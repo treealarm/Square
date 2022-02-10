@@ -30,11 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\map\LocationMarkers.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\map\MapComponent.tsx" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="ClientApp\src\events\" />
   </ItemGroup>
 
