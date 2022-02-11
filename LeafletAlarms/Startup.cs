@@ -1,3 +1,5 @@
+using DbLayer;
+using Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -6,6 +8,8 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Swashbuckle.AspNetCore.Filters;
+using System.Reflection;
 
 namespace LeafletAlarms
 {
@@ -21,6 +25,9 @@ namespace LeafletAlarms
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
+      services.AddSingleton<MapService>();
+
       services.AddControllersWithViews();
 
       // In production, the React files will be served from this directory
@@ -28,6 +35,21 @@ namespace LeafletAlarms
       {
         configuration.RootPath = "ClientApp/build";
       });
+
+      services.AddSwaggerGen(setUpAction =>
+      {
+        setUpAction.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+        {
+          Title = "MapApi",
+          Version = "1.0"
+        });
+        setUpAction.ExampleFilters();
+
+        var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        //setUpAction.IncludeXmlComments(xmlCommentsFile);
+        //setUpAction.AddFluentValidationRules();
+      });
+      services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,6 +58,13 @@ namespace LeafletAlarms
       if (env.IsDevelopment())
       {
         app.UseDeveloperExceptionPage();
+        app.UseSwagger();
+
+        app.UseSwaggerUI(setUpAction =>
+        {
+          setUpAction.SwaggerEndpoint(@"/swagger/v1/swagger.json", "Map API");
+          setUpAction.RoutePrefix = @"api";
+        });
       }
       else
       {
