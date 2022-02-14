@@ -26,8 +26,12 @@ namespace DbLayer
           bookStoreDatabaseSettings.Value.ObjectsCollectionName);
     }
 
-    public async Task<List<Marker>> GetAsync() =>
-        await _circleCollection.Find(_ => true).ToListAsync();
+    public async Task<List<Marker>> GetAsync()
+    {
+      var list = await _circleCollection.Find(_ => true).ToListAsync();
+      return list;
+    }
+        
 
 #nullable enable
     public async Task<Marker?> GetAsync(string id) =>
