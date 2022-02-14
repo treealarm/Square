@@ -11,7 +11,7 @@ namespace DbLayer
 {
   public class MapService
   {
-    private readonly IMongoCollection<CircleMarker> _circleCollection;
+    private readonly IMongoCollection<Marker> _circleCollection;
 
     public MapService(
         IOptions<MapDatabaseSettings> bookStoreDatabaseSettings)
@@ -22,22 +22,22 @@ namespace DbLayer
       var mongoDatabase = mongoClient.GetDatabase(
           bookStoreDatabaseSettings.Value.DatabaseName);
 
-      _circleCollection = mongoDatabase.GetCollection<CircleMarker>(
+      _circleCollection = mongoDatabase.GetCollection<Marker>(
           bookStoreDatabaseSettings.Value.ObjectsCollectionName);
     }
 
-    public async Task<List<CircleMarker>> GetAsync() =>
+    public async Task<List<Marker>> GetAsync() =>
         await _circleCollection.Find(_ => true).ToListAsync();
 
 #nullable enable
-    public async Task<CircleMarker?> GetAsync(string id) =>
+    public async Task<Marker?> GetAsync(string id) =>
         await _circleCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 #nullable disable
 
-    public async Task CreateAsync(CircleMarker newBook) =>
+    public async Task CreateAsync(Marker newBook) =>
         await _circleCollection.InsertOneAsync(newBook);
 
-    public async Task UpdateAsync(string id, CircleMarker updatedBook) =>
+    public async Task UpdateAsync(string id, Marker updatedBook) =>
         await _circleCollection.ReplaceOneAsync(x => x.Id == id, updatedBook);
 
     public async Task RemoveAsync(string id) =>

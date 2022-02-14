@@ -11,15 +11,19 @@ namespace LeafletAlarms.Controllers
   {
     private readonly MapService _mapService;
 
-    public MapController(MapService booksService) =>
-        _mapService = booksService;
+    public MapController(MapService mapsService) =>
+        _mapService = mapsService;
 
     [HttpGet]
-    public async Task<List<CircleMarker>> Get() =>
-        await _mapService.GetAsync();
+    public async Task<List<Marker>> Get()
+    {
+      var test = await _mapService.GetAsync();
+      return test;
+    }
+        
 
     [HttpGet("{id:length(24)}")]
-    public async Task<ActionResult<CircleMarker>> Get(string id)
+    public async Task<ActionResult<Marker>> Get(string id)
     {
       var book = await _mapService.GetAsync(id);
 
@@ -32,7 +36,7 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(CircleMarker newBook)
+    public async Task<IActionResult> Post(Marker newBook)
     {
       await _mapService.CreateAsync(newBook);
 
@@ -40,7 +44,7 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPut("{id:length(24)}")]
-    public async Task<IActionResult> Update(string id, CircleMarker updatedBook)
+    public async Task<IActionResult> Update(string id, Marker updatedBook)
     {
       var book = await _mapService.GetAsync(id);
 

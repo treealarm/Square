@@ -10,14 +10,14 @@ namespace LeafletAlarms
   public class SwaggerExample
   {
   }
-  public class SingleCircle : IExamplesProvider<CircleMarker>
+  public class SingleCircle : IExamplesProvider<Marker>
   {
-    public CircleMarker GetExamples()
+    public Marker GetExamples()
     {
-      return new CircleMarker
+      return new Marker
       {
         MarkerName = @"Test",
-        Center = new double[] {51.505, -0.09 }
+        Points = new double[] { 51.505, -0.09 }
       };
     }
   }
