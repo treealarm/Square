@@ -38,6 +38,7 @@ interface PostingMarkerAction {
 
 interface PostedMarkerAction {
   type: 'POSTED_MARKERS';
+  marker: Marker;
   success: boolean;
 }
 
@@ -73,6 +74,8 @@ export const actionCreators = {
 
   sendMarker: (marker: Marker): AppThunkAction<KnownAction> => (dispatch, getState) => {
 
+    let appState = getState();
+    appState.markersStates.isLoading = false;
     //let marker: Marker = {} as Marker;
 
     // Send data to the backend via POST
@@ -87,7 +90,8 @@ export const actionCreators = {
 
     fetched.then(response => response.json())
       .then(data => {
-        dispatch({ type: 'POSTED_MARKERS', success: true});
+        let m: Marker = data as Marker;
+        dispatch({ type: 'POSTED_MARKERS', success: true , marker: m});
       });
 
     dispatch({ type: 'POSTING_MARKERS', marker: marker });
@@ -132,9 +136,8 @@ export const reducer: Reducer<MarkersState> = (state: MarkersState | undefined, 
         };
       case 'POSTED_MARKERS':
         return {
-          box: state.box,
-          markers: state.markers,
-          isLoading: false
+          ...state,
+          markers: [...state.markers, action.marker]
         };
     }
 

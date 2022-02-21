@@ -27,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\map\LocationMarkers.tsx" />
-    <None Remove="ClientApp\src\map\MapComponent.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\map\LocationMarkers.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\map\MapComponent.tsx" />
   </ItemGroup>
 
   <ItemGroup>
