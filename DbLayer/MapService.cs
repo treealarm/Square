@@ -35,16 +35,16 @@ namespace DbLayer
 
 #nullable enable
     public async Task<Marker?> GetAsync(string id) =>
-        await _circleCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+        await _circleCollection.Find(x => x.id == id).FirstOrDefaultAsync();
 #nullable disable
 
     public async Task CreateAsync(Marker newBook) =>
         await _circleCollection.InsertOneAsync(newBook);
 
     public async Task UpdateAsync(string id, Marker updatedBook) =>
-        await _circleCollection.ReplaceOneAsync(x => x.Id == id, updatedBook);
+        await _circleCollection.ReplaceOneAsync(x => x.id == id, updatedBook);
 
     public async Task RemoveAsync(string id) =>
-        await _circleCollection.DeleteOneAsync(x => x.Id == id);
+        await _circleCollection.DeleteOneAsync(x => x.id == id);
   }
 }

@@ -31,9 +31,19 @@ interface ReceiveMarkersAction {
   markers: Marker[];
 }
 
+interface PostingMarkerAction {
+  type: 'POSTING_MARKERS';
+  marker: Marker;
+}
+
+interface PostedMarkerAction {
+  type: 'POSTED_MARKERS';
+  success: boolean;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestMarkersAction | ReceiveMarkersAction;
+type KnownAction = RequestMarkersAction | ReceiveMarkersAction | PostingMarkerAction | PostedMarkerAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -43,17 +53,44 @@ export const actionCreators = {
   requestMarkers: (box: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
     const appState = getState();
+
     if (appState && appState.markersStates && box !== appState.markersStates.box) {
+
       console.log("fetching....");
+
       var fetched = fetch('api/map');
+
       console.log("fetched:", fetched);
+
       fetched.then(response => response.json() as Promise<Marker[]>)
         .then(data => {
           dispatch({ type: 'RECEIVE_MARKERS', box: box, markers: data });
         });
 
-          dispatch({ type: 'REQUEST_MARKERS', box: box });
+      dispatch({ type: 'REQUEST_MARKERS', box: box });
     }
+  },
+
+  sendMarker: (marker: Marker): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+    //let marker: Marker = {} as Marker;
+
+    // Send data to the backend via POST
+    let body = JSON.stringify(marker);
+    var fetched = fetch('api/map', {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: body
+    });
+
+    console.log("posted:", fetched);
+
+    fetched.then(response => response.json())
+      .then(data => {
+        dispatch({ type: 'POSTED_MARKERS', success: true});
+      });
+
+    dispatch({ type: 'POSTING_MARKERS', marker: marker });
   }
 };
 
@@ -85,7 +122,20 @@ export const reducer: Reducer<MarkersState> = (state: MarkersState | undefined, 
                     isLoading: false
                 };
             }
-            break;
+        break;
+
+      case 'POSTING_MARKERS':
+        return {
+          box: state.box,
+          markers: state.markers,
+          isLoading: false
+        };
+      case 'POSTED_MARKERS':
+        return {
+          box: state.box,
+          markers: state.markers,
+          isLoading: false
+        };
     }
 
     return state;

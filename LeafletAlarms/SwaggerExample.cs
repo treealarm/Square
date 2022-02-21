@@ -16,8 +16,8 @@ namespace LeafletAlarms
     {
       return new Marker
       {
-        Name = @"Test",
-        Points = new double[] { 51.505, -0.09 }
+        name = @"Test",
+        points = new double[] { 51.505, -0.09 }
       };
     }
   }

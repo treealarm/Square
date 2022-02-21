@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { ApplicationState } from '../store';
 import * as MarkersStore from '../store/MarkersStates';
+import { Marker } from '../store/MarkersStates';
 
 // At runtime, Redux will merge together...
 type MarkersProps =
@@ -11,7 +12,14 @@ type MarkersProps =
   & RouteComponentProps<{ box: string }>; // ... plus incoming routing parameters
 
 
+
 class FetchMarkers extends React.PureComponent<MarkersProps> {
+
+  constructor(props) {
+    super(props);
+    this.sendMarker = this.sendMarker.bind(this);
+  }
+
   // This method is called when the component is first added to the document
   public componentDidMount() {
     this.ensureDataFetched();
@@ -37,9 +45,17 @@ class FetchMarkers extends React.PureComponent<MarkersProps> {
     this.props.requestMarkers(box);
   }
 
+  private sendMarker() {
+    let marker: Marker = {} as Marker;
+    marker.name = "Post Test";
+    marker.points = [51.5333, -0.091];
+    this.props.sendMarker(marker);
+  }
+
   private renderMarkersTable() {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabelMarkers">
+        <button onClick={this.sendMarker}>Post Marker</button>
         <thead>
           <tr>
             <th>Id</th>

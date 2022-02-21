@@ -25,37 +25,38 @@ namespace LeafletAlarms.Controllers
     [HttpGet("{id:length(24)}")]
     public async Task<ActionResult<Marker>> Get(string id)
     {
-      var book = await _mapService.GetAsync(id);
+      var marker = await _mapService.GetAsync(id);
 
-      if (book is null)
+      if (marker is null)
       {
         return NotFound();
       }
 
-      return book;
+      return marker;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(Marker newBook)
+    public async Task<IActionResult> Post(Marker newMarker)
     {
-      await _mapService.CreateAsync(newBook);
+      await _mapService.CreateAsync(newMarker);
 
-      return CreatedAtAction(nameof(Get), new { id = newBook.Id }, newBook);
+      var ret = CreatedAtAction(nameof(Get), new { id = newMarker.id }, newMarker);
+      return ret;
     }
 
     [HttpPut("{id:length(24)}")]
-    public async Task<IActionResult> Update(string id, Marker updatedBook)
+    public async Task<IActionResult> Update(string id, Marker updatedMarker)
     {
-      var book = await _mapService.GetAsync(id);
+      var marker = await _mapService.GetAsync(id);
 
-      if (book is null)
+      if (marker is null)
       {
         return NotFound();
       }
 
-      updatedBook.Id = book.Id;
+      updatedMarker.id = marker.id;
 
-      await _mapService.UpdateAsync(id, updatedBook);
+      await _mapService.UpdateAsync(id, updatedMarker);
 
       return NoContent();
     }
@@ -63,14 +64,14 @@ namespace LeafletAlarms.Controllers
     [HttpDelete("{id:length(24)}")]
     public async Task<IActionResult> Delete(string id)
     {
-      var book = await _mapService.GetAsync(id);
+      var marker = await _mapService.GetAsync(id);
 
-      if (book is null)
+      if (marker is null)
       {
         return NotFound();
       }
 
-      await _mapService.RemoveAsync(book.Id);
+      await _mapService.RemoveAsync(marker.id);
 
       return NoContent();
     }
