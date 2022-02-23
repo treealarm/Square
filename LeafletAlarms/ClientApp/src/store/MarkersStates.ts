@@ -11,7 +11,7 @@ export interface MarkersState {
 }
 
 export interface Marker {
-  id: string;
+  id?: string;
   name: string;
   points: number[];
 }
