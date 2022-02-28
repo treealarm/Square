@@ -42,9 +42,23 @@ interface PostedMarkerAction {
   success: boolean;
 }
 
+interface DeletingMarkerAction {
+  type: 'DELETING_MARKERS';
+  marker: Marker;
+}
+
+interface DeletedMarkerAction {
+  type: 'DELETED_MARKERS';
+  marker: Marker;
+  success: boolean;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestMarkersAction | ReceiveMarkersAction | PostingMarkerAction | PostedMarkerAction;
+type KnownAction =
+  RequestMarkersAction | ReceiveMarkersAction |
+  PostingMarkerAction | PostedMarkerAction |
+  DeletingMarkerAction | DeletedMarkerAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -95,6 +109,32 @@ export const actionCreators = {
       });
 
     dispatch({ type: 'POSTING_MARKERS', marker: marker });
+  },
+
+  deleteMarker: (marker: Marker): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+    let appState = getState();
+    appState.markersStates.isLoading = false;
+    //let marker: Marker = {} as Marker;
+
+    // Send data to the backend via DELETE
+    let body = JSON.stringify(marker);
+
+    var fetched = fetch('api/map/' + marker.id, {
+      method: 'DELETE',
+      //headers: { 'Content-type': 'application/json' },
+      //body: body
+    });
+
+    console.log("deleted:", fetched);
+
+    fetched.then(response => response.json())
+      .then(data => {
+        let m: Marker = data as Marker;
+        dispatch({ type: 'DELETED_MARKERS', success: true, marker: m });
+      });
+
+    dispatch({ type: 'DELETING_MARKERS', marker: marker });
   }
 };
 
@@ -108,7 +148,8 @@ export const reducer: Reducer<MarkersState> = (state: MarkersState | undefined, 
         return unloadedState;
     }
 
-    const action = incomingAction as KnownAction;
+  const action = incomingAction as KnownAction;
+
     switch (action.type) {
         case 'REQUEST_MARKERS':
             return {
@@ -138,6 +179,18 @@ export const reducer: Reducer<MarkersState> = (state: MarkersState | undefined, 
         return {
           ...state,
           markers: [...state.markers, action.marker]
+        };
+
+      case 'DELETING_MARKERS':
+        return {
+          box: state.box,
+          markers: state.markers,
+          isLoading: false
+        };
+      case 'DELETED_MARKERS':
+        return {
+          ...state,
+          markers: state.markers.filter(item => item.id !== action.marker.id),
         };
     }
 

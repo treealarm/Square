@@ -59,6 +59,7 @@ export function LocationMarkers() {
       console.log(e.target.value);
       //alert('delete ' + marker.name);
       map.closePopup();
+      dispatch(MarkersStore.actionCreators.deleteMarker(marker));
   }, [])
 
   return (

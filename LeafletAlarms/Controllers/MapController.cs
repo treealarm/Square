@@ -73,7 +73,9 @@ namespace LeafletAlarms.Controllers
 
       await _mapService.RemoveAsync(marker.id);
 
-      return NoContent();
+      var ret = CreatedAtAction(nameof(Delete), new { id = marker.id }, marker);
+
+      return ret;
     }
   }
 }
