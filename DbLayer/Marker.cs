@@ -11,6 +11,9 @@ namespace DbLayer
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? id { get; set; }
+
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? parent_id { get; set; }
 #nullable disable
 
     [BsonElement("name")]
