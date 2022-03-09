@@ -35,6 +35,14 @@ namespace LeafletAlarms.Controllers
       return marker;
     }
 
+    [HttpGet()]
+    [Route("GetByParent")]
+    public async Task<List<Marker>> GetByParent(string parent_id)
+    {
+      var test = await _mapService.GetByParentIdAsync(parent_id);
+      return test;
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Marker newMarker)
     {
