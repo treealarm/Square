@@ -2,8 +2,8 @@
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { ApplicationState } from '../store';
+import { Marker } from '../store/Marker';
 import * as MarkersStore from '../store/MarkersStates';
-import { Marker } from '../store/MarkersStates';
 
 // At runtime, Redux will merge together...
 type MarkersProps =

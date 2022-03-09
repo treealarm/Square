@@ -31,11 +31,15 @@ namespace DbLayer
       var list = await _circleCollection.Find(_ => true).ToListAsync();
       return list;
     }
-        
 
 #nullable enable
     public async Task<Marker?> GetAsync(string id) =>
         await _circleCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+
+    public async Task<List<Marker>> GetByParentIdAsync(string parent_id)
+    {
+      return await _circleCollection.Find(x => x.parent_id == parent_id).ToListAsync();
+    }
 #nullable disable
 
     public async Task CreateAsync(Marker newBook) =>

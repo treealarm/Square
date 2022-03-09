@@ -1,5 +1,6 @@
 import { Action, Reducer } from 'redux';
-import { AppThunkAction } from './';
+import { ApiRootString, AppThunkAction } from './';
+import { Marker } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -10,11 +11,6 @@ export interface MarkersState {
   box: string;
 }
 
-export interface Marker {
-  id?: string;
-  name: string;
-  points: number[];
-}
 
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
@@ -73,7 +69,7 @@ export const actionCreators = {
 
       console.log("fetching....");
 
-      var fetched = fetch('api/map');
+      var fetched = fetch(ApiRootString);
 
       console.log("fetched:", fetched);
 
@@ -88,13 +84,11 @@ export const actionCreators = {
 
   sendMarker: (marker: Marker): AppThunkAction<KnownAction> => (dispatch, getState) => {
 
-    let appState = getState();
-    appState.markersStates.isLoading = false;
     //let marker: Marker = {} as Marker;
 
     // Send data to the backend via POST
     let body = JSON.stringify(marker);
-    var fetched = fetch('api/map', {
+    var fetched = fetch(ApiRootString, {
       method: 'POST',
       headers: { 'Content-type': 'application/json' },
       body: body
@@ -113,14 +107,11 @@ export const actionCreators = {
 
   deleteMarker: (marker: Marker): AppThunkAction<KnownAction> => (dispatch, getState) => {
 
-    let appState = getState();
-    appState.markersStates.isLoading = false;
     //let marker: Marker = {} as Marker;
 
     // Send data to the backend via DELETE
-    let body = JSON.stringify(marker);
 
-    var fetched = fetch('api/map/' + marker.id, {
+    var fetched = fetch(ApiRootString + marker.id, {
       method: 'DELETE',
       //headers: { 'Content-type': 'application/json' },
       //body: body

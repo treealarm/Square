@@ -1,15 +1,28 @@
 ﻿import * as React from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState} from 'react';
 import { TreeItem, TreeView } from '@mui/lab';
 
+import { useDispatch, useSelector, useStore } from "react-redux";
+import * as TreeStore from '../store/TreeStates';
+import { ApplicationState } from '../store';
+import { Marker } from '../store/Marker';
+
+declare module 'react-redux' {
+  interface DefaultRootState extends ApplicationState { }
+}
 
 export function TreeControl() {
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    //console.log('ComponentDidMount');
+    console.log('ComponentDidMount TreeControl');
+    dispatch(TreeStore.actionCreators.getByParent(null));
   }, []);
+
+  const markers = useSelector((state) => state?.treeStates?.markers);
 
   const onNodeSelect = useCallback(
     (event: React.SyntheticEvent, nodeIds: Array<string> | string) => {
@@ -30,15 +43,9 @@ export function TreeControl() {
         onNodeSelect={onNodeSelect}
         onNodeToggle={onNodeToggle}
       >
-        <TreeItem nodeId="1" label="Applications">
-          <TreeItem nodeId="2" label="Calendar" />
-        </TreeItem>
-        <TreeItem nodeId="5" label="Documents">
-          <TreeItem nodeId="10" label="OSS" />
-          <TreeItem nodeId="6" label="MUI">
-            <TreeItem nodeId="8" label="index.js" />
-          </TreeItem>
-        </TreeItem>
+        {markers?.map((marker, index) =>
+          <TreeItem nodeId={marker.id} label={marker.name}/>
+        )}
       </TreeView>
     );
 }

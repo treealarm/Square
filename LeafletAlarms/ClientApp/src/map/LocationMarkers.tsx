@@ -16,9 +16,8 @@ import {
   useMap
 } from "react-leaflet";
 
-import { Marker } from '../store/MarkersStates';
 import { ApplicationState } from '../store';
-import { Table } from 'reactstrap';
+import { Marker } from '../store/Marker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
