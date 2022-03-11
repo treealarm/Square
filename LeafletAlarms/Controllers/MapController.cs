@@ -1,6 +1,8 @@
 ﻿using DbLayer;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
@@ -37,10 +39,33 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetByParent")]
-    public async Task<List<Marker>> GetByParent(string parent_id)
+    public async Task<List<MarkerDTO>> GetByParent(string parent_id)
     {
-      var test = await _mapService.GetByParentIdAsync(parent_id);
-      return test;
+      var markers = await _mapService.GetByParentIdAsync(parent_id);
+
+      List<MarkerDTO> retVal = new List<MarkerDTO>();
+      List<string> parentIds = new List<string>();
+
+      foreach (var marker in markers)
+      {
+        var markerDto = DTOConverter.GetMarkerDTO(marker);
+        retVal.Add(markerDto);
+        parentIds.Add(marker.id);
+      }
+
+      var withChildren = await _mapService.GetTopChildren(parentIds);
+
+      foreach (var item in withChildren)
+      {
+        var markerDto = retVal.Where(x => x.id == item.id).FirstOrDefault();
+
+        if (markerDto != null)
+        {
+          markerDto.has_children = true;
+        }
+      }
+
+      return retVal;
     }
 
     [HttpPost]
