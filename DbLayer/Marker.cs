@@ -7,17 +7,15 @@ namespace DbLayer
   [BsonIgnoreExtraElements]
   public class Marker
   {
-#nullable enable
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? id { get; set; }
+    public string id { get; set; }
 
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? parent_id { get; set; }
-#nullable disable
+    public string parent_id { get; set; }
 
     [BsonElement("name")]
-    public string name { get; set; } = null!;
+    public string name { get; set; } = null;
 
     public double[] points { get; set; }
   }

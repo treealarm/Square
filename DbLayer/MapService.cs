@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -32,15 +33,26 @@ namespace DbLayer
       return list;
     }
 
-#nullable enable
-    public async Task<Marker?> GetAsync(string id) =>
+    public async Task<Marker> GetAsync(string id) =>
         await _circleCollection.Find(x => x.id == id).FirstOrDefaultAsync();
 
     public async Task<List<Marker>> GetByParentIdAsync(string parent_id)
     {
       return await _circleCollection.Find(x => x.parent_id == parent_id).ToListAsync();
     }
-#nullable disable
+
+    public async Task<List<Marker>> GetTopChildren(List<string> parentIds)
+    {
+      var result = await _circleCollection
+        .Aggregate()
+        .Match(x => parentIds.Contains(x.parent_id))
+        //.Group("{ _id : '$parent_id'}")
+        .Group(
+          z => z.parent_id, 
+          g => new Marker() { id = g.Key })
+        .ToListAsync();
+      return result;
+    }
 
     public async Task CreateAsync(Marker newBook) =>
         await _circleCollection.InsertOneAsync(newBook);
