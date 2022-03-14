@@ -2,9 +2,10 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
+import * as GuiStore from '../store/GuiStates';
 
 import {
-    useCallback,
+  useCallback,
   useEffect,
   useState
 } from "react";
@@ -18,6 +19,7 @@ import {
 
 import { ApplicationState } from '../store';
 import { Marker } from '../store/Marker';
+import { GUIState } from '../store/GUIStates';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -37,16 +39,15 @@ export function LocationMarkers() {
   }, []);
 
   const markers = useSelector((state) => state?.markersStates?.markers);
+  const selected_id = useSelector((state1) => state1?.guiState?.selected_id);
 
-  //const [markers1, setMarkers] = useState(markers);
+  console.log('Selected:', selected_id);
 
   const mapEvents = useMapEvents({
     click(e) {
       var ll: L.LatLng = e.latlng as L.LatLng;
       var marker: Marker = { points: [ll.lat, ll.lng], name: 'Initial' };
-      //markers?.push(marker);
-      //setMarkers((prevValue) => [...prevValue, marker]);
-
+      marker.parent_id = selected_id;
       dispatch(MarkersStore.actionCreators.sendMarker(marker));
     }
   });

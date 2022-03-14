@@ -111,7 +111,7 @@ export const actionCreators = {
 
     // Send data to the backend via DELETE
 
-    var fetched = fetch(ApiRootString + marker.id, {
+    var fetched = fetch(ApiRootString + '/' + marker.id, {
       method: 'DELETE',
       //headers: { 'Content-type': 'application/json' },
       //body: body

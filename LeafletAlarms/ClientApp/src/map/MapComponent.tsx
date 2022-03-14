@@ -1,11 +1,6 @@
-﻿import React from 'react';
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from "react";
+﻿import * as React from 'react';
+import * as GuiStore from '../store/GuiStates';
+import { GUIState } from '../store/GUIStates';
 
 import { LocationMarkers } from './LocationMarkers'
 import {
@@ -13,6 +8,8 @@ import {
   TileLayer,
   Circle,
 } from "react-leaflet";
+
+import { useSelector } from 'react-redux';
 
 export function MapComponent() {
 

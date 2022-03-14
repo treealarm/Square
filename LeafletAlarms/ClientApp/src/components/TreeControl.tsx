@@ -6,8 +6,8 @@ import { TreeItem, TreeView } from '@mui/lab';
 
 import { useDispatch, useSelector, useStore } from "react-redux";
 import * as TreeStore from '../store/TreeStates';
+import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { Marker } from '../store/Marker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -26,7 +26,15 @@ export function TreeControl() {
 
   const onNodeSelect = useCallback(
     (event: React.SyntheticEvent, nodeIds: Array<string> | string) => {
+
       console.log("onNodeSelect", nodeIds);
+
+      if (typeof nodeIds === 'string') {
+        dispatch(GuiStore.actionCreators.selectTreeItem(nodeIds));
+      }
+      else{
+        dispatch(GuiStore.actionCreators.selectTreeItem(nodeIds[0]));
+      }
     }, [])
 
   const onNodeToggle = useCallback(
