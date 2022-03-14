@@ -5,7 +5,7 @@ import { ApiRootString, AppThunkAction } from './';
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface GUIState {
-  selected_id: string|null;
+  selected_id: string | null;
 }
 
 
@@ -15,7 +15,7 @@ export interface GUIState {
 
 interface TreeSelectionAction {
   type: 'SELECT_TREE_ITEM';
-  selected_id: string|null;
+  selected_id: string | null;
 }
 
 

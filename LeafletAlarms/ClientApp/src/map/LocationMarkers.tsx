@@ -1,25 +1,16 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector, useStore } from "react-redux";
+import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
-import * as GuiStore from '../store/GuiStates';
+import * as GUIStore from '../store/GUIStates';
 
-import {
-  useCallback,
-  useEffect,
-  useState
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import {
-  Popup,
-  CircleMarker,
-  useMapEvents,
-  useMap
-} from "react-leaflet";
+import { Popup, CircleMarker, useMapEvents, useMap } from "react-leaflet";
 
 import { ApplicationState } from '../store';
 import { Marker } from '../store/Marker';
-import { GUIState } from '../store/GUIStates';
+import { yellow } from '@mui/material/colors';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -28,26 +19,23 @@ declare module 'react-redux' {
 export function LocationMarkers() {
 
   const dispatch = useDispatch();
-
-  var initialMarkers: Marker[] = [];
-  var marker1: Marker = { points: [51.500, -0.091], name :'Initial', id : '1234' };
-  initialMarkers.push(marker1);
-
+  
   useEffect(() => {
     console.log('ComponentDidMount');
     dispatch(MarkersStore.actionCreators.requestMarkers('initial_box'));
   }, []);
 
-  const markers = useSelector((state) => state?.markersStates?.markers);
-  const selected_id = useSelector((state1) => state1?.guiState?.selected_id);
+  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
 
-  console.log('Selected:', selected_id);
-
-  const mapEvents = useMapEvents({
+   const mapEvents = useMapEvents({
     click(e) {
       var ll: L.LatLng = e.latlng as L.LatLng;
-      var marker: Marker = { points: [ll.lat, ll.lng], name: 'Initial' };
-      marker.parent_id = selected_id;
+       var marker: Marker = {
+         points: [ll.lat, ll.lng],
+         name: ll.toString(),
+         parent_id : selected_id
+       };
+
       dispatch(MarkersStore.actionCreators.sendMarker(marker));
     }
   });
@@ -62,10 +50,18 @@ export function LocationMarkers() {
       dispatch(MarkersStore.actionCreators.deleteMarker(marker));
   }, [])
 
+  const markers = useSelector((state) => state?.markersStates?.markers);
+
+  const colorOptionsUnselected = { color: "green" };
+  const colorOptionsSelected = { color: "yellow" };
+
   return (
     <React.Fragment>
-      { markers?.map((marker, index) =>
-        <CircleMarker key={index} center={new L.LatLng(marker.points[0], marker.points[1])}>
+      {markers?.map((marker, index) =>
+        <CircleMarker
+          key={index}
+          center={new L.LatLng(marker.points[0], marker.points[1])}
+          pathOptions={selected_id == marker.id ? colorOptionsSelected : colorOptionsUnselected}>
           <Popup>
             <table>
               <tbody>

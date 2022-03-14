@@ -10,7 +10,7 @@ export interface ApplicationState {
   weatherForecasts: WeatherForecasts.WeatherForecastsState | undefined;
   markersStates: MarkersStates.MarkersState | undefined;
   treeStates: TreeStates.TreeState | undefined;
-  guiState: GUIStates.GUIState | undefined;
+  guiStates: GUIStates.GUIState | undefined;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using

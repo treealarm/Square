@@ -1,6 +1,4 @@
 ﻿import * as React from 'react';
-import * as GuiStore from '../store/GuiStates';
-import { GUIState } from '../store/GUIStates';
 
 import { LocationMarkers } from './LocationMarkers'
 import {
@@ -9,11 +7,11 @@ import {
   Circle,
 } from "react-leaflet";
 
-import { useSelector } from 'react-redux';
 
 export function MapComponent() {
 
   const redOptions = { color: "red" };
+
   return (
     <div>
       <MapContainer center={[51.5359, -0.09]} zoom={13} scrollWheelZoom={false}>

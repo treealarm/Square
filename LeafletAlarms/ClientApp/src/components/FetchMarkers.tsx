@@ -15,7 +15,7 @@ type MarkersProps =
 
 class FetchMarkers extends React.PureComponent<MarkersProps> {
 
-  constructor(props) {
+  constructor(props: MarkersProps | Readonly<MarkersProps>) {
     super(props);
     this.sendMarker = this.sendMarker.bind(this);
   }
@@ -65,7 +65,7 @@ class FetchMarkers extends React.PureComponent<MarkersProps> {
         </thead>
         <tbody>
           {this.props.isLoading && <span>Loading...</span>}
-          {this.props.markers.map((marker: MarkersStore.Marker) =>
+          {this.props.markers.map((marker: Marker) =>
             <tr key={marker.id}>
               <td>{marker?.id}</td>
               <td>{marker?.name}</td>

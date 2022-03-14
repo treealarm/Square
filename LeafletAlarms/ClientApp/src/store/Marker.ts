@@ -1,7 +1,7 @@
 ﻿
 export interface Marker {
-  id?: string;
-  parent_id?: string;
+  id?: string | null;
+  parent_id?: string | null;
   name: string;
   points: number[];
 }

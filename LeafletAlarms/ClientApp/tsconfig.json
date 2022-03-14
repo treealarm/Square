@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "noEmitOnError": true,
+    "strictNullChecks": false,
     "jsx": "preserve",
     "lib": [
       "es2015",
