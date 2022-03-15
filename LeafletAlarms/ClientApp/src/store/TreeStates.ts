@@ -1,6 +1,6 @@
 ﻿import { Action, Reducer } from 'redux';
 import { ApiRootString, AppThunkAction } from './';
-import { Marker } from './Marker';
+import { TreeMarker } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -8,7 +8,7 @@ import { Marker } from './Marker';
 export interface TreeState {
   isLoading: boolean;
   parent_id: string|null;
-  markers: Marker[];
+  markers: TreeMarker[];
 }
 
 
@@ -24,7 +24,7 @@ interface RequestTreeStateAction {
 interface ReceiveTreeStateAction {
   type: 'RECEIVE_TREE_STATE';
   parent_id: string|null;
-  markers: Marker[];
+  markers: TreeMarker[];
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -50,7 +50,7 @@ export const actionCreators = {
 
     console.log("fetched:", fetched);
 
-    fetched.then(response => response.json() as Promise<Marker[]>)
+    fetched.then(response => response.json() as Promise<TreeMarker[]>)
       .then(data => {
         dispatch({ type: 'RECEIVE_TREE_STATE', parent_id: parent_id, markers: data });
       });

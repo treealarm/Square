@@ -22,7 +22,16 @@ export function TreeControl() {
     dispatch(TreeStore.actionCreators.getByParent(null));
   }, []);
 
+  const [levelUp, setLevelUp] = useState(null);
+
   const markers = useSelector((state) => state?.treeStates?.markers);
+  const parent_id = useSelector((state) => state?.treeStates?.parent_id);
+
+    const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+    const handleListItemClick = (event, index) => {
+      setSelectedIndex(index);
+    };
 
   const onNodeSelect = useCallback(
     (event: React.SyntheticEvent, nodeIds: Array<string> | string) => {
@@ -38,8 +47,14 @@ export function TreeControl() {
     }, [])
 
   const onNodeToggle = useCallback(
-    (event: React.SyntheticEvent, nodeIds: Array<string> | string) => {
+    (event: React.SyntheticEvent, nodeIds: Array<string>) => {
       console.log("onNodeToggle", nodeIds);
+
+      if (nodeIds.length > 0)
+      {
+        setLevelUp(parent_id);
+        dispatch(TreeStore.actionCreators.getByParent(nodeIds[0]));
+      }
     }, [])
 
     return (
@@ -50,9 +65,24 @@ export function TreeControl() {
         sx={{ height: 240, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
         onNodeSelect={onNodeSelect}
         onNodeToggle={onNodeToggle}
+        expanded={[]}
       >
-        {markers?.map((marker, index) =>
-          <TreeItem nodeId={marker.id} label={marker.name}/>
+        {
+          parent_id != null &&
+          <TreeItem nodeId={levelUp} label='UP'>
+            <TreeItem nodeId='level_up_loading' label='Loading...'>
+            </TreeItem>
+          </TreeItem>
+        }
+        
+        {
+          markers?.map((marker, index) =>
+          <TreeItem nodeId={marker.id} label={marker.name}>
+            { 
+              marker.has_children &&
+                <TreeItem nodeId={marker.id + 'fake'} label='Loading...' />
+            }
+          </TreeItem>
         )}
       </TreeView>
     );

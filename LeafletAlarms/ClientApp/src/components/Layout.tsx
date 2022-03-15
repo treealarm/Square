@@ -1,8 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import * as React from 'react';
 import { Col, Container, Row } from 'reactstrap';
+import { TreeControl } from '../Tree/TreeControl';
 import NavMenu from './NavMenu';
-import { TreeControl } from './TreeControl';
+
 
 export default class Layout extends React.PureComponent<{}, { children?: React.ReactNode }> {
     public render() {
