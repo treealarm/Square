@@ -26,6 +26,7 @@ export function LocationMarkers() {
   }, []);
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
+  const checked_ids = useSelector((state) => state?.guiStates?.checked);
 
    const mapEvents = useMapEvents({
     click(e) {
@@ -54,25 +55,42 @@ export function LocationMarkers() {
 
   const colorOptionsUnselected = { color: "green" };
   const colorOptionsSelected = { color: "yellow" };
+  const colorOptionsChecked = { color: "blue" };
+  
+
+  const getColor = (id: string) => {
+    let colorOption = colorOptionsUnselected;
+
+    if (checked_ids.indexOf(id) !== -1) {
+      colorOption = colorOptionsChecked;
+    }
+
+    if (selected_id == id) {
+      colorOption = colorOptionsSelected;
+    }
+
+    return colorOption;
+  }
 
   return (
     <React.Fragment>
-      {markers?.map((marker, index) =>
-        <CircleMarker
-          key={index}
-          center={new L.LatLng(marker.points[0], marker.points[1])}
-          pathOptions={selected_id == marker.id ? colorOptionsSelected : colorOptionsUnselected}>
-          <Popup>
-            <table>
-              <tbody>
-                <tr><td>{marker.name}</td></tr>
-                <tr><td>
-                  <span className="menu_item" onClick={(e) => deleteMe(marker, e)}>Delete</span>
-                </td></tr>
-              </tbody>
-            </table>
-          </Popup>
-        </CircleMarker>
+      {
+        markers?.map((marker, index) =>
+          <CircleMarker
+            key={index}
+            center={new L.LatLng(marker.points[0], marker.points[1])}
+            pathOptions={getColor(marker.id)}>
+            <Popup>
+              <table>
+                <tbody>
+                  <tr><td>{marker.name}</td></tr>
+                  <tr><td>
+                    <span className="menu_item" onClick={(e) => deleteMe(marker, e)}>Delete</span>
+                  </td></tr>
+                </tbody>
+              </table>
+            </Popup>
+          </CircleMarker>
       )}
     </React.Fragment>
   );

@@ -34,17 +34,22 @@ export function TreeControl() {
   const markers = useSelector((state) => state?.treeStates?.markers);
   const parent_id = useSelector((state) => state?.treeStates?.parent_id);
 
-  const [checked, setChecked] = React.useState([]);
+  // Selected.
+  const [selectedIndex, setSelectedIndex] = React.useState(null);
 
   const handleSelect = useCallback((selected_id) => () => {
     dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
-  }, []);
+    setSelectedIndex(selected_id);
+  }, [selectedIndex]);
 
+  // Drill down.
   const drillDown = useCallback((selected_id) => () => {
     setLevelUp(parent_id);
     dispatch(TreeStore.actionCreators.getByParent(selected_id));
-  }, []);
+  }, [levelUp]);
 
+  // Checked.
+  const [checked, setChecked] = React.useState([]);
   const handleChecked = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
 
     var selected_id = event.target.id;
@@ -59,17 +64,21 @@ export function TreeControl() {
 
     setChecked(newChecked);
 
-    dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
-  }, []);
+    dispatch(GuiStore.actionCreators.checkTreeItem(newChecked));
+  }, [checked]);
 
 
     return (
-      <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+      <List 
+        sx={{ width: '100%', maxWidth: 460, bgcolor: 'background.paper' }}
+      >
         {
           parent_id != null &&
           <ListItem>
-            <ListItemText id={levelUp} primary='UP'>
-            </ListItemText>
+            <ListItemButton onClick={drillDown(levelUp)}>
+              <ListItemText id={levelUp} primary='UP'>
+              </ListItemText>
+            </ListItemButton>
           </ListItem>
         }
         
@@ -85,7 +94,7 @@ export function TreeControl() {
                 </IconButton>
               }
             >
-              <ListItemButton role={undefined} onClick={handleSelect(marker.id)} dense>
+              <ListItemButton selected={selectedIndex === marker.id} role={undefined} onClick={handleSelect(marker.id)}>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
