@@ -1,6 +1,5 @@
 ﻿import * as React from 'react';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+
 import { useEffect, useCallback, useState} from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 import * as TreeStore from '../store/TreeStates';
@@ -14,7 +13,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
-import CommentIcon from '@mui/icons-material/Comment';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -74,11 +74,14 @@ export function TreeControl() {
       >
         {
           parent_id != null &&
-          <ListItem>
-            <ListItemButton onClick={drillDown(levelUp)}>
+          <ListItem onClick={drillDown(levelUp)}>
+            <IconButton edge="start">
+              <ChevronLeftIcon />
+            </IconButton>
+            <ListItemButton>
               <ListItemText id={levelUp} primary='UP'>
               </ListItemText>
-            </ListItemButton>
+              </ListItemButton>
           </ListItem>
         }
         
@@ -89,8 +92,8 @@ export function TreeControl() {
               disablePadding
               secondaryAction={
                 marker.has_children &&
-                <IconButton edge="end" aria-label="comments">
-                  <CommentIcon onClick={drillDown(marker.id)}/>
+                <IconButton edge="end" aria-label="drill_down">
+                  <ChevronRightIcon onClick={drillDown(marker.id)}/>
                 </IconButton>
               }
             >
@@ -101,7 +104,6 @@ export function TreeControl() {
                     checked={checked.indexOf(marker.id) !== -1}
                     tabIndex={-1}
                     disableRipple
-                    inputProps={{ 'aria-labelledby': marker.id }}
                     id={marker.id}
                     onChange={handleChecked}
                   />
