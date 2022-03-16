@@ -6,7 +6,8 @@ import { ApiRootString, AppThunkAction } from './';
 
 export interface GUIState {
   selected_id: string | null;
-  checked: string[]
+  checked: string[],
+  requestedTreeUpdate?: number
 }
 
 
@@ -24,10 +25,14 @@ interface TreeCheckingAction {
   checked: string[]
 }
 
+interface TreeUpdateRequestedAction {
+  type: 'UPDATE_TREE';
+}
+
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = TreeSelectionAction | TreeCheckingAction;
+type KnownAction = TreeSelectionAction | TreeCheckingAction | TreeUpdateRequestedAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -41,11 +46,17 @@ export const actionCreators = {
   checkTreeItem: (checked: string[]): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: 'CHECK_TREE_ITEM', checked: checked });
   }
+  ,
+
+  requestTreeUpdate: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({ type: 'UPDATE_TREE'});
+  }
 };
 
 const unloadedState: GUIState = {
   selected_id: null,
-  checked: []
+  checked: [],
+  requestedTreeUpdate: 0
 };
 
 export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incomingAction: Action): GUIState => {
@@ -67,6 +78,13 @@ export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incoming
         ...state,
         checked: action.checked
       };
+    case 'UPDATE_TREE':
+      return {
+        ...state,
+        requestedTreeUpdate: state.requestedTreeUpdate + 1
+      };
+    default:
+      break;
   };
 
   return state;

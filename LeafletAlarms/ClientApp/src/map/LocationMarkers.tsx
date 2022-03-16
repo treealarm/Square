@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
-import * as GUIStore from '../store/GUIStates';
+import * as GuiStore from '../store/GUIStates';
 
 import { useCallback, useEffect, useState } from "react";
 
@@ -37,7 +37,7 @@ export function LocationMarkers() {
          parent_id : selected_id
        };
 
-      dispatch(MarkersStore.actionCreators.sendMarker(marker));
+       dispatch(MarkersStore.actionCreators.sendMarker(marker));
     }
   });
 
@@ -52,6 +52,13 @@ export function LocationMarkers() {
   }, [])
 
   const markers = useSelector((state) => state?.markersStates?.markers);
+
+
+  const isChanging = useSelector((state) => state?.markersStates?.isChanging);
+  useEffect(
+    () => {
+      dispatch(GuiStore.actionCreators.requestTreeUpdate());
+    }, [isChanging]);
 
   const colorOptionsUnselected = { color: "green" };
   const colorOptionsSelected = { color: "yellow" };

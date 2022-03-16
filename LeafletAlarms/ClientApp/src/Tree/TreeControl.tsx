@@ -15,6 +15,8 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import { ClickAwayListener } from '@mui/material';
+import { TreeMarker } from '../store/Marker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -42,6 +44,12 @@ export function TreeControl() {
     setSelectedIndex(selected_id);
   }, [selectedIndex]);
 
+    const handleClickAway = useCallback(() => {
+        dispatch(GuiStore.actionCreators.selectTreeItem(null));
+        setSelectedIndex(null);
+    }, []);
+    
+
   // Drill down.
   const drillDown = useCallback((selected_id) => () => {
     setLevelUp(parent_id);
@@ -67,8 +75,16 @@ export function TreeControl() {
     dispatch(GuiStore.actionCreators.checkTreeItem(newChecked));
   }, [checked]);
 
+  const requestTreeUpdate = useSelector((state) => state?.guiStates?.requestedTreeUpdate);
+  const [oldUpdateVaue, setUpdateValue] = React.useState(-1);
+  if (oldUpdateVaue != requestTreeUpdate)
+  {
+    setUpdateValue(requestTreeUpdate);
+    dispatch(TreeStore.actionCreators.getByParent(parent_id));
+  }
 
     return (
+      <ClickAwayListener onClickAway={handleClickAway}>
       <List 
         sx={{ width: '100%', maxWidth: 460, bgcolor: 'background.paper' }}
       >
@@ -112,6 +128,7 @@ export function TreeControl() {
               </ListItemButton>
           </ListItem>
         )}
-      </List>
+            </List>
+        </ClickAwayListener>
     );
 }
