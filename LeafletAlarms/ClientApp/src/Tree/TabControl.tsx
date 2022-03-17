@@ -3,30 +3,40 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 
+import { useDispatch, useSelector } from 'react-redux';
+
+import * as TreeStore from '../store/TreeStates';
+import * as GuiStore from '../store/GUIStates';
+import { ApplicationState } from '../store';
+import { TreeMarker } from '../store/Marker';
+import { useCallback } from 'react';
+
 export default function TabControl() {
-  const [value, setValue] = React.useState(0);
+
+  const parent_list = useSelector((state) => state?.treeStates?.parent_list);
+
+  const dispatch = useDispatch();
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    dispatch(TreeStore.actionCreators.getByParent(newValue));
   };
+  
 
   return (
-    <Box sx={{ maxWidth: { xs: 320, sm: 480 }, bgcolor: 'background.paper' }}>
+    <Box sx={{ border: 1 }}>
       <Tabs
-        value={value}
+        value={parent_list.slice(-1)[0]}
         onChange={handleChange}
         variant="scrollable"
         scrollButtons
         allowScrollButtonsMobile
         aria-label="scrollable force tabs example"
       >
-        <Tab label="Item One" />
-        <Tab label="Item Two" />
-        <Tab label="Item Three" />
-        <Tab label="Item Four" />
-        <Tab label="Item Five" />
-        <Tab label="Item Six" />
-        <Tab label="Item Seven" />
+        {
+          parent_list?.map((marker, index) =>
+            <Tab label={marker!= null ? marker?.name :'ROOT'} value={marker}/>
+          )
+        }
       </Tabs>
     </Box>
   );

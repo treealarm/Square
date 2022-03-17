@@ -2,9 +2,11 @@
 
 import { useEffect, useCallback, useState} from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
+
 import * as TreeStore from '../store/TreeStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
+import { TreeMarker } from '../store/Marker';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -16,7 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Box, ClickAwayListener } from '@mui/material';
-import { TreeMarker } from '../store/Marker';
+
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -26,15 +28,18 @@ export function TreeControl() {
 
   const dispatch = useDispatch();
 
+  function getTreeItemsByParent(parent_marker: TreeMarker | null) {
+    dispatch(TreeStore.actionCreators.getByParent(parent_marker));
+  }
+
   useEffect(() => {
     console.log('ComponentDidMount TreeControl');
-    dispatch(TreeStore.actionCreators.getByParent(null));
+    getTreeItemsByParent(null);
   }, []);
 
-  const [levelUp, setLevelUp] = useState(null);
 
   const markers = useSelector((state) => state?.treeStates?.markers);
-  const parent_id = useSelector((state) => state?.treeStates?.parent_id);
+  const parent_marker = useSelector((state) => state?.treeStates?.parent_marker);
 
   // Selected.
   const [selectedIndex, setSelectedIndex] = React.useState(null);
@@ -59,11 +64,10 @@ export function TreeControl() {
     
 
   // Drill down.
-  const drillDown = useCallback((selected_id) => () => {
+  const drillDown = useCallback((selected_marker: TreeMarker|null) => () => {
     selectItem(null);
-    setLevelUp(parent_id);
-    dispatch(TreeStore.actionCreators.getByParent(selected_id));
-  }, [levelUp]);
+    getTreeItemsByParent(selected_marker);
+  }, []);
 
   // Checked.
   const [checked, setChecked] = React.useState([]);
@@ -85,12 +89,10 @@ export function TreeControl() {
   }, [checked]);
 
   const requestTreeUpdate = useSelector((state) => state?.guiStates?.requestedTreeUpdate);
-  const [oldUpdateVaue, setUpdateValue] = React.useState(-1);
-  if (oldUpdateVaue != requestTreeUpdate)
-  {
-    setUpdateValue(requestTreeUpdate);
-    dispatch(TreeStore.actionCreators.getByParent(parent_id));
-  }
+
+  useEffect(() => {
+    getTreeItemsByParent(parent_marker);
+  }, [requestTreeUpdate, parent_marker]);
 
     return (
       <ClickAwayListener onClickAway={handleClickAway}>
@@ -101,22 +103,13 @@ export function TreeControl() {
               width: '100%',
               maxWidth: 460,
               bgcolor: 'background.paper',
-              overflow: 'auto',
-              maxHeight: '80vh',
+            overflow: 'auto',
+            height: '80vh',
+            maxHeight: '80vh',
+            border: 1
             }}
       >
-        {
-          parent_id != null &&
-          <ListItem onClick={drillDown(levelUp)}>
-            <IconButton edge="start">
-              <ChevronLeftIcon />
-            </IconButton>
-            <ListItemButton>
-              <ListItemText id={levelUp} primary='UP'>
-              </ListItemText>
-              </ListItemButton>
-          </ListItem>
-        }
+          
         
         {
           markers?.map((marker, index) =>
@@ -125,8 +118,8 @@ export function TreeControl() {
               disablePadding
               secondaryAction={
                 marker.has_children &&
-                <IconButton edge="end" aria-label="drill_down">
-                  <ChevronRightIcon onClick={drillDown(marker.id)}/>
+                <IconButton edge="end" aria-label="drill_down" onClick={drillDown(marker)}>
+                  <ChevronRightIcon/>
                 </IconButton>
               }
             >

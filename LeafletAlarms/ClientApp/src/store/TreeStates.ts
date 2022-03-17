@@ -7,8 +7,9 @@ import { TreeMarker } from "./Marker";
 
 export interface TreeState {
   isLoading: boolean;
-  parent_id: string | null;
+  parent_marker: TreeMarker | null;
   markers: TreeMarker[];
+  parent_list: TreeMarker[];
 }
 
 // -----------------
@@ -17,14 +18,15 @@ export interface TreeState {
 
 interface RequestTreeStateAction {
   type: "REQUEST_TREE_STATE";
-  parent_id: string | null;
+  parent_marker: TreeMarker | null;
 }
 
 interface ReceiveTreeStateAction {
   type: "RECEIVE_TREE_STATE";
-  parent_id: string | null;
+  parent_marker: TreeMarker | null;
   markers: TreeMarker[];
 }
+
 
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -32,16 +34,21 @@ interface ReceiveTreeStateAction {
 type KnownAction =
   | RequestTreeStateAction
   | ReceiveTreeStateAction
+  ;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-  getByParent: (parent_id: string | null): AppThunkAction<KnownAction> => (
+
+  getByParent: (parent_marker: TreeMarker | null): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
+
+    var parent_id = parent_marker?.id;
+
     console.log("fetching by parent_id=", parent_id);
     var request = ApiRootString + "/GetByParent?parent_id=";
 
@@ -58,12 +65,12 @@ export const actionCreators = {
       .then(data => {
         dispatch({
           type: "RECEIVE_TREE_STATE",
-          parent_id: parent_id,
+          parent_marker: parent_marker,
           markers: data
         });
       });
 
-    dispatch({ type: "REQUEST_TREE_STATE", parent_id: parent_id });
+    dispatch({ type: "REQUEST_TREE_STATE", parent_marker: parent_marker });
   }
 
 };
@@ -74,7 +81,8 @@ export const actionCreators = {
 const unloadedState: TreeState = {
   markers: [],
   isLoading: false,
-  parent_id: null
+  parent_marker: null,
+  parent_list:[]
 };
 
 export const reducer: Reducer<TreeState> = (
@@ -90,18 +98,27 @@ export const reducer: Reducer<TreeState> = (
   switch (action.type) {
     case "REQUEST_TREE_STATE":
       return {
-        parent_id: action.parent_id,
+        ...state,
+        parent_marker: action.parent_marker,
         markers: state.markers,
         isLoading: true
       };
     case "RECEIVE_TREE_STATE":
-      // Only accept the incoming data if it matches the most recent request. This ensures we correctly
-      // handle out-of-order responses.
-      if (action.parent_id === state.parent_id) {
+      if (action.parent_marker?.id === state.parent_marker?.id) {
+
+        var newArr = state.parent_list;
+        var index = state.parent_list.findIndex((marker) => marker?.id == action?.parent_marker?.id);
+
+        if (index >= 0) {
+          newArr = state.parent_list.slice(0, index);
+        }
+
         return {
-          parent_id: action.parent_id,
+          ...state,
+          parent_marker: action.parent_marker,
           markers: action.markers,
-          isLoading: false
+          isLoading: false,
+          parent_list: newArr.concat(action.parent_marker)
         };
       }
       break;
