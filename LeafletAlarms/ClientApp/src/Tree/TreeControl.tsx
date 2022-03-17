@@ -15,7 +15,7 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { ClickAwayListener } from '@mui/material';
+import { Box, ClickAwayListener } from '@mui/material';
 import { TreeMarker } from '../store/Marker';
 
 declare module 'react-redux' {
@@ -39,19 +39,28 @@ export function TreeControl() {
   // Selected.
   const [selectedIndex, setSelectedIndex] = React.useState(null);
 
-  const handleSelect = useCallback((selected_id) => () => {
+  function selectItem(selected_id: string | null) {
+
+    if (selected_id == selectedIndex) {
+      selected_id = null;
+    }
     dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
     setSelectedIndex(selected_id);
+  }
+
+  const handleSelect = useCallback((selected_id) => () => {
+    selectItem(selected_id);
   }, [selectedIndex]);
 
     const handleClickAway = useCallback(() => {
-        dispatch(GuiStore.actionCreators.selectTreeItem(null));
-        setSelectedIndex(null);
+        //dispatch(GuiStore.actionCreators.selectTreeItem(null));
+        //setSelectedIndex(null);
     }, []);
     
 
   // Drill down.
   const drillDown = useCallback((selected_id) => () => {
+    selectItem(null);
     setLevelUp(parent_id);
     dispatch(TreeStore.actionCreators.getByParent(selected_id));
   }, [levelUp]);
@@ -85,8 +94,16 @@ export function TreeControl() {
 
     return (
       <ClickAwayListener onClickAway={handleClickAway}>
-      <List 
-        sx={{ width: '100%', maxWidth: 460, bgcolor: 'background.paper' }}
+
+        <List 
+          
+          sx={{
+              width: '100%',
+              maxWidth: 460,
+              bgcolor: 'background.paper',
+              overflow: 'auto',
+              maxHeight: '80vh',
+            }}
       >
         {
           parent_id != null &&
@@ -128,7 +145,8 @@ export function TreeControl() {
               </ListItemButton>
           </ListItem>
         )}
-            </List>
+          </List>
+          
         </ClickAwayListener>
     );
 }
