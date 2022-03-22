@@ -45,7 +45,7 @@ interface DeletingMarkerAction {
 
 interface DeletedMarkerAction {
   type: "DELETED_MARKERS";
-  marker: Marker;
+  deleted_ids: string[];
   success: boolean;
 }
 
@@ -133,8 +133,8 @@ export const actionCreators = {
     console.log("deleted:", fetched);
 
     fetched.then(response => response.json()).then(data => {
-      let m: Marker = data as Marker;
-      dispatch({ type: "DELETED_MARKERS", success: true, marker: m });
+      let deleted_ids: string[] = data as string[];
+      dispatch({ type: "DELETED_MARKERS", success: true, deleted_ids: deleted_ids });
     });
 
     dispatch({ type: "DELETING_MARKERS", marker: marker });
@@ -205,7 +205,7 @@ export const reducer: Reducer<MarkersState> = (
     case "DELETED_MARKERS":
       return {
         ...state,
-        markers: state.markers.filter(item => item.id !== action.marker.id),
+        markers: state.markers.filter(item => !(action.deleted_ids.includes(item.id))),
         isLoading: false,
         isChanging: state.isChanging + 1
       };

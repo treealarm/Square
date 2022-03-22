@@ -68,6 +68,23 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
+    [HttpGet()]
+    [Route("GetAllChildren")]
+    public async Task<List<TreeMarkerDTO>> GetAllChildren(string parent_id)
+    {
+      var markers = await _mapService.GetAllChildren(parent_id);
+
+      var retVal = new List<TreeMarkerDTO>();
+
+      foreach (var marker in markers)
+      {
+        var markerDto = DTOConverter.GetreeMarkerDTO(marker);
+        retVal.Add(markerDto);
+      }
+
+      return retVal;
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Marker newMarker)
     {
@@ -104,9 +121,14 @@ namespace LeafletAlarms.Controllers
         return NotFound();
       }
 
-      await _mapService.RemoveAsync(marker.id);
+      var markers = await _mapService.GetAllChildren(id);
+      var ids = markers.Select(m => m.id).ToList();
+      ids.Add(marker.id);
+      await _mapService.RemoveAsync(ids);
 
-      var ret = CreatedAtAction(nameof(Delete), new { id = marker.id }, marker);
+      //await _mapService.RemoveAsync(marker.id);
+
+      var ret = CreatedAtAction(nameof(Delete), new { id = marker.id }, ids);
 
       return ret;
     }

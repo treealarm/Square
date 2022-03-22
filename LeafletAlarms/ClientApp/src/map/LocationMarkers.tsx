@@ -49,6 +49,7 @@ export function LocationMarkers() {
       //alert('delete ' + marker.name);
       map.closePopup();
       dispatch(MarkersStore.actionCreators.deleteMarker(marker));
+      dispatch(GuiStore.actionCreators.selectTreeItem(null));
   }, [])
 
   const markers = useSelector((state) => state?.markersStates?.markers);

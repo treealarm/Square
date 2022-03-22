@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,28 @@ namespace DbLayer
       return await _circleCollection.Find(x => x.parent_id == parent_id).ToListAsync();
     }
 
+    public async Task<List<Marker>> GetAllChildren(string parent_id)
+    {
+      List<Marker> result = new List<Marker>();
+      ConcurrentBag<List<Marker>> cb = new ConcurrentBag<List<Marker>>();
+
+      var children =  await GetByParentIdAsync(parent_id);
+      cb.Add(children);
+
+      foreach (var item in children)
+      {
+        var sub_children = await GetAllChildren(item.id);
+        cb.Add(sub_children);
+      }
+
+      foreach (var list in cb)
+      {
+        result.AddRange(list);
+      }
+
+      return result;
+    }
+
     public async Task<List<Marker>> GetTopChildren(List<string> parentIds)
     {
       var result = await _circleCollection
@@ -62,5 +85,12 @@ namespace DbLayer
 
     public async Task RemoveAsync(string id) =>
         await _circleCollection.DeleteOneAsync(x => x.id == id);
+
+    public async Task<DeleteResult> RemoveAsync(List<string> ids)
+    {
+      //var idsFilter = Builders<Marker>.Filter.In(d => d.id, ids);
+      //return await _circleCollection.DeleteManyAsync(idsFilter);
+      return await _circleCollection.DeleteManyAsync(x => ids.Contains(x.id));
+    }        
   }
 }
