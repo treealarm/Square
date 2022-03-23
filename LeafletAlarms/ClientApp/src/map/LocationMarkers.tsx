@@ -48,7 +48,8 @@ export function LocationMarkers() {
       console.log(e.target.value);
       //alert('delete ' + marker.name);
       map.closePopup();
-      dispatch(MarkersStore.actionCreators.deleteMarker(marker));
+      let idsToDelete: string[] = [marker.id];
+      dispatch(MarkersStore.actionCreators.deleteMarker(idsToDelete));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
   }, [])
 

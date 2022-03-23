@@ -125,11 +125,34 @@ namespace LeafletAlarms.Controllers
       var ids = markers.Select(m => m.id).ToList();
       ids.Add(marker.id);
       await _mapService.RemoveAsync(ids);
-
-      //await _mapService.RemoveAsync(marker.id);
-
       var ret = CreatedAtAction(nameof(Delete), new { id = marker.id }, ids);
 
+      return ret;
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete(List<string> ids)
+    {
+      HashSet<string> idsToDelete = new HashSet<string>();
+
+      foreach(var id in ids)
+      {
+        var marker = await _mapService.GetAsync(id);
+
+        if (marker is null)
+        {
+          continue; ;
+        }
+
+        var markers = await _mapService.GetAllChildren(id);
+        var bunchIds = markers.Select(m => m.id).ToHashSet();
+        idsToDelete.Add(marker.id);
+        idsToDelete.UnionWith(bunchIds);
+
+        await _mapService.RemoveAsync(idsToDelete.ToList());
+      }
+      
+      var ret = CreatedAtAction(nameof(Delete), null, idsToDelete);
       return ret;
     }
   }

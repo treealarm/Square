@@ -40,7 +40,7 @@ interface PostedMarkerAction {
 
 interface DeletingMarkerAction {
   type: "DELETING_MARKERS";
-  marker: Marker;
+  ids_to_delete: string[];
 }
 
 interface DeletedMarkerAction {
@@ -116,18 +116,19 @@ export const actionCreators = {
     dispatch({ type: "POSTING_MARKERS", marker: marker });
   },
 
-  deleteMarker: (marker: Marker): AppThunkAction<KnownAction> => (
+  deleteMarker: (ids: string[]): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
-    //let marker: Marker = {} as Marker;
+
+    let body = JSON.stringify(ids);
 
     // Send data to the backend via DELETE
 
-    var fetched = fetch(ApiRootString + "/" + marker.id, {
-      method: "DELETE"
-      //headers: { 'Content-type': 'application/json' },
-      //body: body
+    var fetched = fetch(ApiRootString, {
+      method: "DELETE",
+      headers: { 'Content-type': 'application/json' },
+      body: body
     });
 
     console.log("deleted:", fetched);
@@ -137,7 +138,7 @@ export const actionCreators = {
       dispatch({ type: "DELETED_MARKERS", success: true, deleted_ids: deleted_ids });
     });
 
-    dispatch({ type: "DELETING_MARKERS", marker: marker });
+    dispatch({ type: "DELETING_MARKERS", ids_to_delete: ids });
   }
 };
 
