@@ -1,10 +1,12 @@
-﻿
+﻿export interface GeoPart {
+  coordinates: number[];
+}
+
 export interface Marker {
   id?: string | null;
   parent_id?: string | null;
   name: string;
-  has_children?: boolean;
-  points: number[];
+  geometry: GeoPart;
 }
 
 export interface TreeMarker {

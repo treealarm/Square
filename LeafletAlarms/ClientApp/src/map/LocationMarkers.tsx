@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Popup, CircleMarker, useMapEvents, useMap } from "react-leaflet";
 
 import { ApplicationState } from '../store';
-import { Marker } from '../store/Marker';
+import { GeoPart, Marker } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 declare module 'react-redux' {
@@ -30,9 +30,14 @@ export function LocationMarkers() {
 
    const mapEvents = useMapEvents({
     click(e) {
-      var ll: L.LatLng = e.latlng as L.LatLng;
+       var ll: L.LatLng = e.latlng as L.LatLng;
+
+       var geoPart: GeoPart = {
+         coordinates: [ll.lat, ll.lng]
+       };
+
        var marker: Marker = {
-         points: [ll.lat, ll.lng],
+         geometry: geoPart,
          name: ll.toString(),
          parent_id : selected_id
        };
@@ -87,7 +92,7 @@ export function LocationMarkers() {
         markers?.map((marker, index) =>
           <CircleMarker
             key={index}
-            center={new L.LatLng(marker.points[0], marker.points[1])}
+            center={new L.LatLng(marker.geometry.coordinates[0], marker.geometry.coordinates[1])}
             pathOptions={getColor(marker.id)}>
             <Popup>
               <table>

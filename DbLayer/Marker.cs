@@ -16,7 +16,5 @@ namespace DbLayer
 
     [BsonElement("name")]
     public string name { get; set; } = null;
-
-    public double[] points { get; set; }
   }
 }

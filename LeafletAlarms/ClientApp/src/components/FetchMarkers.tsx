@@ -45,17 +45,9 @@ class FetchMarkers extends React.PureComponent<MarkersProps> {
     this.props.requestMarkers(box);
   }
 
-  private sendMarker() {
-    let marker: Marker = {} as Marker;
-    marker.name = "Post Test";
-    marker.points = [51.5333, -0.091];
-    this.props.sendMarker(marker);
-  }
-
   private renderMarkersTable() {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabelMarkers">
-        <button onClick={this.sendMarker}>Post Marker</button>
         <thead>
           <tr>
             <th>Id</th>
@@ -69,7 +61,7 @@ class FetchMarkers extends React.PureComponent<MarkersProps> {
             <tr key={marker.id}>
               <td>{marker?.id}</td>
               <td>{marker?.name}</td>
-              <td>{marker?.points}</td>
+              <td>{marker?.geometry.coordinates}</td>
             </tr>
           )}
         </tbody>

@@ -22,8 +22,16 @@
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="JSCompiled\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="JSCompiled\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="JSCompiled\**" />
+    <EmbeddedResource Remove="JSCompiled\**" />
+    <TypeScriptCompile Remove="JSCompiled\**" />
   </ItemGroup>
 
   <ItemGroup>

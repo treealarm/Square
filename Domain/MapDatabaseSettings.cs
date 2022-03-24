@@ -9,5 +9,6 @@ namespace Domain
     public string DatabaseName { get; set; } = null!;
 
     public string ObjectsCollectionName { get; set; } = null!;
+    public string GeoCollectionName { get; set; } = null!;
   }
 }

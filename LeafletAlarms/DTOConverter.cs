@@ -15,12 +15,11 @@ namespace LeafletAlarms
       {
         id = marker.id,
         name = marker.name,
-        parent_id = marker.parent_id,
-        points = marker.points
+        parent_id = marker.parent_id
       };
     }
 
-    public static TreeMarkerDTO GetreeMarkerDTO(Marker marker)
+    public static TreeMarkerDTO GetTreeMarkerDTO(Marker marker)
     {
       return new TreeMarkerDTO()
       {

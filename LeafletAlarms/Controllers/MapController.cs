@@ -17,10 +17,38 @@ namespace LeafletAlarms.Controllers
         _mapService = mapsService;
 
     [HttpGet]
-    public async Task<List<Marker>> Get()
+    public async Task<List<MarkerFullDTO>> Get()
     {
-      var test = await _mapService.GetAsync();
-      return test;
+      var result = new List<MarkerFullDTO>();
+      var geo = await _mapService.GetGeoAsync();
+      var ids = geo.Select(g => g.id).ToList();
+      var tree = await _mapService.GetAsync(ids);
+
+      foreach (var item in tree)
+      {
+        var retItem = new MarkerFullDTO();
+        
+
+        retItem.id = item.id;
+        retItem.name = item.name;
+        retItem.parent_id = item.parent_id;
+
+        var geoPart = geo.Where(i => i.id == item.id).FirstOrDefault();
+
+        if (geoPart != null)
+        {
+          retItem.geometry = new GeoPartDTO();
+          retItem.geometry.coordinates = new double[]
+          {
+            geoPart.coordinates.Coordinates.X,
+            geoPart.coordinates.Coordinates.Y
+          };
+        }
+        
+
+        result.Add(retItem);
+      }
+      return result;
     }
         
 
@@ -78,7 +106,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (var marker in markers)
       {
-        var markerDto = DTOConverter.GetreeMarkerDTO(marker);
+        var markerDto = DTOConverter.GetTreeMarkerDTO(marker);
         retVal.Add(markerDto);
       }
 
@@ -86,11 +114,24 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(Marker newMarker)
+    public async Task<IActionResult> Post(MarkerFullDTO newMarker)
     {
-      await _mapService.CreateAsync(newMarker);
+      Marker marker = new Marker();
+      marker.name = newMarker.name;
+      marker.parent_id = newMarker.parent_id;
+     
+      await _mapService.CreateAsync(marker);
+      newMarker.id = marker.id;
 
-      var ret = CreatedAtAction(nameof(Get), new { id = newMarker.id }, newMarker);
+      // Geo part.
+      GeometryDTO geo = new GeometryDTO();
+      geo.coordinates = newMarker.geometry.coordinates;
+      geo.type = newMarker.geometry.type;
+      geo.id = marker.id;
+
+      await _mapService.CreateGeoAsync(geo);
+
+      var ret = CreatedAtAction(nameof(Get), new { id = marker.id }, newMarker);
       return ret;
     }
 
@@ -153,6 +194,17 @@ namespace LeafletAlarms.Controllers
       }
       
       var ret = CreatedAtAction(nameof(Delete), null, idsToDelete);
+      return ret;
+    }
+
+    /////GEO
+    [HttpPost]
+    [Route("Geo")]
+    public async Task<IActionResult> PostGeo(GeometryDTO newObject)
+    {
+      await _mapService.CreateGeoAsync(newObject);
+
+      var ret = CreatedAtAction(nameof(Get), new { id = newObject.id }, newObject);
       return ret;
     }
   }
