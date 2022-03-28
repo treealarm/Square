@@ -1,6 +1,6 @@
 import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
-import { Marker } from "./Marker";
+import { BoundBox, Marker } from "./Marker";
 import * as TreeStore from "../store/TreeStates";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -8,7 +8,7 @@ import * as TreeStore from "../store/TreeStates";
 export interface MarkersState {
   isLoading: boolean;
   markers: Marker[];
-  box: string;
+  box: BoundBox;
   isChanging?: number;
 }
 
@@ -18,12 +18,12 @@ export interface MarkersState {
 
 interface RequestMarkersAction {
   type: "REQUEST_MARKERS";
-  box: string;
+  box: BoundBox;
 }
 
 interface ReceiveMarkersAction {
   type: "RECEIVE_MARKERS";
-  box: string;
+  box: BoundBox;
   markers: Marker[];
 }
 
@@ -64,7 +64,7 @@ type KnownAction =
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-  requestMarkers: (box: string): AppThunkAction<KnownAction> => (
+  requestMarkers: (box: BoundBox): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
@@ -76,16 +76,27 @@ export const actionCreators = {
       appState.markersStates &&
       box !== appState.markersStates.box
     ) {
-      console.log("fetching....");
 
-      var fetched = fetch(ApiRootString);
+      let body = JSON.stringify(box);
+      var request = ApiRootString + "/GetByBox";
 
-      console.log("fetched:", fetched);
+      var fetched = fetch(request, {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
 
       fetched
-        .then(response => response.json() as Promise<Marker[]>)
+        .then(response => {
+          if (!response.ok) throw response.statusText;
+          return response.json() as Promise<Marker[]>;
+        })
         .then(data => {
           dispatch({ type: "RECEIVE_MARKERS", box: box, markers: data });
+        })
+        .catch((error) => {
+          var emtyMarkers = new Array<Marker>();
+          dispatch({ type: "RECEIVE_MARKERS", box: box, markers: emtyMarkers });
         });
 
       dispatch({ type: "REQUEST_MARKERS", box: box });
@@ -148,7 +159,7 @@ export const actionCreators = {
 const unloadedState: MarkersState = {
   markers: [],
   isLoading: false,
-  box: "",
+  box: null,
   isChanging: 0
 };
 

@@ -16,42 +16,6 @@ namespace LeafletAlarms.Controllers
     public MapController(MapService mapsService) =>
         _mapService = mapsService;
 
-    [HttpGet]
-    public async Task<List<MarkerFullDTO>> Get()
-    {
-      var result = new List<MarkerFullDTO>();
-      var geo = await _mapService.GetGeoAsync();
-      var ids = geo.Select(g => g.id).ToList();
-      var tree = await _mapService.GetAsync(ids);
-
-      foreach (var item in tree)
-      {
-        var retItem = new MarkerFullDTO();
-        
-
-        retItem.id = item.id;
-        retItem.name = item.name;
-        retItem.parent_id = item.parent_id;
-
-        var geoPart = geo.Where(i => i.id == item.id).FirstOrDefault();
-
-        if (geoPart != null)
-        {
-          retItem.geometry = new GeoPartDTO();
-          retItem.geometry.coordinates = new double[]
-          {
-            geoPart.coordinates.Coordinates.X,
-            geoPart.coordinates.Coordinates.Y
-          };
-        }
-        
-
-        result.Add(retItem);
-      }
-      return result;
-    }
-        
-
     [HttpGet("{id:length(24)}")]
     public async Task<ActionResult<Marker>> Get(string id)
     {
@@ -111,6 +75,42 @@ namespace LeafletAlarms.Controllers
       }
 
       return retVal;
+    }
+
+    [HttpPost]
+    [Route("GetByBox")]
+    public async Task<List<MarkerFullDTO>> GetByBox(BoxDTO box)
+    {
+      var result = new List<MarkerFullDTO>();
+      var geo = await _mapService.GetGeoAsync();
+      var ids = geo.Select(g => g.id).ToList();
+      var tree = await _mapService.GetAsync(ids);
+
+      foreach (var item in tree)
+      {
+        var retItem = new MarkerFullDTO();
+
+
+        retItem.id = item.id;
+        retItem.name = item.name;
+        retItem.parent_id = item.parent_id;
+
+        var geoPart = geo.Where(i => i.id == item.id).FirstOrDefault();
+
+        if (geoPart != null)
+        {
+          retItem.geometry = new GeoPartDTO();
+          retItem.geometry.coordinates = new double[]
+          {
+            geoPart.coordinates.Coordinates.X,
+            geoPart.coordinates.Coordinates.Y
+          };
+        }
+
+
+        result.Add(retItem);
+      }
+      return result;
     }
 
     [HttpPost]

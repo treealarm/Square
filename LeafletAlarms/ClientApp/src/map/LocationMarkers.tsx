@@ -3,14 +3,22 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
-
-import { useCallback, useEffect, useState } from "react";
-
-import { Popup, CircleMarker, useMapEvents, useMap } from "react-leaflet";
-
 import { ApplicationState } from '../store';
-import { GeoPart, Marker } from '../store/Marker';
+import { BoundBox, GeoPart, Marker } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
+
+import { useCallback, useMemo, useState, useEffect } from 'react'
+import {
+    CircleMarker,
+  MapContainer,
+  Popup,
+  Rectangle,
+  TileLayer,
+  useMap,
+  useMapEvent,
+  useMapEvents
+  } from 'react-leaflet'
+import { LeafletEvent } from 'leaflet';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -19,14 +27,23 @@ declare module 'react-redux' {
 export function LocationMarkers() {
 
   const dispatch = useDispatch();
+  const parentMap = useMap();
   
   useEffect(() => {
-    console.log('ComponentDidMount');
-    dispatch(MarkersStore.actionCreators.requestMarkers('initial_box'));
+    console.log('ComponentDidMount LocationMarkers');
+    var bounds: L.LatLngBounds;
+    bounds = parentMap.getBounds();
+    var boundBox: BoundBox = {
+      wn: [bounds.getWest(), bounds.getNorth()],
+      es: [bounds.getEast(), bounds.getSouth()],
+      zoom: parentMap.getZoom()
+    };
+    dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
   }, []);
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
+
 
    const mapEvents = useMapEvents({
     click(e) {
@@ -43,16 +60,24 @@ export function LocationMarkers() {
        };
 
        dispatch(MarkersStore.actionCreators.sendMarker(marker));
-    }
+     },
+     moveend(e: LeafletEvent) {
+       var bounds: L.LatLngBounds;
+       bounds = e.target.getBounds();
+       var boundBox: BoundBox = {
+         wn: [bounds.getWest(), bounds.getNorth()],
+         es: [bounds.getEast(), bounds.getSouth()],
+         zoom: e.target.getZoom()
+       };
+       console.log('Locat  ionMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
+     }
   });
-
-  const map = useMap();
 
   const deleteMe = useCallback(
     (marker, e) => {
       console.log(e.target.value);
       //alert('delete ' + marker.name);
-      map.closePopup();
+      parentMap.closePopup();
       let idsToDelete: string[] = [marker.id];
       dispatch(MarkersStore.actionCreators.deleteMarker(idsToDelete));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));

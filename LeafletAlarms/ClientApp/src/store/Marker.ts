@@ -15,3 +15,9 @@ export interface TreeMarker {
   name: string;
   has_children?: boolean;
 }
+
+export interface BoundBox {
+  wn: number[];
+  es: number[];
+  zoom: number;
+}
