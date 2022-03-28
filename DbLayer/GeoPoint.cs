@@ -14,6 +14,6 @@ namespace DbLayer
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
-    public GeoJsonPoint<GeoJson2DCoordinates> coordinates { get; set; }
+    public GeoJsonPoint<GeoJson2DCoordinates> location { get; set; }
   }
 }

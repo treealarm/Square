@@ -1,5 +1,6 @@
 ﻿export interface GeoPart {
-  coordinates: number[];
+  lng: number;
+  lat: number;
 }
 
 export interface Marker {

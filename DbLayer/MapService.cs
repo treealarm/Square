@@ -1,6 +1,8 @@
 ﻿using Domain;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
@@ -107,16 +109,29 @@ namespace DbLayer
     public async Task CreateGeoAsync(GeometryDTO newObject)
     {
       GeoPoint point = new GeoPoint();
-      point.coordinates = new GeoJsonPoint<GeoJson2DCoordinates>(
-        GeoJson.Position(newObject.coordinates[0], newObject.coordinates[1])
+      point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
+        GeoJson.Position(newObject.lng, newObject.lat)
       );
       point.id = newObject.id;
       await _geoCollection.InsertOneAsync(point);
     }
 
-    public async Task<List<GeoPoint>> GetGeoAsync()
+    private static void Log(FilterDefinition<GeoPoint> filter)
     {
-      var list = await _geoCollection.Find(_ => true).ToListAsync();
+      var serializerRegistry = BsonSerializer.SerializerRegistry;
+      var documentSerializer = serializerRegistry.GetSerializer<GeoPoint>();
+      var rendered = filter.Render(documentSerializer, serializerRegistry);
+      Console.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
+      Console.WriteLine();
+    }
+
+    public async Task<List<GeoPoint>> GetGeoAsync(BoxDTO box)
+    {
+      var builder = Builders<GeoPoint>.Filter;
+      
+      var filter = builder.GeoWithinBox(t => t.location, box.wn[0], box.wn[1], box.es[0], box.es[1]);
+      Log(filter);
+      var list = await _geoCollection.Find(filter).ToListAsync();
       return list;
     }
   }

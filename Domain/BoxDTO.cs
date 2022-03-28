@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class GeoPartDTO
+  public class BoxDTO
   {
-    public string type { get; set; }
-    public double lng { get; set; }
-    public double lat { get; set; }
+    public double[] wn { get; set; }
+    public double[] es { get; set; }
+    public double zoom { get; set; }
   }
 }

@@ -10,6 +10,7 @@ namespace Domain
   {
     public string id { get; set; }
     public string type { get; set; }
-    public double[] coordinates { get; set; }
+    public double lng { get; set; }
+    public double lat { get; set; }
   }
 }

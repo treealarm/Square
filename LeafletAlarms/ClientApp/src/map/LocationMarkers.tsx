@@ -50,7 +50,8 @@ export function LocationMarkers() {
        var ll: L.LatLng = e.latlng as L.LatLng;
 
        var geoPart: GeoPart = {
-         coordinates: [ll.lat, ll.lng]
+         lng: ll.lng,
+         lat: ll.lat
        };
 
        var marker: Marker = {
@@ -69,6 +70,9 @@ export function LocationMarkers() {
          es: [bounds.getEast(), bounds.getSouth()],
          zoom: e.target.getZoom()
        };
+
+       dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
+
        console.log('Locat  ionMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
      }
   });
@@ -117,7 +121,7 @@ export function LocationMarkers() {
         markers?.map((marker, index) =>
           <CircleMarker
             key={index}
-            center={new L.LatLng(marker.geometry.coordinates[0], marker.geometry.coordinates[1])}
+            center={new L.LatLng(marker.geometry.lat, marker.geometry.lng)}
             pathOptions={getColor(marker.id)}>
             <Popup>
               <table>

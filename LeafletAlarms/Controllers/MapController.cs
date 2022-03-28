@@ -82,7 +82,7 @@ namespace LeafletAlarms.Controllers
     public async Task<List<MarkerFullDTO>> GetByBox(BoxDTO box)
     {
       var result = new List<MarkerFullDTO>();
-      var geo = await _mapService.GetGeoAsync();
+      var geo = await _mapService.GetGeoAsync(box);
       var ids = geo.Select(g => g.id).ToList();
       var tree = await _mapService.GetAsync(ids);
 
@@ -100,13 +100,9 @@ namespace LeafletAlarms.Controllers
         if (geoPart != null)
         {
           retItem.geometry = new GeoPartDTO();
-          retItem.geometry.coordinates = new double[]
-          {
-            geoPart.coordinates.Coordinates.X,
-            geoPart.coordinates.Coordinates.Y
-          };
+          retItem.geometry.lng = geoPart.location.Coordinates.X;
+          retItem.geometry.lat = geoPart.location.Coordinates.Y;
         }
-
 
         result.Add(retItem);
       }
@@ -125,7 +121,8 @@ namespace LeafletAlarms.Controllers
 
       // Geo part.
       GeometryDTO geo = new GeometryDTO();
-      geo.coordinates = newMarker.geometry.coordinates;
+      geo.lng = newMarker.geometry.lng;
+      geo.lat = newMarker.geometry.lat;
       geo.type = newMarker.geometry.type;
       geo.id = marker.id;
 
