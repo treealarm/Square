@@ -9,15 +9,13 @@ import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
 import {
-    CircleMarker,
-  MapContainer,
+  CircleMarker,
   Popup,
-  Rectangle,
-  TileLayer,
   useMap,
-  useMapEvent,
-  useMapEvents
-  } from 'react-leaflet'
+  useMapEvents,
+  Circle
+} from 'react-leaflet'
+
 import { LeafletEvent } from 'leaflet';
 
 declare module 'react-redux' {
@@ -74,8 +72,22 @@ export function LocationMarkers() {
        dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
 
        console.log('Locat  ionMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
+     },
+     mousemove(e: L.LeafletMouseEvent) {
+       console.log('cursor', parentMap.getContainer().style.cursor);
      }
-  });
+   });
+
+  
+
+  const eventHandlers = useMemo(
+    () => ({
+      mouseover() {
+        //console.log('cursor', parentMap.getContainer().style.cursor);
+      }
+    }),
+    [],
+  )
 
   const deleteMe = useCallback(
     (marker, e) => {
@@ -119,10 +131,13 @@ export function LocationMarkers() {
     <React.Fragment>
       {
         markers?.map((marker, index) =>
-          <CircleMarker
+          <Circle
             key={index}
             center={new L.LatLng(marker.geometry.lat, marker.geometry.lng)}
-            pathOptions={getColor(marker.id)}>
+            pathOptions={getColor(marker.id)}
+            radius={100}
+            eventHandlers={eventHandlers}
+          >
             <Popup>
               <table>
                 <tbody>
@@ -133,7 +148,7 @@ export function LocationMarkers() {
                 </tbody>
               </table>
             </Popup>
-          </CircleMarker>
+          </Circle>
       )}
     </React.Fragment>
   );
