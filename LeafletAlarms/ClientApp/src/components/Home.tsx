@@ -3,6 +3,7 @@ import { Col, Container, Row } from "reactstrap";
 import TabControl from "../Tree/TabControl";
 import { TreeControl } from "../Tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
+import EditOptions from "../Tree/EditOptions";
 
 export function Home() {
   return (
@@ -13,6 +14,7 @@ export function Home() {
       <Row>
         <Col sm="2">
           <div>
+            <EditOptions />
             <TreeControl />
           </div>
         </Col>

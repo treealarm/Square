@@ -39,6 +39,7 @@
     <None Remove="ClientApp\src\store\GUIStates.ts" />
     <None Remove="ClientApp\src\store\Marker.ts" />
     <None Remove="ClientApp\src\store\TreeStates.ts" />
+    <None Remove="ClientApp\src\Tree\EditOptions.tsx" />
     <None Remove="ClientApp\src\Tree\TabControl.tsx" />
   </ItemGroup>
 

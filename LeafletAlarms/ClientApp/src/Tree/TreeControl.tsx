@@ -16,8 +16,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Box, ClickAwayListener } from '@mui/material';
 
 
 declare module 'react-redux' {
@@ -57,10 +55,6 @@ export function TreeControl() {
     selectItem(selected_id);
   }, [selectedIndex]);
 
-    const handleClickAway = useCallback(() => {
-        //dispatch(GuiStore.actionCreators.selectTreeItem(null));
-        //setSelectedIndex(null);
-    }, []);
     
 
   // Drill down.
@@ -95,7 +89,7 @@ export function TreeControl() {
   }, [requestTreeUpdate, parent_marker]);
 
     return (
-      <ClickAwayListener onClickAway={handleClickAway}>
+      <div>
 
         <List 
           
@@ -139,7 +133,6 @@ export function TreeControl() {
           </ListItem>
         )}
           </List>
-          
-        </ClickAwayListener>
+        </div>
     );
 }

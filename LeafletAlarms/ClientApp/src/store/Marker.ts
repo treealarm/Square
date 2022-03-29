@@ -22,3 +22,7 @@ export interface BoundBox {
   es: number[];
   zoom: number;
 }
+
+export interface Area {
+  circles: Marker[];
+}
