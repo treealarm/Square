@@ -17,7 +17,7 @@ export default function TabControl() {
 
   const dispatch = useDispatch();
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (event: React.SyntheticEvent, newValue: any) => {
     dispatch(TreeStore.actionCreators.getByParent(newValue));
   };
   
@@ -34,7 +34,7 @@ export default function TabControl() {
       >
         {
           parent_list?.map((marker, index) =>
-            <Tab label={marker!= null ? marker?.name :'ROOT'} value={marker}/>
+            <Tab label={marker != null ? marker?.name : 'ROOT'} value={marker} key={marker?.id} />
           )
         }
       </Tabs>

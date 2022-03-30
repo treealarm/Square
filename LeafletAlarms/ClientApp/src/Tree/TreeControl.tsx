@@ -16,6 +16,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { Box } from '@mui/material';
 
 
 declare module 'react-redux' {
@@ -89,22 +90,16 @@ export function TreeControl() {
   }, [requestTreeUpdate, parent_marker]);
 
     return (
-      <div>
-
-        <List 
-          
-          sx={{
+      <Box sx={{
               width: '100%',
               maxWidth: 460,
               bgcolor: 'background.paper',
             overflow: 'auto',
-            height: '80vh',
-            maxHeight: '80vh',
+            height: '100%',
             border: 1
-            }}
-      >
-          
-        
+            }}>
+
+        <List>
         {
           markers?.map((marker, index) =>
             <ListItem
@@ -133,6 +128,6 @@ export function TreeControl() {
           </ListItem>
         )}
           </List>
-        </div>
+        </Box>
     );
 }

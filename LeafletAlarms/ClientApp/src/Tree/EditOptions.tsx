@@ -8,7 +8,7 @@ export default function EditOptions() {
   const [selected, setSelected] = React.useState('circle');
   const [state, setState] = React.useState(false);
 
-  const toggleDrawer = (open) => (event) => {
+  const toggleDrawer = (open: boolean) => (event: any) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }

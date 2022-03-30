@@ -1,33 +1,27 @@
 import * as React from "react";
-import { Col, Container, Row } from "reactstrap";
 import TabControl from "../Tree/TabControl";
 import { TreeControl } from "../Tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
 import EditOptions from "../Tree/EditOptions";
+import { Container, Grid, Stack } from "@mui/material";
 
 export function Home() {
   return (
-    <Container fluid>
-      <Row>
+    <Grid container spacing={1} sx={{ height: "100%" }}>
+      <Grid item xs={12} sx={{ height: "6%" }}>
         <TabControl />
-      </Row>
-      <Row>
-        <Col sm="2">
-          <div>
-            <EditOptions />
-            <TreeControl />
-          </div>
-        </Col>
-        <Col>
-          <div>
-            <h1>Goodbye, world!</h1>
-            <MapComponent />
-          </div>
-        </Col>
-        <Col sm="1">
-          <div> test</div>
-        </Col>
-      </Row>
-    </Container>
+      </Grid>
+
+      <Grid item xs={2} sx={{ height: "94%" }}>
+        <Stack sx={{ height: "100%" }}>
+          <EditOptions />
+          <TreeControl />
+        </Stack>
+      </Grid>
+
+      <Grid item xs={10} sx={{ height: "94%" }}>
+        <MapComponent />
+      </Grid>
+    </Grid>
   );
 }
