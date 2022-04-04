@@ -2,10 +2,14 @@
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import * as EditStore from '../store/EditStates';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function EditOptions() {
 
-  const [selected, setSelected] = React.useState('circle');
+  const dispatch = useDispatch();
+  const selected = useSelector((state) => state?.editState?.figure);
+
   const [state, setState] = React.useState(false);
 
   const toggleDrawer = (open: boolean) => (event: any) => {
@@ -16,8 +20,9 @@ export default function EditOptions() {
     setState(open);
   };
 
-  function valueChanged (event: React.ChangeEvent<HTMLInputElement>, value: string){
-    setSelected(value);
+  function valueChanged(event: React.ChangeEvent<HTMLInputElement>, value: string) {
+    const val: EditStore.Figures = value as unknown as EditStore.Figures;
+    dispatch(EditStore.actionCreators.setFigure(val));
   };
 
   const anchor = 'left';
@@ -26,23 +31,27 @@ export default function EditOptions() {
     <div>
       
       <React.Fragment key={anchor}>
-        <Button onClick={toggleDrawer(true)} style={{ textTransform: 'none' }}>Tool:{selected}</Button>
+        <Button onClick={toggleDrawer(true)} style={{ textTransform: 'none' }}>
+          Tool:{EditStore.Figures[selected]}
+        </Button>
           <Drawer
             anchor={anchor}
             open={state}
             onClose={toggleDrawer(false)}
           >
           <FormControl>
-            <FormLabel id="options">Gender</FormLabel>
+            <FormLabel id="options">Select tool</FormLabel>
             <RadioGroup
               aria-labelledby="options-group-label"
               defaultValue={selected}
               name="radio-buttons-group"
               onChange={valueChanged}
             >
-              <FormControlLabel value="circle" control={<Radio />} label="Circle" />
-              <FormControlLabel value="poligon" control={<Radio />} label="Poligon" />
-              <FormControlLabel value="poliline" control={<Radio />} label="Poliline" />
+              {
+                Object.entries(EditStore.Figures).map((item) =>
+                  <FormControlLabel value={item[0]} control={<Radio />} label={item[1]} />
+                  )
+              }
             </RadioGroup>
           </FormControl>
           </Drawer>

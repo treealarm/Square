@@ -1,12 +1,12 @@
 import * as WeatherForecasts from './WeatherForecasts';
-import * as Counter from './Counter';
+import * as EditStates from './EditStates';
 import * as MarkersStates from './MarkersStates';
 import * as TreeStates from './TreeStates';
 import * as GUIStates from './GUIStates';
 
 // The top-level state object
 export interface ApplicationState {
-  counter: Counter.CounterState | undefined;
+  editState: EditStates.EditState | undefined;
   weatherForecasts: WeatherForecasts.WeatherForecastsState | undefined;
   markersStates: MarkersStates.MarkersState | undefined;
   treeStates: TreeStates.TreeState | undefined;
@@ -17,7 +17,7 @@ export interface ApplicationState {
 // the reducer with the matching name. It's important that the names match exactly, and that the reducer
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
-  counter: Counter.reducer,
+  editState: EditStates.reducer,
   weatherForecasts: WeatherForecasts.reducer,
   markersStates: MarkersStates.reducer,
   treeStates: TreeStates.reducer,
