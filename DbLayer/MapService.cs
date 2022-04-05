@@ -110,7 +110,7 @@ namespace DbLayer
     {
       GeoPoint point = new GeoPoint();
       point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
-        GeoJson.Position(newObject.lng, newObject.lat)
+        GeoJson.Position(newObject.points[1], newObject.points[0])
       );
       point.id = newObject.id;
       await _geoCollection.InsertOneAsync(point);

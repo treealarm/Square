@@ -1,25 +1,25 @@
-﻿export interface GeoPart {
-  type: string;
-}
-
-export interface CircleGeo extends GeoPart {
-  lng: number;
-  lat: number;
-}
+﻿
+export type LatLngPair = [number, number];
 
 export interface Marker {
   id?: string | null;
   parent_id?: string | null;
   name: string;
-  geometry: any;
+  type: string;
 }
 
 export interface ICircle extends Marker {
-  geometry: CircleGeo;
+  geometry: LatLngPair;
 }
+
+export interface IPolygon extends Marker {
+  geometry: LatLngPair[];
+}
+
 
 export interface IFigures {
   circles?: ICircle[];
+  polygons?: IPolygon[];
 }
 
 
@@ -34,8 +34,4 @@ export interface BoundBox {
   wn: number[];
   es: number[];
   zoom: number;
-}
-
-export interface Area {
-  circles: Marker[];
 }

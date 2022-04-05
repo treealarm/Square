@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Domain.GeoDTO;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain
 {
   public class FiguresDTO
   {
     public List<FigureCircleDTO> circles { get; set; } = new List<FigureCircleDTO>();
+    public List<FigurePolygonDTO> polygons { get; set; } = new List<FigurePolygonDTO>();
   }
 }

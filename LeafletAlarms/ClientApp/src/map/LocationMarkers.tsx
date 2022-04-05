@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, CircleGeo, GeoPart, ICircle, IFigures, Marker } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, Marker } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -13,7 +13,8 @@ import {
   Popup,
   useMap,
   useMapEvents,
-  Circle
+  Circle,
+  Polygon
 } from 'react-leaflet'
 
 import { LeafletEvent } from 'leaflet';
@@ -48,16 +49,11 @@ export function LocationMarkers() {
     click(e) {
        var ll: L.LatLng = e.latlng as L.LatLng;
 
-       var geoPart: CircleGeo = {
-         lng: ll.lng,
-         lat: ll.lat,
-         type: "Point"
-       };
-
        var circle: ICircle = {
-         geometry: geoPart,
          name: ll.toString(),
-         parent_id : selected_id
+         parent_id: selected_id,
+         geometry: [ll.lat, ll.lng],
+         type: "Point"
        };
 
        var figures: IFigures = {
@@ -133,13 +129,20 @@ export function LocationMarkers() {
     return colorOption;
   }
 
+  const purpleOptions = { color: 'purple' }
+  const polygon = [
+    [51.515, -0.09],
+    [51.52, -0.1],
+    [51.52, -0.12],
+  ]
+
   return (
     <React.Fragment>
       {
         markers?.circles?.map((marker, index) =>
           <Circle
             key={index}
-            center={new L.LatLng(marker.geometry.lat, marker.geometry.lng)}
+            center={marker.geometry}
             pathOptions={getColor(marker.id)}
             radius={100}
             eventHandlers={eventHandlers}
@@ -155,7 +158,8 @@ export function LocationMarkers() {
               </table>
             </Popup>
           </Circle>
-      )}
+        )}
+      <Polygon pathOptions={purpleOptions} positions={polygon} />
     </React.Fragment>
   );
 }

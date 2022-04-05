@@ -100,16 +100,11 @@ namespace LeafletAlarms.Controllers
             retItem.id = item.id;
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;
-            var geometry = new GeoCircleDTO();
-            geometry.lng = geoPart.location.Coordinates.X;
-            geometry.lat = geoPart.location.Coordinates.Y;
-            geometry.type = geoPart.location.Type.ToString();
-            retItem.geometry = geometry;
+            retItem.geometry = new double[2] { geoPart.location.Coordinates.Y, geoPart.location.Coordinates.X };
+            retItem.type = geoPart.location.Type.ToString();
             result.circles.Add(retItem);
-          }
-          
+          }          
         }
-
       }
       return result;
     }
@@ -129,10 +124,7 @@ namespace LeafletAlarms.Controllers
 
         // Geo part.
         GeometryDTO geo = new GeometryDTO();
-
-        GeoCircleDTO geometry = newMarker.geometry as GeoCircleDTO;
-        geo.lng = geometry.lng;
-        geo.lat = geometry.lat;
+        geo.points = newMarker.geometry;
 
         geo.type = "Point";
         geo.id = marker.id;
@@ -204,17 +196,6 @@ namespace LeafletAlarms.Controllers
       }
       
       var ret = CreatedAtAction(nameof(Delete), null, idsToDelete);
-      return ret;
-    }
-
-    /////GEO
-    [HttpPost]
-    [Route("Geo")]
-    public async Task<IActionResult> PostGeo(GeometryDTO newObject)
-    {
-      await _mapService.CreateGeoAsync(newObject);
-
-      var ret = CreatedAtAction(nameof(Get), new { id = newObject.id }, newObject);
       return ret;
     }
   }

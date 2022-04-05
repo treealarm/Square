@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain
+namespace Domain.GeoDTO
 {
-  public class GeoPartDTO
+  public class FigurePolygonDTO
   {
-    public string type { get; set; }
   }
 }
