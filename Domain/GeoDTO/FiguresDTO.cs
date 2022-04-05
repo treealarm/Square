@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class GeoPartDTO
+  public class FiguresDTO
   {
-    public string type { get; set; }
-    public double lng { get; set; }
-    public double lat { get; set; }
+    public List<FigureCircleDTO> circles { get; set; } = new List<FigureCircleDTO>();
   }
 }

@@ -1,13 +1,13 @@
 import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
-import { BoundBox, Marker } from "./Marker";
+import { BoundBox, IFigures, Marker } from "./Marker";
 import * as TreeStore from "../store/TreeStates";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface MarkersState {
   isLoading: boolean;
-  markers: Marker[];
+  markers: IFigures;
   box: BoundBox;
   isChanging?: number;
 }
@@ -24,17 +24,17 @@ interface RequestMarkersAction {
 interface ReceiveMarkersAction {
   type: "RECEIVE_MARKERS";
   box: BoundBox;
-  markers: Marker[];
+  markers: IFigures;
 }
 
 interface PostingMarkerAction {
   type: "POSTING_MARKERS";
-  marker: Marker;
+  markers: IFigures;
 }
 
 interface PostedMarkerAction {
   type: "POSTED_MARKERS";
-  marker: Marker;
+  markers: IFigures;
   success: boolean;
 }
 
@@ -89,13 +89,14 @@ export const actionCreators = {
       fetched
         .then(response => {
           if (!response.ok) throw response.statusText;
-          return response.json() as Promise<Marker[]>;
+          var json = response.json();
+          return json as Promise<IFigures>;
         })
         .then(data => {
           dispatch({ type: "RECEIVE_MARKERS", box: box, markers: data });
         })
         .catch((error) => {
-          var emtyMarkers = new Array<Marker>();
+          const emtyMarkers = {} as IFigures;
           dispatch({ type: "RECEIVE_MARKERS", box: box, markers: emtyMarkers });
         });
 
@@ -103,14 +104,14 @@ export const actionCreators = {
     }
   },
 
-  sendMarker: (marker: Marker): AppThunkAction<KnownAction> => (
+  sendMarker: (markers: IFigures): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
     //let marker: Marker = {} as Marker;
 
     // Send data to the backend via POST
-    let body = JSON.stringify(marker);
+    let body = JSON.stringify(markers);
     var fetched = fetch(ApiRootString, {
       method: "POST",
       headers: { "Content-type": "application/json" },
@@ -120,11 +121,11 @@ export const actionCreators = {
     console.log("posted:", fetched);
 
     fetched.then(response => response.json()).then(data => {
-      let m: Marker = data as Marker;
-      dispatch({ type: "POSTED_MARKERS", success: true, marker: m });
+      let m: IFigures = data as IFigures;
+      dispatch({ type: "POSTED_MARKERS", success: true, markers: m });
     });
 
-    dispatch({ type: "POSTING_MARKERS", marker: marker });
+    dispatch({ type: "POSTING_MARKERS", markers: markers });
   },
 
   deleteMarker: (ids: string[]): AppThunkAction<KnownAction> => (
@@ -157,7 +158,7 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: MarkersState = {
-  markers: [],
+  markers: null,
   isLoading: false,
   box: null,
   isChanging: 0
@@ -202,12 +203,19 @@ export const reducer: Reducer<MarkersState> = (
         isLoading: true
       };
     case "POSTED_MARKERS":
-      return {
-        ...state,
-        markers: [...state.markers, action.marker],
-        isLoading: false,
-        isChanging: state.isChanging + 1
-      };
+      {
+        var cur_markers: IFigures =
+        {
+          circles: state.markers.circles.concat(action.markers.circles)
+        };
+
+        return {
+          ...state,
+          markers: cur_markers,
+          isLoading: false,
+          isChanging: state.isChanging + 1
+        };
+      }
 
     case "DELETING_MARKERS":
       return {
@@ -215,12 +223,20 @@ export const reducer: Reducer<MarkersState> = (
         isLoading: true
       };
     case "DELETED_MARKERS":
-      return {
-        ...state,
-        markers: state.markers.filter(item => !(action.deleted_ids.includes(item.id))),
-        isLoading: false,
-        isChanging: state.isChanging + 1
-      };
+      {
+        var cur_markers: IFigures =
+        {
+          circles: state.markers.circles.filter(item => !(action.deleted_ids.includes(item.id)))
+        };
+
+        
+        return {
+          ...state,
+          markers: cur_markers,
+          isLoading: false,
+          isChanging: state.isChanging + 1
+        };
+      }
   }
 
   return state;

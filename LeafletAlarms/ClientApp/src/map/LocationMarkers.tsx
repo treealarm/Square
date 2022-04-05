@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, GeoPart, Marker } from '../store/Marker';
+import { BoundBox, CircleGeo, GeoPart, ICircle, IFigures, Marker } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -17,6 +17,7 @@ import {
 } from 'react-leaflet'
 
 import { LeafletEvent } from 'leaflet';
+import { Figures } from '../store/EditStates';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -47,18 +48,23 @@ export function LocationMarkers() {
     click(e) {
        var ll: L.LatLng = e.latlng as L.LatLng;
 
-       var geoPart: GeoPart = {
+       var geoPart: CircleGeo = {
          lng: ll.lng,
-         lat: ll.lat
+         lat: ll.lat,
+         type: "Point"
        };
 
-       var marker: Marker = {
+       var circle: ICircle = {
          geometry: geoPart,
          name: ll.toString(),
          parent_id : selected_id
        };
 
-       dispatch(MarkersStore.actionCreators.sendMarker(marker));
+       var figures: IFigures = {
+         circles: [circle]
+       };
+
+       dispatch(MarkersStore.actionCreators.sendMarker(figures));
      },
      moveend(e: LeafletEvent) {
        var bounds: L.LatLngBounds;
@@ -130,7 +136,7 @@ export function LocationMarkers() {
   return (
     <React.Fragment>
       {
-        markers?.map((marker, index) =>
+        markers?.circles?.map((marker, index) =>
           <Circle
             key={index}
             center={new L.LatLng(marker.geometry.lat, marker.geometry.lng)}

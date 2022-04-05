@@ -79,56 +79,69 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetByBox")]
-    public async Task<List<MarkerFullDTO>> GetByBox(BoxDTO box)
+    public async Task<FiguresDTO> GetByBox(BoxDTO box)
     {
-      var result = new List<MarkerFullDTO>();
+      var result = new FiguresDTO();
+
       var geo = await _mapService.GetGeoAsync(box);
       var ids = geo.Select(g => g.id).ToList();
       var tree = await _mapService.GetAsync(ids);
 
       foreach (var item in tree)
       {
-        var retItem = new MarkerFullDTO();
-
-
-        retItem.id = item.id;
-        retItem.name = item.name;
-        retItem.parent_id = item.parent_id;
-
         var geoPart = geo.Where(i => i.id == item.id).FirstOrDefault();
 
         if (geoPart != null)
         {
-          retItem.geometry = new GeoPartDTO();
-          retItem.geometry.lng = geoPart.location.Coordinates.X;
-          retItem.geometry.lat = geoPart.location.Coordinates.Y;
+          if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Point)
+          {
+            var retItem = new FigureCircleDTO();
+
+            retItem.id = item.id;
+            retItem.name = item.name;
+            retItem.parent_id = item.parent_id;
+            var geometry = new GeoCircleDTO();
+            geometry.lng = geoPart.location.Coordinates.X;
+            geometry.lat = geoPart.location.Coordinates.Y;
+            geometry.type = geoPart.location.Type.ToString();
+            retItem.geometry = geometry;
+            result.circles.Add(retItem);
+          }
+          
         }
 
-        result.Add(retItem);
       }
       return result;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(MarkerFullDTO newMarker)
+    public async Task<IActionResult> Post(FiguresDTO newMarkers)
     {
-      Marker marker = new Marker();
-      marker.name = newMarker.name;
-      marker.parent_id = newMarker.parent_id;
-     
-      await _mapService.CreateAsync(marker);
-      newMarker.id = marker.id;
+      foreach(var newMarker in newMarkers.circles)
+      {
+        Marker marker = new Marker();
+        marker.name = newMarker.name;
+        marker.parent_id = newMarker.parent_id;
 
-      // Geo part.
-      GeometryDTO geo = new GeometryDTO();
-      geo.lng = newMarker.geometry.lng;
-      geo.lat = newMarker.geometry.lat;
-      geo.type = newMarker.geometry.type;
-      geo.id = marker.id;
+        await _mapService.CreateAsync(marker);
+        
+        newMarker.id = marker.id;
 
-      await _mapService.CreateGeoAsync(geo);
+        // Geo part.
+        GeometryDTO geo = new GeometryDTO();
 
-      var ret = CreatedAtAction(nameof(Get), new { id = marker.id }, newMarker);
+        GeoCircleDTO geometry = newMarker.geometry as GeoCircleDTO;
+        geo.lng = geometry.lng;
+        geo.lat = geometry.lat;
+
+        geo.type = "Point";
+        geo.id = marker.id;
+
+        await _mapService.CreateGeoAsync(geo);
+      }
+      
+
+      var ret = CreatedAtAction(nameof(Post), newMarkers);
       return ret;
     }
 
