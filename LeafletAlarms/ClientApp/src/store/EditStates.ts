@@ -3,15 +3,17 @@ import { AppThunkAction } from '.';
 
 // -----------------
 
-export enum Figures {
-  Nothing = "No tool",
-  Circle = "Circle tool",
-  MultiLine = "Multiline tool",
-  Poligon = "Poligon tool"
+export const Figures: Record<string, string> =
+{
+  NoTool: "Nothing",
+  Circle: "Circle",
+  MultiLine: "Multiline",
+  Polygon: "Polygon"
 };
 
+
 export interface EditState {
-  figure: Figures;
+  figure: string;
 }
 
 // -----------------
@@ -21,7 +23,7 @@ export interface EditState {
 
 export interface SetFigureAction {
   type: 'SET_FIGURE';
-  figure: Figures;
+  figure: string;
 }
 export interface DecrementCountAction { type: 'DECREMENT_COUNT' }
 
@@ -34,14 +36,14 @@ export type KnownAction = SetFigureAction | DecrementCountAction;
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-  setFigure: (figure: Figures): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  setFigure: (figure: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: 'SET_FIGURE', figure: figure });
   },
   decrement: () => ({ type: 'DECREMENT_COUNT' } as DecrementCountAction)
 };
 
 const unloadedState: EditState = {
-  figure: Object.keys(Figures)[0] as Figures
+  figure: 'NoTool'
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.

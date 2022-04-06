@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.GeoDTO;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
@@ -106,12 +107,31 @@ namespace DbLayer
       return await _circleCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
-    public async Task CreateGeoAsync(GeometryDTO newObject)
+    public async Task CreateGeoPointAsync(FigureCircleDTO newObject)
     {
       GeoPoint point = new GeoPoint();
       point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
-        GeoJson.Position(newObject.points[1], newObject.points[0])
+        GeoJson.Position(newObject.geometry[1], newObject.geometry[0])
       );
+      point.id = newObject.id;
+      await _geoCollection.InsertOneAsync(point);
+    }
+
+    public async Task CreateGeoPoligonAsync(FigurePolygonDTO newObject)
+    {
+      GeoPoint point = new GeoPoint();
+
+      List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
+
+      for(int i = 0; i <newObject.geometry.Length; i++)
+      {
+        coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
+      }
+      
+      coordinates.Add(GeoJson.Position(newObject.geometry[0][1], newObject.geometry[0][0]));
+
+      point.location = GeoJson.Polygon(coordinates.ToArray());
+
       point.id = newObject.id;
       await _geoCollection.InsertOneAsync(point);
     }
@@ -128,8 +148,19 @@ namespace DbLayer
     public async Task<List<GeoPoint>> GetGeoAsync(BoxDTO box)
     {
       var builder = Builders<GeoPoint>.Filter;
+      var geometry = GeoJson.Polygon(
+        new GeoJson2DCoordinates[]
+        {
+          GeoJson.Position(box.wn[0], box.wn[1]), 
+          GeoJson.Position(box.es[0], box.wn[1]),
+          GeoJson.Position(box.es[0], box.es[1]),
+          GeoJson.Position(box.wn[0], box.es[1]),
+          GeoJson.Position(box.wn[0], box.wn[1])
+        }        
+        );
       
-      var filter = builder.GeoWithinBox(t => t.location, box.wn[0], box.wn[1], box.es[0], box.es[1]);
+      var filter = builder.GeoIntersects(t => t.location, geometry);
+      //var filter = builder.GeoWithinBox(t => t.location, box.wn[0], box.wn[1], box.es[0], box.es[1]);
       Log(filter);
       var list = await _geoCollection.Find(filter).ToListAsync();
       return list;

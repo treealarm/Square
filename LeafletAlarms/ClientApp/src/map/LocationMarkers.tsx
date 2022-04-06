@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, Marker } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, IPolygon } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -43,25 +43,43 @@ export function LocationMarkers() {
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
+  const selectedTool = useSelector((state) => state.editState.figure);
 
 
    const mapEvents = useMapEvents({
     click(e) {
        var ll: L.LatLng = e.latlng as L.LatLng;
 
-       var circle: ICircle = {
-         name: ll.toString(),
-         parent_id: selected_id,
-         geometry: [ll.lat, ll.lng],
-         type: "Point"
+       var figures: IFigures = {
+         
        };
 
-       var figures: IFigures = {
-         circles: [circle]
-       };
+       if (selectedTool == 'Circle')
+       {
+         var circle: ICircle = {
+           name: ll.toString(),
+           parent_id: selected_id,
+           geometry: [ll.lat, ll.lng],
+           type: 'Point'
+         };
+
+         figures.circles = [circle];
+       }
+
+       if (selectedTool == 'Polygon') {
+         var figure: IPolygon = {
+           name: ll.toString(),
+           parent_id: selected_id,
+           geometry: [[ll.lat, ll.lng], [ll.lat, ll.lng+0.1], [ll.lat+0.1, ll.lng+0.1]],
+           type: 'Polygon'
+         };
+
+         figures.polygons = [figure];
+       }
 
        dispatch(MarkersStore.actionCreators.sendMarker(figures));
-     },
+},
+
      moveend(e: LeafletEvent) {
        var bounds: L.LatLngBounds;
        bounds = e.target.getBounds();
@@ -159,7 +177,11 @@ export function LocationMarkers() {
             </Popup>
           </Circle>
         )}
-      <Polygon pathOptions={purpleOptions} positions={polygon} />
+      {
+        markers?.polygons?.map((marker, index) =>
+          <Polygon pathOptions={purpleOptions} positions={marker.geometry} />
+      )}
+      
     </React.Fragment>
   );
 }

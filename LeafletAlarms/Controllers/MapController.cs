@@ -1,6 +1,8 @@
 ﻿using DbLayer;
 using Domain;
+using Domain.GeoDTO;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver.GeoJsonObjectModel;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -97,13 +99,34 @@ namespace LeafletAlarms.Controllers
           {
             var retItem = new FigureCircleDTO();
 
+            var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
             retItem.id = item.id;
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;
-            retItem.geometry = new double[2] { geoPart.location.Coordinates.Y, geoPart.location.Coordinates.X };
+            retItem.geometry = new double[2] { pt.Coordinates.Y, pt.Coordinates.X };
             retItem.type = geoPart.location.Type.ToString();
             result.circles.Add(retItem);
-          }          
+          }
+
+          if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Polygon)
+          {
+            var retItem = new FigurePolygonDTO();
+
+            var pt = geoPart.location as GeoJsonPolygon<GeoJson2DCoordinates>;
+            retItem.id = item.id;
+            retItem.name = item.name;
+            retItem.parent_id = item.parent_id;
+
+            List<double[]> list = new List<double[]>();
+
+            foreach(var cur in pt.Coordinates.Exterior.Positions)
+            {
+              list.Add(new double[2] { cur.Y, cur.X });
+            }
+            retItem.geometry = list.ToArray();
+            retItem.type = geoPart.location.Type.ToString();
+            result.polygons.Add(retItem);
+          }
         }
       }
       return result;
@@ -121,17 +144,21 @@ namespace LeafletAlarms.Controllers
         await _mapService.CreateAsync(marker);
         
         newMarker.id = marker.id;
-
-        // Geo part.
-        GeometryDTO geo = new GeometryDTO();
-        geo.points = newMarker.geometry;
-
-        geo.type = "Point";
-        geo.id = marker.id;
-
-        await _mapService.CreateGeoAsync(geo);
+        await _mapService.CreateGeoPointAsync(newMarker);
       }
-      
+
+      foreach (var newMarker in newMarkers.polygons)
+      {
+        Marker marker = new Marker();
+        marker.name = newMarker.name;
+        marker.parent_id = newMarker.parent_id;
+
+        await _mapService.CreateAsync(marker);
+
+        newMarker.id = marker.id;
+        await _mapService.CreateGeoPoligonAsync(newMarker);
+      }
+
 
       var ret = CreatedAtAction(nameof(Post), newMarkers);
       return ret;

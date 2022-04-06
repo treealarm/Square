@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
-  public class GeoPoint
+  public class GeoPolygon
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
-    public GeoJsonGeometry<GeoJson2DCoordinates> location { get; set; }
+    public GeoJsonPoint<GeoJson2DCoordinates> location { get; set; }
   }
 }

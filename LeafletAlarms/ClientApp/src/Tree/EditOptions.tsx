@@ -8,8 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 export default function EditOptions() {
 
   const dispatch = useDispatch();
-  const selected = useSelector((state) => state?.editState?.figure);
-
+  const selectedTool = useSelector((state) => state.editState.figure);
+  
   const [state, setState] = React.useState(false);
 
   const toggleDrawer = (open: boolean) => (event: any) => {
@@ -21,8 +21,7 @@ export default function EditOptions() {
   };
 
   function valueChanged(event: React.ChangeEvent<HTMLInputElement>, value: string) {
-    const val: EditStore.Figures = value as unknown as EditStore.Figures;
-    dispatch(EditStore.actionCreators.setFigure(val));
+    dispatch(EditStore.actionCreators.setFigure(value));
   };
 
   const anchor = 'left';
@@ -32,7 +31,7 @@ export default function EditOptions() {
       
       <React.Fragment key={anchor}>
         <Button onClick={toggleDrawer(true)} style={{ textTransform: 'none' }}>
-          Tool:{EditStore.Figures[selected]}
+          Current tool: {EditStore.Figures[selectedTool]}
         </Button>
           <Drawer
             anchor={anchor}
@@ -43,7 +42,7 @@ export default function EditOptions() {
             <FormLabel id="options">Select tool</FormLabel>
             <RadioGroup
               aria-labelledby="options-group-label"
-              defaultValue={selected}
+              defaultValue={selectedTool}
               name="radio-buttons-group"
               onChange={valueChanged}
             >
