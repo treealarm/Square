@@ -70,7 +70,7 @@ export function LocationMarkers() {
          var figure: IPolygon = {
            name: ll.toString(),
            parent_id: selected_id,
-           geometry: [[ll.lat, ll.lng], [ll.lat, ll.lng+0.1], [ll.lat+0.1, ll.lng+0.1]],
+           geometry: [[ll.lat, ll.lng], [ll.lat, ll.lng+0.01], [ll.lat+0.01, ll.lng+0.01]],
            type: 'Polygon'
          };
 
