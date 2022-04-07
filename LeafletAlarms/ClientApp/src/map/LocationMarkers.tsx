@@ -19,6 +19,7 @@ import {
 
 import { LeafletEvent } from 'leaflet';
 import { Figures } from '../store/EditStates';
+import { ObjectPopup } from './ObjectPopup';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -165,21 +166,16 @@ export function LocationMarkers() {
             radius={100}
             eventHandlers={eventHandlers}
           >
-            <Popup>
-              <table>
-                <tbody>
-                  <tr><td>{marker.name}</td></tr>
-                  <tr><td>
-                    <span className="menu_item" onClick={(e) => deleteMe(marker, e)}>Delete</span>
-                  </td></tr>
-                </tbody>
-              </table>
-            </Popup>
+            <ObjectPopup marker={marker} deleteMe={deleteMe}>
+            </ObjectPopup>
           </Circle>
         )}
       {
         markers?.polygons?.map((marker, index) =>
-          <Polygon pathOptions={purpleOptions} positions={marker.geometry} />
+          <Polygon pathOptions={purpleOptions} positions={marker.geometry}>
+            <ObjectPopup marker={marker} deleteMe={deleteMe}>
+            </ObjectPopup>
+          </Polygon>
       )}
       
     </React.Fragment>

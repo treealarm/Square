@@ -107,6 +107,27 @@ namespace DbLayer
       return await _circleCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
+    public async Task CreateCompleteObject(FigureBaseDTO figure)
+    {
+      Marker marker = new Marker();
+      marker.name = figure.name;
+      marker.parent_id = figure.parent_id;
+
+      await CreateAsync(marker);
+
+      figure.id = marker.id;
+
+      if (figure is FigureCircleDTO circle)
+      {
+        await CreateGeoPointAsync(circle);
+      }
+      
+      if (figure is FigurePolygonDTO poligon)
+      {
+        await CreateGeoPoligonAsync(poligon);
+      }
+    }
+
     public async Task CreateGeoPointAsync(FigureCircleDTO newObject)
     {
       GeoPoint point = new GeoPoint();

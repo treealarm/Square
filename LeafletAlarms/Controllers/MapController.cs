@@ -95,27 +95,22 @@ namespace LeafletAlarms.Controllers
 
         if (geoPart != null)
         {
+          FigureBaseDTO retItem = null;
+
           if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Point)
           {
-            var retItem = new FigureCircleDTO();
-
+            var figure = new FigureCircleDTO();
             var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
-            retItem.id = item.id;
-            retItem.name = item.name;
-            retItem.parent_id = item.parent_id;
-            retItem.geometry = new double[2] { pt.Coordinates.Y, pt.Coordinates.X };
-            retItem.type = geoPart.location.Type.ToString();
-            result.circles.Add(retItem);
+            figure.geometry = new double[2] { pt.Coordinates.Y, pt.Coordinates.X };
+            result.circles.Add(figure);
+            retItem = figure;
           }
 
           if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Polygon)
           {
-            var retItem = new FigurePolygonDTO();
+            var figure = new FigurePolygonDTO();
 
             var pt = geoPart.location as GeoJsonPolygon<GeoJson2DCoordinates>;
-            retItem.id = item.id;
-            retItem.name = item.name;
-            retItem.parent_id = item.parent_id;
 
             List<double[]> list = new List<double[]>();
 
@@ -123,10 +118,19 @@ namespace LeafletAlarms.Controllers
             {
               list.Add(new double[2] { cur.Y, cur.X });
             }
-            retItem.geometry = list.ToArray();
-            retItem.type = geoPart.location.Type.ToString();
-            result.polygons.Add(retItem);
+            figure.geometry = list.ToArray();
+            result.polygons.Add(figure);
+            retItem = figure;
           }
+
+          if (retItem != null)
+          {
+            retItem.id = item.id;
+            retItem.name = item.name;
+            retItem.parent_id = item.parent_id;
+            retItem.type = geoPart.location.Type.ToString();
+          }
+
         }
       }
       return result;
@@ -135,30 +139,15 @@ namespace LeafletAlarms.Controllers
     [HttpPost]
     public async Task<IActionResult> Post(FiguresDTO newMarkers)
     {
-      foreach(var newMarker in newMarkers.circles)
+      foreach(var figure in newMarkers.circles)
       {
-        Marker marker = new Marker();
-        marker.name = newMarker.name;
-        marker.parent_id = newMarker.parent_id;
-
-        await _mapService.CreateAsync(marker);
-        
-        newMarker.id = marker.id;
-        await _mapService.CreateGeoPointAsync(newMarker);
+        await _mapService.CreateCompleteObject(figure);
       }
 
-      foreach (var newMarker in newMarkers.polygons)
+      foreach (var figure in newMarkers.polygons)
       {
-        Marker marker = new Marker();
-        marker.name = newMarker.name;
-        marker.parent_id = newMarker.parent_id;
-
-        await _mapService.CreateAsync(marker);
-
-        newMarker.id = marker.id;
-        await _mapService.CreateGeoPoligonAsync(newMarker);
+        await _mapService.CreateCompleteObject(figure);
       }
-
 
       var ret = CreatedAtAction(nameof(Post), newMarkers);
       return ret;
