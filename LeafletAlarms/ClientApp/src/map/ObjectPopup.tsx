@@ -9,9 +9,9 @@ export function ObjectPopup(props) {
       <Popup>
         <table>
           <tbody>
-            <tr><td>{props.marker.name}</td></tr>
+            <tr><td>{props?.marker?.name}</td></tr>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.deleteMe(props.marker, e)}>Delete object</span>
+              <span className="menu_item" onClick={(e) => props.deleteMe(props?.marker, e)}>Delete object</span>
             </td></tr>
           </tbody>
         </table>

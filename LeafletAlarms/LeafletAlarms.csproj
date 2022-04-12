@@ -37,6 +37,7 @@
   <ItemGroup>
     <None Remove="ClientApp\src\components\TreeControl.tsx" />
     <None Remove="ClientApp\src\map\ObjectPopup.tsx" />
+    <None Remove="ClientApp\src\map\PolygonMaker.tsx" />
     <None Remove="ClientApp\src\store\GUIStates.ts" />
     <None Remove="ClientApp\src\store\Marker.ts" />
     <None Remove="ClientApp\src\store\TreeStates.ts" />

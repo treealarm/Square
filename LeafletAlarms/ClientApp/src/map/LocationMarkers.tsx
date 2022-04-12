@@ -14,12 +14,14 @@ import {
   useMap,
   useMapEvents,
   Circle,
-  Polygon
+  Polygon,
+  Polyline
 } from 'react-leaflet'
 
 import { LeafletEvent } from 'leaflet';
 import { Figures } from '../store/EditStates';
 import { ObjectPopup } from './ObjectPopup';
+import { PolygonMaker } from './PolygonMaker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -149,11 +151,6 @@ export function LocationMarkers() {
   }
 
   const purpleOptions = { color: 'purple' }
-  const polygon = [
-    [51.515, -0.09],
-    [51.52, -0.1],
-    [51.52, -0.12],
-  ]
 
   return (
     <React.Fragment>
@@ -177,7 +174,7 @@ export function LocationMarkers() {
             </ObjectPopup>
           </Polygon>
       )}
-      
+      <PolygonMaker/>
     </React.Fragment>
   );
 }
