@@ -3,7 +3,7 @@ import {
   Popup
 } from 'react-leaflet'
 
-export function ObjectPopup(props) {
+export function ObjectPopup(props: any) {
   return (
     <React.Fragment>
       <Popup>

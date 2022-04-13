@@ -159,19 +159,17 @@ export function PolygonMaker() {
     <React.Fragment>
       {
         polygon.geometry.map((point, index) =>
-          <div>
+          <div key={index}>
             <CircleMarker
               key={index}
               center={point}
               pathOptions={colorOptions}
               radius={10}
-              icon={text}
               eventHandlers={eventHandlersCircle}>
               {
                 movedIndex < 0
                   ? <CirclePopup index={index} MoveVertex={moveVertex} DeleteVertex={deleteVertex}>
-                  </CirclePopup>
-                  : <div></div>
+                  </CirclePopup> : < div />
               }
               
             </CircleMarker>
