@@ -70,14 +70,15 @@ export function LocationMarkers() {
        }
 
        if (selectedTool == 'Polygon') {
-         var figure: IPolygon = {
-           name: ll.toString(),
-           parent_id: selected_id,
-           geometry: [[ll.lat, ll.lng], [ll.lat, ll.lng+0.01], [ll.lat+0.01, ll.lng+0.01]],
-           type: 'Polygon'
-         };
+         //var figure: IPolygon = {
+         //  name: ll.toString(),
+         //  parent_id: selected_id,
+         //  geometry: [[ll.lat, ll.lng], [ll.lat, ll.lng+0.01], [ll.lat+0.01, ll.lng+0.01]],
+         //  type: 'Polygon'
+         //};
 
-         figures.polygons = [figure];
+         //figures.polygons = [figure];
+         return;
        }
 
        dispatch(MarkersStore.actionCreators.sendMarker(figures));
@@ -111,6 +112,17 @@ export function LocationMarkers() {
     }),
     [],
   )
+  
+  const polygonChanged = useCallback(
+    (polygon: IPolygon, e) => {
+      var figures: IFigures = {
+
+      };
+
+      figures.polygons = [polygon];
+      dispatch(MarkersStore.actionCreators.sendMarker(figures));
+
+    }, [])
 
   const deleteMe = useCallback(
     (marker, e) => {
@@ -178,7 +190,7 @@ export function LocationMarkers() {
             </ObjectPopup>
           </Polygon>
       )}
-      <PolygonMaker/>
+      {selectedTool == 'Polygon' ? <PolygonMaker polygonChanged={polygonChanged}/>:<div/>}
     </React.Fragment>
   );
 }

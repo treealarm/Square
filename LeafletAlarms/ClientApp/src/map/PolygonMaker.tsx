@@ -44,7 +44,23 @@ function CirclePopup(props: any) {
   );
 }
 
-export function PolygonMaker() {
+function PolygonPopup(props: any) {
+  return (
+    <React.Fragment>
+      <Popup>
+        <table>
+          <tbody>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.PolygonChanged(e)}>Save</span>
+            </td></tr>
+          </tbody>
+        </table>
+      </Popup>
+    </React.Fragment>
+  );
+}
+
+export function PolygonMaker(props: any) {
 
   const dispatch = useDispatch();
   const parentMap = useMap();
@@ -83,7 +99,7 @@ export function PolygonMaker() {
       
 
       let updatedValue = {};
-      updatedValue = { geometry: [...polygon.geometry, ll] };
+      updatedValue = { geometry: [...polygon.geometry, [ll.lat, ll.lng]] };
       setPolygon(polygon => ({
         ...polygon,
         ...updatedValue
@@ -155,6 +171,12 @@ export function PolygonMaker() {
   const markers = useSelector((state) => state?.markersStates?.markers);
   const colorOptions = { color: 'green' }
 
+  const polygonChanged = useCallback(
+    (e) => {
+      props.polygonChanged(polygon, e);
+      setPolygon(initPolygon);
+    }, [polygon])
+
   return (
     <React.Fragment>
       {
@@ -168,7 +190,11 @@ export function PolygonMaker() {
               eventHandlers={eventHandlersCircle}>
               {
                 movedIndex < 0
-                  ? <CirclePopup index={index} MoveVertex={moveVertex} DeleteVertex={deleteVertex}>
+                  ? <CirclePopup
+                    index={index}
+                    MoveVertex={moveVertex}
+                    DeleteVertex={deleteVertex}
+                  >
                   </CirclePopup> : < div />
               }
               
@@ -179,7 +205,9 @@ export function PolygonMaker() {
       {
         polygon.geometry.length > 2 
           ? <Polygon pathOptions={colorOptions} positions={polygon.geometry}>
-            
+            <PolygonPopup
+              PolygonChanged={polygonChanged}
+            />
             </Polygon>
           : <Polyline pathOptions={colorOptions} positions={polygon.geometry}>
             
