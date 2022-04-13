@@ -97,7 +97,7 @@ export function LocationMarkers() {
        console.log('Locat  ionMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
      },
      mousemove(e: L.LeafletMouseEvent) {
-       console.log('cursor', parentMap.getContainer().style.cursor);
+
      }
    });
 

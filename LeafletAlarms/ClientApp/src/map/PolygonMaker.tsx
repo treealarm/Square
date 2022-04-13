@@ -25,6 +25,25 @@ declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
+function CirclePopup(props) {
+  return (
+    <React.Fragment>
+      <Popup>
+        <table>
+          <tbody>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.DeleteVertex(props?.index, e)}>Delete vertex</span>
+            </td></tr>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.MoveVertex(props?.index, e)}>Move vertex</span>
+            </td></tr>
+          </tbody>
+        </table>
+      </Popup>
+    </React.Fragment>
+  );
+}
+
 export function PolygonMaker() {
 
   const dispatch = useDispatch();
@@ -37,6 +56,8 @@ export function PolygonMaker() {
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const selectedTool = useSelector((state) => state.editState.figure);
+
+  const [movedIndex, setMovedIndex] = React.useState(-1);
 
   const initPolygon: IPolygon = {
     name: 'New Polygon',
@@ -53,6 +74,12 @@ export function PolygonMaker() {
   const mapEvents = useMapEvents({
     click(e) {
       var ll: L.LatLng = e.latlng as L.LatLng;
+
+      if (movedIndex >= 0) {
+        setMovedIndex(-1);
+        return;
+      }
+      
 
       let updatedValue = {};
       updatedValue = { geometry: [...polygon.geometry, ll] };
@@ -75,7 +102,16 @@ export function PolygonMaker() {
       };
     },
     mousemove(e: L.LeafletMouseEvent) {
+      if (movedIndex >= 0) {
+        var updatedValue = { geometry: [...polygon.geometry]};
 
+        updatedValue.geometry.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
+
+        setPolygon(polygon => ({
+          ...polygon,
+          ...updatedValue
+        }));
+      }
     }
   });
 
@@ -90,12 +126,27 @@ export function PolygonMaker() {
     [],
   )
 
-  const deleteMe = useCallback(
-    (marker, e) => {
+  const moveVertex = useCallback(
+    (index, e) => {
       console.log(e.target.value);
       parentMap.closePopup();
-      let idsToDelete: string[] = [marker.id];
+      
+      setMovedIndex(index);
     }, [])
+
+  const deleteVertex = useCallback(
+    (index, e) => {      
+      parentMap.closePopup();
+
+      var updatedValue = { geometry: [...polygon.geometry] };
+      updatedValue.geometry.splice(index, 1);
+
+      setPolygon(polygon => ({
+        ...polygon,
+        ...updatedValue
+      }));
+
+    }, [polygon])
 
   const markers = useSelector((state) => state?.markersStates?.markers);
   const colorOptions = { color: 'green' }
@@ -111,13 +162,14 @@ export function PolygonMaker() {
             radius={10}
             eventHandlers={eventHandlersCircle}
           >
+            <CirclePopup index={index} MoveVertex={moveVertex} DeleteVertex={deleteVertex}>
+            </CirclePopup>
           </CircleMarker>
         )}
       {
         polygon.geometry.length > 2 
           ? <Polygon pathOptions={colorOptions} positions={polygon.geometry}>
-              <ObjectPopup marker={polygon} deleteMe={deleteMe}>
-              </ObjectPopup>
+            
             </Polygon>
           : <Polyline pathOptions={colorOptions} positions={polygon.geometry}>
             
