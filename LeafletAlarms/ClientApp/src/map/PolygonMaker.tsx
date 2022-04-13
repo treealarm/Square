@@ -13,7 +13,7 @@ import {
   Popup,
   useMap,
   useMapEvents,
-  Circle,
+  Marker,
   Polygon,
   Polyline
 } from 'react-leaflet'
@@ -25,7 +25,7 @@ declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
-function CirclePopup(props) {
+function CirclePopup(props: any) {
   return (
     <React.Fragment>
       <Popup>
@@ -73,6 +73,7 @@ export function PolygonMaker() {
     
   const mapEvents = useMapEvents({
     click(e) {
+      console.log('onclick map');
       var ll: L.LatLng = e.latlng as L.LatLng;
 
       if (movedIndex >= 0) {
@@ -120,7 +121,10 @@ export function PolygonMaker() {
   const eventHandlersCircle = useMemo(
     () => ({
       mouseover() {
-        console.log('Mouse over polygon');
+        
+      },
+      onclick() {
+        console.log('onclick circle');
       }
     }),
     [],
@@ -155,17 +159,25 @@ export function PolygonMaker() {
     <React.Fragment>
       {
         polygon.geometry.map((point, index) =>
-          <CircleMarker
-            key={index}
-            center={point}
-            pathOptions={colorOptions}
-            radius={10}
-            eventHandlers={eventHandlersCircle}
-          >
-            <CirclePopup index={index} MoveVertex={moveVertex} DeleteVertex={deleteVertex}>
-            </CirclePopup>
-          </CircleMarker>
-        )}
+          <div>
+            <CircleMarker
+              key={index}
+              center={point}
+              pathOptions={colorOptions}
+              radius={10}
+              icon={text}
+              eventHandlers={eventHandlersCircle}>
+              {
+                movedIndex < 0
+                  ? <CirclePopup index={index} MoveVertex={moveVertex} DeleteVertex={deleteVertex}>
+                  </CirclePopup>
+                  : <div></div>
+              }
+              
+            </CircleMarker>
+          </div>
+        )
+      }
       {
         polygon.geometry.length > 2 
           ? <Polygon pathOptions={colorOptions} positions={polygon.geometry}>

@@ -34,7 +34,10 @@ export default function TabControl() {
       >
         {
           parent_list?.map((marker, index) =>
-            <Tab label={marker != null ? marker?.name : 'ROOT'} value={marker} key={marker?.id} />
+            <Tab
+              label={marker != null ? marker?.name : 'ROOT'}
+              value={marker}
+              key={index} />
           )
         }
       </Tabs>

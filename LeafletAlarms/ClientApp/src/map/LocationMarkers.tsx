@@ -169,7 +169,11 @@ export function LocationMarkers() {
         )}
       {
         markers?.polygons?.map((marker, index) =>
-          <Polygon pathOptions={purpleOptions} positions={marker.geometry}>
+          <Polygon
+            pathOptions={purpleOptions}
+            positions={marker.geometry}
+            key={index}
+          >
             <ObjectPopup marker={marker} deleteMe={deleteMe}>
             </ObjectPopup>
           </Polygon>

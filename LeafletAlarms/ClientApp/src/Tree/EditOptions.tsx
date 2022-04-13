@@ -47,8 +47,12 @@ export default function EditOptions() {
               onChange={valueChanged}
             >
               {
-                Object.entries(EditStore.Figures).map((item) =>
-                  <FormControlLabel value={item[0]} control={<Radio />} label={item[1]} />
+                Object.entries(EditStore.Figures).map((item, index) =>
+                  <FormControlLabel
+                    key={index}
+                    value={item[0]}
+                    control={<Radio />}
+                    label={item[1]} />
                   )
               }
             </RadioGroup>
