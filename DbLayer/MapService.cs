@@ -122,9 +122,14 @@ namespace DbLayer
         await CreateGeoPointAsync(circle);
       }
       
-      if (figure is FigurePolygonDTO poligon)
+      if (figure is FigurePolygonDTO polygon)
       {
-        await CreateGeoPoligonAsync(poligon);
+        await CreateGeoPolygonAsync(polygon);
+      }
+
+      if (figure is FigurePolylineDTO polyline)
+      {
+        await CreateGeoPolylineAsync(polyline);
       }
     }
 
@@ -138,7 +143,7 @@ namespace DbLayer
       await _geoCollection.InsertOneAsync(point);
     }
 
-    public async Task CreateGeoPoligonAsync(FigurePolygonDTO newObject)
+    public async Task CreateGeoPolygonAsync(FigurePolygonDTO newObject)
     {
       GeoPoint point = new GeoPoint();
 
@@ -152,6 +157,23 @@ namespace DbLayer
       coordinates.Add(GeoJson.Position(newObject.geometry[0][1], newObject.geometry[0][0]));
 
       point.location = GeoJson.Polygon(coordinates.ToArray());
+
+      point.id = newObject.id;
+      await _geoCollection.InsertOneAsync(point);
+    }
+
+    public async Task CreateGeoPolylineAsync(FigurePolylineDTO newObject)
+    {
+      GeoPoint point = new GeoPoint();
+
+      List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
+
+      for (int i = 0; i < newObject.geometry.Length; i++)
+      {
+        coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
+      }
+
+      point.location = GeoJson.LineString(coordinates.ToArray());
 
       point.id = newObject.id;
       await _geoCollection.InsertOneAsync(point);

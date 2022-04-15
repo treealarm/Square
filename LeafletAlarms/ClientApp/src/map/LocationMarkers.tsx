@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolygon } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, IPolyline, IPolygon } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -19,9 +19,10 @@ import {
 } from 'react-leaflet'
 
 import { LeafletEvent } from 'leaflet';
-import { Figures } from '../store/EditStates';
+import { CircleTool, Figures, PolylineTool, PolygonTool } from '../store/EditStates';
 import { ObjectPopup } from './ObjectPopup';
 import { PolygonMaker } from './PolygonMaker';
+import { PolylineMaker } from './PolylineMaker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -50,54 +51,42 @@ export function LocationMarkers() {
 
 
    const mapEvents = useMapEvents({
-    click(e) {
-       var ll: L.LatLng = e.latlng as L.LatLng;
+      click(e) {
+         var ll: L.LatLng = e.latlng as L.LatLng;
 
-       var figures: IFigures = {
+         var figures: IFigures = {
          
-       };
-
-       if (selectedTool == 'Circle')
-       {
-         var circle: ICircle = {
-           name: ll.toString(),
-           parent_id: selected_id,
-           geometry: [ll.lat, ll.lng],
-           type: 'Point'
          };
 
-         figures.circles = [circle];
-       }
+         if (selectedTool == CircleTool)
+         {
+           var circle: ICircle = {
+             name: ll.toString(),
+             parent_id: selected_id,
+             geometry: [ll.lat, ll.lng],
+             type: 'Point'
+           };
 
-       if (selectedTool == 'Polygon') {
-         //var figure: IPolygon = {
-         //  name: ll.toString(),
-         //  parent_id: selected_id,
-         //  geometry: [[ll.lat, ll.lng], [ll.lat, ll.lng+0.01], [ll.lat+0.01, ll.lng+0.01]],
-         //  type: 'Polygon'
-         //};
+           figures.circles = [circle];
+           dispatch(MarkersStore.actionCreators.sendMarker(figures));
+         }
+      
+      },
 
-         //figures.polygons = [figure];
-         return;
-       }
+       moveend(e: LeafletEvent) {
+         var bounds: L.LatLngBounds;
+         bounds = e.target.getBounds();
+         var boundBox: BoundBox = {
+           wn: [bounds.getWest(), bounds.getNorth()],
+           es: [bounds.getEast(), bounds.getSouth()],
+           zoom: e.target.getZoom()
+         };
 
-       dispatch(MarkersStore.actionCreators.sendMarker(figures));
-},
+         dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
 
-     moveend(e: LeafletEvent) {
-       var bounds: L.LatLngBounds;
-       bounds = e.target.getBounds();
-       var boundBox: BoundBox = {
-         wn: [bounds.getWest(), bounds.getNorth()],
-         es: [bounds.getEast(), bounds.getSouth()],
-         zoom: e.target.getZoom()
-       };
-
-       dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
-
-       console.log('Locat  ionMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
-     },
-     mousemove(e: L.LeafletMouseEvent) {
+         console.log('Locat  ionMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
+       },
+        mousemove(e: L.LeafletMouseEvent) {
 
      }
    });
@@ -123,6 +112,18 @@ export function LocationMarkers() {
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
 
     }, [])
+
+  const polylineChanged = useCallback(
+    (figure: IPolyline, e) => {
+      var figures: IFigures = {
+
+      };
+
+      figures.polylines = [figure];
+      dispatch(MarkersStore.actionCreators.sendMarker(figures));
+
+    }, [])
+  
 
   const deleteMe = useCallback(
     (marker, e) => {
@@ -189,8 +190,22 @@ export function LocationMarkers() {
             <ObjectPopup marker={marker} deleteMe={deleteMe}>
             </ObjectPopup>
           </Polygon>
-      )}
-      {selectedTool == 'Polygon' ? <PolygonMaker polygonChanged={polygonChanged}/>:<div/>}
+        )}
+
+      {
+        markers?.polylines?.map((marker, index) =>
+          <Polyline
+            pathOptions={purpleOptions}
+            positions={marker.geometry}
+            key={index}
+          >
+            <ObjectPopup marker={marker} deleteMe={deleteMe}>
+            </ObjectPopup>
+          </Polyline>
+        )}
+
+      {selectedTool == PolygonTool ? <PolygonMaker polygonChanged={polygonChanged} /> : <div />}
+      {selectedTool == PolylineTool ? <PolylineMaker figureChanged={polylineChanged} /> : <div />}
     </React.Fragment>
   );
 }

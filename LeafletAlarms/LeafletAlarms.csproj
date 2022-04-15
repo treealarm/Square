@@ -38,6 +38,7 @@
     <None Remove="ClientApp\src\components\TreeControl.tsx" />
     <None Remove="ClientApp\src\map\ObjectPopup.tsx" />
     <None Remove="ClientApp\src\map\PolygonMaker.tsx" />
+    <None Remove="ClientApp\src\map\PolylineMaker.tsx" />
     <None Remove="ClientApp\src\store\GUIStates.ts" />
     <None Remove="ClientApp\src\store\Marker.ts" />
     <None Remove="ClientApp\src\store\TreeStates.ts" />
@@ -57,6 +58,12 @@
   <ItemGroup>
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Update="ClientApp\src\map\PolylineMaker.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

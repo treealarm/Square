@@ -2,13 +2,17 @@ import { Action, Reducer } from 'redux';
 import { AppThunkAction } from '.';
 
 // -----------------
+export const PolygonTool = 'Polygon';
+export const CircleTool = 'Circle';
+export const PolylineTool = 'Polyline';
+export const NothingTool = 'Nothing';
 
 export const Figures: Record<string, string> =
 {
-  NoTool: "Nothing",
-  Circle: "Circle",
-  MultiLine: "Multiline",
-  Polygon: "Polygon"
+  Nothing: 'NothingTool',
+  Circle: 'CircleTool',
+  Polyline: 'PolylineTool',
+  Polygon: 'PolygonTool'
 };
 
 
@@ -43,7 +47,7 @@ export const actionCreators = {
 };
 
 const unloadedState: EditState = {
-  figure: 'NoTool'
+  figure: NothingTool
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.

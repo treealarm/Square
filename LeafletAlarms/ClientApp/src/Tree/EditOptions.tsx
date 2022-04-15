@@ -42,7 +42,7 @@ export default function EditOptions() {
             <FormLabel id="options">Select tool</FormLabel>
             <RadioGroup
               aria-labelledby="options-group-label"
-              defaultValue={selectedTool}
+              value={selectedTool}
               name="radio-buttons-group"
               onChange={valueChanged}
             >

@@ -7,5 +7,6 @@ namespace Domain
   {
     public List<FigureCircleDTO> circles { get; set; } = new List<FigureCircleDTO>();
     public List<FigurePolygonDTO> polygons { get; set; } = new List<FigurePolygonDTO>();
+    public List<FigurePolylineDTO> polylines { get; set; } = new List<FigurePolylineDTO>();
   }
 }

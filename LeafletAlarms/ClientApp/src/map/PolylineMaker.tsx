@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolygon } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, IPolyline, IPolygon } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -20,7 +20,7 @@ import {
 
 import { LeafletEvent } from 'leaflet';
 import { ObjectPopup } from './ObjectPopup';
-import { PolygonTool } from '../store/EditStates';
+import { PolylineTool, PolygonTool } from '../store/EditStates';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -45,14 +45,14 @@ function CirclePopup(props: any) {
   );
 }
 
-function PolygonPopup(props: any) {
+function FigurePopup(props: any) {
   return (
     <React.Fragment>
       <Popup>
         <table>
           <tbody>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.PolygonChanged(e)}>Save</span>
+              <span className="menu_item" onClick={(e) => props.FigureChanged(e)}>Save</span>
             </td></tr>
           </tbody>
         </table>
@@ -61,13 +61,13 @@ function PolygonPopup(props: any) {
   );
 }
 
-export function PolygonMaker(props: any) {
+export function PolylineMaker(props: any) {
 
   const dispatch = useDispatch();
   const parentMap = useMap();
 
   useEffect(() => {
-    console.log('ComponentDidMount PolygonMaker');
+    console.log('ComponentDidMount PolylineMaker');
 
   }, []);
 
@@ -76,16 +76,16 @@ export function PolygonMaker(props: any) {
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
 
-  const initPolygon: IPolygon = {
-    name: 'New Polygon',
+  const initFigure: IPolyline = {
+    name: 'New Polyline',
     parent_id: selected_id,
     geometry: [
 
     ],
-    type: 'Polygon'
+    type: 'LineString'
   };
 
-  const [polygon, setPolygon] = React.useState<IPolygon>(initPolygon);
+  const [figure, setFigure] = React.useState<IPolyline>(initFigure);
 
     
   const mapEvents = useMapEvents({
@@ -100,12 +100,12 @@ export function PolygonMaker(props: any) {
       
 
       let updatedValue = {};
-      updatedValue = { geometry: [...polygon.geometry, [ll.lat, ll.lng]] };
-      setPolygon(polygon => ({
-        ...polygon,
+      updatedValue = { geometry: [...figure.geometry, [ll.lat, ll.lng]] };
+      setFigure(polygon => ({
+        ...figure,
         ...updatedValue
       }));
-      if (selectedTool == PolygonTool) {
+      if (selectedTool == PolylineTool) {
 
       }
     },
@@ -121,11 +121,11 @@ export function PolygonMaker(props: any) {
     },
     mousemove(e: L.LeafletMouseEvent) {
       if (movedIndex >= 0) {
-        var updatedValue = { geometry: [...polygon.geometry]};
+        var updatedValue = { geometry: [...figure.geometry]};
 
         updatedValue.geometry.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
 
-        setPolygon(polygon => ({
+        setFigure(polygon => ({
           ...polygon,
           ...updatedValue
         }));
@@ -159,29 +159,29 @@ export function PolygonMaker(props: any) {
     (index, e) => {      
       parentMap.closePopup();
 
-      var updatedValue = { geometry: [...polygon.geometry] };
+      var updatedValue = { geometry: [...figure.geometry] };
       updatedValue.geometry.splice(index, 1);
 
-      setPolygon(polygon => ({
+      setFigure(polygon => ({
         ...polygon,
         ...updatedValue
       }));
 
-    }, [polygon])
+    }, [figure])
 
   const markers = useSelector((state) => state?.markersStates?.markers);
   const colorOptions = { color: 'green' }
 
-  const polygonChanged = useCallback(
+  const figureChanged = useCallback(
     (e) => {
-      props.polygonChanged(polygon, e);
-      setPolygon(initPolygon);
-    }, [polygon])
+      props.figureChanged(figure, e);
+      setFigure(initFigure);
+    }, [figure])
 
   return (
     <React.Fragment>
       {
-        polygon.geometry.map((point, index) =>
+        figure.geometry.map((point, index) =>
           <div key={index}>
             <CircleMarker
               key={index}
@@ -204,15 +204,12 @@ export function PolygonMaker(props: any) {
         )
       }
       {
-        polygon.geometry.length > 2 
-          ? <Polygon pathOptions={colorOptions} positions={polygon.geometry}>
-            <PolygonPopup
-              PolygonChanged={polygonChanged}
-            />
-            </Polygon>
-          : <Polyline pathOptions={colorOptions} positions={polygon.geometry}>
-            
+        figure.geometry.length > 1 
+          ? 
+          <Polyline pathOptions={colorOptions} positions={figure.geometry}>
+            <FigurePopup FigureChanged={figureChanged} />
           </Polyline>
+          :<div/>
       }
     </React.Fragment>
   );

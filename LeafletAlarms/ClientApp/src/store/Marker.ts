@@ -16,10 +16,15 @@ export interface IPolygon extends Marker {
   geometry: LatLngPair[];
 }
 
+export interface IPolyline extends Marker {
+  geometry: LatLngPair[];
+}
+
 
 export interface IFigures {
   circles?: ICircle[];
   polygons?: IPolygon[];
+  polylines?: IPolyline[];
 }
 
 

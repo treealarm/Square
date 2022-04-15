@@ -123,6 +123,23 @@ namespace LeafletAlarms.Controllers
             retItem = figure;
           }
 
+          if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.LineString)
+          {
+            var figure = new FigurePolylineDTO();
+
+            var pt = geoPart.location as GeoJsonLineString<GeoJson2DCoordinates>;
+
+            List<double[]> list = new List<double[]>();
+
+            foreach (var cur in pt.Coordinates.Positions)
+            {
+              list.Add(new double[2] { cur.Y, cur.X });
+            }
+            figure.geometry = list.ToArray();
+            result.polylines.Add(figure);
+            retItem = figure;
+          }
+
           if (retItem != null)
           {
             retItem.id = item.id;
@@ -145,6 +162,11 @@ namespace LeafletAlarms.Controllers
       }
 
       foreach (var figure in newMarkers.polygons)
+      {
+        await _mapService.CreateCompleteObject(figure);
+      }
+
+      foreach (var figure in newMarkers.polylines)
       {
         await _mapService.CreateCompleteObject(figure);
       }

@@ -207,7 +207,8 @@ export const reducer: Reducer<MarkersState> = (
         var cur_markers: IFigures =
         {
           circles: state.markers.circles.concat(action.markers.circles),
-          polygons: state.markers.polygons.concat(action.markers.polygons)
+          polygons: state.markers.polygons.concat(action.markers.polygons),
+          polylines: state.markers.polylines.concat(action.markers.polylines)
         };
 
         return {
@@ -228,7 +229,8 @@ export const reducer: Reducer<MarkersState> = (
         var cur_markers: IFigures =
         {
           circles: state.markers.circles.filter(item => !(action.deleted_ids.includes(item.id))),
-          polygons: state.markers.polygons.filter(item => !(action.deleted_ids.includes(item.id)))
+          polygons: state.markers.polygons.filter(item => !(action.deleted_ids.includes(item.id))),
+          polylines: state.markers.polylines.filter(item => !(action.deleted_ids.includes(item.id)))
         };
 
         
