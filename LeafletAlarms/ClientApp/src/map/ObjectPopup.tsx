@@ -19,6 +19,9 @@ export function ObjectPopup(props: any) {
 
   function handleOnClose()
   {
+    if (props.updateBaseMarker == null) {
+      return;
+    }
     if (curName != props.marker.name && curName != null) {
       var updatedMarker: Marker = props.marker;
       updatedMarker.name = curName[0];
