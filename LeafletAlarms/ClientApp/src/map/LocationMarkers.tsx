@@ -146,7 +146,7 @@ export function LocationMarkers() {
   const colorOptionsUnselected = { color: "green" };
   const colorOptionsSelected = { color: "yellow" };
   const colorOptionsChecked = { color: "blue" };
-  
+  const purpleOptions = { color: 'purple' }
 
   const getColor = (id: string) => {
     let colorOption = colorOptionsUnselected;
@@ -162,8 +162,6 @@ export function LocationMarkers() {
     return colorOption;
   }
 
-  const purpleOptions = { color: 'purple' }
-
   return (
     <React.Fragment>
       {
@@ -175,14 +173,14 @@ export function LocationMarkers() {
             radius={100}
             eventHandlers={eventHandlers}
           >
-            <ObjectPopup marker={marker} deleteMe={deleteMe}>
+            <ObjectPopup marker={marker} deleteMe={deleteMe} updateBaseMarker={updateBaseMarker}>
             </ObjectPopup>
           </Circle>
         )}
       {
         markers?.polygons?.map((marker, index) =>
           <Polygon
-            pathOptions={purpleOptions}
+            pathOptions={getColor(marker.id)}
             positions={marker.geometry}
             key={index}
           >
@@ -194,11 +192,11 @@ export function LocationMarkers() {
       {
         markers?.polylines?.map((marker, index) =>
           <Polyline
-            pathOptions={purpleOptions}
+            pathOptions={getColor(marker.id)}
             positions={marker.geometry}
             key={index}
           >
-            <ObjectPopup marker={marker} deleteMe={deleteMe}>
+            <ObjectPopup marker={marker} deleteMe={deleteMe} updateBaseMarker={updateBaseMarker}>
             </ObjectPopup>
           </Polyline>
         )}
