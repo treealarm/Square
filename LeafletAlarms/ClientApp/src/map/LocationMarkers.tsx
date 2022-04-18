@@ -127,7 +127,12 @@ export function LocationMarkers() {
       let idsToDelete: string[] = [marker.id];
       dispatch(MarkersStore.actionCreators.deleteMarker(idsToDelete));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
-  }, [])
+    }, [])
+
+  const updateBaseMarker = useCallback(
+    (marker, e) => {
+      dispatch(MarkersStore.actionCreators.updateBaseInfo(marker));
+    }, [])
 
   const markers = useSelector((state) => state?.markersStates?.markers);
 
@@ -181,7 +186,7 @@ export function LocationMarkers() {
             positions={marker.geometry}
             key={index}
           >
-            <ObjectPopup marker={marker} deleteMe={deleteMe}>
+            <ObjectPopup marker={marker} deleteMe={deleteMe} updateBaseMarker={updateBaseMarker}>
             </ObjectPopup>
           </Polygon>
         )}

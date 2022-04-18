@@ -86,11 +86,11 @@ namespace DbLayer
       return result;
     }
 
-    public async Task CreateAsync(Marker newBook) =>
-        await _circleCollection.InsertOneAsync(newBook);
+    public async Task CreateAsync(Marker newObj) =>
+        await _circleCollection.InsertOneAsync(newObj);
 
-    public async Task UpdateAsync(string id, Marker updatedBook) =>
-        await _circleCollection.ReplaceOneAsync(x => x.id == id, updatedBook);
+    public async Task UpdateAsync(Marker updatedObj) =>
+        await _circleCollection.ReplaceOneAsync(x => x.id == updatedObj.id, updatedObj);
 
     public async Task RemoveAsync(string id)
     {

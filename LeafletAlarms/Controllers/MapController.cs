@@ -175,19 +175,17 @@ namespace LeafletAlarms.Controllers
       return ret;
     }
 
-    [HttpPut("{id:length(24)}")]
-    public async Task<IActionResult> Update(string id, Marker updatedMarker)
+    [HttpPut]
+    public async Task<IActionResult> Update(Marker updatedMarker)
     {
-      var marker = await _mapService.GetAsync(id);
+      var marker = await _mapService.GetAsync(updatedMarker.id);
 
       if (marker is null)
       {
         return NotFound();
       }
 
-      updatedMarker.id = marker.id;
-
-      await _mapService.UpdateAsync(id, updatedMarker);
+      await _mapService.UpdateAsync(updatedMarker);
 
       return NoContent();
     }
