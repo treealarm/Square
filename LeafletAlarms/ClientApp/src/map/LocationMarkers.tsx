@@ -23,6 +23,7 @@ import { CircleTool, Figures, PolylineTool, PolygonTool } from '../store/EditSta
 import { ObjectPopup } from './ObjectPopup';
 import { PolygonMaker } from './PolygonMaker';
 import { PolylineMaker } from './PolylineMaker';
+import { CircleMaker } from './CircleMaker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -53,24 +54,6 @@ export function LocationMarkers() {
    const mapEvents = useMapEvents({
       click(e) {
          var ll: L.LatLng = e.latlng as L.LatLng;
-
-         var figures: IFigures = {
-         
-         };
-
-         if (selectedTool == CircleTool)
-         {
-           var circle: ICircle = {
-             name: ll.toString(),
-             parent_id: selected_id,
-             geometry: [ll.lat, ll.lng],
-             type: 'Point'
-           };
-
-           figures.circles = [circle];
-           dispatch(MarkersStore.actionCreators.sendMarker(figures));
-         }
-      
       },
 
        moveend(e: LeafletEvent) {
@@ -120,6 +103,17 @@ export function LocationMarkers() {
       };
 
       figures.polylines = [figure];
+      dispatch(MarkersStore.actionCreators.sendMarker(figures));
+
+    }, [])
+
+  const circleChanged = useCallback(
+    (figure: ICircle, e) => {
+      var figures: IFigures = {
+
+      };
+
+      figures.circles = [figure];
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
 
     }, [])
@@ -206,6 +200,7 @@ export function LocationMarkers() {
 
       {selectedTool == PolygonTool ? <PolygonMaker polygonChanged={polygonChanged} /> : <div />}
       {selectedTool == PolylineTool ? <PolylineMaker figureChanged={polylineChanged} /> : <div />}
+      {selectedTool == CircleTool ? <CircleMaker figureChanged={circleChanged} /> : <div />}
     </React.Fragment>
   );
 }
