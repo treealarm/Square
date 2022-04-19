@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, IPolygon } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, PointType } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -69,7 +69,7 @@ export function CircleMaker(props: any) {
     name: 'New Circle',
     parent_id: selected_id,
     geometry: null,
-    type: 'Point'
+    type: PointType
   };
 
   const [figure, setFigure] = React.useState<ICircle>(initFigure);

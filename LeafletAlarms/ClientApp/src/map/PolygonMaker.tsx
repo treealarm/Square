@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolygon } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, IPolygon, PolygonType } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -46,6 +46,10 @@ function CirclePopup(props: any) {
 }
 
 function PolygonPopup(props: any) {
+
+  if (props.movedIndex >= 0) {
+    return null;
+  }
   return (
     <React.Fragment>
       <Popup>
@@ -66,11 +70,6 @@ export function PolygonMaker(props: any) {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  useEffect(() => {
-    console.log('ComponentDidMount PolygonMaker');
-
-  }, []);
-
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const selectedTool = useSelector((state) => state.editState.figure);
 
@@ -82,10 +81,18 @@ export function PolygonMaker(props: any) {
     geometry: [
 
     ],
-    type: 'Polygon'
+    type: PolygonType
   };
 
   const [polygon, setPolygon] = React.useState<IPolygon>(initPolygon);
+
+  useEffect(() => {
+    console.log('ComponentDidMount PolygonMaker');
+
+    if (props.obj2Edit != null) {
+      setPolygon(props.obj2Edit);
+    }
+  }, []);
 
     
   const mapEvents = useMapEvents({
@@ -208,6 +215,7 @@ export function PolygonMaker(props: any) {
           ? <Polygon pathOptions={colorOptions} positions={polygon.geometry}>
             <PolygonPopup
               PolygonChanged={polygonChanged}
+              movedIndex={movedIndex}
             />
             </Polygon>
           : <Polyline pathOptions={colorOptions} positions={polygon.geometry}>

@@ -41,6 +41,9 @@ export function ObjectPopup(props: any) {
             <tr><td>
               <span className="menu_item" onClick={(e) => props.deleteMe(props?.marker, e)}>Delete object</span>
             </td></tr>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.editMe(props?.marker, e)}>Edit object</span>
+            </td></tr>
           </tbody>
         </table>
       </Popup>

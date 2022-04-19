@@ -4,8 +4,8 @@ import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, IPolygon } from '../store/Marker';
-import { yellow } from '@mui/material/colors';
+import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, PointType, PolygonType, LineStringType } from '../store/Marker';
+import * as EditStore from '../store/EditStates';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
 import {
@@ -117,7 +117,32 @@ export function LocationMarkers() {
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
 
     }, [])
-  
+
+  const [obj2Edit, setObj2Edit] = React.useState({});
+
+  const editMe = useCallback(
+    (marker, e) => {
+      console.log(e.target.value);
+      //alert('delete ' + marker.name);
+      parentMap.closePopup();
+      var value = EditStore.NothingTool;
+
+      if (marker.type == PointType) {
+        value = EditStore.CircleTool
+      }
+
+      if (marker.type == LineStringType) {
+        value = EditStore.PolylineTool
+      }
+
+      if (marker.type == PolygonType) {
+        value = EditStore.PolygonTool
+      }
+
+      setObj2Edit(marker);
+
+      dispatch(EditStore.actionCreators.setFigure(value));
+    }, [])
 
   const deleteMe = useCallback(
     (marker, e) => {
@@ -129,6 +154,7 @@ export function LocationMarkers() {
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
+  
   const updateBaseMarker = useCallback(
     (marker, e) => {
       dispatch(MarkersStore.actionCreators.updateBaseInfo(marker));
@@ -184,7 +210,11 @@ export function LocationMarkers() {
             positions={marker.geometry}
             key={index}
           >
-            <ObjectPopup marker={marker} deleteMe={deleteMe} updateBaseMarker={updateBaseMarker}>
+            <ObjectPopup
+              marker={marker}
+              deleteMe={deleteMe}
+              editMe={editMe}
+              updateBaseMarker={updateBaseMarker}>
             </ObjectPopup>
           </Polygon>
         )}
@@ -201,9 +231,13 @@ export function LocationMarkers() {
           </Polyline>
         )}
 
-      {selectedTool == PolygonTool ? <PolygonMaker polygonChanged={polygonChanged} /> : <div />}
-      {selectedTool == PolylineTool ? <PolylineMaker figureChanged={polylineChanged} /> : <div />}
-      {selectedTool == CircleTool ? <CircleMaker figureChanged={circleChanged} /> : <div />}
+      {selectedTool == PolygonTool ?
+        <PolygonMaker polygonChanged={polygonChanged} obj2Edit={obj2Edit}/> : <div />}
+      {selectedTool == PolylineTool ?
+        <PolylineMaker figureChanged={polylineChanged} obj2Edit={obj2Edit}/> : <div />}
+      {selectedTool == CircleTool ?
+        <CircleMaker figureChanged={circleChanged} obj2Edit={obj2Edit} /> : <div />}
+
     </React.Fragment>
   );
 }

@@ -4,7 +4,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, IPolygon } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, LineStringType } from '../store/Marker';
 import { yellow } from '@mui/material/colors';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
@@ -82,7 +82,7 @@ export function PolylineMaker(props: any) {
     geometry: [
 
     ],
-    type: 'LineString'
+    type: LineStringType
   };
 
   const [figure, setFigure] = React.useState<IPolyline>(initFigure);

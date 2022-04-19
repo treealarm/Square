@@ -8,16 +8,23 @@ export interface Marker {
   type: string;
 }
 
+export const PointType = 'Point';
+export const PolygonType = 'Polygon';
+export const LineStringType = 'LineString';
+
 export interface ICircle extends Marker {
   geometry: LatLngPair;
+  type: typeof PointType;
 }
 
 export interface IPolygon extends Marker {
   geometry: LatLngPair[];
+  type: typeof PolygonType;
 }
 
 export interface IPolyline extends Marker {
   geometry: LatLngPair[];
+  type: typeof LineStringType;
 }
 
 
