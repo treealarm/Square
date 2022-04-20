@@ -242,11 +242,22 @@ export const reducer: Reducer<MarkersState> = (
       };
     case "POSTED_MARKERS":
       {
+        let deleted_ids = action.markers.circles.map(item => item.id);
+        deleted_ids = deleted_ids.concat(action.markers.polygons.map(item => item.id));
+        deleted_ids = deleted_ids.concat(action.markers.polylines.map(item => item.id));  
+
+        var cur_markersLeft: IFigures =
+        {
+          circles: state.markers.circles.filter(item => !(deleted_ids.includes(item.id))),
+          polygons: state.markers.polygons.filter(item => !(deleted_ids.includes(item.id))),
+          polylines: state.markers.polylines.filter(item => !(deleted_ids.includes(item.id)))
+        };
+
         var cur_markers: IFigures =
         {
-          circles: state.markers.circles.concat(action.markers.circles),
-          polygons: state.markers.polygons.concat(action.markers.polygons),
-          polylines: state.markers.polylines.concat(action.markers.polylines)
+          circles: cur_markersLeft.circles.concat(action.markers.circles),
+          polygons: cur_markersLeft.polygons.concat(action.markers.polygons),
+          polylines: cur_markersLeft.polylines.concat(action.markers.polylines)
         };
 
         return {
@@ -270,7 +281,6 @@ export const reducer: Reducer<MarkersState> = (
           polygons: state.markers.polygons.filter(item => !(action.deleted_ids.includes(item.id))),
           polylines: state.markers.polylines.filter(item => !(action.deleted_ids.includes(item.id)))
         };
-
         
         return {
           ...state,

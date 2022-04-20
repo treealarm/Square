@@ -22,7 +22,7 @@ export function ObjectPopup(props: any) {
     if (props.updateBaseMarker == null) {
       return;
     }
-    if (curName != props.marker.name && curName != null) {
+    if (curName[0] != props.marker.name && curName != null) {
       var updatedMarker: Marker = props.marker;
       updatedMarker.name = curName[0];
       props.updateBaseMarker(updatedMarker);

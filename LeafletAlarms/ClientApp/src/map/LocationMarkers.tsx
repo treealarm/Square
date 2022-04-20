@@ -29,6 +29,28 @@ declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
+function MyPolygon(props: any) {
+  if (props.hidden == true) {
+    return null;
+  }
+
+  return (
+    <React.Fragment>
+      <Polygon
+        pathOptions={props.pathOptions}
+        positions={props.positions}
+      >
+        <ObjectPopup
+          marker={props.marker}
+          deleteMe={props.deleteMe}
+          editMe={props.editMe}
+          updateBaseMarker={props.updateBaseMarker}>
+        </ObjectPopup>
+      </Polygon>
+    </React.Fragment>
+  );
+}
+
 export function LocationMarkers() {
 
   const dispatch = useDispatch();
@@ -90,7 +112,7 @@ export function LocationMarkers() {
       var figures: IFigures = {
 
       };
-
+      setObj2Edit(null);
       figures.polygons = [polygon];
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
 
@@ -118,12 +140,10 @@ export function LocationMarkers() {
 
     }, [])
 
-  const [obj2Edit, setObj2Edit] = React.useState({});
+  const [obj2Edit, setObj2Edit] = React.useState(null);
 
   const editMe = useCallback(
     (marker, e) => {
-      console.log(e.target.value);
-      //alert('delete ' + marker.name);
       parentMap.closePopup();
       var value = EditStore.NothingTool;
 
@@ -205,18 +225,17 @@ export function LocationMarkers() {
         )}
       {
         markers?.polygons?.map((marker, index) =>
-          <Polygon
+          <MyPolygon
             pathOptions={getColor(marker.id)}
             positions={marker.geometry}
             key={index}
-          >
-            <ObjectPopup
-              marker={marker}
-              deleteMe={deleteMe}
-              editMe={editMe}
-              updateBaseMarker={updateBaseMarker}>
-            </ObjectPopup>
-          </Polygon>
+            hidden={marker.id == obj2Edit?.id}
+
+            marker={marker}
+            deleteMe={deleteMe}
+            editMe={editMe}
+            updateBaseMarker={updateBaseMarker}>
+          </MyPolygon>
         )}
 
       {

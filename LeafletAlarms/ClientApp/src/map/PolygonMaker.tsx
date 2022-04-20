@@ -18,7 +18,7 @@ import {
   Polyline
 } from 'react-leaflet'
 
-import { LeafletEvent } from 'leaflet';
+import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
 import { ObjectPopup } from './ObjectPopup';
 import { PolygonTool } from '../store/EditStates';
 
@@ -85,14 +85,17 @@ export function PolygonMaker(props: any) {
   };
 
   const [polygon, setPolygon] = React.useState<IPolygon>(initPolygon);
+  const [oldPolygon, setOldPolygon] = React.useState<IPolygon>(initPolygon);
 
   useEffect(() => {
-    console.log('ComponentDidMount PolygonMaker');
-
     if (props.obj2Edit != null) {
       setPolygon(props.obj2Edit);
     }
-  }, []);
+    else {
+      setPolygon(initPolygon);
+    }
+
+  }, [props.obj2Edit]);
 
     
   const mapEvents = useMapEvents({
@@ -126,6 +129,7 @@ export function PolygonMaker(props: any) {
         zoom: e.target.getZoom()
       };
     },
+
     mousemove(e: L.LeafletMouseEvent) {
       if (movedIndex >= 0) {
         var updatedValue = { geometry: [...polygon.geometry]};
@@ -137,28 +141,25 @@ export function PolygonMaker(props: any) {
           ...updatedValue
         }));
       }
+    },
+
+    keydown(e: LeafletKeyboardEvent) {
+      if (e.originalEvent.code == 'Escape') {
+        if (movedIndex >= 0) {
+          setMovedIndex(-1);
+          setPolygon(oldPolygon);
+          setOldPolygon(initPolygon);
+        }
+      }
     }
   });
 
-
-
-  const eventHandlersCircle = useMemo(
-    () => ({
-      mouseover() {
-        
-      },
-      onclick() {
-        console.log('onclick circle');
-      }
-    }),
-    [],
-  )
-
+    
   const moveVertex = useCallback(
     (index, e) => {
       console.log(e.target.value);
       parentMap.closePopup();
-      
+      setOldPolygon(polygon);
       setMovedIndex(index);
     }, [])
 
@@ -169,7 +170,7 @@ export function PolygonMaker(props: any) {
       var updatedValue = { geometry: [...polygon.geometry] };
       updatedValue.geometry.splice(index, 1);
 
-      setPolygon(polygon => ({
+      setPolygon(polygon1 => ({
         ...polygon,
         ...updatedValue
       }));
@@ -195,7 +196,7 @@ export function PolygonMaker(props: any) {
               center={point}
               pathOptions={colorOptions}
               radius={10}
-              eventHandlers={eventHandlersCircle}>
+              >
               {
                 movedIndex < 0
                   ? <CirclePopup

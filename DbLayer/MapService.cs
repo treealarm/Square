@@ -18,7 +18,7 @@ namespace DbLayer
 {
   public class MapService
   {
-    private readonly IMongoCollection<Marker> _circleCollection;
+    private readonly IMongoCollection<Marker> _markerCollection;
     private readonly IMongoCollection<GeoPoint> _geoCollection;
 
     public MapService(
@@ -30,7 +30,7 @@ namespace DbLayer
       var mongoDatabase = mongoClient.GetDatabase(
           bookStoreDatabaseSettings.Value.DatabaseName);
 
-      _circleCollection = mongoDatabase.GetCollection<Marker>(
+      _markerCollection = mongoDatabase.GetCollection<Marker>(
           bookStoreDatabaseSettings.Value.ObjectsCollectionName);
 
       _geoCollection = mongoDatabase.GetCollection<GeoPoint>(
@@ -39,16 +39,16 @@ namespace DbLayer
 
     public async Task<List<Marker>> GetAsync(List<string> ids)
     {
-      var list = await _circleCollection.Find(i => ids.Contains(i.id)).ToListAsync();
+      var list = await _markerCollection.Find(i => ids.Contains(i.id)).ToListAsync();
       return list;
     }
 
     public async Task<Marker> GetAsync(string id) =>
-        await _circleCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+        await _markerCollection.Find(x => x.id == id).FirstOrDefaultAsync();
 
     public async Task<List<Marker>> GetByParentIdAsync(string parent_id)
     {
-      return await _circleCollection.Find(x => x.parent_id == parent_id).ToListAsync();
+      return await _markerCollection.Find(x => x.parent_id == parent_id).ToListAsync();
     }
 
     public async Task<List<Marker>> GetAllChildren(string parent_id)
@@ -75,7 +75,7 @@ namespace DbLayer
 
     public async Task<List<Marker>> GetTopChildren(List<string> parentIds)
     {
-      var result = await _circleCollection
+      var result = await _markerCollection
         .Aggregate()
         .Match(x => parentIds.Contains(x.parent_id))
         //.Group("{ _id : '$parent_id'}")
@@ -87,14 +87,14 @@ namespace DbLayer
     }
 
     public async Task CreateAsync(Marker newObj) =>
-        await _circleCollection.InsertOneAsync(newObj);
+        await _markerCollection.InsertOneAsync(newObj);
 
     public async Task UpdateAsync(Marker updatedObj) =>
-        await _circleCollection.ReplaceOneAsync(x => x.id == updatedObj.id, updatedObj);
+        await _markerCollection.ReplaceOneAsync(x => x.id == updatedObj.id, updatedObj);
 
     public async Task RemoveAsync(string id)
     {
-      await _circleCollection.DeleteOneAsync(x => x.id == id);
+      await _markerCollection.DeleteOneAsync(x => x.id == id);
       await _geoCollection.DeleteOneAsync(x => x.id == id);
     }
         
@@ -104,7 +104,7 @@ namespace DbLayer
       //var idsFilter = Builders<Marker>.Filter.In(d => d.id, ids);
       //return await _circleCollection.DeleteManyAsync(idsFilter);
       await _geoCollection.DeleteManyAsync(x => ids.Contains(x.id));
-      return await _circleCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      return await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
     public async Task CreateCompleteObject(FigureBaseDTO figure)
@@ -113,7 +113,16 @@ namespace DbLayer
       marker.name = figure.name;
       marker.parent_id = figure.parent_id;
 
-      await CreateAsync(marker);
+      if (!string.IsNullOrEmpty(figure.id))
+      {
+        marker.id = figure.id;
+        await UpdateAsync(marker);
+      }
+      else
+      {
+        await CreateAsync(marker);
+      }
+      
 
       figure.id = marker.id;
 
@@ -159,7 +168,12 @@ namespace DbLayer
       point.location = GeoJson.Polygon(coordinates.ToArray());
 
       point.id = newObject.id;
-      await _geoCollection.InsertOneAsync(point);
+      var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);
+
+      if (result.MatchedCount <= 0)
+      {
+        await _geoCollection.InsertOneAsync(point);
+      }
     }
 
     public async Task CreateGeoPolylineAsync(FigurePolylineDTO newObject)
