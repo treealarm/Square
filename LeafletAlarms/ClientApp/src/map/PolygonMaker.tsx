@@ -47,7 +47,7 @@ function CirclePopup(props: any) {
 
 function PolygonPopup(props: any) {
 
-  if (props.movedIndex >= 0) {
+  if (props.movedIndex >= 0 || props.isMoveAll) {
     return null;
   }
   return (
@@ -56,7 +56,10 @@ function PolygonPopup(props: any) {
         <table>
           <tbody>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.PolygonChanged(e)}>Save</span>
+              <span className="menu_item" onClick={(e) => props.PolygonChanged(e)}>Save Polygon</span>
+            </td></tr>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.MoveAllPoints(e)}>Move Polygon</span>
             </td></tr>
           </tbody>
         </table>
@@ -72,6 +75,7 @@ export function PolygonMaker(props: any) {
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
+  const [isMoveAll, setIsMoveAll] = React.useState(false);
 
   const initPolygon: IPolygon = {
     name: 'New Polygon',
@@ -82,7 +86,7 @@ export function PolygonMaker(props: any) {
     type: PolygonType
   };
 
-  const [polygon, setPolygon] = React.useState<IPolygon>(initPolygon);
+  const [curPolygon, setPolygon] = React.useState<IPolygon>(initPolygon);
   const [oldPolygon, setOldPolygon] = React.useState<IPolygon>(initPolygon);
 
   useEffect(() => {
@@ -105,10 +109,15 @@ export function PolygonMaker(props: any) {
         setMovedIndex(-1);
         return;
       }
+
+      if (isMoveAll) {
+        setIsMoveAll(false);
+        return;
+      }
       
 
       let updatedValue = {};
-      updatedValue = { geometry: [...polygon.geometry, [ll.lat, ll.lng]] };
+      updatedValue = { geometry: [...curPolygon.geometry, [ll.lat, ll.lng]] };
       setPolygon(polygon => ({
         ...polygon,
         ...updatedValue
@@ -126,8 +135,32 @@ export function PolygonMaker(props: any) {
     },
 
     mousemove(e: L.LeafletMouseEvent) {
+      if (isMoveAll) {
+
+        var shift_y = e.latlng.lat - oldPolygon.geometry[0][0];
+        var shift_x = e.latlng.lng - oldPolygon.geometry[0][1];
+
+        const updatedValue =
+        {
+          geometry: [...oldPolygon.geometry]
+        }
+
+        for (var _i = 0; _i < oldPolygon.geometry.length; _i++) {
+          //updatedValue.geometry[_i][0] = shift_y + oldPolygon.geometry[_i][0];
+          //updatedValue.geometry[_i][1] = shift_x + oldPolygon.geometry[_i][1];
+          updatedValue.geometry.splice(_i, 1,
+            [oldPolygon.geometry[_i][0] + shift_y, oldPolygon.geometry[_i][1] + shift_x]
+          );
+        }
+
+        setPolygon(polygon => ({
+          ...polygon,
+          ...updatedValue
+        }));
+      }
+
       if (movedIndex >= 0) {
-        var updatedValue = { geometry: [...polygon.geometry]};
+        var updatedValue = { geometry: [...curPolygon.geometry]};
 
         updatedValue.geometry.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
 
@@ -140,8 +173,9 @@ export function PolygonMaker(props: any) {
 
     keydown(e: LeafletKeyboardEvent) {
       if (e.originalEvent.code == 'Escape') {
-        if (movedIndex >= 0) {
+        if (movedIndex >= 0 || isMoveAll) {
           setMovedIndex(-1);
+          setIsMoveAll(false);
           setPolygon(oldPolygon);
           setOldPolygon(initPolygon);
         }
@@ -152,48 +186,56 @@ export function PolygonMaker(props: any) {
     
   const moveVertex = useCallback(
     (index, e) => {
-      console.log(e.target.value);
       parentMap.closePopup();
-      setOldPolygon(polygon);
+      setOldPolygon(curPolygon);
       setMovedIndex(index);
-    }, [])
+    }, [curPolygon])
 
   const deleteVertex = useCallback(
     (index, e) => {      
       parentMap.closePopup();
 
-      var updatedValue = { geometry: [...polygon.geometry] };
+      var updatedValue = { geometry: [...curPolygon.geometry] };
       updatedValue.geometry.splice(index, 1);
 
       setPolygon(polygon1 => ({
-        ...polygon,
+        ...curPolygon,
         ...updatedValue
       }));
 
-    }, [polygon])
+    }, [curPolygon])
 
   const markers = useSelector((state) => state?.markersStates?.markers);
   const colorOptions = { color: 'green' }
+  const colorOptionsCircle = { color: 'red' }
 
   const polygonChanged = useCallback(
     (e) => {
-      props.polygonChanged(polygon, e);
+      props.polygonChanged(curPolygon, e);
       setPolygon(initPolygon);
-    }, [polygon])
+    }, [curPolygon])
+
+  function moveAllPoints(e)
+  {
+      parentMap.closePopup();
+      setOldPolygon(curPolygon);
+      setIsMoveAll(true);
+  }
+  
 
   return (
     <React.Fragment>
       {
-        polygon.geometry.map((point, index) =>
+        curPolygon.geometry.map((point, index) =>
           <div key={index}>
             <CircleMarker
               key={index}
               center={point}
-              pathOptions={colorOptions}
+              pathOptions={colorOptionsCircle}
               radius={10}
               >
               {
-                movedIndex < 0
+                movedIndex < 0 && !isMoveAll
                   ? <CirclePopup
                     index={index}
                     MoveVertex={moveVertex}
@@ -207,14 +249,16 @@ export function PolygonMaker(props: any) {
         )
       }
       {
-        polygon.geometry.length > 2 
-          ? <Polygon pathOptions={colorOptions} positions={polygon.geometry}>
+        curPolygon.geometry.length > 2 
+          ? <Polygon pathOptions={colorOptions} positions={curPolygon.geometry}>
             <PolygonPopup
               PolygonChanged={polygonChanged}
+              MoveAllPoints={moveAllPoints}
               movedIndex={movedIndex}
+              isMoveAll={isMoveAll}
             />
             </Polygon>
-          : <Polyline pathOptions={colorOptions} positions={polygon.geometry}>
+          : <Polyline pathOptions={colorOptions} positions={curPolygon.geometry}>
             
           </Polyline>
       }
