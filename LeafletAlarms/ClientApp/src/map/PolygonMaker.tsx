@@ -142,15 +142,11 @@ export function PolygonMaker(props: any) {
 
         const updatedValue =
         {
-          geometry: [...oldPolygon.geometry]
+          geometry: []
         }
 
         for (var _i = 0; _i < oldPolygon.geometry.length; _i++) {
-          //updatedValue.geometry[_i][0] = shift_y + oldPolygon.geometry[_i][0];
-          //updatedValue.geometry[_i][1] = shift_x + oldPolygon.geometry[_i][1];
-          updatedValue.geometry.splice(_i, 1,
-            [oldPolygon.geometry[_i][0] + shift_y, oldPolygon.geometry[_i][1] + shift_x]
-          );
+          updatedValue.geometry.push([shift_y + oldPolygon.geometry[_i][0], shift_x + oldPolygon.geometry[_i][1]]);
         }
 
         setPolygon(polygon => ({
