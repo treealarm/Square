@@ -3,6 +3,7 @@ import TabControl from "../Tree/TabControl";
 import { TreeControl } from "../Tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
 import EditOptions from "../Tree/EditOptions";
+import { ObjectProperties } from "../Tree/ObjectProperties";
 import { Container, Grid, Stack } from "@mui/material";
 
 export function Home() {
@@ -19,8 +20,11 @@ export function Home() {
         </Stack>
       </Grid>
 
-      <Grid item xs={10} sx={{ height: "94%" }}>
+      <Grid item xs={8} sx={{ height: "94%" }}>
         <MapComponent />
+      </Grid>
+      <Grid item xs={2} sx={{ height: "94%" }}>
+        <ObjectProperties />
       </Grid>
     </Grid>
   );
