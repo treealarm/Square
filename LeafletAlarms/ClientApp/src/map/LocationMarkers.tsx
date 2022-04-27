@@ -51,6 +51,51 @@ function MyPolygon(props: any) {
   );
 }
 
+function MyPolyline(props: any) {
+  if (props.hidden == true) {
+    return null;
+  }
+
+  return (
+    <React.Fragment>
+      <Polyline
+        pathOptions={props.pathOptions}
+        positions={props.positions}
+      >
+        <ObjectPopup
+          marker={props.marker}
+          deleteMe={props.deleteMe}
+          editMe={props.editMe}
+          updateBaseMarker={props.updateBaseMarker}>
+        </ObjectPopup>
+      </Polyline>
+    </React.Fragment>
+  );
+}
+
+function MyCircle(props: any) {
+  if (props.hidden == true) {
+    return null;
+  }
+
+  return (
+    <React.Fragment>
+      <Circle
+        pathOptions={props.pathOptions}
+        center={props.center}
+        radius={props.radius}
+      >
+        <ObjectPopup
+          marker={props.marker}
+          deleteMe={props.deleteMe}
+          editMe={props.editMe}
+          updateBaseMarker={props.updateBaseMarker}>
+        </ObjectPopup>
+      </Circle>
+    </React.Fragment>
+  );
+}
+
 export function LocationMarkers() {
 
   const dispatch = useDispatch();
@@ -123,7 +168,7 @@ export function LocationMarkers() {
       var figures: IFigures = {
 
       };
-
+      setObj2Edit(null);
       figures.polylines = [figure];
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
 
@@ -134,7 +179,7 @@ export function LocationMarkers() {
       var figures: IFigures = {
 
       };
-
+      setObj2Edit(null);
       figures.circles = [figure];
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
 
@@ -212,16 +257,21 @@ export function LocationMarkers() {
     <React.Fragment>
       {
         markers?.circles?.map((marker, index) =>
-          <Circle
+          <MyCircle
             key={index}
             center={marker.geometry}
             pathOptions={getColor(marker.id)}
-            radius={100}
-            eventHandlers={eventHandlers}
+            radius={50}
+            hidden={marker.id == obj2Edit?.id}
+
+            marker={marker}
+            deleteMe={deleteMe}
+            editMe={editMe}
+            updateBaseMarker={updateBaseMarker}
           >
             <ObjectPopup marker={marker} deleteMe={deleteMe} updateBaseMarker={updateBaseMarker}>
             </ObjectPopup>
-          </Circle>
+          </MyCircle>
         )}
       {
         markers?.polygons?.map((marker, index) =>
@@ -240,14 +290,17 @@ export function LocationMarkers() {
 
       {
         markers?.polylines?.map((marker, index) =>
-          <Polyline
+          <MyPolyline
             pathOptions={getColor(marker.id)}
             positions={marker.geometry}
             key={index}
-          >
-            <ObjectPopup marker={marker} deleteMe={deleteMe} updateBaseMarker={updateBaseMarker}>
-            </ObjectPopup>
-          </Polyline>
+            hidden={marker.id == obj2Edit?.id}
+
+            marker={marker}
+            deleteMe={deleteMe}
+            editMe={editMe}
+            updateBaseMarker={updateBaseMarker}>
+          </MyPolyline>
         )}
 
       {selectedTool == PolygonTool ?

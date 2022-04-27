@@ -19,7 +19,7 @@ import {
   Circle
 } from 'react-leaflet'
 
-import { LeafletEvent } from 'leaflet';
+import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
 import { ObjectPopup } from './ObjectPopup';
 import { PolylineTool, PolygonTool } from '../store/EditStates';
 
@@ -28,6 +28,9 @@ declare module 'react-redux' {
 }
 
 function CirclePopup(props: any) {
+  if (props.movedIndex >= 0) {
+    return null;
+  }
   return (
     <React.Fragment>
       <Popup>
@@ -73,7 +76,17 @@ export function CircleMaker(props: any) {
   };
 
   const [figure, setFigure] = React.useState<ICircle>(initFigure);
+  const [oldFigure, setOldFigure] = React.useState<ICircle>(initFigure);
 
+  useEffect(() => {
+    if (props.obj2Edit != null) {
+      setFigure(props.obj2Edit);
+    }
+    else {
+      setFigure(initFigure);
+    }
+
+  }, [props.obj2Edit]);
 
   const mapEvents = useMapEvents({
     click(e) {
@@ -102,6 +115,16 @@ export function CircleMaker(props: any) {
           ...figure,
           ...updatedValue
         }));
+      }
+    },
+
+    keydown(e: LeafletKeyboardEvent) {
+      if (e.originalEvent.code == 'Escape') {
+        if (movedIndex >= 0) {
+          setMovedIndex(-1);
+          setFigure(oldFigure);
+          setOldFigure(initFigure);
+        }
       }
     }
   });
@@ -152,17 +175,14 @@ export function CircleMaker(props: any) {
                 MoveVertex={moveVertex}
                 DeleteVertex={deleteVertex}
                 FigureChanged={figureChanged}
+                movedIndex={movedIndex}
               >
             </CirclePopup> : < div />
           }
 
         </CircleMarker>
 
-        </div>
-      
-        
-          
-      
+        </div>      
     </React.Fragment>
   );
 }

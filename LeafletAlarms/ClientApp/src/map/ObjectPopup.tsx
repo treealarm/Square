@@ -8,7 +8,7 @@ import { Marker } from '../store/Marker';
 
 export function ObjectPopup(props: any) {
 
-  const curName = React.useState(props?.marker.name);
+  const curName = React.useState(props?.marker?.name);
 
   const handleChange = useCallback(
     (e: any) => {
@@ -35,7 +35,10 @@ export function ObjectPopup(props: any) {
         <table>
           <tbody>
             <tr><td>
-              <TextField size="small" fullWidth sx={{ width: '25ch' }} id="outlined" label='Name' defaultValue={props.marker.name}
+              <span className="menu_item">{props?.marker?.type}/{props?.marker?.id}</span>
+            </td></tr>
+            <tr><td>
+              <TextField size="small" fullWidth sx={{ width: '25ch' }} id="outlined" label='Name' defaultValue={props?.marker?.name}
               onChange={handleChange}              />
             </td></tr>
             <tr><td>

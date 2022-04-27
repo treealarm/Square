@@ -67,11 +67,9 @@ function PolygonPopup(props: any) {
 
 export function PolygonMaker(props: any) {
 
-  const dispatch = useDispatch();
   const parentMap = useMap();
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const selectedTool = useSelector((state) => state.editState.figure);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
 
@@ -100,7 +98,7 @@ export function PolygonMaker(props: any) {
     
   const mapEvents = useMapEvents({
     click(e) {
-      console.log('onclick map');
+      
       var ll: L.LatLng = e.latlng as L.LatLng;
 
       if (movedIndex >= 0) {
@@ -115,9 +113,6 @@ export function PolygonMaker(props: any) {
         ...polygon,
         ...updatedValue
       }));
-      if (selectedTool == PolygonTool) {
-
-      }
     },
 
     moveend(e: LeafletEvent) {

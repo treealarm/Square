@@ -118,6 +118,12 @@ namespace LeafletAlarms.Controllers
             {
               list.Add(new double[2] { cur.Y, cur.X });
             }
+
+            if (list.Count > 3)
+            {
+              list.RemoveAt(list.Count - 1);
+            }            
+
             figure.geometry = list.ToArray();
             result.polygons.Add(figure);
             retItem = figure;
@@ -185,7 +191,7 @@ namespace LeafletAlarms.Controllers
         return NotFound();
       }
 
-      await _mapService.UpdateAsync(updatedMarker);
+      await _mapService.UpdateAsync(null, updatedMarker);
 
       return NoContent();
     }

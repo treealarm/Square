@@ -20,21 +20,22 @@ namespace DbLayer
   {
     private readonly IMongoCollection<Marker> _markerCollection;
     private readonly IMongoCollection<GeoPoint> _geoCollection;
+    private readonly MongoClient _mongoClient;
 
     public MapService(
-        IOptions<MapDatabaseSettings> bookStoreDatabaseSettings)
+        IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
-      var mongoClient = new MongoClient(
-          bookStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = new MongoClient(
+          geoStoreDatabaseSettings.Value.ConnectionString);
 
-      var mongoDatabase = mongoClient.GetDatabase(
-          bookStoreDatabaseSettings.Value.DatabaseName);
+      var mongoDatabase = _mongoClient.GetDatabase(
+          geoStoreDatabaseSettings.Value.DatabaseName);
 
       _markerCollection = mongoDatabase.GetCollection<Marker>(
-          bookStoreDatabaseSettings.Value.ObjectsCollectionName);
+          geoStoreDatabaseSettings.Value.ObjectsCollectionName);
 
       _geoCollection = mongoDatabase.GetCollection<GeoPoint>(
-          bookStoreDatabaseSettings.Value.GeoCollectionName);
+          geoStoreDatabaseSettings.Value.GeoCollectionName);
     }
 
     public async Task<List<Marker>> GetAsync(List<string> ids)
@@ -86,11 +87,25 @@ namespace DbLayer
       return result;
     }
 
-    public async Task CreateAsync(Marker newObj) =>
-        await _markerCollection.InsertOneAsync(newObj);
+    public async Task CreateAsync(Marker newObj)
+    {
+      await _markerCollection.InsertOneAsync(newObj);
+    }
 
-    public async Task UpdateAsync(Marker updatedObj) =>
-        await _markerCollection.ReplaceOneAsync(x => x.id == updatedObj.id, updatedObj);
+    public async Task CreateAsync(IClientSessionHandle session, Marker newObj)
+    {
+      await _markerCollection.InsertOneAsync(session, newObj);
+    }
+
+    public async Task UpdateAsync(Marker updatedObj)
+    {
+      await _markerCollection.ReplaceOneAsync(x => x.id == updatedObj.id, updatedObj);
+    }
+
+    public async Task UpdateAsync(IClientSessionHandle session, Marker updatedObj)
+    {
+      await _markerCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj);
+    }        
 
     public async Task RemoveAsync(string id)
     {
@@ -107,7 +122,8 @@ namespace DbLayer
       return await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
-    public async Task CreateCompleteObject(FigureBaseDTO figure)
+
+    private async Task DoCreateCompleteObject(FigureBaseDTO figure, IClientSessionHandle session)
     {
       Marker marker = new Marker();
       marker.name = figure.name;
@@ -116,43 +132,65 @@ namespace DbLayer
       if (!string.IsNullOrEmpty(figure.id))
       {
         marker.id = figure.id;
-        await UpdateAsync(marker);
+        await UpdateAsync(session, marker);
       }
       else
       {
-        await CreateAsync(marker);
+        await CreateAsync(session, marker);
       }
-      
+
 
       figure.id = marker.id;
 
       if (figure is FigureCircleDTO circle)
       {
-        await CreateGeoPointAsync(circle);
+        await CreateOrUpdateGeoPointAsync(session, circle);
       }
-      
+
       if (figure is FigurePolygonDTO polygon)
       {
-        await CreateGeoPolygonAsync(polygon);
+        await CreateOrUpdateGeoPolygonAsync(session, polygon);
       }
 
       if (figure is FigurePolylineDTO polyline)
       {
-        await CreateGeoPolylineAsync(polyline);
+        await CreateOrUpdateGeoPolylineAsync(session, polyline);
+      }
+    }
+    public async Task CreateCompleteObject(FigureBaseDTO figure)
+    {
+      using (var session = await _mongoClient.StartSessionAsync())
+      {
+        //session.StartTransaction();
+        try
+        {
+          await DoCreateCompleteObject(figure, session);
+
+          //await session.CommitTransactionAsync();
+        }
+        catch (Exception ex)
+        {
+          //await session.AbortTransactionAsync();
+        }
       }
     }
 
-    public async Task CreateGeoPointAsync(FigureCircleDTO newObject)
+    public async Task CreateOrUpdateGeoPointAsync(IClientSessionHandle session, FigureCircleDTO newObject)
     {
       GeoPoint point = new GeoPoint();
       point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
         GeoJson.Position(newObject.geometry[1], newObject.geometry[0])
       );
       point.id = newObject.id;
-      await _geoCollection.InsertOneAsync(point);
+      var result = await _geoCollection.ReplaceOneAsync(session, x => x.id == newObject.id, point);
+      
+      if (result.MatchedCount <= 0)
+      {
+        await _geoCollection.InsertOneAsync(session, point);
+      }
     }
 
-    public async Task CreateGeoPolygonAsync(FigurePolygonDTO newObject)
+    public async Task CreateOrUpdateGeoPolygonAsync(IClientSessionHandle session, FigurePolygonDTO newObject)
     {
       GeoPoint point = new GeoPoint();
 
@@ -168,15 +206,15 @@ namespace DbLayer
       point.location = GeoJson.Polygon(coordinates.ToArray());
 
       point.id = newObject.id;
-      var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);
+      var result = await _geoCollection.ReplaceOneAsync(session, x => x.id == newObject.id, point);
 
       if (result.MatchedCount <= 0)
       {
-        await _geoCollection.InsertOneAsync(point);
+        await _geoCollection.InsertOneAsync(session, point);
       }
     }
 
-    public async Task CreateGeoPolylineAsync(FigurePolylineDTO newObject)
+    public async Task CreateOrUpdateGeoPolylineAsync(IClientSessionHandle session, FigurePolylineDTO newObject)
     {
       GeoPoint point = new GeoPoint();
 
@@ -190,7 +228,11 @@ namespace DbLayer
       point.location = GeoJson.LineString(coordinates.ToArray());
 
       point.id = newObject.id;
-      await _geoCollection.InsertOneAsync(point);
+      var result = await _geoCollection.ReplaceOneAsync(session, x => x.id == newObject.id, point);
+      if (result.MatchedCount <= 0)
+      {
+        await _geoCollection.InsertOneAsync(session, point);
+      }
     }
 
     private static void Log(FilterDefinition<GeoPoint> filter)

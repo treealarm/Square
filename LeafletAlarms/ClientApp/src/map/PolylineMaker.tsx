@@ -4,8 +4,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, LineStringType } from '../store/Marker';
-import { yellow } from '@mui/material/colors';
+import { BoundBox, ICircle, IFigures, IPolyline, LineStringType } from '../store/Marker';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
 import {
@@ -18,7 +17,7 @@ import {
   Polyline
 } from 'react-leaflet'
 
-import { LeafletEvent } from 'leaflet';
+import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
 import { ObjectPopup } from './ObjectPopup';
 import { PolylineTool, PolygonTool } from '../store/EditStates';
 
@@ -46,6 +45,9 @@ function CirclePopup(props: any) {
 }
 
 function FigurePopup(props: any) {
+  if (props.movedIndex >= 0) {
+    return null;
+  }
   return (
     <React.Fragment>
       <Popup>
@@ -63,7 +65,6 @@ function FigurePopup(props: any) {
 
 export function PolylineMaker(props: any) {
 
-  const dispatch = useDispatch();
   const parentMap = useMap();
 
   useEffect(() => {
@@ -72,7 +73,6 @@ export function PolylineMaker(props: any) {
   }, []);
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const selectedTool = useSelector((state) => state.editState.figure);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
 
@@ -86,11 +86,21 @@ export function PolylineMaker(props: any) {
   };
 
   const [figure, setFigure] = React.useState<IPolyline>(initFigure);
+  const [oldFigure, setOldFigure] = React.useState<IPolyline>(initFigure);
 
+  useEffect(() => {
+    if (props.obj2Edit != null) {
+      setFigure(props.obj2Edit);
+    }
+    else {
+      setFigure(initFigure);
+    }
+
+  }, [props.obj2Edit]);
     
   const mapEvents = useMapEvents({
     click(e) {
-      console.log('onclick map');
+      
       var ll: L.LatLng = e.latlng as L.LatLng;
 
       if (movedIndex >= 0) {
@@ -105,9 +115,6 @@ export function PolylineMaker(props: any) {
         ...figure,
         ...updatedValue
       }));
-      if (selectedTool == PolylineTool) {
-
-      }
     },
 
     moveend(e: LeafletEvent) {
@@ -119,6 +126,7 @@ export function PolylineMaker(props: any) {
         zoom: e.target.getZoom()
       };
     },
+
     mousemove(e: L.LeafletMouseEvent) {
       if (movedIndex >= 0) {
         var updatedValue = { geometry: [...figure.geometry]};
@@ -129,6 +137,16 @@ export function PolylineMaker(props: any) {
           ...polygon,
           ...updatedValue
         }));
+      }
+    },
+
+    keydown(e: LeafletKeyboardEvent) {
+      if (e.originalEvent.code == 'Escape') {
+        if (movedIndex >= 0) {
+          setMovedIndex(-1);
+          setFigure(oldFigure);
+          setOldFigure(initFigure);
+        }
       }
     }
   });
@@ -207,7 +225,10 @@ export function PolylineMaker(props: any) {
         figure.geometry.length > 1 
           ? 
           <Polyline pathOptions={colorOptions} positions={figure.geometry}>
-            <FigurePopup FigureChanged={figureChanged} />
+            <FigurePopup
+              FigureChanged={figureChanged}
+              movedIndex={movedIndex}
+            />
           </Polyline>
           :<div/>
       }
