@@ -37,6 +37,12 @@ function CirclePopup(props: any) {
             <tr><td>
               <span className="menu_item" onClick={(e) => props.MoveVertex(props?.index, e)}>Move vertex</span>
             </td></tr>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.AddVertex(props?.index,false, e)}>Insert vertex</span>
+            </td></tr>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.AddVertex(props?.index,true, e)}>Add vertex</span>
+            </td></tr>
           </tbody>
         </table>
       </Popup>
@@ -173,6 +179,26 @@ export function PolylineMaker(props: any) {
       setMovedIndex(index);
     }, [])
 
+  const addVertex = useCallback(
+    (index, toEnd, e) => {
+      parentMap.closePopup();
+      setOldFigure(figure);
+
+      var updatedValue = { geometry: [...figure.geometry] };
+      updatedValue.geometry.splice(index, 0, updatedValue.geometry[index]);
+
+      setFigure(f1 => ({
+        ...figure,
+        ...updatedValue
+      }));
+
+      if (toEnd) {
+        index++;
+      }
+
+      setMovedIndex(index);
+    }, [figure])
+
   const deleteVertex = useCallback(
     (index, e) => {      
       parentMap.closePopup();
@@ -213,6 +239,7 @@ export function PolylineMaker(props: any) {
                     index={index}
                     MoveVertex={moveVertex}
                     DeleteVertex={deleteVertex}
+                    AddVertex={addVertex}
                   >
                   </CirclePopup> : < div />
               }

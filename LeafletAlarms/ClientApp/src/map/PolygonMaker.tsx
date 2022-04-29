@@ -38,6 +38,9 @@ function CirclePopup(props: any) {
             <tr><td>
               <span className="menu_item" onClick={(e) => props.MoveVertex(props?.index, e)}>Move vertex</span>
             </td></tr>
+            <tr><td>
+              <span className="menu_item" onClick={(e) => props.AddVertex(props?.index, e)}>Add vertex</span>
+            </td></tr>
           </tbody>
         </table>
       </Popup>
@@ -187,6 +190,22 @@ export function PolygonMaker(props: any) {
       setMovedIndex(index);
     }, [curPolygon])
 
+  const addVertex = useCallback(
+    (index, e) => {
+      parentMap.closePopup();
+      setOldPolygon(curPolygon);
+
+      var updatedValue = { geometry: [...curPolygon.geometry] };
+      updatedValue.geometry.splice(index, 0, updatedValue.geometry[index]);
+
+      setPolygon(polygon1 => ({
+        ...curPolygon,
+        ...updatedValue
+      }));
+
+      setMovedIndex(index);
+    }, [curPolygon])
+
   const deleteVertex = useCallback(
     (index, e) => {      
       parentMap.closePopup();
@@ -236,6 +255,7 @@ export function PolygonMaker(props: any) {
                     index={index}
                     MoveVertex={moveVertex}
                     DeleteVertex={deleteVertex}
+                    AddVertex={addVertex}
                   >
                   </CirclePopup> : < div />
               }
