@@ -1,4 +1,5 @@
-﻿import { TextField } from '@mui/material';
+﻿import { Alert, AlertTitle, Box, List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import * as React from 'react';
 import { useCallback } from 'react';
 import {
@@ -6,9 +7,17 @@ import {
 } from 'react-leaflet'
 import { Marker } from '../store/Marker';
 
+const theme = createTheme({
+  typography: {
+    // In Chinese and Japanese the characters are usually larger,
+    // so a smaller fontsize may be appropriate.
+    fontSize: 12,
+  },
+});
+
 export function ObjectPopup(props: any) {
 
-  const curName = React.useState(props?.marker?.name);
+  const curName = React.useState(props.marker.name);
 
   const handleChange = useCallback(
     (e: any) => {
@@ -31,24 +40,29 @@ export function ObjectPopup(props: any) {
 
   return (
     <React.Fragment>
-      <Popup onClose={handleOnClose} >
-        <table>
-          <tbody>
-            <tr className="menu_header"><td>
-              <span>{props?.marker?.type}/{props?.marker?.id}</span>
-            </td></tr>
-            <tr className="menu_header"><td>
-              <span>Name:{props?.marker?.name}</span>
-            </td></tr>
-            <tr className="border-bottom"><td>
-              <span className="menu_item" onClick={(e) => props.deleteMe(props?.marker, e)}>Delete object</span>
-            </td></tr>
-            <tr className="border-bottom"><td>
-              <span className="menu_item" onClick={(e) => props.editMe(props?.marker, e)}>Edit object</span>
-            </td></tr>
-          </tbody>
-        </table>
+      <Popup onClose={handleOnClose}>
+        <ThemeProvider theme={theme}>
+        <Box>            
+           <Alert severity="info">
+            <AlertTitle>Name:<strong>{props?.marker?.name}</strong></AlertTitle>
+              {props?.marker?.type}/{props?.marker?.id}
+            </Alert>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton onClick={(e) => props.deleteMe(props?.marker, e)}>
+                <ListItemText primary="Delete object" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={(e) => props.editMe(props?.marker, e)}>
+                <ListItemText primary="Edit object" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </Box>
+      </ThemeProvider>  
       </Popup>
-    </React.Fragment>
+      </React.Fragment>
+      
   );
 }
