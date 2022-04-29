@@ -28,3 +28,13 @@ code {
     color: white;
 }
 
+tr.menu_header td {
+    background: lightgray;
+    border-bottom: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+}
+
+tr.border-bottom td {
+    
+}
+

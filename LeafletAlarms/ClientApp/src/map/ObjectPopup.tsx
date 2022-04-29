@@ -34,17 +34,16 @@ export function ObjectPopup(props: any) {
       <Popup onClose={handleOnClose} >
         <table>
           <tbody>
-            <tr><td>
-              <span className="menu_item">{props?.marker?.type}/{props?.marker?.id}</span>
+            <tr className="menu_header"><td>
+              <span>{props?.marker?.type}/{props?.marker?.id}</span>
             </td></tr>
-            <tr><td>
-              <TextField size="small" fullWidth sx={{ width: '25ch' }} id="outlined" label='Name' defaultValue={props?.marker?.name}
-              onChange={handleChange}              />
+            <tr className="menu_header"><td>
+              <span>Name:{props?.marker?.name}</span>
             </td></tr>
-            <tr><td>
+            <tr className="border-bottom"><td>
               <span className="menu_item" onClick={(e) => props.deleteMe(props?.marker, e)}>Delete object</span>
             </td></tr>
-            <tr><td>
+            <tr className="border-bottom"><td>
               <span className="menu_item" onClick={(e) => props.editMe(props?.marker, e)}>Edit object</span>
             </td></tr>
           </tbody>
