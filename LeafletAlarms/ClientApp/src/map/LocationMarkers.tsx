@@ -33,11 +33,12 @@ function MyPolygon(props: any) {
   if (props.hidden == true) {
     return null;
   }
-
+  const dispatch = useDispatch();
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        console.log('MyPolygon', event);
+        var selected_id = event.target.options.marker.id;
+        dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
       }
     }),
     [],
@@ -46,6 +47,7 @@ function MyPolygon(props: any) {
   return (
     <React.Fragment>
       <Polygon
+        marker={props.marker}
         pathOptions={props.pathOptions}
         positions={props.positions}
         eventHandlers={eventHandlers}
@@ -67,11 +69,24 @@ function MyPolyline(props: any) {
     return null;
   }
 
+  const dispatch = useDispatch();
+  const eventHandlers = useMemo(
+    () => ({
+      click(event: LeafletMouseEvent) {
+        var selected_id = event.target.options.marker.id;
+        dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+      }
+    }),
+    [],
+  )
+
   return (
     <React.Fragment>
       <Polyline
+        marker={props.marker}
         pathOptions={props.pathOptions}
         positions={props.positions}
+        eventHandlers={eventHandlers}
       >
         <ObjectPopup
           marker={props.marker}
@@ -89,12 +104,25 @@ function MyCircle(props: any) {
     return null;
   }
 
+  const dispatch = useDispatch();
+  const eventHandlers = useMemo(
+    () => ({
+      click(event: LeafletMouseEvent) {
+        var selected_id = event.target.options.marker.id;
+        dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+      }
+    }),
+    [],
+  )
+
   return (
     <React.Fragment>
       <Circle
+        marker={props.marker}
         pathOptions={props.pathOptions}
         center={props.center}
         radius={props.radius}
+        eventHandlers={eventHandlers}
       >
         <ObjectPopup
           marker={props.marker}
@@ -152,16 +180,6 @@ export function LocationMarkers() {
      }
    });
 
-  
-
-  const eventHandlers = useMemo(
-    () => ({
-      mouseover() {
-        //console.log('cursor', parentMap.getContainer().style.cursor);
-      }
-    }),
-    [],
-  )
   
   const polygonChanged = useCallback(
     (polygon: IPolygon, e) => {

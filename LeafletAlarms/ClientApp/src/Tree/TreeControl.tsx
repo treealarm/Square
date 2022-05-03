@@ -44,20 +44,19 @@ export function TreeControl() {
   const parent_marker_id = useSelector((state) => state?.treeStates?.parent_marker_id);
 
   // Selected.
-  const [selectedIndex, setSelectedIndex] = React.useState(null);
+  const reduxSelectedId = useSelector((state) => state?.guiStates?.selected_id);
 
   function selectItem(selected_id: string | null) {
 
-    if (selected_id == selectedIndex) {
+    if (selected_id == reduxSelectedId) {
       selected_id = null;
     }
     dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
-    setSelectedIndex(selected_id);
   }
 
   const handleSelect = useCallback((selected_id) => () => {
     selectItem(selected_id);
-  }, [selectedIndex]);
+  }, [reduxSelectedId]);
 
     
 
@@ -115,7 +114,7 @@ export function TreeControl() {
                 </IconButton>
               }
             >
-              <ListItemButton selected={selectedIndex === marker.id} role={undefined} onClick={handleSelect(marker.id)}>
+              <ListItemButton selected={reduxSelectedId == marker.id} role={undefined} onClick={handleSelect(marker.id)}>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
