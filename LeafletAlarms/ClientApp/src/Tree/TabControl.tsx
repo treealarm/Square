@@ -17,8 +17,10 @@ export default function TabControl() {
   const parent_list = treeState.parent_list;
 
   let curMarker = parent_list.find((element) => {
-    return element?.id === treeState?.parent_marker_id;
+    return element?.id == treeState?.parent_marker_id;
   });
+
+  curMarker = curMarker == undefined ? null : curMarker;
   const dispatch = useDispatch();
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker|null) => {

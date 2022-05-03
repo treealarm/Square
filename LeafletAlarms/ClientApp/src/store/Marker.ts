@@ -53,3 +53,7 @@ export interface BoundBox {
   es: number[];
   zoom: number;
 }
+
+export interface ViewOption {
+  map_center: LatLngPair;
+}

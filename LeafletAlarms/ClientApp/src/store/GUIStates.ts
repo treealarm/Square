@@ -1,5 +1,6 @@
 ﻿import { Action, Reducer } from 'redux';
 import { ApiRootString, AppThunkAction } from './';
+import { ViewOption } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -7,7 +8,8 @@ import { ApiRootString, AppThunkAction } from './';
 export interface GUIState {
   selected_id: string | null;
   checked: string[],
-  requestedTreeUpdate?: number
+  requestedTreeUpdate?: number,
+  map_option: ViewOption | null;
 }
 
 
@@ -18,6 +20,7 @@ export interface GUIState {
 interface TreeSelectionAction {
   type: 'SELECT_TREE_ITEM';
   selected_id: string | null;
+  map_option: ViewOption | null;
 }
 
 interface TreeCheckingAction {
@@ -39,8 +42,12 @@ type KnownAction = TreeSelectionAction | TreeCheckingAction | TreeUpdateRequeste
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-  selectTreeItem: (selected_id: string|null): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    dispatch({ type: 'SELECT_TREE_ITEM', selected_id: selected_id });
+  selectTreeItem: (selected_id: string | null, map_option: ViewOption | null = null): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({
+      type: 'SELECT_TREE_ITEM',
+      selected_id: selected_id,
+      map_option: map_option
+    });
   },
   
   checkTreeItem: (checked: string[]): AppThunkAction<KnownAction> => (dispatch, getState) => {
@@ -56,7 +63,8 @@ export const actionCreators = {
 const unloadedState: GUIState = {
   selected_id: null,
   checked: [],
-  requestedTreeUpdate: 0
+  requestedTreeUpdate: 0,
+  map_option: {map_center:null}
 };
 
 export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incomingAction: Action): GUIState => {
@@ -71,7 +79,8 @@ export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incoming
     case 'SELECT_TREE_ITEM':
       return {
         ...state,
-        selected_id: action.selected_id
+        selected_id: action.selected_id,
+        map_option: action.map_option
       };
     case 'CHECK_TREE_ITEM':
       return {

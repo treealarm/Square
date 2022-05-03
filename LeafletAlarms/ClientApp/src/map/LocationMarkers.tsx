@@ -156,6 +156,14 @@ export function LocationMarkers() {
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
   const selectedTool = useSelector((state) => state.editState.figure);
 
+  const guiStates = useSelector((state) => state?.guiStates);
+  
+  useEffect(() => {
+    let map_center = guiStates.map_option.map_center;
+    map_center = map_center ? map_center : [51.5359, -0.09];
+    parentMap.setView(map_center);
+  }, [guiStates.map_option.map_center]);
+
 
    const mapEvents = useMapEvents({
       click(e) {

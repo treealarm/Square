@@ -6,7 +6,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import * as TreeStore from '../store/TreeStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { TreeMarker } from '../store/Marker';
+import { TreeMarker, ViewOption } from '../store/Marker';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -46,24 +46,29 @@ export function TreeControl() {
   // Selected.
   const reduxSelectedId = useSelector((state) => state?.guiStates?.selected_id);
 
-  function selectItem(selected_id: string | null) {
+  function selectItem(selected_marker: TreeMarker | null) {
+
+    var selected_id = selected_marker?.id;
 
     if (selected_id == reduxSelectedId) {
       selected_id = null;
     }
-    dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+    let option: ViewOption ={
+      map_center: [51.5359, -0.19]
+    };
+    dispatch(GuiStore.actionCreators.selectTreeItem(selected_id, option));
   }
 
-  const handleSelect = useCallback((selected_id) => () => {
-    selectItem(selected_id);
+  const handleSelect = useCallback((selected: TreeMarker) => () => {
+    selectItem(selected);
   }, [reduxSelectedId]);
 
     
 
   // Drill down.
-  const drillDown = useCallback((selected_marker: string|null) => () => {
+  const drillDown = useCallback((selected_marker: TreeMarker|null) => () => {
     selectItem(null);
-    getTreeItemsByParent(selected_marker);
+    getTreeItemsByParent(selected_marker?.id);
   }, []);
 
   // Checked.
@@ -109,12 +114,12 @@ export function TreeControl() {
               disablePadding
               secondaryAction={
                 marker.has_children &&
-                <IconButton edge="end" aria-label="drill_down" onClick={drillDown(marker?.id)}>
+                <IconButton edge="end" aria-label="drill_down" onClick={drillDown(marker)}>
                   <ChevronRightIcon/>
                 </IconButton>
               }
             >
-              <ListItemButton selected={reduxSelectedId == marker.id} role={undefined} onClick={handleSelect(marker.id)}>
+              <ListItemButton selected={reduxSelectedId == marker.id} role = {undefined} onClick={handleSelect(marker)}>
                 <ListItemIcon>
                   <Checkbox
                     edge="start"
