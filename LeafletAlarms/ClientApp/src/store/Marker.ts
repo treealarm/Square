@@ -42,6 +42,12 @@ export interface TreeMarker {
   has_children?: boolean;
 }
 
+export interface GetByParentDTO {
+  parent_id?: string | null;
+  parents?: TreeMarker[];
+  children?: TreeMarker[];
+}
+
 export interface BoundBox {
   wn: number[];
   es: number[];

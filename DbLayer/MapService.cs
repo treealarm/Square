@@ -52,6 +52,19 @@ namespace DbLayer
       return await _markerCollection.Find(x => x.parent_id == parent_id).ToListAsync();
     }
 
+    public async Task<List<Marker>> GetByChildIdAsync(string object_id)
+    {
+      List<Marker> parents = new List<Marker>();
+      var marker = await GetAsync(object_id);
+
+      while (marker != null)
+      {
+        parents.Add(marker);
+        marker = await _markerCollection.Find(x => x.id == marker.parent_id).FirstOrDefaultAsync();
+      }
+      return parents;
+    }
+
     public async Task<List<Marker>> GetAllChildren(string parent_id)
     {
       List<Marker> result = new List<Marker>();

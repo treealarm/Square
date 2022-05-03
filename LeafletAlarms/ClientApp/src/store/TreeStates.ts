@@ -1,13 +1,13 @@
 ﻿import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
-import { TreeMarker } from "./Marker";
+import { GetByParentDTO, TreeMarker } from "./Marker";
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface TreeState {
   isLoading: boolean;
-  parent_marker: TreeMarker | null;
+  parent_marker_id: string | null;
   markers: TreeMarker[];
   parent_list: TreeMarker[];
 }
@@ -18,13 +18,12 @@ export interface TreeState {
 
 interface RequestTreeStateAction {
   type: "REQUEST_TREE_STATE";
-  parent_marker: TreeMarker | null;
+  parent_marker_id: string | null;
 }
 
 interface ReceiveTreeStateAction {
   type: "RECEIVE_TREE_STATE";
-  parent_marker: TreeMarker | null;
-  markers: TreeMarker[];
+  data: GetByParentDTO
 }
 
 
@@ -42,12 +41,10 @@ type KnownAction =
 
 export const actionCreators = {
 
-  getByParent: (parent_marker: TreeMarker | null): AppThunkAction<KnownAction> => (
+  getByParent: (parent_id: string | null): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
-
-    var parent_id = parent_marker?.id;
 
     console.log("fetching by parent_id=", parent_id);
     var request = ApiRootString + "/GetByParent?parent_id=";
@@ -61,18 +58,16 @@ export const actionCreators = {
     console.log("fetched:", fetched);
 
     fetched
-      .then(response => response.json() as Promise<TreeMarker[]>)
+      .then(response => response.json() as Promise<GetByParentDTO>)
       .then(data => {
         dispatch({
           type: "RECEIVE_TREE_STATE",
-          parent_marker: parent_marker,
-          markers: data
+          data: data
         });
       });
 
-    dispatch({ type: "REQUEST_TREE_STATE", parent_marker: parent_marker });
+    dispatch({ type: "REQUEST_TREE_STATE", parent_marker_id: parent_id });
   }
-
 };
 
 // ----------------
@@ -81,7 +76,7 @@ export const actionCreators = {
 const unloadedState: TreeState = {
   markers: [],
   isLoading: false,
-  parent_marker: null,
+  parent_marker_id: null,
   parent_list:[]
 };
 
@@ -99,26 +94,18 @@ export const reducer: Reducer<TreeState> = (
     case "REQUEST_TREE_STATE":
       return {
         ...state,
-        parent_marker: action.parent_marker,
+        parent_marker_id: action.parent_marker_id,
         markers: state.markers,
         isLoading: true
       };
     case "RECEIVE_TREE_STATE":
-      if (action.parent_marker?.id === state.parent_marker?.id) {
-
-        var newArr = state.parent_list;
-        var index = state.parent_list.findIndex((marker) => marker?.id == action?.parent_marker?.id);
-
-        if (index >= 0) {
-          newArr = state.parent_list.slice(0, index);
-        }
-
+      if (action.data.parent_id == state.parent_marker_id) {
         return {
           ...state,
-          parent_marker: action.parent_marker,
-          markers: action.markers,
+          parent_marker_id: action.data.parent_id,
+          markers: action.data.children,
           isLoading: false,
-          parent_list: newArr.concat(action.parent_marker)
+          parent_list: [null, ...action.data.parents]
         };
       }
       break;

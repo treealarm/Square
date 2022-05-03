@@ -8,7 +8,6 @@ namespace Domain
 {
   public class MarkerDTO: TreeMarkerDTO
   {
-    public double[] points { get; set; }
     public bool has_children { get; set; }
   }
 }

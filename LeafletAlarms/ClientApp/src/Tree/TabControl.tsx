@@ -13,19 +13,23 @@ import { useCallback } from 'react';
 
 export default function TabControl() {
 
-  const parent_list = useSelector((state) => state?.treeStates?.parent_list);
+  const treeState = useSelector((state) => state?.treeStates);
+  const parent_list = treeState.parent_list;
 
+  let curMarker = parent_list.find((element) => {
+    return element?.id === treeState?.parent_marker_id;
+  });
   const dispatch = useDispatch();
 
-  const handleChange = (event: React.SyntheticEvent, newValue: any) => {
-    dispatch(TreeStore.actionCreators.getByParent(newValue));
+  const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker|null) => {
+    dispatch(TreeStore.actionCreators.getByParent(newValue?.id));
   };
   
 
   return (
     <Box sx={{ border: 1 }}>
       <Tabs
-        value={parent_list.slice(-1)[0]}
+        value={curMarker}
         onChange={handleChange}
         variant="scrollable"
         scrollButtons

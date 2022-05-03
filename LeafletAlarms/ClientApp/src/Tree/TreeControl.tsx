@@ -27,8 +27,11 @@ export function TreeControl() {
 
   const dispatch = useDispatch();
 
-  function getTreeItemsByParent(parent_marker: TreeMarker | null) {
-    dispatch(TreeStore.actionCreators.getByParent(parent_marker));
+  function getTreeItemsByParent(parent_marker_id: string | null)
+  {
+    dispatch(
+      TreeStore.actionCreators.getByParent(parent_marker_id)
+    );
   }
 
   useEffect(() => {
@@ -38,7 +41,7 @@ export function TreeControl() {
 
 
   const markers = useSelector((state) => state?.treeStates?.markers);
-  const parent_marker = useSelector((state) => state?.treeStates?.parent_marker);
+  const parent_marker_id = useSelector((state) => state?.treeStates?.parent_marker_id);
 
   // Selected.
   const [selectedIndex, setSelectedIndex] = React.useState(null);
@@ -59,7 +62,7 @@ export function TreeControl() {
     
 
   // Drill down.
-  const drillDown = useCallback((selected_marker: TreeMarker|null) => () => {
+  const drillDown = useCallback((selected_marker: string|null) => () => {
     selectItem(null);
     getTreeItemsByParent(selected_marker);
   }, []);
@@ -86,8 +89,8 @@ export function TreeControl() {
   const requestTreeUpdate = useSelector((state) => state?.guiStates?.requestedTreeUpdate);
 
   useEffect(() => {
-    getTreeItemsByParent(parent_marker);
-  }, [requestTreeUpdate, parent_marker]);
+    getTreeItemsByParent(parent_marker_id);
+  }, [requestTreeUpdate, parent_marker_id]);
 
     return (
       <Box sx={{
@@ -107,7 +110,7 @@ export function TreeControl() {
               disablePadding
               secondaryAction={
                 marker.has_children &&
-                <IconButton edge="end" aria-label="drill_down" onClick={drillDown(marker)}>
+                <IconButton edge="end" aria-label="drill_down" onClick={drillDown(marker?.id)}>
                   <ChevronRightIcon/>
                 </IconButton>
               }

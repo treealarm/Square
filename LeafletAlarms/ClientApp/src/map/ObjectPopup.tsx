@@ -57,7 +57,12 @@ export function ObjectPopup(props: any) {
               <ListItemButton onClick={(e) => props.editMe(props?.marker, e)}>
                 <ListItemText primary="Edit object" />
               </ListItemButton>
-            </ListItem>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton onClick={(e) => props.selectMe(props?.marker, e)}>
+                  <ListItemText primary="Select object" />
+                </ListItemButton>
+              </ListItem>
           </List>
         </Box>
       </ThemeProvider>  

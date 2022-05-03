@@ -33,25 +33,41 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetByParent")]
-    public async Task<List<MarkerDTO>> GetByParent(string parent_id)
+    public async Task<GetByParentDTO> GetByParent(string parent_id)
     {
+      GetByParentDTO retVal = new GetByParentDTO();
+      retVal.parent_id = parent_id;
+
+      // Fill out parents.
+      var parents = await _mapService.GetByChildIdAsync(parent_id);
+
+      retVal.parents = new List<TreeMarkerDTO>();
+      foreach (var parent in parents)
+      {
+        var markerDto = DTOConverter.GetTreeMarkerDTO(parent);
+        retVal.parents.Insert(0, markerDto);
+      }
+
+      // Get children.
       var markers = await _mapService.GetByParentIdAsync(parent_id);
 
-      List<MarkerDTO> retVal = new List<MarkerDTO>();
+      retVal.children = new List<MarkerDTO>();
+
       List<string> parentIds = new List<string>();
 
       foreach (var marker in markers)
       {
         var markerDto = DTOConverter.GetMarkerDTO(marker);
-        retVal.Add(markerDto);
+        retVal.children.Add(markerDto);
         parentIds.Add(marker.id);
       }
 
+      // Set flag has_children.
       var withChildren = await _mapService.GetTopChildren(parentIds);
 
       foreach (var item in withChildren)
       {
-        var markerDto = retVal.Where(x => x.id == item.id).FirstOrDefault();
+        var markerDto = retVal.children.Where(x => x.id == item.id).FirstOrDefault();
 
         if (markerDto != null)
         {

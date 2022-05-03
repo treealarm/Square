@@ -18,7 +18,7 @@ import {
   Polyline
 } from 'react-leaflet'
 
-import { LeafletEvent } from 'leaflet';
+import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
 import { CircleTool, Figures, PolylineTool, PolygonTool } from '../store/EditStates';
 import { ObjectPopup } from './ObjectPopup';
 import { PolygonMaker } from './PolygonMaker';
@@ -34,16 +34,27 @@ function MyPolygon(props: any) {
     return null;
   }
 
+  const eventHandlers = useMemo(
+    () => ({
+      click(event: LeafletMouseEvent) {
+        console.log('MyPolygon', event);
+      }
+    }),
+    [],
+  )
+
   return (
     <React.Fragment>
       <Polygon
         pathOptions={props.pathOptions}
         positions={props.positions}
+        eventHandlers={eventHandlers}
       >
         <ObjectPopup
           marker={props.marker}
           deleteMe={props.deleteMe}
           editMe={props.editMe}
+          selectMe={props.selectMe}
           updateBaseMarker={props.updateBaseMarker}>
         </ObjectPopup>
       </Polygon>
@@ -209,6 +220,13 @@ export function LocationMarkers() {
       dispatch(EditStore.actionCreators.setFigure(value));
     }, [])
 
+  const selectMe = useCallback(
+    (marker, e) => {
+      parentMap.closePopup();
+      var selected_id = marker.id;
+      dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+    }, [])
+
   const deleteMe = useCallback(
     (marker, e) => {
       console.log(e.target.value);
@@ -284,6 +302,7 @@ export function LocationMarkers() {
             marker={marker}
             deleteMe={deleteMe}
             editMe={editMe}
+            selectMe={selectMe}
             updateBaseMarker={updateBaseMarker}>
           </MyPolygon>
         )}
