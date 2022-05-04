@@ -28,5 +28,24 @@ namespace LeafletAlarms
         parent_id = marker.parent_id
       };
     }
+
+    public static ObjPropsDTO GetObjPropsDTO(Marker marker)
+    {
+      return new ObjPropsDTO()
+      {
+        id = marker.id,
+        name = marker.name,
+        parent_id = marker.parent_id
+      };
+    }
+    public static Marker ConvertObjPropsDTOToMarker(ObjPropsDTO marker)
+    {
+      return new Marker()
+      {
+        id = marker.id,
+        name = marker.name,
+        parent_id = marker.parent_id        
+      };
+    }
   }
 }

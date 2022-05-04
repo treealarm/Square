@@ -159,10 +159,10 @@ export function LocationMarkers() {
   const guiStates = useSelector((state) => state?.guiStates);
   
   useEffect(() => {
-    let map_center = guiStates.map_option.map_center;
+    let map_center = guiStates.map_option?.map_center;
     map_center = map_center ? map_center : [51.5359, -0.09];
-    parentMap.setView(map_center);
-  }, [guiStates.map_option.map_center]);
+    //parentMap.setView(map_center);
+  }, [guiStates.map_option?.map_center]);
 
 
    const mapEvents = useMapEvents({

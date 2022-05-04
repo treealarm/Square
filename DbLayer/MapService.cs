@@ -112,10 +112,13 @@ namespace DbLayer
 
     public async Task UpdateAsync(Marker updatedObj)
     {
-      await _markerCollection.ReplaceOneAsync(x => x.id == updatedObj.id, updatedObj);
+      using (var session = await _mongoClient.StartSessionAsync())
+      {
+        await UpdateAsync(session, updatedObj);
+      }
     }
 
-    public async Task UpdateAsync(IClientSessionHandle session, Marker updatedObj)
+    private async Task UpdateAsync(IClientSessionHandle session, Marker updatedObj)
     {
       await _markerCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj);
     }        

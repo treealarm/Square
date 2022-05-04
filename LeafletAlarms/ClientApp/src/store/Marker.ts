@@ -27,6 +27,10 @@ export interface IPolyline extends Marker {
   type: typeof LineStringType;
 }
 
+export interface IObjProps extends Marker {
+  geometry: string;
+}
+
 
 export interface IFigures {
   circles?: ICircle[];

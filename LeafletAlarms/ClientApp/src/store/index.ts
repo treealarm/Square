@@ -1,4 +1,4 @@
-import * as WeatherForecasts from './WeatherForecasts';
+import * as ObjPropsStates from './ObjPropsStates';
 import * as EditStates from './EditStates';
 import * as MarkersStates from './MarkersStates';
 import * as TreeStates from './TreeStates';
@@ -7,7 +7,7 @@ import * as GUIStates from './GUIStates';
 // The top-level state object
 export interface ApplicationState {
   editState: EditStates.EditState | undefined;
-  weatherForecasts: WeatherForecasts.WeatherForecastsState | undefined;
+  objPropsStates: ObjPropsStates.ObjPropsState | undefined;
   markersStates: MarkersStates.MarkersState | undefined;
   treeStates: TreeStates.TreeState | undefined;
   guiStates: GUIStates.GUIState | undefined;
@@ -18,7 +18,7 @@ export interface ApplicationState {
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
   editState: EditStates.reducer,
-  weatherForecasts: WeatherForecasts.reducer,
+  objPropsStates: ObjPropsStates.reducer,
   markersStates: MarkersStates.reducer,
   treeStates: TreeStates.reducer,
   guiStates: GUIStates.reducer

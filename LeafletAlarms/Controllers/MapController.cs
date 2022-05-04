@@ -32,6 +32,22 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpGet()]
+    [Route("GetObjProps")]
+    public async Task<ActionResult<ObjPropsDTO>> GetObjProps(string id)
+    {
+      var marker = await _mapService.GetAsync(id);
+
+      if (marker is null)
+      {
+        return NotFound();
+      }
+
+      var markerDto = DTOConverter.GetObjPropsDTO(marker);
+
+      return markerDto;
+    }
+
+    [HttpGet()]
     [Route("GetByParent")]
     public async Task<GetByParentDTO> GetByParent(string parent_id)
     {
@@ -176,6 +192,25 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
+    [Route("UpdateProperties")]
+    public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
+    {
+      var marker = await _mapService.GetAsync(updatedMarker.id);
+
+      if (marker is null)
+      {
+        return NotFound();
+      }
+
+      marker.name = updatedMarker.name;
+      marker.parent_id = updatedMarker.parent_id;
+
+      await _mapService.UpdateAsync(marker);
+
+      return NoContent();
+    }
+
+    [HttpPost]
     public async Task<IActionResult> Post(FiguresDTO newMarkers)
     {
       foreach(var figure in newMarkers.circles)
@@ -207,7 +242,7 @@ namespace LeafletAlarms.Controllers
         return NotFound();
       }
 
-      await _mapService.UpdateAsync(null, updatedMarker);
+      await _mapService.UpdateAsync(updatedMarker);
 
       return NoContent();
     }
