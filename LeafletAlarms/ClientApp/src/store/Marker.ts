@@ -27,17 +27,21 @@ export interface IPolyline extends Marker {
   type: typeof LineStringType;
 }
 
-export interface IObjProps extends Marker {
-  geometry: string;
+export interface ObjExtraPropertyDTO {
+  visual_type: string;
+  str_val: string;
 }
 
+export interface IObjProps extends Marker {
+  extra_props: ObjExtraPropertyDTO[];
+  geometry: string;
+}
 
 export interface IFigures {
   circles?: ICircle[];
   polygons?: IPolygon[];
   polylines?: IPolyline[];
 }
-
 
 export interface TreeMarker {
   id?: string | null;

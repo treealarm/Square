@@ -157,12 +157,47 @@ export function LocationMarkers() {
   const selectedTool = useSelector((state) => state.editState.figure);
 
   const guiStates = useSelector((state) => state?.guiStates);
+
+  const markers = useSelector((state) => state?.markersStates?.markers);
+  const isChanging = useSelector((state) => state?.markersStates?.isChanging);
+
+  const [obj2Edit, setObj2Edit] = React.useState(null);
   
   useEffect(() => {
     let map_center = guiStates.map_option?.map_center;
     map_center = map_center ? map_center : [51.5359, -0.09];
     //parentMap.setView(map_center);
   }, [guiStates.map_option?.map_center]);
+
+  useEffect(() => {
+    if (selected_id != null && selectedTool != EditStore.NothingTool) {
+
+      let circle = markers?.circles.find(f => f.id == selected_id);
+
+      if (circle != null) {
+        setObj2Edit(circle);
+        return;
+      }
+
+      let polygon = markers?.polygons.find(f => f.id == selected_id);
+
+      if (polygon != null) {
+        setObj2Edit(polygon);
+        return;
+      }
+
+      let polyline = markers?.polylines.find(f => f.id == selected_id);
+
+      if (polyline != null) {
+        setObj2Edit(polyline);
+        return;
+      }
+    }
+
+    if (selectedTool == EditStore.NothingTool && selected_id != null) {
+      setObj2Edit(null);
+    }
+  }, [selected_id, selectedTool]);
 
 
    const mapEvents = useMapEvents({
@@ -222,8 +257,6 @@ export function LocationMarkers() {
 
     }, [])
 
-  const [obj2Edit, setObj2Edit] = React.useState(null);
-
   const editMe = useCallback(
     (marker, e) => {
       parentMap.closePopup();
@@ -269,10 +302,7 @@ export function LocationMarkers() {
       dispatch(MarkersStore.actionCreators.updateBaseInfo(marker));
     }, [])
 
-  const markers = useSelector((state) => state?.markersStates?.markers);
-
-
-  const isChanging = useSelector((state) => state?.markersStates?.isChanging);
+  
   useEffect(
     () => {
       dispatch(GuiStore.actionCreators.requestTreeUpdate());
@@ -281,7 +311,7 @@ export function LocationMarkers() {
   const colorOptionsUnselected = { color: "green" };
   const colorOptionsSelected = { color: "yellow" };
   const colorOptionsChecked = { color: "blue" };
-  const purpleOptions = { color: 'purple' }
+  
 
   const getColor = (id: string) => {
     let colorOption = colorOptionsUnselected;

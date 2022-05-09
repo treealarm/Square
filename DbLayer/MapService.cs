@@ -280,5 +280,11 @@ namespace DbLayer
       var list = await _geoCollection.Find(filter).ToListAsync();
       return list;
     }
+
+    public async Task<GeoPoint> GetGeoObjectAsync(string id)
+    {
+      var obj = await _geoCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+      return obj;
+    }
   }
 }

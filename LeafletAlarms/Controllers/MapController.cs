@@ -44,6 +44,14 @@ namespace LeafletAlarms.Controllers
 
       var markerDto = DTOConverter.GetObjPropsDTO(marker);
 
+      var geoPart = await _mapService.GetGeoObjectAsync(id);
+
+      markerDto.type = geoPart.location.Type.ToString();
+
+      var figure = DTOConverter.ConvertGeoPoint2DTO(geoPart);
+
+      markerDto.geometry = figure.geometry;
+
       return markerDto;
     }
 

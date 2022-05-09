@@ -1,5 +1,7 @@
 ﻿using DbLayer;
 using Domain;
+using Domain.GeoDTO;
+using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +48,57 @@ namespace LeafletAlarms
         name = marker.name,
         parent_id = marker.parent_id        
       };
+    }
+
+    public static dynamic ConvertGeoPoint2DTO(GeoPoint geoPart)
+    {
+      if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Point)
+      {
+        var figure = new FigureCircleDTO();
+        var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
+        figure.geometry = new double[2] { pt.Coordinates.Y, pt.Coordinates.X };
+        return figure;
+      }
+
+      if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Polygon)
+      {
+        var figure = new FigurePolygonDTO();
+
+        var pt = geoPart.location as GeoJsonPolygon<GeoJson2DCoordinates>;
+
+        List<double[]> list = new List<double[]>();
+
+        foreach (var cur in pt.Coordinates.Exterior.Positions)
+        {
+          list.Add(new double[2] { cur.Y, cur.X });
+        }
+
+        if (list.Count > 3)
+        {
+          list.RemoveAt(list.Count - 1);
+        }
+
+        figure.geometry = list.ToArray();
+        return figure;
+      }
+
+      if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.LineString)
+      {
+        var figure = new FigurePolylineDTO();
+
+        var pt = geoPart.location as GeoJsonLineString<GeoJson2DCoordinates>;
+
+        List<double[]> list = new List<double[]>();
+
+        foreach (var cur in pt.Coordinates.Positions)
+        {
+          list.Add(new double[2] { cur.Y, cur.X });
+        }
+        figure.geometry = list.ToArray();
+        return figure;
+      }
+
+      return null;
     }
   }
 }

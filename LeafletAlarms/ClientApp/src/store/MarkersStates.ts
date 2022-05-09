@@ -1,7 +1,6 @@
 import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
 import { BoundBox, IFigures, Marker } from "./Marker";
-import * as TreeStore from "../store/TreeStates";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
