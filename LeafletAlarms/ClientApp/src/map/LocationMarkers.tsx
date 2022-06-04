@@ -4,19 +4,18 @@ import { useDispatch, useSelector, useStore} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, PointType, PolygonType, LineStringType } from '../store/Marker';
+import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, PointType, PolygonType, LineStringType, Marker } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
 import {
-  CircleMarker,
-  Popup,
   useMap,
   useMapEvents,
   Circle,
   Polygon,
   Polyline
 } from 'react-leaflet'
+
 
 import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
 import { CircleTool, Figures, PolylineTool, PolygonTool } from '../store/EditStates';
@@ -54,8 +53,6 @@ function MyPolygon(props: any) {
       >
         <ObjectPopup
           marker={props.marker}
-          deleteMe={props.deleteMe}
-          editMe={props.editMe}
           selectMe={props.selectMe}
           updateBaseMarker={props.updateBaseMarker}>
         </ObjectPopup>
@@ -90,8 +87,6 @@ function MyPolyline(props: any) {
       >
         <ObjectPopup
           marker={props.marker}
-          deleteMe={props.deleteMe}
-          editMe={props.editMe}
           updateBaseMarker={props.updateBaseMarker}>
         </ObjectPopup>
       </Polyline>
@@ -126,8 +121,6 @@ function MyCircle(props: any) {
       >
         <ObjectPopup
           marker={props.marker}
-          deleteMe={props.deleteMe}
-          editMe={props.editMe}
           updateBaseMarker={props.updateBaseMarker}>
         </ObjectPopup>
       </Circle>
@@ -161,7 +154,7 @@ export function LocationMarkers() {
   const markers = useSelector((state) => state?.markersStates?.markers);
   const isChanging = useSelector((state) => state?.markersStates?.isChanging);
 
-  const [obj2Edit, setObj2Edit] = React.useState(null);
+  const [obj2Edit, setObj2Edit] = React.useState<Marker>(null);
   
   useEffect(() => {
     let map_center = guiStates.map_option?.map_center;
@@ -175,6 +168,7 @@ export function LocationMarkers() {
       let circle = markers?.circles.find(f => f.id == selected_id);
 
       if (circle != null) {
+        dispatch(EditStore.actionCreators.setFigure(CircleTool));
         setObj2Edit(circle);
         return;
       }
@@ -182,6 +176,7 @@ export function LocationMarkers() {
       let polygon = markers?.polygons.find(f => f.id == selected_id);
 
       if (polygon != null) {
+        dispatch(EditStore.actionCreators.setFigure(PolygonTool));
         setObj2Edit(polygon);
         return;
       }
@@ -189,6 +184,7 @@ export function LocationMarkers() {
       let polyline = markers?.polylines.find(f => f.id == selected_id);
 
       if (polyline != null) {
+        dispatch(EditStore.actionCreators.setFigure(PolylineTool));
         setObj2Edit(polyline);
         return;
       }
@@ -257,43 +253,11 @@ export function LocationMarkers() {
 
     }, [])
 
-  const editMe = useCallback(
-    (marker, e) => {
-      parentMap.closePopup();
-      var value = EditStore.NothingTool;
-
-      if (marker.type == PointType) {
-        value = EditStore.CircleTool
-      }
-
-      if (marker.type == LineStringType) {
-        value = EditStore.PolylineTool
-      }
-
-      if (marker.type == PolygonType) {
-        value = EditStore.PolygonTool
-      }
-
-      setObj2Edit(marker);
-
-      dispatch(EditStore.actionCreators.setFigure(value));
-    }, [])
-
   const selectMe = useCallback(
     (marker, e) => {
       parentMap.closePopup();
       var selected_id = marker.id;
       dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
-    }, [])
-
-  const deleteMe = useCallback(
-    (marker, e) => {
-      console.log(e.target.value);
-      //alert('delete ' + marker.name);
-      parentMap.closePopup();
-      let idsToDelete: string[] = [marker.id];
-      dispatch(MarkersStore.actionCreators.deleteMarker(idsToDelete));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
   
@@ -339,11 +303,9 @@ export function LocationMarkers() {
             hidden={marker.id == obj2Edit?.id}
 
             marker={marker}
-            deleteMe={deleteMe}
-            editMe={editMe}
             updateBaseMarker={updateBaseMarker}
           >
-            <ObjectPopup marker={marker} deleteMe={deleteMe} updateBaseMarker={updateBaseMarker}>
+            <ObjectPopup marker={marker} updateBaseMarker={updateBaseMarker}>
             </ObjectPopup>
           </MyCircle>
         )}
@@ -356,8 +318,6 @@ export function LocationMarkers() {
             hidden={marker.id == obj2Edit?.id}
 
             marker={marker}
-            deleteMe={deleteMe}
-            editMe={editMe}
             selectMe={selectMe}
             updateBaseMarker={updateBaseMarker}>
           </MyPolygon>
@@ -372,8 +332,6 @@ export function LocationMarkers() {
             hidden={marker.id == obj2Edit?.id}
 
             marker={marker}
-            deleteMe={deleteMe}
-            editMe={editMe}
             updateBaseMarker={updateBaseMarker}>
           </MyPolyline>
         )}

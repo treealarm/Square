@@ -20,8 +20,6 @@ import {
 } from 'react-leaflet'
 
 import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
-import { ObjectPopup } from './ObjectPopup';
-import { PolylineTool, PolygonTool } from '../store/EditStates';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -64,7 +62,6 @@ export function CircleMaker(props: any) {
   }, []);
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const selectedTool = useSelector((state) => state.editState.figure);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
 

@@ -10,6 +10,8 @@ import ListItem from '@mui/material/ListItem';
 import { Box, ListItemButton, ListItemText, TextField } from '@mui/material';
 import { ObjExtraPropertyDTO, IObjProps, PointType, LineStringType, PolygonType, Marker } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
+import * as MarkersStore from '../store/MarkersStates';
+import * as GuiStore from '../store/GUIStates';
 
 
 declare module 'react-redux' {
@@ -21,7 +23,6 @@ export function ObjectProperties() {
   const dispatch = useDispatch();
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const selectedTool = useSelector((state) => state.editState.figure);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
 
   
@@ -29,14 +30,16 @@ export function ObjectProperties() {
     dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
   }, [selected_id]);
 
-  const [name, setName] = React.useState(objProps?.name);
 
-  const handleChangeName = useCallback(
-    (e: any) => {
-      const { target: { name, value } } = e;
-      setName(value);
-    }, [name]
-  );
+  function handleChangeName (e: any){
+    const { target: { name, value } } = e;
+    var copy = Object.assign({}, objProps);
+    if (copy == null) {
+      return;
+    }
+    copy.name = value;
+    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  };
 
 
   const handleSave = useCallback(() => {
@@ -44,9 +47,9 @@ export function ObjectProperties() {
     if (copy == null) {
       return;
     }
-    copy.name = name;
+
     dispatch(ObjPropsStore.actionCreators.updateObjProps(copy));
-  }, [name, objProps]);
+  }, [objProps]);
 
   const editMe = useCallback(
     (props: IObjProps, e) => {
@@ -75,8 +78,22 @@ export function ObjectProperties() {
       dispatch(EditStore.actionCreators.setFigure(value));
     }, [])
 
+  const deleteMe = useCallback(
+    (props: IObjProps, e) => {
+
+      var marker: Marker = {
+        name: props.name,
+        type: props.type,
+        id: props.id,
+        parent_id: props.parent_id
+      }
+      let idsToDelete: string[] = [marker.id];
+      dispatch(MarkersStore.actionCreators.deleteMarker(idsToDelete));
+      dispatch(GuiStore.actionCreators.selectTreeItem(null));
+    }, [])
+
     if (objProps == null || objProps == undefined) {
-    return null;
+      return null;
   }
 
   return (
@@ -95,7 +112,7 @@ export function ObjectProperties() {
           <TextField size="small"
           fullWidth sx={{ width: '25ch' }}
           id="outlined" label='Name'
-            defaultValue={objProps.name}
+            value={objProps?.name}
             onChange={handleChangeName} />
         </ListItem>
         <ListItem>{objProps.parent_id}</ListItem>
@@ -111,6 +128,9 @@ export function ObjectProperties() {
         </ListItemButton>
         <ListItemButton onClick={(e) => editMe(objProps, e)}>
           <ListItemText primary="Edit" />
+        </ListItemButton>
+        <ListItemButton onClick={(e) => deleteMe(objProps, e)}>
+          <ListItemText primary="Delete" />
         </ListItemButton>
       </List>
     </Box>

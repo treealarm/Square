@@ -23,6 +23,11 @@ export interface SetPropsAction {
   objProps: IObjProps;
 }
 
+export interface SetPropsLocallyAction {
+  type: 'SET_PROPS_LOCALLY';
+  objProps: IObjProps;
+}
+
 export interface UpdatedPropsAction {
   type: 'UPDATED_PROPS';
   objProps: IObjProps;
@@ -35,7 +40,8 @@ export interface UpdatingDPropsAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-export type KnownAction = GetPropsAction | SetPropsAction | UpdatedPropsAction | UpdatingDPropsAction;
+export type KnownAction =
+  GetPropsAction | SetPropsAction | UpdatedPropsAction | UpdatingDPropsAction | SetPropsLocallyAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -89,6 +95,12 @@ export const actionCreators = {
 
     dispatch({ type: "UPDATED_PROPS", objProps: marker });
   },
+  setObjPropsLocally: (marker: IObjProps): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "SET_PROPS_LOCALLY", objProps: marker });
+  }
 };
 
 const unloadedState: ObjPropsState = {
@@ -110,6 +122,8 @@ export const reducer: Reducer<ObjPropsState> = (state: ObjPropsState | undefined
         objProps: state.objProps
       };
     case 'SET_PROPS':
+      return { objProps: action.objProps };
+    case 'SET_PROPS_LOCALLY':
       return { objProps: action.objProps };
 
     case 'UPDATING_PROPS':
