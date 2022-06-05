@@ -9,6 +9,7 @@ namespace Domain
   public class ObjExtraPropertyDTO
   {
     public string visual_type { get; set; }
-    public dynamic str_val { get; set; }
+    public string str_val { get; set; }
+    public string prop_name { get; set; }
   }
 }

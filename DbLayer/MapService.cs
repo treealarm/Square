@@ -20,6 +20,8 @@ namespace DbLayer
   {
     private readonly IMongoCollection<Marker> _markerCollection;
     private readonly IMongoCollection<GeoPoint> _geoCollection;
+    private readonly IMongoCollection<MarkerProperties> _propCollection;
+    
     private readonly MongoClient _mongoClient;
 
     public MapService(
@@ -36,6 +38,9 @@ namespace DbLayer
 
       _geoCollection = mongoDatabase.GetCollection<GeoPoint>(
           geoStoreDatabaseSettings.Value.GeoCollectionName);
+
+      _propCollection = mongoDatabase.GetCollection<MarkerProperties>(
+          geoStoreDatabaseSettings.Value.PropCollectionName);
     }
 
     public async Task<List<Marker>> GetAsync(List<string> ids)
@@ -284,6 +289,27 @@ namespace DbLayer
     public async Task<GeoPoint> GetGeoObjectAsync(string id)
     {
       var obj = await _geoCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+      return obj;
+    }
+
+    public async Task UpdatePropAsync(MarkerProperties updatedObj)
+    {
+      using (var session = await _mongoClient.StartSessionAsync())
+      {
+        await UpdatePropAsync(session, updatedObj);
+      }
+    }
+
+    private async Task UpdatePropAsync(IClientSessionHandle session, MarkerProperties updatedObj)
+    {
+      ReplaceOptions opt = new ReplaceOptions();
+      opt.IsUpsert = true;
+      await _propCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj, opt);
+    }
+
+    public async Task<MarkerProperties> GetPropAsync(string id)
+    {
+      var obj = await _propCollection.Find(x => x.id == id).FirstOrDefaultAsync();
       return obj;
     }
   }

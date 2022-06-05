@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class FigureCircleDTO : FigureBaseDTO
-  {
+  public class FigureCircleDTO : FigureBaseDTO  {
     public double[] geometry { get; set; }
   }
 }

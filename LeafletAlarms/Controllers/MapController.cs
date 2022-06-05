@@ -52,6 +52,13 @@ namespace LeafletAlarms.Controllers
 
       markerDto.geometry = figure.geometry;
 
+      var props = await _mapService.GetPropAsync(id);
+
+      var propDTO = DTOConverter.Conver2Property2DTO(props);
+
+      if (propDTO!= null && propDTO.extra_props.Count > 0)
+        markerDto.extra_props = propDTO.extra_props;
+
       return markerDto;
     }
 
@@ -213,7 +220,10 @@ namespace LeafletAlarms.Controllers
       marker.name = updatedMarker.name;
       marker.parent_id = updatedMarker.parent_id;
 
-      await _mapService.UpdateAsync(marker);
+      var props = DTOConverter.ConvertDTO2Property(updatedMarker);
+      
+
+      await _mapService.UpdatePropAsync(props);
 
       return NoContent();
     }

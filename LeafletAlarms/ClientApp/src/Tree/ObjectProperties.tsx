@@ -32,12 +32,30 @@ export function ObjectProperties() {
 
 
   function handleChangeName (e: any){
-    const { target: { name, value } } = e;
+    const { target: { id, value } } = e;
     var copy = Object.assign({}, objProps);
     if (copy == null) {
       return;
     }
     copy.name = value;
+    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  };
+
+  function handleChangeProp(e: any) {
+    const { target: { id, value } } = e;
+    let copy = Object.assign({}, objProps);
+    if (copy == null) {
+      return;
+    }
+
+    const first = copy.extra_props.find((obj) => {
+      return obj.prop_name === id;
+    });
+
+    if (first != null) {
+      first.str_val = value;
+    }
+    
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
@@ -119,7 +137,15 @@ export function ObjectProperties() {
         <ListItem>{objProps.type}</ListItem>
         {
           objProps?.extra_props.map((item, index) =>
-            <ListItem key={index}>{item.str_val}</ListItem>
+            <ListItem key={index}>
+
+              <TextField size="small"
+                fullWidth sx={{ width: '25ch' }}
+                id={item.prop_name} label={item.prop_name}
+                value={item.str_val}
+                onChange={handleChangeProp} />
+
+            </ListItem>
             )
         }
         

@@ -30,6 +30,7 @@ export interface IPolyline extends Marker {
 export interface ObjExtraPropertyDTO {
   visual_type: string;
   str_val: string;
+  prop_name: string;
 }
 
 export interface IObjProps extends Marker {

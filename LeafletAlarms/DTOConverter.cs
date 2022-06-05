@@ -1,6 +1,7 @@
 ﻿using DbLayer;
 using Domain;
 using Domain.GeoDTO;
+using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,7 @@ namespace LeafletAlarms
       {
         id = marker.id,
         name = marker.name,
-        parent_id = marker.parent_id        
+        parent_id = marker.parent_id
       };
     }
 
@@ -99,6 +100,57 @@ namespace LeafletAlarms
       }
 
       return null;
+    }
+
+    public static MarkerProperties ConvertDTO2Property(ObjPropsDTO props)
+    {
+      MarkerProperties mProps = new MarkerProperties()
+      {
+        extra_props = new List<ObjExtraProperty>(),
+        id = props.id
+      };
+
+      foreach (var prop in props.extra_props)
+      {
+        ObjExtraProperty newProp = new ObjExtraProperty()
+        {
+          prop_name = prop.prop_name,
+          MetaValue = new BsonDocument(
+            "str_val",
+            prop.str_val
+            ),
+          visual_type = prop.visual_type
+        };
+        mProps.extra_props.Add(newProp);
+      }
+
+      return mProps;
+    }
+    public static ObjPropsDTO Conver2Property2DTO(MarkerProperties props)
+    {
+      if (props == null)
+      {
+        return null;
+      }
+
+      ObjPropsDTO mProps = new ObjPropsDTO()
+      {
+        extra_props = new List<ObjExtraPropertyDTO>(),
+        id = props.id
+      };
+
+      foreach (var prop in props.extra_props)
+      {
+        ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
+        {
+          prop_name = prop.prop_name,
+          str_val = prop.MetaValue.GetValue("str_val", string.Empty).ToString(),
+          visual_type = prop.visual_type
+        };
+        mProps.extra_props.Add(newProp);
+      }
+
+      return mProps;
     }
   }
 }
