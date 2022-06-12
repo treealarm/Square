@@ -8,7 +8,7 @@ namespace Domain
 {
   public class ObjPropsDTO : FigureBaseDTO
   {
-    public dynamic geometry { get; set; }
+    public string geometry { get; set; }
     public List<ObjExtraPropertyDTO> extra_props { get; set; } = 
       new List<ObjExtraPropertyDTO>() { 
         new ObjExtraPropertyDTO () 

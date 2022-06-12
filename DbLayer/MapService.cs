@@ -21,7 +21,9 @@ namespace DbLayer
     private readonly IMongoCollection<Marker> _markerCollection;
     private readonly IMongoCollection<GeoPoint> _geoCollection;
     private readonly IMongoCollection<MarkerProperties> _propCollection;
+    private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     
+
     private readonly MongoClient _mongoClient;
 
     public MapService(
@@ -41,6 +43,8 @@ namespace DbLayer
 
       _propCollection = mongoDatabase.GetCollection<MarkerProperties>(
           geoStoreDatabaseSettings.Value.PropCollectionName);
+
+      _geoRawCollection = mongoDatabase.GetCollection<BsonDocument>(geoStoreDatabaseSettings.Value.GeoCollectionName);
     }
 
     public async Task<List<Marker>> GetAsync(List<string> ids)
@@ -196,6 +200,50 @@ namespace DbLayer
       }
     }
 
+    public async Task CreateOrUpdateGeoFromStringAsync(string id, string geometry, string type)
+    {
+      BsonArray arr = new BsonArray();
+
+      if (type == GeoJsonObjectType.Point.ToString())
+      {
+        arr = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
+        
+        var temp = arr[0];
+        arr[0] = arr[1];
+        arr[1] = temp;
+      }
+      else
+      {
+        var val = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
+
+        foreach (var element in val)
+        {
+          var temp = element[0];
+          element[0] = element[1];
+          element[1] = temp;
+        }
+
+        if (type == GeoJsonObjectType.Polygon.ToString())
+        {
+          val.Add(val[0]);
+          arr.Add(val);
+        }
+
+        if (type == GeoJsonObjectType.LineString.ToString())
+        {
+          arr = val;
+        }     
+
+        
+      }
+
+      var update = Builders<BsonDocument>.Update.Set("location.coordinates", arr);
+
+      var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
+      var options = new UpdateOptions() { IsUpsert = true };
+      await _geoRawCollection.UpdateOneAsync(filter, update, options);
+    }
+
     public async Task CreateOrUpdateGeoPointAsync(IClientSessionHandle session, FigureCircleDTO newObject)
     {
       GeoPoint point = new GeoPoint();
@@ -250,6 +298,7 @@ namespace DbLayer
 
       point.id = newObject.id;
       var result = await _geoCollection.ReplaceOneAsync(session, x => x.id == newObject.id, point);
+
       if (result.MatchedCount <= 0)
       {
         await _geoCollection.InsertOneAsync(session, point);
@@ -288,7 +337,17 @@ namespace DbLayer
 
     public async Task<GeoPoint> GetGeoObjectAsync(string id)
     {
-      var obj = await _geoCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+      GeoPoint obj = null;
+
+      try
+      {
+        obj = await _geoCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+      }
+      catch(Exception ex)
+      {
+
+      }
+      
       return obj;
     }
 

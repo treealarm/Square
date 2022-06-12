@@ -3,8 +3,10 @@ using Domain;
 using Domain.GeoDTO;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver.GeoJsonObjectModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
@@ -29,37 +31,6 @@ namespace LeafletAlarms.Controllers
       }
 
       return marker;
-    }
-
-    [HttpGet()]
-    [Route("GetObjProps")]
-    public async Task<ActionResult<ObjPropsDTO>> GetObjProps(string id)
-    {
-      var marker = await _mapService.GetAsync(id);
-
-      if (marker is null)
-      {
-        return NotFound();
-      }
-
-      var markerDto = DTOConverter.GetObjPropsDTO(marker);
-
-      var geoPart = await _mapService.GetGeoObjectAsync(id);
-
-      markerDto.type = geoPart.location.Type.ToString();
-
-      var figure = DTOConverter.ConvertGeoPoint2DTO(geoPart);
-
-      markerDto.geometry = figure.geometry;
-
-      var props = await _mapService.GetPropAsync(id);
-
-      var propDTO = DTOConverter.Conver2Property2DTO(props);
-
-      if (propDTO!= null && propDTO.extra_props.Count > 0)
-        markerDto.extra_props = propDTO.extra_props;
-
-      return markerDto;
     }
 
     [HttpGet()]
@@ -206,6 +177,38 @@ namespace LeafletAlarms.Controllers
       return result;
     }
 
+    [HttpGet()]
+    [Route("GetObjProps")]
+    public async Task<ActionResult<ObjPropsDTO>> GetObjProps(string id)
+    {
+      var marker = await _mapService.GetAsync(id);
+
+      if (marker is null)
+      {
+        return NotFound();
+      }
+
+      var markerDto = DTOConverter.GetObjPropsDTO(marker);
+
+      var geoPart = await _mapService.GetGeoObjectAsync(id);
+
+      if (geoPart != null)
+      {
+        markerDto.type = geoPart.location.Type.ToString();
+        var figure = DTOConverter.ConvertGeoPoint2DTO(geoPart);
+        markerDto.geometry = JsonSerializer.Serialize(figure.geometry);
+      }
+
+      var props = await _mapService.GetPropAsync(id);
+
+      var propDTO = DTOConverter.Conver2Property2DTO(props);
+
+      if (propDTO != null && propDTO.extra_props.Count > 0)
+        markerDto.extra_props = propDTO.extra_props;
+
+      return markerDto;
+    }
+
     [HttpPost]
     [Route("UpdateProperties")]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
@@ -226,6 +229,10 @@ namespace LeafletAlarms.Controllers
       
 
       await _mapService.UpdatePropAsync(props);
+
+
+      await _mapService.CreateOrUpdateGeoFromStringAsync(updatedMarker.id, updatedMarker.geometry, updatedMarker.type);
+
 
       return NoContent();
     }

@@ -7,7 +7,10 @@ import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, ListItemButton, ListItemText, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton, ListItemButton, ListItemText, TextField } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
 import { ObjExtraPropertyDTO, IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
@@ -39,6 +42,16 @@ export function ObjectProperties() {
       return;
     }
     copy.name = value;
+    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  };
+
+  function handleChangeGeo(e: any) {
+    const { target: { id, value } } = e;
+    var copy = Object.assign({}, objProps);
+    if (copy == null) {
+      return;
+    }
+    copy.geometry = value;
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
@@ -74,6 +87,9 @@ export function ObjectProperties() {
       name: copy.name
     }
     dispatch(TreeStore.actionCreators.setTreeItem(copy));
+
+    var value = EditStore.NothingTool;
+    dispatch(EditStore.actionCreators.setFigure(value));
 
   }, [objProps]);
 
@@ -141,6 +157,13 @@ export function ObjectProperties() {
             value={objProps?.name}
             onChange={handleChangeName} />
         </ListItem>
+        <ListItem>
+          <TextField size="small"
+            fullWidth sx={{ width: '25ch' }}
+            id="outlined" label='Geo'
+            value={objProps?.geometry}
+            onChange={handleChangeGeo} />
+        </ListItem>
         <ListItem>{objProps.parent_id}</ListItem>
         <ListItem>{objProps.type}</ListItem>
         {
@@ -156,16 +179,19 @@ export function ObjectProperties() {
             </ListItem>
             )
         }
-        
-        <ListItemButton role={undefined} onClick={handleSave}>
-          <ListItemText primary="Save" />
-        </ListItemButton>
-        <ListItemButton onClick={(e) => editMe(objProps, e)}>
-          <ListItemText primary="Edit" />
-        </ListItemButton>
-        <ListItemButton onClick={(e) => deleteMe(objProps, e)}>
-          <ListItemText primary="Delete" />
-        </ListItemButton>
+        <ListItem>
+          <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            <IconButton aria-label="save" size="large">
+              <SaveIcon fontSize="inherit" onClick={handleSave} />
+            </IconButton>
+            <IconButton aria-label="edit" size="large">
+              <EditIcon fontSize="inherit" onClick={(e) => editMe(objProps, e)} />
+            </IconButton>
+            <IconButton aria-label="delete" size="large">
+              <DeleteIcon fontSize="inherit" onClick={(e) => deleteMe(objProps, e)}/>
+            </IconButton>          
+          </ButtonGroup>
+        </ListItem>
       </List>
     </Box>
   );
