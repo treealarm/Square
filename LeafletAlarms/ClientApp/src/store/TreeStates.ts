@@ -26,6 +26,11 @@ interface ReceiveTreeStateAction {
   data: GetByParentDTO
 }
 
+interface SetTreeItemAction {
+  type: "SET_TREE_ITEM";
+  item: TreeMarker
+}
+
 
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -33,6 +38,7 @@ interface ReceiveTreeStateAction {
 type KnownAction =
   | RequestTreeStateAction
   | ReceiveTreeStateAction
+  | SetTreeItemAction
   ;
 
 // ----------------
@@ -67,6 +73,13 @@ export const actionCreators = {
       });
 
     dispatch({ type: "REQUEST_TREE_STATE", parent_marker_id: parent_id });
+  },
+
+  setTreeItem: (treeItem: TreeMarker | null): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "SET_TREE_ITEM", item: treeItem });
   }
 };
 
@@ -109,6 +122,29 @@ export const reducer: Reducer<TreeState> = (
         };
       }
       break;
+    case "SET_TREE_ITEM":
+
+      var found = state.markers.find(i => i.id == action.item.id);
+
+      if (found == null) {
+        return state;
+      }
+
+      var newMarkers = state.markers.map((item : any): TreeMarker => {
+        if (item.id == action.item.id) {
+          item.name = action.item.name;
+        }
+        return item;
+      }
+      );
+
+        return {
+          ...state,
+          markers: newMarkers,
+        };
+
+      break;
+      
   }
 
   return state;

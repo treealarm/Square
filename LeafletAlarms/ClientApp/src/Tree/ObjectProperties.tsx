@@ -8,10 +8,11 @@ import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Box, ListItemButton, ListItemText, TextField } from '@mui/material';
-import { ObjExtraPropertyDTO, IObjProps, PointType, LineStringType, PolygonType, Marker } from '../store/Marker';
+import { ObjExtraPropertyDTO, IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
+import * as TreeStore from '../store/TreeStates';
 
 
 declare module 'react-redux' {
@@ -67,6 +68,13 @@ export function ObjectProperties() {
     }
 
     dispatch(ObjPropsStore.actionCreators.updateObjProps(copy));
+
+    var treeItem: TreeMarker = {
+      id: copy.id,
+      name: copy.name
+    }
+    dispatch(TreeStore.actionCreators.setTreeItem(copy));
+
   }, [objProps]);
 
   const editMe = useCallback(

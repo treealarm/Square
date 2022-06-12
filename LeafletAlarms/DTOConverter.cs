@@ -114,13 +114,24 @@ namespace LeafletAlarms
       {
         ObjExtraProperty newProp = new ObjExtraProperty()
         {
-          prop_name = prop.prop_name,
-          MetaValue = new BsonDocument(
-            "str_val",
-            prop.str_val
-            ),
+          prop_name = prop.prop_name,          
           visual_type = prop.visual_type
         };
+
+        if (prop.visual_type == BsonType.DateTime.ToString())
+        {
+          newProp.MetaValue = new BsonDocument(
+            "str_val",
+            DateTime.Parse(prop.str_val)
+            );
+        }
+        else
+        {
+          newProp.MetaValue = new BsonDocument(
+            "str_val",
+            prop.str_val
+            );
+        }
         mProps.extra_props.Add(newProp);
       }
 

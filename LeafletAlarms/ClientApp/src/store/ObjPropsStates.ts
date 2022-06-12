@@ -2,6 +2,7 @@
 import { ApiRootString, AppThunkAction } from '.';
 import { IObjProps } from './Marker';
 
+
 // -----------------
 
 export interface ObjPropsState {

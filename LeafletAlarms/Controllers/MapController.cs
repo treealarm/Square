@@ -220,6 +220,8 @@ namespace LeafletAlarms.Controllers
       marker.name = updatedMarker.name;
       marker.parent_id = updatedMarker.parent_id;
 
+      await _mapService.UpdateAsync(marker);
+
       var props = DTOConverter.ConvertDTO2Property(updatedMarker);
       
 
