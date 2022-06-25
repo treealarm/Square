@@ -82,14 +82,20 @@ export function ObjectProperties() {
 
     dispatch(ObjPropsStore.actionCreators.updateObjProps(copy));
 
+    // Update name in tree control.
     var treeItem: TreeMarker = {
       id: copy.id,
       name: copy.name
     }
     dispatch(TreeStore.actionCreators.setTreeItem(copy));
 
+    // Stop edit mode.
     var value = EditStore.NothingTool;
     dispatch(EditStore.actionCreators.setFigure(value));
+
+    // Update figure.
+    dispatch(MarkersStore.actionCreators.requestMarkersByIds([treeItem.id]));
+    
 
   }, [objProps]);
 

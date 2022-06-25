@@ -59,6 +59,11 @@ interface DeletedMarkerAction {
   success: boolean;
 }
 
+interface GotMarkersByIdsAction {
+  type: "GOT_MARKERS_BY_IDS";
+  markers: IFigures;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction =
@@ -70,6 +75,7 @@ type KnownAction =
   | DeletedMarkerAction
   | UpdatingMarkerAction
   | UpdatedMarkerAction
+  | GotMarkersByIdsAction
   ;
 
 // ----------------
@@ -188,7 +194,44 @@ export const actionCreators = {
     });
 
     dispatch({ type: "DELETING_MARKERS", ids_to_delete: ids });
-  }
+  },
+
+  requestMarkersByIds: (ids: string[]): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    // Only load data if it's something we don't already have (and are not already loading)
+    const appState = getState();
+
+    if (
+      appState &&
+      appState.markersStates
+    ) {
+
+      let body = JSON.stringify(ids);
+      var request = ApiRootString + "/GetByIds";
+
+      var fetched = fetch(request, {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+      fetched
+        .then(response => {
+          if (!response.ok) throw response.statusText;
+          var json = response.json();
+          return json as Promise<IFigures>;
+        })
+        .then(data => {
+          dispatch({ type: "GOT_MARKERS_BY_IDS", markers: data });
+        })
+        .catch((error) => {
+          const emtyMarkers = {} as IFigures;
+          //dispatch({ type: "RECEIVE_MARKERS", box: box, markers: emtyMarkers });
+        });
+    }
+  },
 };
 
 // ----------------
@@ -319,6 +362,36 @@ export const reducer: Reducer<MarkersState> = (
           isChanging: state.isChanging + 1
         };
       }
+    case "GOT_MARKERS_BY_IDS":
+      var cur_markers: IFigures = action.markers;
+
+      state.markers.circles.forEach(element => {
+        const itemIndex = cur_markers.circles.findIndex(o => o.id === element.id);
+        if (itemIndex < 0) {
+          cur_markers.circles.push(element);
+        }
+      });
+
+      state.markers.polygons.forEach(element => {
+        const itemIndex = cur_markers.polygons.findIndex(o => o.id === element.id);
+        if (itemIndex < 0) {
+          cur_markers.polygons.push(element);
+        }
+      });
+
+      state.markers.polylines.forEach(element => {
+        const itemIndex = cur_markers.polylines.findIndex(o => o.id === element.id);
+        if (itemIndex < 0) {
+          cur_markers.polylines.push(element);
+        }
+      });
+
+      return {
+        ...state,
+        markers: cur_markers,
+        isLoading: false,
+        isChanging: state.isChanging + 1
+      };
   }
 
   return state;

@@ -97,13 +97,9 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    [HttpPost]
-    [Route("GetByBox")]
-    public async Task<FiguresDTO> GetByBox(BoxDTO box)
+    private async Task<FiguresDTO> GetFigures(List<GeoPoint> geo)
     {
       var result = new FiguresDTO();
-
-      var geo = await _mapService.GetGeoAsync(box);
       var ids = geo.Select(g => g.id).ToList();
       var tree = await _mapService.GetAsync(ids);
 
@@ -132,7 +128,7 @@ namespace LeafletAlarms.Controllers
 
             List<double[]> list = new List<double[]>();
 
-            foreach(var cur in pt.Coordinates.Exterior.Positions)
+            foreach (var cur in pt.Coordinates.Exterior.Positions)
             {
               list.Add(new double[2] { cur.Y, cur.X });
             }
@@ -140,7 +136,7 @@ namespace LeafletAlarms.Controllers
             if (list.Count > 3)
             {
               list.RemoveAt(list.Count - 1);
-            }            
+            }
 
             figure.geometry = list.ToArray();
             result.polygons.Add(figure);
@@ -175,6 +171,22 @@ namespace LeafletAlarms.Controllers
         }
       }
       return result;
+    }
+
+    [HttpPost]
+    [Route("GetByIds")]
+    public async Task<FiguresDTO> GetByIds(List<string> ids)
+    {
+      var geo = await _mapService.GetGeoObjectsAsync(ids);
+      return await GetFigures(geo);
+    }
+
+    [HttpPost]
+    [Route("GetByBox")]
+    public async Task<FiguresDTO> GetByBox(BoxDTO box)
+    {
+      var geo = await _mapService.GetGeoAsync(box);
+      return await GetFigures(geo);
     }
 
     [HttpGet()]

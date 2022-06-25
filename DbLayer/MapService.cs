@@ -351,6 +351,22 @@ namespace DbLayer
       return obj;
     }
 
+    public async Task<List<GeoPoint>> GetGeoObjectsAsync(List<string> ids)
+    {
+      List<GeoPoint> obj = null;
+
+      try
+      {
+        obj = await _geoCollection.Find(x => ids.Contains(x.id)).ToListAsync();
+      }
+      catch (Exception ex)
+      {
+
+      }
+
+      return obj;
+    }
+
     public async Task UpdatePropAsync(MarkerProperties updatedObj)
     {
       using (var session = await _mongoClient.StartSessionAsync())
