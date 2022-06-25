@@ -228,7 +228,7 @@ export function LocationMarkers() {
       setObj2Edit(null);
       figures.polygons = [polygon];
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
-
+      dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
   const polylineChanged = useCallback(
@@ -239,7 +239,7 @@ export function LocationMarkers() {
       setObj2Edit(null);
       figures.polylines = [figure];
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
-
+      dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
   const circleChanged = useCallback(
@@ -250,7 +250,7 @@ export function LocationMarkers() {
       setObj2Edit(null);
       figures.circles = [figure];
       dispatch(MarkersStore.actionCreators.sendMarker(figures));
-
+      dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
   const selectMe = useCallback(

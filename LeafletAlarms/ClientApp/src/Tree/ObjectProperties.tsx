@@ -31,6 +31,9 @@ export function ObjectProperties() {
 
   
   useEffect(() => {
+    if (selected_id == null) {
+      dispatch(EditStore.actionCreators.setFigure(EditStore.NothingTool));
+    }
     dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
   }, [selected_id]);
 
@@ -90,8 +93,7 @@ export function ObjectProperties() {
     dispatch(TreeStore.actionCreators.setTreeItem(copy));
 
     // Stop edit mode.
-    var value = EditStore.NothingTool;
-    dispatch(EditStore.actionCreators.setFigure(value));
+    dispatch(EditStore.actionCreators.setFigure(EditStore.NothingTool));
 
     // Update figure.
     dispatch(MarkersStore.actionCreators.requestMarkersByIds([treeItem.id]));
