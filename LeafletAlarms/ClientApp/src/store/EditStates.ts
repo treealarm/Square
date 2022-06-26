@@ -18,6 +18,7 @@ export const Figures: Record<string, string> =
 
 export interface EditState {
   figure: string;
+  edit_mode: boolean;
 }
 
 // -----------------
@@ -28,6 +29,7 @@ export interface EditState {
 export interface SetFigureAction {
   type: 'SET_FIGURE';
   figure: string;
+  edit_mode: boolean;
 }
 export interface DecrementCountAction { type: 'DECREMENT_COUNT' }
 
@@ -40,14 +42,16 @@ export type KnownAction = SetFigureAction | DecrementCountAction;
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-  setFigure: (figure: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    dispatch({ type: 'SET_FIGURE', figure: figure });
+
+  setFigureEditMode: (figure: string, edit_mode:boolean): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({ type: 'SET_FIGURE', figure: figure, edit_mode: edit_mode });
   },
   decrement: () => ({ type: 'DECREMENT_COUNT' } as DecrementCountAction)
 };
 
 const unloadedState: EditState = {
-  figure: NothingTool
+  figure: NothingTool,
+  edit_mode: false
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
@@ -60,9 +64,9 @@ export const reducer: Reducer<EditState> = (state: EditState | undefined, incomi
     const action = incomingAction as KnownAction;
     switch (action.type) {
       case 'SET_FIGURE':
-        return { figure: action.figure};
-        case 'DECREMENT_COUNT':
-        return { figure: state.figure};
+        return { figure: action.figure, edit_mode: action.edit_mode };
+      case 'DECREMENT_COUNT':
+        return { figure: state.figure, edit_mode: state.edit_mode };
         default:
             return state;
     }

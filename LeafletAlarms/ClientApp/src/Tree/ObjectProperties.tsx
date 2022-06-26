@@ -7,7 +7,7 @@ import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, ButtonGroup, IconButton, ListItemButton, ListItemText, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton, ListItemButton, ListItemText, TextField, ToggleButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -16,6 +16,7 @@ import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as TreeStore from '../store/TreeStates';
+import NotInterestedSharpIcon from '@mui/icons-material/NotInterestedSharp';
 
 
 declare module 'react-redux' {
@@ -28,11 +29,11 @@ export function ObjectProperties() {
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
-
+  const selectedEditMode = useSelector((state) => state.editState);
   
   useEffect(() => {
     if (selected_id == null) {
-      dispatch(EditStore.actionCreators.setFigure(EditStore.NothingTool));
+      dispatch(EditStore.actionCreators.setFigureEditMode(EditStore.NothingTool, false));
     }
     dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
   }, [selected_id]);
@@ -93,7 +94,7 @@ export function ObjectProperties() {
     dispatch(TreeStore.actionCreators.setTreeItem(copy));
 
     // Stop edit mode.
-    dispatch(EditStore.actionCreators.setFigure(EditStore.NothingTool));
+    dispatch(EditStore.actionCreators.setFigureEditMode(EditStore.NothingTool, false));
 
     // Update figure.
     dispatch(MarkersStore.actionCreators.requestMarkersByIds([treeItem.id]));
@@ -101,8 +102,12 @@ export function ObjectProperties() {
 
   }, [objProps]);
 
-  const editMe = useCallback(
-    (props: IObjProps, e) => {
+  function editMe(props: IObjProps, editMode: boolean){
+
+      if (!editMode) {
+        dispatch(EditStore.actionCreators.setFigureEditMode(EditStore.NothingTool, false));
+        return;
+      }
 
       var marker: Marker = {
         name: props.name,
@@ -125,8 +130,8 @@ export function ObjectProperties() {
         value = EditStore.PolygonTool
       }
 
-      dispatch(EditStore.actionCreators.setFigure(value));
-    }, [])
+      dispatch(EditStore.actionCreators.setFigureEditMode(value, true));
+  };
 
   const deleteMe = useCallback(
     (props: IObjProps, e) => {
@@ -193,7 +198,12 @@ export function ObjectProperties() {
               <SaveIcon fontSize="inherit" onClick={handleSave} />
             </IconButton>
             <IconButton aria-label="edit" size="large">
-              <EditIcon fontSize="inherit" onClick={(e) => editMe(objProps, e)} />
+              {
+                selectedEditMode.edit_mode ? 
+                  <NotInterestedSharpIcon fontSize="inherit" onClick={(e) => editMe(objProps, false)} /> :
+                  <EditIcon fontSize="inherit" onClick={(e) => editMe(objProps, true)} />
+              }            
+              
             </IconButton>
             <IconButton aria-label="delete" size="large">
               <DeleteIcon fontSize="inherit" onClick={(e) => deleteMe(objProps, e)}/>

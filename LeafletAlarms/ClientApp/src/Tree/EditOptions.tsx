@@ -1,7 +1,7 @@
 ﻿import * as React from 'react';
 import Drawer from '@mui/material/Drawer';
 import Button from '@mui/material/Button';
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import { FormControl, FormControlLabel, FormLabel, Menu, MenuItem, Radio, RadioGroup, SpeedDial, SpeedDialIcon } from '@mui/material';
 import * as EditStore from '../store/EditStates';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,54 +10,54 @@ export default function EditOptions() {
   const dispatch = useDispatch();
   const selectedTool = useSelector((state) => state.editState.figure);
   
-  const [state, setState] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const toggleDrawer = (open: boolean) => (event: any) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
+  const open = Boolean(anchorEl);
 
-    setState(open);
+  const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  function valueChanged(event: React.ChangeEvent<HTMLInputElement>, value: string) {
-    dispatch(EditStore.actionCreators.setFigure(value));
+  const handleMenuItemClick = (
+    item: string,
+    index: number,
+  ) => {
+    setAnchorEl(null);
+    dispatch(EditStore.actionCreators.setFigureEditMode(item, false));
   };
 
-  const anchor = 'left';
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <div>
       
-      <React.Fragment key={anchor}>
-        <Button onClick={toggleDrawer(true)} style={{ textTransform: 'none' }}>
+      <React.Fragment key={"Edit_Options"}>
+        <Button onClick={handleClickListItem} style={{ textTransform: 'none' }}>
           Current tool: {EditStore.Figures[selectedTool]}
         </Button>
-          <Drawer
-            anchor={anchor}
-            open={state}
-            onClose={toggleDrawer(false)}
+          <Menu
+            id="lock-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'lock-button',
+              role: 'listbox',
+            }}
           >
-          <FormControl>
-            <FormLabel id="options">Select tool</FormLabel>
-            <RadioGroup
-              aria-labelledby="options-group-label"
-              value={selectedTool}
-              name="radio-buttons-group"
-              onChange={valueChanged}
-            >
-              {
-                Object.entries(EditStore.Figures).map((item, index) =>
-                  <FormControlLabel
-                    key={index}
-                    value={item[0]}
-                    control={<Radio />}
-                    label={item[1]} />
-                  )
-              }
-            </RadioGroup>
-          </FormControl>
-          </Drawer>
+
+            {Object.entries(EditStore.Figures).map((item, index) => (
+                  <MenuItem
+                    key={item[0]}
+                selected={selectedTool === item[0]}
+                onClick={(event) => handleMenuItemClick(item[0], index)}>
+                {item[1]}
+                  </MenuItem>
+                ))}
+                
+            </Menu>
         </React.Fragment>
     </div>
   );

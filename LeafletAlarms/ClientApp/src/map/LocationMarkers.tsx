@@ -99,12 +99,14 @@ function MyCircle(props: any) {
     return null;
   }
 
+  var marker_id = props.marker.id;
+
   const dispatch = useDispatch();
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
         var selected_id = event.target.options.marker.id;
-        dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+        dispatch(GuiStore.actionCreators.selectTreeItem(marker_id));
       }
     }),
     [],
@@ -147,7 +149,7 @@ export function LocationMarkers() {
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
-  const selectedTool = useSelector((state) => state.editState.figure);
+  const selectedEditMode = useSelector((state) => state.editState);
 
   const guiStates = useSelector((state) => state?.guiStates);
 
@@ -163,37 +165,44 @@ export function LocationMarkers() {
   }, [guiStates.map_option?.map_center]);
 
   useEffect(() => {
-    if (selected_id != null && selectedTool != EditStore.NothingTool) {
+    if (selectedEditMode.figure != EditStore.NothingTool) {
 
-      let circle = markers?.circles.find(f => f.id == selected_id);
-
-      if (circle != null) {
-        dispatch(EditStore.actionCreators.setFigure(CircleTool));
-        setObj2Edit(circle);
+      if (!selectedEditMode.edit_mode) {
+        setObj2Edit(null);
         return;
       }
 
-      let polygon = markers?.polygons.find(f => f.id == selected_id);
+      if (selected_id != null && selectedEditMode.edit_mode) {
+        let circle = markers?.circles.find(f => f.id == selected_id);
 
-      if (polygon != null) {
-        dispatch(EditStore.actionCreators.setFigure(PolygonTool));
-        setObj2Edit(polygon);
-        return;
-      }
+        if (circle != null) {
+          //dispatch(EditStore.actionCreators.setFigureEditMode(CircleTool, true));
+          setObj2Edit(circle);
+          return;
+        }
 
-      let polyline = markers?.polylines.find(f => f.id == selected_id);
+        let polygon = markers?.polygons.find(f => f.id == selected_id);
 
-      if (polyline != null) {
-        dispatch(EditStore.actionCreators.setFigure(PolylineTool));
-        setObj2Edit(polyline);
-        return;
-      }
+        if (polygon != null) {
+          //dispatch(EditStore.actionCreators.setFigureEditMode(PolygonTool, true));
+          setObj2Edit(polygon);
+          return;
+        }
+
+        let polyline = markers?.polylines.find(f => f.id == selected_id);
+
+        if (polyline != null) {
+          //dispatch(EditStore.actionCreators.setFigureEditMode(PolylineTool, true));
+          setObj2Edit(polyline);
+          return;
+        }
+      }      
     }
 
-    if (selectedTool == EditStore.NothingTool && selected_id != null) {
+    if (selectedEditMode.figure == EditStore.NothingTool && selected_id != null) {
       setObj2Edit(null);
     }
-  }, [selected_id, selectedTool]);
+  }, [selected_id, selectedEditMode]);
 
 
    const mapEvents = useMapEvents({
@@ -296,10 +305,10 @@ export function LocationMarkers() {
       {
         markers?.circles?.map((marker, index) =>
           <MyCircle
-            key={index}
+            key={marker.id}
             center={marker.geometry}
             pathOptions={getColor(marker.id)}
-            radius={50}
+            radius={100}
             hidden={marker.id == obj2Edit?.id}
 
             marker={marker}
@@ -314,7 +323,7 @@ export function LocationMarkers() {
           <MyPolygon
             pathOptions={getColor(marker.id)}
             positions={marker.geometry}
-            key={index}
+            key={marker.id}
             hidden={marker.id == obj2Edit?.id}
 
             marker={marker}
@@ -328,7 +337,7 @@ export function LocationMarkers() {
           <MyPolyline
             pathOptions={getColor(marker.id)}
             positions={marker.geometry}
-            key={index}
+            key={marker.id}
             hidden={marker.id == obj2Edit?.id}
 
             marker={marker}
@@ -336,11 +345,11 @@ export function LocationMarkers() {
           </MyPolyline>
         )}
 
-      {selectedTool == PolygonTool ?
+      {selectedEditMode.figure == PolygonTool ?
         <PolygonMaker polygonChanged={polygonChanged} obj2Edit={obj2Edit}/> : <div />}
-      {selectedTool == PolylineTool ?
+      {selectedEditMode.figure == PolylineTool ?
         <PolylineMaker figureChanged={polylineChanged} obj2Edit={obj2Edit}/> : <div />}
-      {selectedTool == CircleTool ?
+      {selectedEditMode.figure == CircleTool ?
         <CircleMaker figureChanged={circleChanged} obj2Edit={obj2Edit} /> : <div />}
 
     </React.Fragment>
