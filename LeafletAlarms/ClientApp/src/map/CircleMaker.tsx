@@ -1,11 +1,11 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector, useStore } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ApplicationState } from '../store';
 import { ICircle, PointType } from '../store/Marker';
 
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   CircleMarker,
   Popup,

@@ -99,7 +99,7 @@ export function EditableFigure() {
     <React.Fragment>
       {
         selectedEditMode.figure == PolygonTool ?
-          <PolygonMaker polygonChanged={polygonChanged} obj2Edit={obj2Edit} /> : <div />
+          <PolygonMaker figureChanged={polygonChanged} obj2Edit={obj2Edit} /> : <div />
       }
       {
         selectedEditMode.figure == PolylineTool ?

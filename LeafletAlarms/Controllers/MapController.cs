@@ -246,7 +246,7 @@ namespace LeafletAlarms.Controllers
       await _mapService.CreateOrUpdateGeoFromStringAsync(updatedMarker.id, updatedMarker.geometry, updatedMarker.type);
 
 
-      return NoContent();
+      return CreatedAtAction(nameof(Post), updatedMarker);
     }
 
     [HttpPost]

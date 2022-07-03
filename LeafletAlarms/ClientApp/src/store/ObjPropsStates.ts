@@ -7,6 +7,7 @@ import { IObjProps } from './Marker';
 
 export interface ObjPropsState {
   objProps: IObjProps;
+  updated: boolean;
 }
 
 // -----------------
@@ -91,10 +92,10 @@ export const actionCreators = {
 
     fetched.then(response => response.json()).then(data => {
       let m: IObjProps = data as IObjProps;
-      dispatch({ type: "UPDATING_PROPS", objProps: m });
+      dispatch({ type: "UPDATED_PROPS", objProps: m });
     });
 
-    dispatch({ type: "UPDATED_PROPS", objProps: marker });
+    dispatch({ type: "UPDATING_PROPS", objProps: marker });
   },
   setObjPropsLocally: (marker: IObjProps): AppThunkAction<KnownAction> => (
     dispatch,
@@ -105,7 +106,8 @@ export const actionCreators = {
 };
 
 const unloadedState: ObjPropsState = {
-  objProps: null
+  objProps: null,
+  updated: false
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
@@ -123,17 +125,18 @@ export const reducer: Reducer<ObjPropsState> = (state: ObjPropsState | undefined
         objProps: state.objProps
       };
     case 'SET_PROPS':
-      return { objProps: action.objProps };
+      return { objProps: action.objProps, updated: false };
     case 'SET_PROPS_LOCALLY':
-      return { objProps: action.objProps };
+      return { objProps: action.objProps, updated: false };
 
-    case 'UPDATING_PROPS':
+    case 'UPDATED_PROPS':
       return {
         ...state,
-        objProps: action.objProps
+        objProps: action.objProps,
+        updated: true
       };
-    case 'UPDATED_PROPS':
-      return { objProps: action.objProps };
+    case 'UPDATING_PROPS':
+      return { objProps: action.objProps, updated: false };
     default:
       return state;
   }

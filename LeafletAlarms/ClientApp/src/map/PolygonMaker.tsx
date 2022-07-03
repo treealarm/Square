@@ -54,7 +54,7 @@ function PolygonPopup(props: any) {
         <table>
           <tbody>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.PolygonChanged(e)}>Save Polygon</span>
+              <span className="menu_item" onClick={(e) => props.FigureChanged(e)}>Save Polygon</span>
             </td></tr>
             <tr><td>
               <span className="menu_item" onClick={(e) => props.MoveAllPoints(e)}>Move Polygon</span>
@@ -230,9 +230,9 @@ export function PolygonMaker(props: any) {
   const colorOptions = { color: 'green' }
   const colorOptionsCircle = { color: 'red' }
 
-  const polygonChanged = useCallback(
+  const figureChanged = useCallback(
     (e) => {
-      props.polygonChanged(curPolygon, e);
+      props.figureChanged(curPolygon, e);
       setPolygon(initPolygon);
     }, [curPolygon])
 
@@ -274,7 +274,7 @@ export function PolygonMaker(props: any) {
         curPolygon.geometry.length > 2 
           ? <Polygon pathOptions={colorOptions} positions={curPolygon.geometry}>
             <PolygonPopup
-              PolygonChanged={polygonChanged}
+              FigureChanged={figureChanged}
               MoveAllPoints={moveAllPoints}
               movedIndex={movedIndex}
               isMoveAll={isMoveAll}

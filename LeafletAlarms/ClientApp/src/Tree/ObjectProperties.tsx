@@ -29,6 +29,7 @@ export function ObjectProperties() {
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
+  const propsUpdated = useSelector((state) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state) => state.editState);
   
   useEffect(() => {
@@ -77,6 +78,13 @@ export function ObjectProperties() {
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
+  useEffect(() => {
+    if (propsUpdated) {
+      // Update figure.
+      dispatch(MarkersStore.actionCreators.requestMarkersByIds([objProps.id]));
+    }
+
+  }, [propsUpdated]);
 
   const handleSave = useCallback(() => {
     var copy = Object.assign({}, objProps);
@@ -95,10 +103,6 @@ export function ObjectProperties() {
 
     // Stop edit mode.
     dispatch(EditStore.actionCreators.setFigureEditMode(EditStore.NothingTool, false));
-
-    // Update figure.
-    dispatch(MarkersStore.actionCreators.requestMarkersByIds([treeItem.id]));
-    
 
   }, [objProps]);
 
