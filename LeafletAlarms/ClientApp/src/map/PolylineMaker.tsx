@@ -18,7 +18,7 @@ import {
 } from 'react-leaflet'
 
 import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
-import { PolylineTool, PolygonTool } from '../store/EditStates';
+import * as ObjPropsStore from '../store/ObjPropsStates';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -70,6 +70,7 @@ function FigurePopup(props: any) {
 
 export function PolylineMaker(props: any) {
 
+  const dispatch = useDispatch();
   const parentMap = useMap();
 
   useEffect(() => {
@@ -92,6 +93,7 @@ export function PolylineMaker(props: any) {
 
   const [figure, setFigure] = React.useState<IPolyline>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<IPolyline>(initFigure);
+  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
 
   useEffect(() => {
     if (props.obj2Edit != null) {
@@ -102,6 +104,16 @@ export function PolylineMaker(props: any) {
     }
 
   }, [props.obj2Edit]);
+
+  useEffect(() => {
+    var copy = Object.assign({}, objProps);
+
+    if (copy == null) {
+      return;
+    }
+    copy.geometry = JSON.stringify(figure.geometry);
+    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }, [figure]);
     
   const mapEvents = useMapEvents({
     click(e) {

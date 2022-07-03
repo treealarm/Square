@@ -1,17 +1,17 @@
 ﻿import * as React from 'react';
 
-import { useEffect, useCallback, useState, useRef } from 'react';
-import { useDispatch, useSelector, useStore } from "react-redux";
+import { useEffect, useCallback} from 'react';
+import { useDispatch, useSelector} from "react-redux";
 
 import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, ButtonGroup, IconButton, ListItemButton, ListItemText, TextField, ToggleButton } from '@mui/material';
+import { Box, ButtonGroup, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import { ObjExtraPropertyDTO, IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker } from '../store/Marker';
+import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';

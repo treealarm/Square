@@ -1,19 +1,16 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector, useStore } from "react-redux";
-import * as MarkersStore from '../store/MarkersStates';
-import * as GuiStore from '../store/GUIStates';
+import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolygon, PolygonType } from '../store/Marker';
-import { yellow } from '@mui/material/colors';
+import { BoundBox, IPolygon, PolygonType } from '../store/Marker';
+import * as ObjPropsStore from '../store/ObjPropsStates';
 
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   CircleMarker,
   Popup,
   useMap,
   useMapEvents,
-  Marker,
   Polygon,
   Polyline
 } from 'react-leaflet'
@@ -71,12 +68,14 @@ function PolygonPopup(props: any) {
 
 export function PolygonMaker(props: any) {
 
+  const dispatch = useDispatch();
   const parentMap = useMap();
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
   const [isMoveAll, setIsMoveAll] = React.useState(false);
+  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
 
   const initPolygon: IPolygon = {
     name: 'New Polygon',
@@ -99,6 +98,16 @@ export function PolygonMaker(props: any) {
     }
 
   }, [props.obj2Edit]);
+
+  useEffect(() => {    
+    var copy = Object.assign({}, objProps);
+
+    if (copy == null) {
+      return;
+    }
+    copy.geometry = JSON.stringify(curPolygon.geometry);
+    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }, [curPolygon]);
 
     
   const mapEvents = useMapEvents({
@@ -218,7 +227,6 @@ export function PolygonMaker(props: any) {
 
     }, [curPolygon])
 
-  const markers = useSelector((state) => state?.markersStates?.markers);
   const colorOptions = { color: 'green' }
   const colorOptionsCircle = { color: 'red' }
 

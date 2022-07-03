@@ -10,7 +10,7 @@ import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as EditStore from '../store/EditStates';
 
-export function EditableFigure(props: any) {
+export function EditableFigure() {
 
   const dispatch = useDispatch();
   const selectedEditMode = useSelector((state) => state.editState);

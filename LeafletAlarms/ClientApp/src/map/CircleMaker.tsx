@@ -1,11 +1,9 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
 import { useDispatch, useSelector, useStore } from "react-redux";
-import * as MarkersStore from '../store/MarkersStates';
-import * as GuiStore from '../store/GUIStates';
+import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, PointType } from '../store/Marker';
-import { yellow } from '@mui/material/colors';
+import { ICircle, PointType } from '../store/Marker';
 
 import { useCallback, useMemo, useState, useEffect } from 'react'
 import {
@@ -13,13 +11,10 @@ import {
   Popup,
   useMap,
   useMapEvents,
-  Marker,
-  Polygon,
-  Polyline,
   Circle
 } from 'react-leaflet'
 
-import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
+import { LeafletKeyboardEvent } from 'leaflet';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -56,10 +51,6 @@ export function CircleMaker(props: any) {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  useEffect(() => {
-    console.log('ComponentDidMount CircleMaker');
-
-  }, []);
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
 
@@ -74,6 +65,7 @@ export function CircleMaker(props: any) {
 
   const [figure, setFigure] = React.useState<ICircle>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<ICircle>(initFigure);
+  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
 
   useEffect(() => {
     if (props.obj2Edit != null) {
@@ -84,6 +76,17 @@ export function CircleMaker(props: any) {
     }
 
   }, [props.obj2Edit]);
+
+  useEffect(() => {
+    var copy = Object.assign({}, objProps);
+
+    if (copy == null) {
+      return;
+    }
+    copy.geometry = JSON.stringify(figure.geometry);
+    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }, [figure]);
+
 
   const mapEvents = useMapEvents({
     click(e) {
