@@ -17,7 +17,6 @@ export const Figures: Record<string, string> =
 
 
 export interface EditState {
-  figure: string;
   edit_mode: boolean;
 }
 
@@ -26,16 +25,14 @@ export interface EditState {
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 // Use @typeName and isActionType for type detection that works even after serialization/deserialization.
 
-export interface SetFigureAction {
-  type: 'SET_FIGURE';
-  figure: string;
+export interface SetEditModeAction {
+  type: 'SET_EDIT_MODE';
   edit_mode: boolean;
 }
-export interface DecrementCountAction { type: 'DECREMENT_COUNT' }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-export type KnownAction = SetFigureAction | DecrementCountAction;
+export type KnownAction = SetEditModeAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -43,14 +40,12 @@ export type KnownAction = SetFigureAction | DecrementCountAction;
 
 export const actionCreators = {
 
-  setFigureEditMode: (figure: string, edit_mode:boolean): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    dispatch({ type: 'SET_FIGURE', figure: figure, edit_mode: edit_mode });
-  },
-  decrement: () => ({ type: 'DECREMENT_COUNT' } as DecrementCountAction)
+  setFigureEditMode: (edit_mode:boolean): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({ type: 'SET_EDIT_MODE', edit_mode: edit_mode });
+  }
 };
 
 const unloadedState: EditState = {
-  figure: NothingTool,
   edit_mode: false
 };
 // ----------------
@@ -63,10 +58,8 @@ export const reducer: Reducer<EditState> = (state: EditState | undefined, incomi
 
     const action = incomingAction as KnownAction;
     switch (action.type) {
-      case 'SET_FIGURE':
-        return { figure: action.figure, edit_mode: action.edit_mode };
-      case 'DECREMENT_COUNT':
-        return { figure: state.figure, edit_mode: state.edit_mode };
+      case 'SET_EDIT_MODE':
+        return { edit_mode: action.edit_mode };
         default:
             return state;
     }

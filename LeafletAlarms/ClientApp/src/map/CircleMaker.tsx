@@ -3,7 +3,7 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ApplicationState } from '../store';
-import { ICircle, PointType } from '../store/Marker';
+import { ICircle, IObjProps, PointType } from '../store/Marker';
 
 import { useCallback, useEffect } from 'react'
 import {
@@ -63,19 +63,20 @@ export function CircleMaker(props: any) {
     type: PointType
   };
 
+  useEffect(() => {
+    if (props.obj2Edit != null) {
+      const obj2Edit: IObjProps = props.obj2Edit;
+
+      initFigure.name = obj2Edit.name;
+      initFigure.parent_id = obj2Edit.parent_id;
+      initFigure.geometry = JSON.parse(obj2Edit.geometry);
+      initFigure.id = obj2Edit.id;
+    }
+  }, [props.obj2Edit]);
+
   const [figure, setFigure] = React.useState<ICircle>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<ICircle>(initFigure);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
-
-  useEffect(() => {
-    if (props.obj2Edit != null) {
-      setFigure(props.obj2Edit);
-    }
-    else {
-      setFigure(initFigure);
-    }
-
-  }, [props.obj2Edit]);
 
   useEffect(() => {
     var copy = Object.assign({}, objProps);

@@ -34,7 +34,7 @@ export function ObjectProperties() {
   
   useEffect(() => {
     if (selected_id == null) {
-      dispatch(EditStore.actionCreators.setFigureEditMode(EditStore.NothingTool, false));
+      dispatch(EditStore.actionCreators.setFigureEditMode(false));
     }
     dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
   }, [selected_id]);
@@ -102,39 +102,12 @@ export function ObjectProperties() {
     dispatch(TreeStore.actionCreators.setTreeItem(copy));
 
     // Stop edit mode.
-    dispatch(EditStore.actionCreators.setFigureEditMode(EditStore.NothingTool, false));
+    dispatch(EditStore.actionCreators.setFigureEditMode(false));
 
   }, [objProps]);
 
   function editMe(props: IObjProps, editMode: boolean){
-
-      if (!editMode) {
-        dispatch(EditStore.actionCreators.setFigureEditMode(EditStore.NothingTool, false));
-        return;
-      }
-
-      var marker: Marker = {
-        name: props.name,
-        type: props.type,
-        id: props.id,
-        parent_id: props.parent_id        
-      }
-
-      var value = EditStore.NothingTool;
-
-      if (marker.type == PointType) {
-        value = EditStore.CircleTool
-      }
-
-      if (marker.type == LineStringType) {
-        value = EditStore.PolylineTool
-      }
-
-      if (marker.type == PolygonType) {
-        value = EditStore.PolygonTool
-      }
-
-      dispatch(EditStore.actionCreators.setFigureEditMode(value, true));
+    dispatch(EditStore.actionCreators.setFigureEditMode(editMode));
   };
 
   const deleteMe = useCallback(
@@ -184,7 +157,7 @@ export function ObjectProperties() {
         <ListItem>{objProps.parent_id}</ListItem>
         <ListItem>{objProps.type}</ListItem>
         {
-          objProps?.extra_props.map((item, index) =>
+          objProps?.extra_props?.map((item, index) =>
             <ListItem key={index}>
 
               <TextField size="small"

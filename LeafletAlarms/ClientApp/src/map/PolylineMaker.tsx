@@ -1,19 +1,15 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector, useStore } from "react-redux";
-import * as MarkersStore from '../store/MarkersStates';
-import * as GuiStore from '../store/GUIStates';
+import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, LineStringType } from '../store/Marker';
+import { BoundBox, IObjProps, IPolyline, LineStringType } from '../store/Marker';
 
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useCallback, useMemo, useEffect } from 'react'
 import {
   CircleMarker,
   Popup,
   useMap,
   useMapEvents,
-  Marker,
-  Polygon,
   Polyline
 } from 'react-leaflet'
 
@@ -91,19 +87,20 @@ export function PolylineMaker(props: any) {
     type: LineStringType
   };
 
+  useEffect(() => {
+    if (props.obj2Edit != null) {
+      const obj2Edit: IObjProps = props.obj2Edit;
+
+      initFigure.name = obj2Edit.name;
+      initFigure.parent_id = obj2Edit.parent_id;
+      initFigure.geometry = JSON.parse(obj2Edit.geometry);
+      initFigure.id = obj2Edit.id;
+    }
+  }, [props.obj2Edit]);
+
   const [figure, setFigure] = React.useState<IPolyline>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<IPolyline>(initFigure);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
-
-  useEffect(() => {
-    if (props.obj2Edit != null) {
-      setFigure(props.obj2Edit);
-    }
-    else {
-      setFigure(initFigure);
-    }
-
-  }, [props.obj2Edit]);
 
   useEffect(() => {
     var copy = Object.assign({}, objProps);

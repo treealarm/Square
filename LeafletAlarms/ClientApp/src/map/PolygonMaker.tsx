@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, IPolygon, PolygonType } from '../store/Marker';
+import { BoundBox, IPolygon, PolygonType, IObjProps } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
 import { useCallback, useEffect } from 'react'
@@ -86,18 +86,19 @@ export function PolygonMaker(props: any) {
     type: PolygonType
   };
 
-  const [curPolygon, setPolygon] = React.useState<IPolygon>(initPolygon);
-  const [oldPolygon, setOldPolygon] = React.useState<IPolygon>(initPolygon);
-
   useEffect(() => {
     if (props.obj2Edit != null) {
-      setPolygon(props.obj2Edit);
-    }
-    else {
-      setPolygon(initPolygon);
-    }
+      const obj2Edit: IObjProps = props.obj2Edit;
 
+      initPolygon.name = obj2Edit.name;
+      initPolygon.parent_id = obj2Edit.parent_id;
+      initPolygon.geometry = JSON.parse(obj2Edit.geometry);
+      initPolygon.id = obj2Edit.id;
+    }
   }, [props.obj2Edit]);
+
+  const [curPolygon, setPolygon] = React.useState<IPolygon>(initPolygon);
+  const [oldPolygon, setOldPolygon] = React.useState<IPolygon>(initPolygon);
 
   useEffect(() => {    
     var copy = Object.assign({}, objProps);
