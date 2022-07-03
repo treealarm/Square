@@ -100,6 +100,12 @@ namespace LeafletAlarms.Controllers
     private async Task<FiguresDTO> GetFigures(List<GeoPoint> geo)
     {
       var result = new FiguresDTO();
+
+      if (geo == null)
+      {
+        return result;
+      }
+
       var ids = geo.Select(g => g.id).ToList();
       var tree = await _mapService.GetAsync(ids);
 
@@ -225,6 +231,11 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateProperties")]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
     {
+      if (string.IsNullOrEmpty(updatedMarker.id))
+      {
+        await _mapService.CreateCompleteObject(updatedMarker);
+      }
+
       var marker = await _mapService.GetAsync(updatedMarker.id);
 
       if (marker is null)

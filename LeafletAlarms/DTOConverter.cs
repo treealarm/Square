@@ -110,6 +110,11 @@ namespace LeafletAlarms
         id = props.id
       };
 
+      if (props.extra_props == null)
+      {
+        return mProps;
+      }
+
       foreach (var prop in props.extra_props)
       {
         ObjExtraProperty newProp = new ObjExtraProperty()

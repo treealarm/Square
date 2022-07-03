@@ -202,6 +202,7 @@ namespace DbLayer
 
     public async Task CreateOrUpdateGeoFromStringAsync(string id, string geometry, string type)
     {
+      BsonDocument doc = new BsonDocument();
       BsonArray arr = new BsonArray();
 
       if (type == GeoJsonObjectType.Point.ToString())
@@ -237,11 +238,14 @@ namespace DbLayer
         
       }
 
-      var update = Builders<BsonDocument>.Update.Set("location.coordinates", arr);
+      doc.Add("coordinates", arr);
+      doc.Add("type", type);
+
+      var update = Builders<BsonDocument>.Update.Set("location", doc);
 
       var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
       var options = new UpdateOptions() { IsUpsert = true };
-      await _geoRawCollection.UpdateOneAsync(filter, update, options);
+      var updateResult = await _geoRawCollection.UpdateOneAsync(filter, update, options);
     }
 
     public async Task CreateOrUpdateGeoPointAsync(IClientSessionHandle session, FigureCircleDTO newObject)

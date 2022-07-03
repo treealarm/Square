@@ -5,14 +5,12 @@ import { AppThunkAction } from '.';
 export const PolygonTool = 'Polygon';
 export const CircleTool = 'Circle';
 export const PolylineTool = 'Polyline';
-export const NothingTool = 'Nothing';
 
 export const Figures: Record<string, string> =
 {
-  Nothing: 'NothingTool',
-  Circle: 'CircleTool',
-  Polyline: 'PolylineTool',
-  Polygon: 'PolygonTool'
+  Circle: 'Create Circle',
+  Polyline: 'Create Polyline',
+  Polygon: 'Create Polygon'
 };
 
 
