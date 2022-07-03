@@ -1,13 +1,13 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector, useStore} from "react-redux";
+import { useDispatch, useSelector} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, ICircle, IFigures, IPolyline, IPolygon, PointType, PolygonType, LineStringType, Marker } from '../store/Marker';
-import * as EditStore from '../store/EditStates';
+import { BoundBox, Marker } from '../store/Marker';
 
-import { useCallback, useMemo, useState, useEffect } from 'react'
+
+import { useCallback, useMemo, useEffect } from 'react'
 import {
   useMap,
   useMapEvents,
@@ -18,11 +18,7 @@ import {
 
 
 import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
-import { CircleTool, Figures, PolylineTool, PolygonTool } from '../store/EditStates';
-import { ObjectPopup } from './ObjectPopup';
-import { PolygonMaker } from './PolygonMaker';
-import { PolylineMaker } from './PolylineMaker';
-import { CircleMaker } from './CircleMaker';
+import { EditableFigure } from './EditableFigure';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -51,11 +47,6 @@ function MyPolygon(props: any) {
         positions={props.positions}
         eventHandlers={eventHandlers}
       >
-        <ObjectPopup
-          marker={props.marker}
-          selectMe={props.selectMe}
-          updateBaseMarker={props.updateBaseMarker}>
-        </ObjectPopup>
       </Polygon>
     </React.Fragment>
   );
@@ -85,10 +76,6 @@ function MyPolyline(props: any) {
         positions={props.positions}
         eventHandlers={eventHandlers}
       >
-        <ObjectPopup
-          marker={props.marker}
-          updateBaseMarker={props.updateBaseMarker}>
-        </ObjectPopup>
       </Polyline>
     </React.Fragment>
   );
@@ -121,10 +108,6 @@ function MyCircle(props: any) {
         radius={props.radius}
         eventHandlers={eventHandlers}
       >
-        <ObjectPopup
-          marker={props.marker}
-          updateBaseMarker={props.updateBaseMarker}>
-        </ObjectPopup>
       </Circle>
     </React.Fragment>
   );
@@ -149,60 +132,11 @@ export function LocationMarkers() {
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
-  const selectedEditMode = useSelector((state) => state.editState);
 
-  const guiStates = useSelector((state) => state?.guiStates);
+  const selectedEditMode = useSelector((state) => state.editState);
 
   const markers = useSelector((state) => state?.markersStates?.markers);
   const isChanging = useSelector((state) => state?.markersStates?.isChanging);
-
-  const [obj2Edit, setObj2Edit] = React.useState<Marker>(null);
-  
-  useEffect(() => {
-    let map_center = guiStates.map_option?.map_center;
-    map_center = map_center ? map_center : [51.5359, -0.09];
-    //parentMap.setView(map_center);
-  }, [guiStates.map_option?.map_center]);
-
-  useEffect(() => {
-    if (selectedEditMode.figure != EditStore.NothingTool) {
-
-      if (!selectedEditMode.edit_mode) {
-        setObj2Edit(null);
-        return;
-      }
-
-      if (selected_id != null && selectedEditMode.edit_mode) {
-        let circle = markers?.circles.find(f => f.id == selected_id);
-
-        if (circle != null) {
-          //dispatch(EditStore.actionCreators.setFigureEditMode(CircleTool, true));
-          setObj2Edit(circle);
-          return;
-        }
-
-        let polygon = markers?.polygons.find(f => f.id == selected_id);
-
-        if (polygon != null) {
-          //dispatch(EditStore.actionCreators.setFigureEditMode(PolygonTool, true));
-          setObj2Edit(polygon);
-          return;
-        }
-
-        let polyline = markers?.polylines.find(f => f.id == selected_id);
-
-        if (polyline != null) {
-          //dispatch(EditStore.actionCreators.setFigureEditMode(PolylineTool, true));
-          setObj2Edit(polyline);
-          return;
-        }
-      }      
-    }
-
-    if (selectedEditMode.figure == EditStore.NothingTool && selected_id != null) {
-      setObj2Edit(null);
-    }
-  }, [selected_id, selectedEditMode]);
 
 
    const mapEvents = useMapEvents({
@@ -229,39 +163,6 @@ export function LocationMarkers() {
    });
 
   
-  const polygonChanged = useCallback(
-    (polygon: IPolygon, e) => {
-      var figures: IFigures = {
-
-      };
-      setObj2Edit(null);
-      figures.polygons = [polygon];
-      dispatch(MarkersStore.actionCreators.sendMarker(figures));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
-    }, [])
-
-  const polylineChanged = useCallback(
-    (figure: IPolyline, e) => {
-      var figures: IFigures = {
-
-      };
-      setObj2Edit(null);
-      figures.polylines = [figure];
-      dispatch(MarkersStore.actionCreators.sendMarker(figures));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
-    }, [])
-
-  const circleChanged = useCallback(
-    (figure: ICircle, e) => {
-      var figures: IFigures = {
-
-      };
-      setObj2Edit(null);
-      figures.circles = [figure];
-      dispatch(MarkersStore.actionCreators.sendMarker(figures));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
-    }, [])
-
   const selectMe = useCallback(
     (marker, e) => {
       parentMap.closePopup();
@@ -300,6 +201,11 @@ export function LocationMarkers() {
     return colorOption;
   }
 
+  var hidden_id = null;
+  if (selectedEditMode.edit_mode) {
+    hidden_id = selected_id;
+  }
+
   return (
     <React.Fragment>
       {
@@ -309,13 +215,11 @@ export function LocationMarkers() {
             center={marker.geometry}
             pathOptions={getColor(marker.id)}
             radius={100}
-            hidden={marker.id == obj2Edit?.id}
+            hidden={marker.id == hidden_id}
 
             marker={marker}
             updateBaseMarker={updateBaseMarker}
           >
-            <ObjectPopup marker={marker} updateBaseMarker={updateBaseMarker}>
-            </ObjectPopup>
           </MyCircle>
         )}
       {
@@ -324,7 +228,7 @@ export function LocationMarkers() {
             pathOptions={getColor(marker.id)}
             positions={marker.geometry}
             key={marker.id}
-            hidden={marker.id == obj2Edit?.id}
+            hidden={marker.id == hidden_id}
 
             marker={marker}
             selectMe={selectMe}
@@ -338,19 +242,14 @@ export function LocationMarkers() {
             pathOptions={getColor(marker.id)}
             positions={marker.geometry}
             key={marker.id}
-            hidden={marker.id == obj2Edit?.id}
+            hidden={marker.id == hidden_id}
 
             marker={marker}
             updateBaseMarker={updateBaseMarker}>
           </MyPolyline>
         )}
 
-      {selectedEditMode.figure == PolygonTool ?
-        <PolygonMaker polygonChanged={polygonChanged} obj2Edit={obj2Edit}/> : <div />}
-      {selectedEditMode.figure == PolylineTool ?
-        <PolylineMaker figureChanged={polylineChanged} obj2Edit={obj2Edit}/> : <div />}
-      {selectedEditMode.figure == CircleTool ?
-        <CircleMaker figureChanged={circleChanged} obj2Edit={obj2Edit} /> : <div />}
+      <EditableFigure/>
 
     </React.Fragment>
   );

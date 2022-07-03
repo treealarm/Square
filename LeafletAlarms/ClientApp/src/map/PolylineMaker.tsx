@@ -18,7 +18,6 @@ import {
 } from 'react-leaflet'
 
 import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
-import { ObjectPopup } from './ObjectPopup';
 import { PolylineTool, PolygonTool } from '../store/EditStates';
 
 declare module 'react-redux' {
