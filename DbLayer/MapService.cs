@@ -200,7 +200,12 @@ namespace DbLayer
       }
     }
 
-    public async Task CreateOrUpdateGeoFromStringAsync(string id, string geometry, string type)
+    public async Task CreateOrUpdateGeoFromStringAsync(
+      string id,
+      string geometry,
+      string type,
+      string radius
+    )
     {
       BsonDocument doc = new BsonDocument();
       BsonArray arr = new BsonArray();
@@ -233,15 +238,18 @@ namespace DbLayer
         if (type == GeoJsonObjectType.LineString.ToString())
         {
           arr = val;
-        }     
-
-        
+        }
       }
 
       doc.Add("coordinates", arr);
       doc.Add("type", type);
 
       var update = Builders<BsonDocument>.Update.Set("location", doc);
+
+      if (!string.IsNullOrEmpty(radius))
+      {
+        update = update.Set("radius", radius);
+      }
 
       var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
       var options = new UpdateOptions() { IsUpsert = true };
@@ -251,6 +259,8 @@ namespace DbLayer
     public async Task CreateOrUpdateGeoPointAsync(IClientSessionHandle session, FigureCircleDTO newObject)
     {
       GeoPoint point = new GeoPoint();
+      point.radius = newObject.radius;
+
       point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
         GeoJson.Position(newObject.geometry[1], newObject.geometry[0])
       );

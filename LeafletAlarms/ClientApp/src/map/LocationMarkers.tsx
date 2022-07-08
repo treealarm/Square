@@ -214,7 +214,7 @@ export function LocationMarkers() {
             key={marker.id}
             center={marker.geometry}
             pathOptions={getColor(marker.id)}
-            radius={100}
+            radius={marker.radius > 0 ? marker.radius : 10}
             hidden={marker.id == hidden_id}
 
             marker={marker}

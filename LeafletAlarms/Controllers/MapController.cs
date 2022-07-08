@@ -120,6 +120,7 @@ namespace LeafletAlarms.Controllers
           if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Point)
           {
             var figure = new FigureCircleDTO();
+            figure.radius = geoPart.radius;
             var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
             figure.geometry = new double[2] { pt.Coordinates.Y, pt.Coordinates.X };
             result.circles.Add(figure);
@@ -208,6 +209,10 @@ namespace LeafletAlarms.Controllers
 
       var markerDto = DTOConverter.GetObjPropsDTO(marker);
 
+      var props = await _mapService.GetPropAsync(id);
+
+      var propDTO = DTOConverter.Conver2Property2DTO(props);
+
       var geoPart = await _mapService.GetGeoObjectAsync(id);
 
       if (geoPart != null)
@@ -215,14 +220,23 @@ namespace LeafletAlarms.Controllers
         markerDto.type = geoPart.location.Type.ToString();
         var figure = DTOConverter.ConvertGeoPoint2DTO(geoPart);
         markerDto.geometry = JsonSerializer.Serialize(figure.geometry);
+
+        if (geoPart.location.Type == GeoJsonObjectType.Point)
+        {
+          if (propDTO == null)
+          {
+            propDTO = new ObjPropsDTO();
+          }
+          propDTO.extra_props.Add(
+            new ObjExtraPropertyDTO() { str_val = $"{geoPart.radius}", prop_name = "radius" }
+          );
+        }
       }
 
-      var props = await _mapService.GetPropAsync(id);
-
-      var propDTO = DTOConverter.Conver2Property2DTO(props);
-
       if (propDTO != null && propDTO.extra_props.Count > 0)
+      {
         markerDto.extra_props = propDTO.extra_props;
+      }
 
       return markerDto;
     }
@@ -248,13 +262,24 @@ namespace LeafletAlarms.Controllers
 
       await _mapService.UpdateAsync(marker);
 
+      ObjExtraPropertyDTO radius = null;
+
+      if (updatedMarker.extra_props != null)
+      {
+        radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
+      }      
+
       var props = DTOConverter.ConvertDTO2Property(updatedMarker);
-      
 
       await _mapService.UpdatePropAsync(props);
 
 
-      await _mapService.CreateOrUpdateGeoFromStringAsync(updatedMarker.id, updatedMarker.geometry, updatedMarker.type);
+      await _mapService.CreateOrUpdateGeoFromStringAsync(
+        updatedMarker.id,
+        updatedMarker.geometry,
+        updatedMarker.type,
+        radius?.str_val
+      );
 
 
       return CreatedAtAction(nameof(Post), updatedMarker);

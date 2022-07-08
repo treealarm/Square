@@ -15,6 +15,7 @@ export const LineStringType = 'LineString';
 export interface ICircle extends Marker {
   geometry: LatLngPair;
   type: typeof PointType;
+  radius: number;
 }
 
 export interface IPolygon extends Marker {

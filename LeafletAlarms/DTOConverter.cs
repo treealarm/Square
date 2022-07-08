@@ -117,6 +117,11 @@ namespace LeafletAlarms
 
       foreach (var prop in props.extra_props)
       {
+        if (prop.prop_name == "radius")
+        {
+          continue;
+        }
+
         ObjExtraProperty newProp = new ObjExtraProperty()
         {
           prop_name = prop.prop_name,          

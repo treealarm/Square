@@ -60,7 +60,8 @@ export function CircleMaker(props: any) {
     name: 'New Circle',
     parent_id: selected_id,
     geometry: null,
-    type: PointType
+    type: PointType,
+    radius: 10
   };
 
   useEffect(() => {

@@ -8,5 +8,6 @@ namespace Domain
 {
   public class FigureCircleDTO : FigureBaseDTO  {
     public double[] geometry { get; set; }
+    public double radius { get; set; }
   }
 }
