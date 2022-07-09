@@ -171,19 +171,19 @@ export function ObjectProperties() {
         }
         <ListItem>
           <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <IconButton aria-label="save" size="large">
-              <SaveIcon fontSize="inherit" onClick={handleSave} />
+            <IconButton aria-label="save" size="large" onClick={handleSave}>
+              <SaveIcon fontSize="inherit"/>
             </IconButton>
-            <IconButton aria-label="edit" size="large">
+            <IconButton aria-label="edit" size="large" onClick={(e) => editMe(objProps, false)} >
               {
                 selectedEditMode.edit_mode ? 
-                  <NotInterestedSharpIcon fontSize="inherit" onClick={(e) => editMe(objProps, false)} /> :
+                  <NotInterestedSharpIcon fontSize="inherit"/> :
                   <EditIcon fontSize="inherit" onClick={(e) => editMe(objProps, true)} />
               }            
               
             </IconButton>
-            <IconButton aria-label="delete" size="large">
-              <DeleteIcon fontSize="inherit" onClick={(e) => deleteMe(objProps, e)}/>
+            <IconButton aria-label="delete" size="large" onClick={(e) => deleteMe(objProps, e)}>
+              <DeleteIcon fontSize="inherit"/>
             </IconButton>          
           </ButtonGroup>
         </ListItem>

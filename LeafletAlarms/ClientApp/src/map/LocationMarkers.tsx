@@ -32,7 +32,7 @@ function MyPolygon(props: any) {
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        var selected_id = event.target.options.marker.id;
+        var selected_id = props.marker.id;
         dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
       }
     }),
@@ -42,7 +42,6 @@ function MyPolygon(props: any) {
   return (
     <React.Fragment>
       <Polygon
-        marker={props.marker}
         pathOptions={props.pathOptions}
         positions={props.positions}
         eventHandlers={eventHandlers}
@@ -61,7 +60,7 @@ function MyPolyline(props: any) {
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        var selected_id = event.target.options.marker.id;
+        var selected_id = props.marker.id;
         dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
       }
     }),
@@ -71,7 +70,6 @@ function MyPolyline(props: any) {
   return (
     <React.Fragment>
       <Polyline
-        marker={props.marker}
         pathOptions={props.pathOptions}
         positions={props.positions}
         eventHandlers={eventHandlers}
@@ -86,14 +84,11 @@ function MyCircle(props: any) {
     return null;
   }
 
-  var marker_id = props.marker.id;
-
   const dispatch = useDispatch();
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        var selected_id = event.target.options.marker.id;
-        dispatch(GuiStore.actionCreators.selectTreeItem(marker_id));
+        dispatch(GuiStore.actionCreators.selectTreeItem(props.marker.id));
       }
     }),
     [],
@@ -102,7 +97,6 @@ function MyCircle(props: any) {
   return (
     <React.Fragment>
       <Circle
-        marker={props.marker}
         pathOptions={props.pathOptions}
         center={props.center}
         radius={props.radius}
@@ -201,7 +195,8 @@ export function LocationMarkers() {
     return colorOption;
   }
 
-  var hidden_id = null;
+  var hidden_id: string = null;
+
   if (selectedEditMode.edit_mode) {
     hidden_id = selected_id;
   }

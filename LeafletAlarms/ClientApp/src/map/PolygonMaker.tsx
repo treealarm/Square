@@ -153,7 +153,7 @@ export function PolygonMaker(props: any) {
 
         const updatedValue =
         {
-          geometry: []
+          geometry: new Array<[number, number]>()
         }
 
         for (var _i = 0; _i < oldPolygon.geometry.length; _i++) {
@@ -237,7 +237,7 @@ export function PolygonMaker(props: any) {
       setPolygon(initPolygon);
     }, [curPolygon])
 
-  function moveAllPoints(e)
+  function moveAllPoints( e: React.MouseEventHandler)
   {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
