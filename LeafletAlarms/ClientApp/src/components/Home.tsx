@@ -4,13 +4,14 @@ import { TreeControl } from "../Tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
 import EditOptions from "../Tree/EditOptions";
 import { ObjectProperties } from "../Tree/ObjectProperties";
-import { Container, Grid, Stack } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
+import { WebSockClient } from "./WebSockClient";
 
 export function Home() {
   return (
     <Grid container spacing={1} sx={{ height: "100%" }}>
       <Grid item xs={12} sx={{ height: "8%" }}>
-        <TabControl />
+        <Stack direction="row" spacing={2}><TabControl /><WebSockClient /></Stack>
       </Grid>
 
       <Grid item xs={2} sx={{ height: "90%" }}>
