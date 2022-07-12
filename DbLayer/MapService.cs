@@ -193,7 +193,7 @@ namespace DbLayer
 
           //await session.CommitTransactionAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
           //await session.AbortTransactionAsync();
         }
@@ -340,7 +340,7 @@ namespace DbLayer
           GeoJson.Position(box.wn[0], box.es[1]),
           GeoJson.Position(box.wn[0], box.wn[1])
         }        
-        );
+      );
       
       var filter = builder.GeoIntersects(t => t.location, geometry);
       //var filter = builder.GeoWithinBox(t => t.location, box.wn[0], box.wn[1], box.es[0], box.es[1]);
@@ -357,7 +357,7 @@ namespace DbLayer
       {
         obj = await _geoCollection.Find(x => x.id == id).FirstOrDefaultAsync();
       }
-      catch(Exception ex)
+      catch(Exception)
       {
 
       }
@@ -373,7 +373,7 @@ namespace DbLayer
       {
         obj = await _geoCollection.Find(x => ids.Contains(x.id)).ToListAsync();
       }
-      catch (Exception ex)
+      catch (Exception)
       {
 
       }

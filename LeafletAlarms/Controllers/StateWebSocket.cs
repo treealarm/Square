@@ -1,8 +1,10 @@
-﻿using Domain;
+﻿using DbLayer;
+using Domain;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Net.WebSockets;
 using System.Text;
@@ -16,7 +18,10 @@ namespace LeafletAlarms.Controllers
   {
     private HttpContext _context;
     private WebSocket _webSocket;
+    private MapService _mapService;
     System.Timers.Timer tmr;
+    HashSet<string> _dicIds = new HashSet<string>();
+    object _locker = new object();
     void InitTimer()
     {
       tmr = new System.Timers.Timer();
@@ -42,8 +47,13 @@ namespace LeafletAlarms.Controllers
       tmr.Enabled = true;
     }
 
-    public StateWebSocket(HttpContext context, WebSocket webSocket)
+    public StateWebSocket(
+      HttpContext context,
+      WebSocket webSocket,
+      MapService mapsService
+    )
     {
+      _mapService = mapsService;
       _context = context;
       _webSocket = webSocket;
 
@@ -68,7 +78,7 @@ namespace LeafletAlarms.Controllers
 
           if (setBox != null)
           {
-
+            await OnSetBox(setBox);
           }
         }
         var replay = JsonSerializer.SerializeToUtf8Bytes(json);
@@ -93,6 +103,21 @@ namespace LeafletAlarms.Controllers
         result.CloseStatusDescription,
         CancellationToken.None
       );
+    }
+
+    private async Task OnSetBox(BoxDTO box)
+    {
+      var geo = await _mapService.GetGeoAsync(box);
+
+      lock(_locker)
+      {
+        _dicIds.Clear();
+
+        foreach (var item in geo)
+        {
+          _dicIds.Add(item.id);
+        }
+      }
     }
   }
 }
