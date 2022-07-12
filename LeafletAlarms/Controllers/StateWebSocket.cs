@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Domain;
+using Domain.StateWebSock;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Concurrent;
 using System.Dynamic;
@@ -62,7 +64,17 @@ namespace LeafletAlarms.Controllers
       {
         string s = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-        dynamic json = JsonSerializer.Deserialize<ExpandoObject>(s);
+        StateBaseDTO json = JsonSerializer.Deserialize<StateBaseDTO>(s);
+
+        if (json.action.ToString() == "set_box")
+        {
+          BoxDTO setBox = JsonSerializer.Deserialize<BoxDTO>(json.data.ToString()); ;
+
+          if (setBox != null)
+          {
+
+          }
+        }
         var replay = JsonSerializer.SerializeToUtf8Bytes(json);
 
         await _webSocket.SendAsync(

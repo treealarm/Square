@@ -35,8 +35,8 @@ export function WebSockClient() {
 
       var Message =
       {
-        box: box,
-        action: "set_box"
+        action: "set_box",
+        data: box        
       };
       socket.send(JSON.stringify(Message));
     }
@@ -45,8 +45,8 @@ export function WebSockClient() {
   const sendPing = () => {
     var Message =
     {
-      ping: 'ping ' + new Date().toISOString(),
-      action: "ping"
+      action: "ping",
+      data: 'ping ' + new Date().toISOString(),      
     };
     socket.send(JSON.stringify(Message));
   }
