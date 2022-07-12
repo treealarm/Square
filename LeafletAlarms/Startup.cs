@@ -1,10 +1,8 @@
 using DbLayer;
 using Domain;
+using LeafletAlarms.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,8 +12,6 @@ using System;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LeafletAlarms
 {
@@ -101,13 +97,14 @@ namespace LeafletAlarms
 
       app.Use(async (context, next) =>
       {
-        if (context.Request.Path == "/push")
+        if (context.Request.Path == "/state")
         {
           if (context.WebSockets.IsWebSocketRequest)
           {
             using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
             {
-              await Echo(context, webSocket);
+              StateWebSocket stateWs = new StateWebSocket(context, webSocket);
+              await stateWs.ProcessAcceptedSocket();
             }
           }
           else
@@ -132,19 +129,6 @@ namespace LeafletAlarms
         }
       });
 
-    }
-
-    private async Task Echo(HttpContext context, WebSocket webSocket)
-    {
-      var buffer = new byte[1024 * 4];
-      WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-      while (!result.CloseStatus.HasValue)
-      {
-        await webSocket.SendAsync(new ArraySegment<byte>(buffer, 0, result.Count), result.MessageType, result.EndOfMessage, CancellationToken.None);
-
-        result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-      }
-      await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
     }
     //End
   }

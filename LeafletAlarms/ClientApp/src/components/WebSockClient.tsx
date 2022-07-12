@@ -1,14 +1,16 @@
 ﻿import * as React from "react";
-import { Box, Button } from "@mui/material";
-
-import { useState } from "react";
-
+import { Box, Button, IconButton } from "@mui/material";
+import { useEffect, useState } from "react";
+import CircleIcon from '@mui/icons-material/Circle';
+import { useSelector } from "react-redux";
 //"wss://localhost:44307/push"
-var url = 'wss://' + window.location.hostname + ':' + window.location.port + '/push';
+var url = 'wss://' + window.location.hostname + ':' + window.location.port + '/state';
 var socket = new WebSocket(url);
 
 
 export function WebSockClient() {
+
+  const box = useSelector((state) => state?.markersStates?.box);
 
   const [isConnected, setIsConnected] = useState(socket.readyState == WebSocket.OPEN);
 
@@ -21,7 +23,6 @@ export function WebSockClient() {
   };
 
   socket.onmessage = function (event) {
-    const json = JSON.parse(event.data);
     try {
       console.log(event.data);
     } catch (err) {
@@ -29,8 +30,25 @@ export function WebSockClient() {
     }
   };
 
+  useEffect(() => {
+    if (box != null && isConnected) {
+
+      var Message =
+      {
+        box: box,
+        action: "set_box"
+      };
+      socket.send(JSON.stringify(Message));
+    }
+  }, [box]);
+
   const sendPing = () => {
-    socket.send(JSON.stringify('ping ' + new Date().toISOString()));
+    var Message =
+    {
+      ping: 'ping ' + new Date().toISOString(),
+      action: "ping"
+    };
+    socket.send(JSON.stringify(Message));
   }
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -38,17 +56,12 @@ export function WebSockClient() {
   };
 
   return (
-    <div>
-
       <React.Fragment key={"WebSock1"}>
         <Box sx={{ border: 1 }}>
-
-          <Button onClick={sendPing } style={{ textTransform: 'none' }}>
-            Send ping
-          </Button>
-          <Button>Connected: {'' + isConnected}</Button>
+          <IconButton onClick={sendPing} style={{ textTransform: 'none' }}>
+            <CircleIcon color={isConnected ? "success" : "error"} />
+          </IconButton>
        </Box>
       </React.Fragment>
-    </div>
   );
 }

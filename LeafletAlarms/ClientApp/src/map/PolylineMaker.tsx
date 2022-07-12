@@ -221,7 +221,6 @@ export function PolylineMaker(props: any) {
 
     }, [figure])
 
-  const markers = useSelector((state) => state?.markersStates?.markers);
   const colorOptions = { color: 'green' }
 
   const figureChanged = useCallback(
