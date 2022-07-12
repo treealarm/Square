@@ -28,7 +28,9 @@ function MyPolygon(props: any) {
   if (props.hidden == true) {
     return null;
   }
+
   const dispatch = useDispatch();
+
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
@@ -131,7 +133,7 @@ export function LocationMarkers() {
 
   const markers = useSelector((state) => state?.markersStates?.markers);
   const isChanging = useSelector((state) => state?.markersStates?.isChanging);
-
+  const visualStates = useSelector((state) => state?.markersVisualStates?.visualStates);
 
    const mapEvents = useMapEvents({
       click(e) {
@@ -181,19 +183,26 @@ export function LocationMarkers() {
   const colorOptionsChecked = { color: "blue" };
   
 
-  const getColor = (id: string) => {
-    let colorOption = colorOptionsUnselected;
+  const getColor = useCallback(
+    (id: string) => {
 
-    if (checked_ids.indexOf(id) !== -1) {
-      colorOption = colorOptionsChecked;
-    }
+      if (checked_ids.indexOf(id) !== -1) {
+        return colorOptionsChecked;
+      }
 
-    if (selected_id == id) {
-      colorOption = colorOptionsSelected;
-    }
+      if (selected_id == id) {
+        return colorOptionsSelected;
+      }
 
-    return colorOption;
-  }
+      var vState = visualStates.find(i => i.id == id);
+
+      if (vState != null) {
+        return vState;
+      }
+
+      return colorOptionsUnselected;
+
+    }, [visualStates, selected_id, checked_ids])
 
   var hidden_id: string = null;
 

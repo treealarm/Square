@@ -1,14 +1,17 @@
 ﻿import * as React from "react";
+import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import { Box, Button, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 //"wss://localhost:44307/push"
 var url = 'wss://' + window.location.hostname + ':' + window.location.port + '/state';
 var socket = new WebSocket(url);
 
 
 export function WebSockClient() {
+
+  const dispatch = useDispatch();
 
   const box = useSelector((state) => state?.markersStates?.box);
 
@@ -25,6 +28,11 @@ export function WebSockClient() {
   socket.onmessage = function (event) {
     try {
       console.log(event.data);
+      var received = JSON.parse(event.data);
+
+      if (received.action == "set_visual_states") {
+        dispatch(MarkersVisualStore.actionCreators.setMarkersVisualStates(received.data));
+      }
     } catch (err) {
       console.log(err);
     }
@@ -40,7 +48,7 @@ export function WebSockClient() {
       };
       socket.send(JSON.stringify(Message));
     }
-  }, [box]);
+  }, [box, isConnected]);
 
   const sendPing = () => {
     var Message =

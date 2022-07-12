@@ -25,7 +25,7 @@ namespace LeafletAlarms.Controllers
     void InitTimer()
     {
       tmr = new System.Timers.Timer();
-      tmr.Interval = 3000;
+      tmr.Interval = 1000;
       tmr.AutoReset = false;
       tmr.Elapsed += OnElapsed;
       tmr.Enabled = true;
@@ -33,18 +33,50 @@ namespace LeafletAlarms.Controllers
 
     void OnElapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
-      string replay = $"test state";
-      var buffer = Encoding.UTF8.GetBytes(replay);
+      // let timer start ticking
+      tmr.Enabled = true;
+
+      List<MarkerVisualState> stateList = new List<MarkerVisualState>();
+
+      StateBaseDTO packet = new StateBaseDTO()
+      {
+        action = "set_visual_states",
+        data = stateList
+      };      
+
+      lock (_locker)
+      {
+        if (_dicIds.Count == 0)
+        {
+          return;
+        }
+
+        int i = 1;
+        Random rnd = new Random();
+        foreach (var id in _dicIds)
+        {
+          i++;
+          
+
+          MarkerVisualState state = new MarkerVisualState()
+          {
+            id = id,
+            color = System.Drawing.ColorTranslator.ToHtml(
+              System.Drawing.Color.FromArgb(255, rnd.Next(1, 254), rnd.Next(1, 254), rnd.Next(1, 254)))
+          };
+
+          stateList.Add(state);
+        }
+      }
+
+      var buffer = JsonSerializer.SerializeToUtf8Bytes(packet);
 
       _webSocket.SendAsync(
         new ArraySegment<byte>(buffer, 0, buffer.Length),
         WebSocketMessageType.Text,
         true,
         CancellationToken.None
-      );
-
-      // let timer start ticking
-      tmr.Enabled = true;
+      );      
     }
 
     public StateWebSocket(

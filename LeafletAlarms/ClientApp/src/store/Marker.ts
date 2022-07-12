@@ -67,3 +67,8 @@ export interface BoundBox {
 export interface ViewOption {
   map_center: LatLngPair;
 }
+
+export interface MarkerVisualState {
+  id: string;
+  color: string;
+}
