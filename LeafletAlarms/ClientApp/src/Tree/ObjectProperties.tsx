@@ -174,11 +174,11 @@ export function ObjectProperties() {
             <IconButton aria-label="save" size="large" onClick={handleSave}>
               <SaveIcon fontSize="inherit"/>
             </IconButton>
-            <IconButton aria-label="edit" size="large" onClick={(e) => editMe(objProps, false)} >
+            <IconButton aria-label="edit" size="large" onClick={(e) => editMe(objProps, !selectedEditMode.edit_mode)} >
               {
                 selectedEditMode.edit_mode ? 
                   <NotInterestedSharpIcon fontSize="inherit"/> :
-                  <EditIcon fontSize="inherit" onClick={(e) => editMe(objProps, true)} />
+                  <EditIcon fontSize="inherit"/>
               }            
               
             </IconButton>
