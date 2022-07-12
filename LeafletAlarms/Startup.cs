@@ -29,6 +29,7 @@ namespace LeafletAlarms
     {
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
       services.AddSingleton<MapService>();
+      services.AddSingleton<StateWebSocketHandler>();
 
       services.AddControllersWithViews();
 
@@ -103,8 +104,8 @@ namespace LeafletAlarms
           {
             using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
             {
-              StateWebSocket stateWs = new StateWebSocket(context, webSocket);
-              await stateWs.ProcessAcceptedSocket();
+              var handler = app.ApplicationServices.GetRequiredService<StateWebSocketHandler>();
+              await handler.PushAsync(context, webSocket);
             }
           }
           else

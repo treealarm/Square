@@ -14,9 +14,6 @@ namespace LeafletAlarms.Controllers
 {  
   public class StateWebSocket
   {
-    public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
-      new ConcurrentDictionary<string, StateWebSocket>();
-
     private HttpContext _context;
     private WebSocket _webSocket;
     System.Timers.Timer tmr;
@@ -49,7 +46,6 @@ namespace LeafletAlarms.Controllers
     {
       _context = context;
       _webSocket = webSocket;
-      StateSockets.TryAdd(_context.Connection.Id, this);
 
       InitTimer();
     }
@@ -91,7 +87,6 @@ namespace LeafletAlarms.Controllers
       }
 
       tmr.Enabled = false;
-      StateSockets.TryRemove(_context.Connection.Id, out var sock);
 
       await _webSocket.CloseAsync(
         result.CloseStatus.Value,
