@@ -72,6 +72,21 @@ export function CircleMaker(props: any) {
       initFigure.parent_id = obj2Edit.parent_id;
       initFigure.geometry = JSON.parse(obj2Edit.geometry);
       initFigure.id = obj2Edit.id;
+
+      var radius2set = 100;
+
+      if (obj2Edit.extra_props != null) {
+        var radius = obj2Edit.extra_props.find(p => p.prop_name == "radius");
+        if (radius != null) {
+          radius2set = parseInt(radius.str_val);
+        }
+      }
+
+      initFigure.radius = radius2set;
+
+      if (initFigure.geometry == null) {
+        setMovedIndex(0)
+      }
     }
   }, [props.obj2Edit]);
 
@@ -85,6 +100,13 @@ export function CircleMaker(props: any) {
     if (copy == null) {
       return;
     }
+
+    copy.extra_props = [{
+      prop_name: "radius",
+      str_val: figure.radius.toString(),
+      visual_type: null
+    }];
+
     copy.geometry = JSON.stringify(figure.geometry);
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   }, [figure]);
@@ -99,7 +121,7 @@ export function CircleMaker(props: any) {
         setMovedIndex(-1);
         return;
       }
-      var updatedValue = { geometry: figure.geometry };
+      var updatedValue = { geometry: figure.geometry};
       updatedValue.geometry = [ll.lat, ll.lng];
       setFigure(fig => ({
         ...figure,
@@ -146,7 +168,13 @@ export function CircleMaker(props: any) {
       setFigure(initFigure);
     }, [figure])
 
-  const colorOptions = { color: 'green' }
+  const colorOptions = {
+    fillColor: 'yellow',
+    fillOpacity: 0.5,
+    color: 'yellow',
+    opacity: 1,
+    dashArray: '5,10'
+  }
 
   const figureChanged = useCallback(
     (e) => {
@@ -162,13 +190,11 @@ export function CircleMaker(props: any) {
     <React.Fragment>
       
       <div key={0}>
-        <Circle pathOptions={colorOptions} center={figure.geometry} radius={1000}>
-        </Circle>
-        <CircleMarker
-          key={0}
-          center={figure.geometry}
+        <Circle
           pathOptions={colorOptions}
-          radius={10}
+          center={figure.geometry}
+          radius={figure.radius}
+          key={0}
           >
           {
             movedIndex < 0
@@ -182,7 +208,7 @@ export function CircleMaker(props: any) {
             </CirclePopup> : < div />
           }
 
-        </CircleMarker>
+        </Circle>
 
         </div>      
     </React.Fragment>
