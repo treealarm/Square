@@ -1,6 +1,7 @@
 ﻿using DbLayer;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
@@ -21,6 +22,14 @@ namespace LeafletAlarms.Controllers
       StateSockets.TryAdd(context.Connection.Id, stateWs);
       await stateWs.ProcessAcceptedSocket();
       StateSockets.TryRemove(context.Connection.Id, out var sock);
+    }
+
+    public async Task OnUpdatePosition(List<string> movedMarkers)
+    {
+      foreach (var sock in StateSockets)
+      {
+        await sock.Value.OnUpdatePosition(movedMarkers);
+      }
     }
   }
 }

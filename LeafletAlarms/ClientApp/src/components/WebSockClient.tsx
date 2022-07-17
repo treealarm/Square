@@ -1,5 +1,6 @@
 ﻿import * as React from "react";
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
+import * as MarkersStore from '../store/MarkersStates';
 import { Box, Button, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
@@ -33,6 +34,11 @@ export function WebSockClient() {
       if (received.action == "set_visual_states") {
         dispatch(MarkersVisualStore.actionCreators.setMarkersVisualStates(received.data));
       }
+
+      if (received.action == "set_ids2update") {
+        dispatch(MarkersStore.actionCreators.requestMarkersByIds(received.data));
+      }
+      
     } catch (err) {
       console.log(err);
     }

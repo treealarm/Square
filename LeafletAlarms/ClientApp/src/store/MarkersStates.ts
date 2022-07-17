@@ -37,17 +37,6 @@ interface PostedMarkerAction {
   success: boolean;
 }
 
-interface UpdatingMarkerAction {
-  type: "UPDATING_MARKER";
-  marker: Marker;
-}
-
-interface UpdatedMarkerAction {
-  type: "UPDATED_MARKER";
-  marker: Marker;
-  success: boolean;
-}
-
 interface DeletingMarkerAction {
   type: "DELETING_MARKERS";
   ids_to_delete: string[];
@@ -73,8 +62,6 @@ type KnownAction =
   | PostedMarkerAction
   | DeletingMarkerAction
   | DeletedMarkerAction
-  | UpdatingMarkerAction
-  | UpdatedMarkerAction
   | GotMarkersByIdsAction
   ;
 
@@ -123,7 +110,7 @@ export const actionCreators = {
     }
   },
 
-  sendMarker: (markers: IFigures): AppThunkAction<KnownAction> => (
+  addTracks: (markers: IFigures): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
@@ -131,7 +118,10 @@ export const actionCreators = {
 
     // Send data to the backend via POST
     let body = JSON.stringify(markers);
-    var fetched = fetch(ApiRootString, {
+
+    var request = ApiRootString + "/AddTracks";
+
+    var fetched = fetch(request, {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: body
@@ -145,30 +135,6 @@ export const actionCreators = {
     });
 
     dispatch({ type: "POSTING_MARKERS", markers: markers });
-  },
-
-  updateBaseInfo: (marker: Marker): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    //let marker: Marker = {} as Marker;
-
-    // Send data to the backend via POST
-    let body = JSON.stringify(marker);
-    var fetched = fetch(ApiRootString, {
-      method: "PUT",
-      headers: { "Content-type": "application/json" },
-      body: body
-    });
-
-    console.log("puted:", fetched);
-
-    fetched.then(response => response.json()).then(data => {
-      let m: Marker = data as Marker;
-      dispatch({ type: "UPDATED_MARKER", success: true, marker: m });
-    });
-
-    dispatch({ type: "UPDATING_MARKER", marker: marker });
   },
 
   deleteMarker: (ids: string[]): AppThunkAction<KnownAction> => (
@@ -332,36 +298,6 @@ export const reducer: Reducer<MarkersState> = (
         };
       }
 
-    case "UPDATING_MARKER":
-      return {
-        ...state,
-        isLoading: true
-      };
-    case "UPDATED_MARKER":
-      {
-        var cur_markers: IFigures =
-        {
-          circles:  [...state.markers.circles],
-          polygons: [...state.markers.polygons],
-          polylines:[...state.markers.polylines]
-        };
-
-        let selectedItem = cur_markers.polygons.findIndex((element) => {
-          return element.id === action.marker.id;
-        });
-
-        if (selectedItem >= 0) {
-          cur_markers.polygons[selectedItem].name = action.marker.name;
-        }
-
-
-        return {
-          ...state,
-          markers: cur_markers,
-          isLoading: false,
-          isChanging: state.isChanging + 1
-        };
-      }
     case "GOT_MARKERS_BY_IDS":
       var cur_markers: IFigures = action.markers;
 

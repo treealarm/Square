@@ -6,11 +6,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace LeafletAlarms.Controllers
 {  
@@ -27,11 +29,11 @@ namespace LeafletAlarms.Controllers
       tmr = new System.Timers.Timer();
       tmr.Interval = 1000;
       tmr.AutoReset = false;
-      tmr.Elapsed += OnElapsed;
+      tmr.Elapsed += new ElapsedEventHandler(OnElapsed);
       tmr.Enabled = true;
     }
 
-    void OnElapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private async void OnElapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
       // let timer start ticking
       tmr.Enabled = true;
@@ -53,6 +55,7 @@ namespace LeafletAlarms.Controllers
 
         int i = 1;
         Random rnd = new Random();
+
         foreach (var id in _dicIds)
         {
           i++;
@@ -69,14 +72,7 @@ namespace LeafletAlarms.Controllers
         }
       }
 
-      var buffer = JsonSerializer.SerializeToUtf8Bytes(packet);
-
-      _webSocket.SendAsync(
-        new ArraySegment<byte>(buffer, 0, buffer.Length),
-        WebSocketMessageType.Text,
-        true,
-        CancellationToken.None
-      );      
+      await SendPacket(packet);            
     }
 
     public StateWebSocket(
@@ -133,6 +129,39 @@ namespace LeafletAlarms.Controllers
       await _webSocket.CloseAsync(
         result.CloseStatus.Value,
         result.CloseStatusDescription,
+        CancellationToken.None
+      );
+    }
+
+    public async Task OnUpdatePosition(List<string> movedMarkers)
+    {
+      List<string> toUpdate;
+
+      lock (_locker)
+      {
+        toUpdate = movedMarkers.Where(m => _dicIds.Contains(m)).ToList();
+      }
+
+      if (toUpdate.Count > 0)
+      {
+        StateBaseDTO packet = new StateBaseDTO()
+        {
+          action = "set_ids2update",
+          data = toUpdate
+        };
+
+        await SendPacket(packet);
+      }
+    }
+
+    private async Task SendPacket(StateBaseDTO packet)
+    {
+      var buffer = JsonSerializer.SerializeToUtf8Bytes(packet);
+
+      await _webSocket.SendAsync(
+        new ArraySegment<byte>(buffer, 0, buffer.Length),
+        WebSocketMessageType.Text,
+        true,
         CancellationToken.None
       );
     }

@@ -21,7 +21,7 @@ export function EditableFigure() {
 
       };
       figures.polygons = [polygon];
-      dispatch(MarkersStore.actionCreators.sendMarker(figures));
+      dispatch(MarkersStore.actionCreators.addTracks(figures));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
@@ -31,7 +31,7 @@ export function EditableFigure() {
 
       };
       figures.polylines = [figure];
-      dispatch(MarkersStore.actionCreators.sendMarker(figures));
+      dispatch(MarkersStore.actionCreators.addTracks(figures));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
@@ -41,7 +41,7 @@ export function EditableFigure() {
 
       };
       figures.circles = [figure];
-      dispatch(MarkersStore.actionCreators.sendMarker(figures));
+      dispatch(MarkersStore.actionCreators.addTracks(figures));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 

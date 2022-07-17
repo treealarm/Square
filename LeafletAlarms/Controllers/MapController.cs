@@ -16,9 +16,12 @@ namespace LeafletAlarms.Controllers
   public class MapController : ControllerBase
   {
     private readonly MapService _mapService;
-
-    public MapController(MapService mapsService) =>
-        _mapService = mapsService;
+    private StateWebSocketHandler _stateService;
+    public MapController(MapService mapsService, StateWebSocketHandler stateService)
+    {
+      _mapService = mapsService;
+      _stateService = stateService;
+    }        
 
     [HttpGet("{id:length(24)}")]
     public async Task<ActionResult<Marker>> Get(string id)
@@ -282,44 +285,37 @@ namespace LeafletAlarms.Controllers
       );
 
 
-      return CreatedAtAction(nameof(Post), updatedMarker);
+      return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(FiguresDTO newMarkers)
+    [Route("AddTracks")]
+    public async Task<IActionResult> AddTracks(FiguresDTO movedMarkers)
     {
-      foreach(var figure in newMarkers.circles)
+      List<string> movedIds = new List<string>();
+
+      foreach (var figure in movedMarkers.circles)
       {
+        movedIds.Add(figure.id);
         await _mapService.CreateCompleteObject(figure);
       }
 
-      foreach (var figure in newMarkers.polygons)
+      foreach (var figure in movedMarkers.polygons)
       {
+        movedIds.Add(figure.id);
         await _mapService.CreateCompleteObject(figure);
       }
 
-      foreach (var figure in newMarkers.polylines)
+      foreach (var figure in movedMarkers.polylines)
       {
+        movedIds.Add(figure.id);
         await _mapService.CreateCompleteObject(figure);
       }
 
-      var ret = CreatedAtAction(nameof(Post), newMarkers);
+      await _stateService.OnUpdatePosition(movedIds);
+
+      var ret = CreatedAtAction(nameof(AddTracks), movedMarkers);
       return ret;
-    }
-
-    [HttpPut]
-    public async Task<IActionResult> Update(Marker updatedMarker)
-    {
-      var marker = await _mapService.GetAsync(updatedMarker.id);
-
-      if (marker is null)
-      {
-        return NotFound();
-      }
-
-      await _mapService.UpdateAsync(updatedMarker);
-
-      return NoContent();
     }
 
     [HttpDelete("{id:length(24)}")]

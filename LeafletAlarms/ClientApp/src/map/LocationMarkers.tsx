@@ -167,12 +167,6 @@ export function LocationMarkers() {
     }, [])
 
   
-  const updateBaseMarker = useCallback(
-    (marker, e) => {
-      dispatch(MarkersStore.actionCreators.updateBaseInfo(marker));
-    }, [])
-
-  
   useEffect(
     () => {
       dispatch(GuiStore.actionCreators.requestTreeUpdate());
@@ -222,7 +216,6 @@ export function LocationMarkers() {
             hidden={marker.id == hidden_id}
 
             marker={marker}
-            updateBaseMarker={updateBaseMarker}
           >
           </MyCircle>
         )}
@@ -236,7 +229,7 @@ export function LocationMarkers() {
 
             marker={marker}
             selectMe={selectMe}
-            updateBaseMarker={updateBaseMarker}>
+          >
           </MyPolygon>
         )}
 
@@ -249,7 +242,7 @@ export function LocationMarkers() {
             hidden={marker.id == hidden_id}
 
             marker={marker}
-            updateBaseMarker={updateBaseMarker}>
+          >
           </MyPolyline>
         )}
 
