@@ -187,7 +187,7 @@ namespace LeafletAlarms.Controllers
     [Route("GetByIds")]
     public async Task<FiguresDTO> GetByIds(List<string> ids)
     {
-      var geo = await _mapService.GetGeoObjectsAsync(ids);
+      var geo = await _mapService.GeoServ.GetGeoObjectsAsync(ids);
       return await GetFigures(geo);
     }
 
@@ -195,7 +195,7 @@ namespace LeafletAlarms.Controllers
     [Route("GetByBox")]
     public async Task<FiguresDTO> GetByBox(BoxDTO box)
     {
-      var geo = await _mapService.GetGeoAsync(box);
+      var geo = await _mapService.GeoServ.GetGeoAsync(box);
       return await GetFigures(geo);
     }
 
@@ -216,7 +216,7 @@ namespace LeafletAlarms.Controllers
 
       var propDTO = DTOConverter.Conver2Property2DTO(props);
 
-      var geoPart = await _mapService.GetGeoObjectAsync(id);
+      var geoPart = await _mapService.GeoServ.GetGeoObjectAsync(id);
 
       if (geoPart != null)
       {
@@ -277,7 +277,7 @@ namespace LeafletAlarms.Controllers
       await _mapService.UpdatePropAsync(props);
 
 
-      await _mapService.CreateOrUpdateGeoFromStringAsync(
+      await _mapService.GeoServ.CreateOrUpdateGeoFromStringAsync(
         updatedMarker.id,
         updatedMarker.geometry,
         updatedMarker.type,
@@ -292,30 +292,46 @@ namespace LeafletAlarms.Controllers
     [Route("AddTracks")]
     public async Task<IActionResult> AddTracks(FiguresDTO movedMarkers)
     {
-      List<string> movedIds = new List<string>();
+      List<TrackPoint> trackPoints = new List<TrackPoint>();
 
       foreach (var figure in movedMarkers.circles)
       {
-        movedIds.Add(figure.id);
-        await _mapService.CreateCompleteObject(figure);
+        trackPoints.Add(
+          new TrackPoint()
+          {
+            figure = await _mapService.CreateCompleteObject(figure)
+          }
+        );
       }
 
       foreach (var figure in movedMarkers.polygons)
       {
-        movedIds.Add(figure.id);
-        await _mapService.CreateCompleteObject(figure);
+        trackPoints.Add(
+          new TrackPoint()
+          {
+            figure = await _mapService.CreateCompleteObject(figure)
+          }
+        );
       }
 
       foreach (var figure in movedMarkers.polylines)
       {
-        movedIds.Add(figure.id);
-        await _mapService.CreateCompleteObject(figure);
+        trackPoints.Add(
+          new TrackPoint()
+          {
+            figure = await _mapService.CreateCompleteObject(figure)
+          }
+        );
       }
+
+      await _mapService.TracksServ.InsertManyAsync(trackPoints);
+
+      List<string> movedIds = trackPoints.Select(p => p.id).ToList();
 
       await _stateService.OnUpdatePosition(movedIds);
 
-      var ret = CreatedAtAction(nameof(AddTracks), movedMarkers);
-      return ret;
+      
+      return CreatedAtAction(nameof(AddTracks), movedMarkers);
     }
 
     [HttpDelete("{id:length(24)}")]

@@ -10,8 +10,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DbLayer
@@ -19,12 +17,22 @@ namespace DbLayer
   public class MapService
   {
     private readonly IMongoCollection<Marker> _markerCollection;
-    private readonly IMongoCollection<GeoPoint> _geoCollection;
+
     private readonly IMongoCollection<MarkerProperties> _propCollection;
-    private readonly IMongoCollection<BsonDocument> _geoRawCollection;
-    
 
     private readonly MongoClient _mongoClient;
+
+    public GeoService GeoServ 
+    { 
+      get; 
+      private set; 
+    }
+
+    public TrackService TracksServ
+    {
+      get;
+      private set;
+    }
 
     public MapService(
         IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
@@ -38,13 +46,32 @@ namespace DbLayer
       _markerCollection = mongoDatabase.GetCollection<Marker>(
           geoStoreDatabaseSettings.Value.ObjectsCollectionName);
 
-      _geoCollection = mongoDatabase.GetCollection<GeoPoint>(
-          geoStoreDatabaseSettings.Value.GeoCollectionName);
-
       _propCollection = mongoDatabase.GetCollection<MarkerProperties>(
           geoStoreDatabaseSettings.Value.PropCollectionName);
 
-      _geoRawCollection = mongoDatabase.GetCollection<BsonDocument>(geoStoreDatabaseSettings.Value.GeoCollectionName);
+
+      var geoCollection = mongoDatabase.GetCollection<GeoPoint>(
+        geoStoreDatabaseSettings.Value.GeoCollectionName);
+
+      var geoRawCollection =
+        mongoDatabase.GetCollection<BsonDocument>(geoStoreDatabaseSettings.Value.GeoCollectionName);
+
+      GeoServ = CreateGeoService(mongoDatabase, geoStoreDatabaseSettings.Value.GeoCollectionName);
+
+      var tracksCollection =
+        mongoDatabase.GetCollection<TrackPoint>(geoStoreDatabaseSettings.Value.TracksCollectionName);
+
+      TracksServ = new TrackService(tracksCollection);
+    }
+
+    private GeoService CreateGeoService(IMongoDatabase mongoDatabase, string collName)
+    {
+      var geoCollection = mongoDatabase.GetCollection<GeoPoint>(collName);
+
+      var geoRawCollection =
+        mongoDatabase.GetCollection<BsonDocument>(collName);
+
+      return new GeoService(geoCollection, geoRawCollection);
     }
 
     public async Task<List<Marker>> GetAsync(List<string> ids)
@@ -114,11 +141,6 @@ namespace DbLayer
       await _markerCollection.InsertOneAsync(newObj);
     }
 
-    public async Task CreateAsync(IClientSessionHandle session, Marker newObj)
-    {
-      await _markerCollection.InsertOneAsync(session, newObj);
-    }
-
     public async Task UpdateAsync(Marker updatedObj)
     {
       using (var session = await _mongoClient.StartSessionAsync())
@@ -130,26 +152,19 @@ namespace DbLayer
     private async Task UpdateAsync(IClientSessionHandle session, Marker updatedObj)
     {
       await _markerCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj);
-    }        
-
-    public async Task RemoveAsync(string id)
-    {
-      await _markerCollection.DeleteOneAsync(x => x.id == id);
-      await _geoCollection.DeleteOneAsync(x => x.id == id);
-    }
-        
+    } 
 
     public async Task<DeleteResult> RemoveAsync(List<string> ids)
     {
       //var idsFilter = Builders<Marker>.Filter.In(d => d.id, ids);
       //return await _circleCollection.DeleteManyAsync(idsFilter);
-      await _geoCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      await GeoServ.RemoveAsync(ids);
       return await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
 
-    private async Task DoCreateCompleteObject(FigureBaseDTO figure, IClientSessionHandle session)
-    {
+    public async Task<GeoPoint> CreateCompleteObject(FigureBaseDTO figure)
+    { 
       Marker marker = new Marker();
       marker.name = figure.name;
       marker.parent_id = figure.parent_id;
@@ -157,228 +172,38 @@ namespace DbLayer
       if (!string.IsNullOrEmpty(figure.id))
       {
         marker.id = figure.id;
-        await UpdateAsync(session, marker);
+        await UpdateAsync(marker);
       }
       else
       {
-        await CreateAsync(session, marker);
+        await CreateAsync(marker);
       }
-
 
       figure.id = marker.id;
 
+      return await CreateGeoPoint(figure);
+    }
+
+    public async Task<GeoPoint> CreateGeoPoint(FigureBaseDTO figure)
+    {
+      GeoPoint geoPoint = null;
+
       if (figure is FigureCircleDTO circle)
       {
-        await CreateOrUpdateGeoPointAsync(session, circle);
+        geoPoint = await GeoServ.CreateOrUpdateGeoPointAsync(circle);
       }
 
       if (figure is FigurePolygonDTO polygon)
       {
-        await CreateOrUpdateGeoPolygonAsync(session, polygon);
+        geoPoint = await GeoServ.CreateOrUpdateGeoPolygonAsync(polygon);
       }
 
       if (figure is FigurePolylineDTO polyline)
       {
-        await CreateOrUpdateGeoPolylineAsync(session, polyline);
-      }
-    }
-    public async Task CreateCompleteObject(FigureBaseDTO figure)
-    {
-      using (var session = await _mongoClient.StartSessionAsync())
-      {
-        //session.StartTransaction();
-        try
-        {
-          await DoCreateCompleteObject(figure, session);
-
-          //await session.CommitTransactionAsync();
-        }
-        catch (Exception)
-        {
-          //await session.AbortTransactionAsync();
-        }
-      }
-    }
-
-    public async Task CreateOrUpdateGeoFromStringAsync(
-      string id,
-      string geometry,
-      string type,
-      string radius
-    )
-    {
-      BsonDocument doc = new BsonDocument();
-      BsonArray arr = new BsonArray();
-
-      if (type == GeoJsonObjectType.Point.ToString())
-      {
-        arr = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
-        
-        var temp = arr[0];
-        arr[0] = arr[1];
-        arr[1] = temp;
-      }
-      else
-      {
-        var val = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
-
-        foreach (var element in val)
-        {
-          var temp = element[0];
-          element[0] = element[1];
-          element[1] = temp;
-        }
-
-        if (type == GeoJsonObjectType.Polygon.ToString())
-        {
-          val.Add(val[0]);
-          arr.Add(val);
-        }
-
-        if (type == GeoJsonObjectType.LineString.ToString())
-        {
-          arr = val;
-        }
+        geoPoint = await GeoServ.CreateOrUpdateGeoPolylineAsync(polyline);
       }
 
-      doc.Add("coordinates", arr);
-      doc.Add("type", type);
-
-      var update = Builders<BsonDocument>.Update.Set("location", doc);
-
-      if (!string.IsNullOrEmpty(radius))
-      {
-        update = update.Set("radius", radius);
-      }
-
-      var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
-      var options = new UpdateOptions() { IsUpsert = true };
-      var updateResult = await _geoRawCollection.UpdateOneAsync(filter, update, options);
-    }
-
-    public async Task CreateOrUpdateGeoPointAsync(IClientSessionHandle session, FigureCircleDTO newObject)
-    {
-      GeoPoint point = new GeoPoint();
-      point.radius = newObject.radius;
-
-      point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
-        GeoJson.Position(newObject.geometry[1], newObject.geometry[0])
-      );
-      point.id = newObject.id;
-      var result = await _geoCollection.ReplaceOneAsync(session, x => x.id == newObject.id, point);
-      
-      if (result.MatchedCount <= 0)
-      {
-        await _geoCollection.InsertOneAsync(session, point);
-      }
-    }
-
-    public async Task CreateOrUpdateGeoPolygonAsync(IClientSessionHandle session, FigurePolygonDTO newObject)
-    {
-      GeoPoint point = new GeoPoint();
-
-      List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-      for(int i = 0; i <newObject.geometry.Length; i++)
-      {
-        coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
-      }
-      
-      coordinates.Add(GeoJson.Position(newObject.geometry[0][1], newObject.geometry[0][0]));
-
-      point.location = GeoJson.Polygon(coordinates.ToArray());
-
-      point.id = newObject.id;
-      var result = await _geoCollection.ReplaceOneAsync(session, x => x.id == newObject.id, point);
-
-      if (result.MatchedCount <= 0)
-      {
-        await _geoCollection.InsertOneAsync(session, point);
-      }
-    }
-
-    public async Task CreateOrUpdateGeoPolylineAsync(IClientSessionHandle session, FigurePolylineDTO newObject)
-    {
-      GeoPoint point = new GeoPoint();
-
-      List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-      for (int i = 0; i < newObject.geometry.Length; i++)
-      {
-        coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
-      }
-
-      point.location = GeoJson.LineString(coordinates.ToArray());
-
-      point.id = newObject.id;
-      var result = await _geoCollection.ReplaceOneAsync(session, x => x.id == newObject.id, point);
-
-      if (result.MatchedCount <= 0)
-      {
-        await _geoCollection.InsertOneAsync(session, point);
-      }
-    }
-
-    private static void Log(FilterDefinition<GeoPoint> filter)
-    {
-      var serializerRegistry = BsonSerializer.SerializerRegistry;
-      var documentSerializer = serializerRegistry.GetSerializer<GeoPoint>();
-      var rendered = filter.Render(documentSerializer, serializerRegistry);
-      Console.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
-      Console.WriteLine();
-    }
-
-    public async Task<List<GeoPoint>> GetGeoAsync(BoxDTO box)
-    {
-      var builder = Builders<GeoPoint>.Filter;
-      var geometry = GeoJson.Polygon(
-        new GeoJson2DCoordinates[]
-        {
-          GeoJson.Position(box.wn[0], box.wn[1]), 
-          GeoJson.Position(box.es[0], box.wn[1]),
-          GeoJson.Position(box.es[0], box.es[1]),
-          GeoJson.Position(box.wn[0], box.es[1]),
-          GeoJson.Position(box.wn[0], box.wn[1])
-        }        
-      );
-      
-      var filter = builder.GeoIntersects(t => t.location, geometry);
-      //var filter = builder.GeoWithinBox(t => t.location, box.wn[0], box.wn[1], box.es[0], box.es[1]);
-      Log(filter);
-      var list = await _geoCollection.Find(filter).ToListAsync();
-      return list;
-    }
-
-    public async Task<GeoPoint> GetGeoObjectAsync(string id)
-    {
-      GeoPoint obj = null;
-
-      try
-      {
-        obj = await _geoCollection.Find(x => x.id == id).FirstOrDefaultAsync();
-      }
-      catch(Exception)
-      {
-
-      }
-      
-      return obj;
-    }
-
-    public async Task<List<GeoPoint>> GetGeoObjectsAsync(List<string> ids)
-    {
-      List<GeoPoint> obj = null;
-
-      try
-      {
-        obj = await _geoCollection.Find(x => ids.Contains(x.id)).ToListAsync();
-      }
-      catch (Exception)
-      {
-
-      }
-
-      return obj;
+      return geoPoint;
     }
 
     public async Task UpdatePropAsync(MarkerProperties updatedObj)

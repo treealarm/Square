@@ -168,7 +168,7 @@ namespace LeafletAlarms.Controllers
 
     private async Task OnSetBox(BoxDTO box)
     {
-      var geo = await _mapService.GetGeoAsync(box);
+      var geo = await _mapService.GeoServ.GetGeoAsync(box);
 
       lock(_locker)
       {
