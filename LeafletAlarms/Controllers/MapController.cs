@@ -185,10 +185,12 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetByIds")]
-    public async Task<FiguresDTO> GetByIds(List<string> ids)
+    public async Task<ActionResult<FiguresDTO>> GetByIds(List<string> ids)
     {
       var geo = await _mapService.GeoServ.GetGeoObjectsAsync(ids);
-      return await GetFigures(geo);
+      var figures = await GetFigures(geo);
+
+      return CreatedAtAction(nameof(GetByIds), figures);
     }
 
     [HttpPost]
@@ -326,10 +328,9 @@ namespace LeafletAlarms.Controllers
 
       await _mapService.TracksServ.InsertManyAsync(trackPoints);
 
-      List<string> movedIds = trackPoints.Select(p => p.id).ToList();
+      List<string> movedIds = trackPoints.Select(p => p.figure.id).ToList();
 
       await _stateService.OnUpdatePosition(movedIds);
-
       
       return CreatedAtAction(nameof(AddTracks), movedMarkers);
     }
