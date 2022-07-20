@@ -17,7 +17,14 @@ namespace TrackSender
 
     static void Main(string[] args)
     {
-      RunAsync().GetAwaiter().GetResult();
+      try
+      {
+        RunAsync().GetAwaiter().GetResult();
+      }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
     }
 
     static async Task<FiguresDTO> UpdateFiguresAsync(FiguresDTO figure)
@@ -67,6 +74,7 @@ namespace TrackSender
       for (double x = 0; x < 0.1; x+=0.001)
       {
         circle.geometry[0] = stat + x;
+        Console.WriteLine(JsonSerializer.Serialize(circle.geometry));
         await UpdateFiguresAsync(figures);
         await Task.Delay(1000);
       }      

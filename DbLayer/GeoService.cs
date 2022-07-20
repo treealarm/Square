@@ -168,6 +168,7 @@ namespace DbLayer
       //var filter = builder.GeoWithinBox(t => t.location, box.wn[0], box.wn[1], box.es[0], box.es[1]);
       Log(filter);
       var list = await _geoCollection.Find(filter).ToListAsync();
+
       return list;
     }
 

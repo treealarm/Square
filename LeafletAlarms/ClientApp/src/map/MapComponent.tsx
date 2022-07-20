@@ -6,23 +6,26 @@ import {
   TileLayer,
   Circle,
   Pane,
-  Rectangle
+  Rectangle,
+  ImageOverlay
 } from "react-leaflet";
+import { LatLngBounds } from "leaflet";
 
 export function MapComponent() {
   const redOptions = { color: "red" };
-
+  const bounds = new LatLngBounds([51.5359, -0.09], [51.55, -0.088])
   return (
         <MapContainer
           center={[51.5359, -0.09]}
           zoom={13}
           scrollWheelZoom={false}
         >
-          <Circle
-            center={[51.5359, -0.09]}
-            pathOptions={redOptions}
-            radius={200}
-          />
+      <ImageOverlay
+        url="http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg"
+        bounds={bounds}
+        opacity={0.5}
+        zIndex={10}
+      />
           <LocationMarkers />
 
           <TileLayer

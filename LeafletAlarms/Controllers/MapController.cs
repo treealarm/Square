@@ -326,11 +326,9 @@ namespace LeafletAlarms.Controllers
         );
       }
 
-      await _mapService.TracksServ.InsertManyAsync(trackPoints);
+      await _mapService.TracksServ.InsertManyAsync(trackPoints);      
 
-      List<string> movedIds = trackPoints.Select(p => p.figure.id).ToList();
-
-      await _stateService.OnUpdatePosition(movedIds);
+      await _stateService.OnUpdatePosition(trackPoints);
       
       return CreatedAtAction(nameof(AddTracks), movedMarkers);
     }

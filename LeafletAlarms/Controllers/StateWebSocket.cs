@@ -2,6 +2,7 @@
 using Domain;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
+using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -21,22 +22,33 @@ namespace LeafletAlarms.Controllers
     private HttpContext _context;
     private WebSocket _webSocket;
     private MapService _mapService;
-    System.Timers.Timer tmr;
-    HashSet<string> _dicIds = new HashSet<string>();
-    object _locker = new object();
+    private System.Timers.Timer _timer;
+    private HashSet<string> _dicIds = new HashSet<string>();
+    private object _locker = new object();
+    private BoxDTO _currentBox;
+    public BoxDTO CurrentBox
+    {
+      get
+      {
+        lock(_locker)
+        {
+          return _currentBox;
+        }        
+      }
+    }
     void InitTimer()
     {
-      tmr = new System.Timers.Timer();
-      tmr.Interval = 1000;
-      tmr.AutoReset = false;
-      tmr.Elapsed += new ElapsedEventHandler(OnElapsed);
-      tmr.Enabled = true;
+      _timer = new System.Timers.Timer();
+      _timer.Interval = 1000;
+      _timer.AutoReset = false;
+      _timer.Elapsed += new ElapsedEventHandler(OnElapsed);
+      _timer.Enabled = true;
     }
 
     private async void OnElapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
       // let timer start ticking
-      tmr.Enabled = true;
+      _timer.Enabled = true;
 
       List<MarkerVisualState> stateList = new List<MarkerVisualState>();
 
@@ -124,7 +136,7 @@ namespace LeafletAlarms.Controllers
         );
       }
 
-      tmr.Enabled = false;
+      _timer.Enabled = false;
 
       await _webSocket.CloseAsync(
         result.CloseStatus.Value,
@@ -133,13 +145,97 @@ namespace LeafletAlarms.Controllers
       );
     }
 
-    public async Task OnUpdatePosition(List<string> movedMarkers)
+    public static bool IsWithinBox(BoxDTO box, GeoPoint track)
     {
-      List<string> toUpdate;
+      bool IsPointInBox(BoxDTO box, GeoJson2DCoordinates coord, double dx = 0)
+      {
+        var right = box.es[0] + dx;
+        var left = box.wn[0] - dx;
+        var up = box.wn[1] + dx;
+        var down = box.es[1] - dx;
+
+        if (coord.X < left)
+          return false;
+
+        if (coord.X > right)
+          return false;
+
+        if (coord.Y > up)
+          return false;
+
+        if (coord.Y < down)
+          return false;
+
+        return true;
+      }
+
+      if (track.location is GeoJsonPoint<GeoJson2DCoordinates> point)
+      {
+        var dx = track.radius / 111000;
+        return IsPointInBox(box, point.Coordinates, dx);
+      }
+
+      if (track.location is GeoJsonPolygon<GeoJson2DCoordinates> polygon)
+      {
+        foreach (var pt in polygon.Coordinates.Exterior.Positions)
+        {
+          if (IsPointInBox(box, pt))
+          {
+            return true;
+          }
+        }
+      }
+
+      if (track.location is GeoJsonLineString<GeoJson2DCoordinates> line)
+      {
+        foreach (var pt in line.Coordinates.Positions)
+        {
+          if (IsPointInBox(box, pt))
+          {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    }
+
+    public async Task OnUpdatePosition(List<TrackPoint> movedMarkers)
+    {
+      HashSet<string> toUpdate = new HashSet<string>();
+      BoxDTO curBox = CurrentBox;
+
+      if (curBox == null)
+      {
+        return;
+      }
+
+      List<TrackPoint> toCheckIfInBox = new List<TrackPoint>();
 
       lock (_locker)
       {
-        toUpdate = movedMarkers.Where(m => _dicIds.Contains(m)).ToList();
+        foreach (var track in movedMarkers)
+        {
+          if (_dicIds.Contains(track.figure.id))
+          {
+            if (!IsWithinBox(curBox, track.figure))
+            {
+              _dicIds.Remove(track.figure.id);
+            }
+            toUpdate.Add(track.figure.id);
+            continue;
+          }
+          toCheckIfInBox.Add(track);
+        }        
+      }
+
+      foreach (var track in toCheckIfInBox)
+      {
+        if (IsWithinBox(curBox, track.figure))
+        {
+          toUpdate.Add(track.figure.id);
+          _dicIds.Add(track.figure.id);
+        }
       }
 
       if (toUpdate.Count > 0)
@@ -172,6 +268,8 @@ namespace LeafletAlarms.Controllers
 
       lock(_locker)
       {
+        _currentBox = box;
+
         _dicIds.Clear();
 
         foreach (var item in geo)

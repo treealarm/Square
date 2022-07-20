@@ -24,7 +24,7 @@ namespace LeafletAlarms.Controllers
       StateSockets.TryRemove(context.Connection.Id, out var sock);
     }
 
-    public async Task OnUpdatePosition(List<string> movedMarkers)
+    public async Task OnUpdatePosition(List<TrackPoint> movedMarkers)
     {
       foreach (var sock in StateSockets)
       {
