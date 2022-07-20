@@ -28,7 +28,9 @@ namespace DbLayer
       string id,
       string geometry,
       string type,
-      string radius
+      string radius,
+      string min_zoom,
+      string max_zoom
     )
     {
       BsonDocument doc = new BsonDocument();
@@ -73,6 +75,16 @@ namespace DbLayer
       if (!string.IsNullOrEmpty(radius))
       {
         update = update.Set("radius", radius);
+      }
+
+      if (!string.IsNullOrEmpty(min_zoom))
+      {
+        update = update.Set("min_zoom", min_zoom);
+      }
+
+      if (!string.IsNullOrEmpty(max_zoom))
+      {
+        update = update.Set("max_zoom", max_zoom);
       }
 
       var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.GeoDTO
 {
-  public class FigurePolygonDTO : FigureBaseDTO
+  public class FigurePolygonDTO : FigureZoomedDTO
   {
     public double[][] geometry { get; set; }
   }

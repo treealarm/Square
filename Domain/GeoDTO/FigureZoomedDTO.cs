@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.GeoDTO
 {
-  public class FigurePolylineDTO : FigureZoomedDTO
+  public class FigureZoomedDTO: FigureBaseDTO
   {
-    public double[][] geometry { get; set; }
+    public int min_zoom { get; set; }
+    public int max_zoom { get; set; }    
   }
 }

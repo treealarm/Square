@@ -115,9 +115,17 @@ namespace LeafletAlarms
         return mProps;
       }
 
+      var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
+
+      propertieNames.AddRange(
+        typeof(FigureCircleDTO).GetProperties().Select(x => x.Name)
+        );
+
+
       foreach (var prop in props.extra_props)
       {
-        if (prop.prop_name == "radius")
+        // "radius", "min_zoom", "max_zoom"
+        if (propertieNames.Contains(prop.prop_name))
         {
           continue;
         }

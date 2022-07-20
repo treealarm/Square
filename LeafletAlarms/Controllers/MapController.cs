@@ -118,9 +118,9 @@ namespace LeafletAlarms.Controllers
 
         if (geoPart != null)
         {
-          FigureBaseDTO retItem = null;
+          FigureZoomedDTO retItem = null;
 
-          if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Point)
+          if (geoPart.location.Type == GeoJsonObjectType.Point)
           {
             var figure = new FigureCircleDTO();
             figure.radius = geoPart.radius;
@@ -130,7 +130,7 @@ namespace LeafletAlarms.Controllers
             retItem = figure;
           }
 
-          if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Polygon)
+          if (geoPart.location.Type == GeoJsonObjectType.Polygon)
           {
             var figure = new FigurePolygonDTO();
 
@@ -153,7 +153,7 @@ namespace LeafletAlarms.Controllers
             retItem = figure;
           }
 
-          if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.LineString)
+          if (geoPart.location.Type == GeoJsonObjectType.LineString)
           {
             var figure = new FigurePolylineDTO();
 
@@ -165,6 +165,7 @@ namespace LeafletAlarms.Controllers
             {
               list.Add(new double[2] { cur.Y, cur.X });
             }
+
             figure.geometry = list.ToArray();
             result.polylines.Add(figure);
             retItem = figure;
@@ -176,6 +177,8 @@ namespace LeafletAlarms.Controllers
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;
             retItem.type = geoPart.location.Type.ToString();
+            retItem.min_zoom = geoPart.min_zoom;
+            retItem.max_zoom = geoPart.max_zoom;
           }
 
         }
@@ -218,6 +221,11 @@ namespace LeafletAlarms.Controllers
 
       var propDTO = DTOConverter.Conver2Property2DTO(props);
 
+      if (propDTO == null)
+      {
+        propDTO = new ObjPropsDTO();
+      }
+
       var geoPart = await _mapService.GeoServ.GetGeoObjectAsync(id);
 
       if (geoPart != null)
@@ -227,15 +235,19 @@ namespace LeafletAlarms.Controllers
         markerDto.geometry = JsonSerializer.Serialize(figure.geometry);
 
         if (geoPart.location.Type == GeoJsonObjectType.Point)
-        {
-          if (propDTO == null)
-          {
-            propDTO = new ObjPropsDTO();
-          }
+        {          
           propDTO.extra_props.Add(
             new ObjExtraPropertyDTO() { str_val = $"{geoPart.radius}", prop_name = "radius" }
           );
         }
+
+        propDTO.extra_props.Add(
+            new ObjExtraPropertyDTO() { str_val = $"{geoPart.min_zoom}", prop_name = "min_zoom" }
+          );
+
+        propDTO.extra_props.Add(
+            new ObjExtraPropertyDTO() { str_val = $"{geoPart.max_zoom}", prop_name = "max_zoom" }
+          );
       }
 
       if (propDTO != null && propDTO.extra_props.Count > 0)
@@ -266,24 +278,28 @@ namespace LeafletAlarms.Controllers
       marker.parent_id = updatedMarker.parent_id;
 
       await _mapService.UpdateAsync(marker);
-
-      ObjExtraPropertyDTO radius = null;
-
-      if (updatedMarker.extra_props != null)
-      {
-        radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
-      }      
-
       var props = DTOConverter.ConvertDTO2Property(updatedMarker);
 
       await _mapService.UpdatePropAsync(props);
 
+      ObjExtraPropertyDTO radius = null;
+      ObjExtraPropertyDTO min_zoom = null;
+      ObjExtraPropertyDTO max_zoom = null;
+
+      if (updatedMarker.extra_props != null)
+      {
+        radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
+        min_zoom = updatedMarker.extra_props.Where(p => p.prop_name == "min_zoom").FirstOrDefault();
+        max_zoom = updatedMarker.extra_props.Where(p => p.prop_name == "max_zoom").FirstOrDefault();
+      }
 
       await _mapService.GeoServ.CreateOrUpdateGeoFromStringAsync(
         updatedMarker.id,
         updatedMarker.geometry,
         updatedMarker.type,
-        radius?.str_val
+        radius?.str_val,
+        min_zoom?.str_val,
+        max_zoom?.str_val
       );
 
 
