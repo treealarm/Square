@@ -136,13 +136,6 @@ export function PolygonMaker(props: any) {
     },
 
     moveend(e: LeafletEvent) {
-      var bounds: L.LatLngBounds;
-      bounds = e.target.getBounds();
-      var boundBox: BoundBox = {
-        wn: [bounds.getWest(), bounds.getNorth()],
-        es: [bounds.getEast(), bounds.getSouth()],
-        zoom: e.target.getZoom()
-      };
     },
 
     mousemove(e: L.LeafletMouseEvent) {

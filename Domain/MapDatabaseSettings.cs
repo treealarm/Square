@@ -10,5 +10,6 @@ namespace Domain
     public string GeoCollectionName { get; set; } = null!;
     public string TracksCollectionName { get; set; } = null!;
     public string PropCollectionName { get; set; } = null!;
+    public string LevelCollectionName { get; set; } = null!;
   }
 }

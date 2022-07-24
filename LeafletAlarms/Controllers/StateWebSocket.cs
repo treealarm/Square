@@ -145,7 +145,7 @@ namespace LeafletAlarms.Controllers
       );
     }
 
-    public static bool IsWithinBox(BoxDTO box, GeoPoint track)
+    public bool IsWithinBox(BoxDTO box, GeoPoint track, List<string> levels)
     {
       bool IsPointInBox(BoxDTO box, GeoJson2DCoordinates coord, double dx = 0)
       {
@@ -168,6 +168,14 @@ namespace LeafletAlarms.Controllers
 
         return true;
       }
+
+      if (!string.IsNullOrEmpty(track.zoom_level))
+      {
+        if (!levels.Contains(track.zoom_level))
+        {
+          return false;
+        }
+      }      
 
       if (track.location is GeoJsonPoint<GeoJson2DCoordinates> point)
       {
@@ -211,6 +219,7 @@ namespace LeafletAlarms.Controllers
       }
 
       List<TrackPoint> toCheckIfInBox = new List<TrackPoint>();
+      var levels = _mapService.LevelServ.GetLevelsByZoom(curBox.zoom);
 
       lock (_locker)
       {
@@ -218,7 +227,7 @@ namespace LeafletAlarms.Controllers
         {
           if (_dicIds.Contains(track.figure.id))
           {
-            if (!IsWithinBox(curBox, track.figure))
+            if (!IsWithinBox(curBox, track.figure, levels))
             {
               _dicIds.Remove(track.figure.id);
             }
@@ -231,7 +240,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (var track in toCheckIfInBox)
       {
-        if (IsWithinBox(curBox, track.figure))
+        if (IsWithinBox(curBox, track.figure, levels))
         {
           toUpdate.Add(track.figure.id);
           _dicIds.Add(track.figure.id);

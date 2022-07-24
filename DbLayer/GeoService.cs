@@ -7,6 +7,7 @@ using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace DbLayer
@@ -15,11 +16,14 @@ namespace DbLayer
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<GeoPoint> _geoCollection;
+    private readonly MapService _parent;
     public GeoService(
+      MapService parent,
       IMongoCollection<GeoPoint> geoCollection,
       IMongoCollection<BsonDocument> geoRawCollection
     )
     {
+      _parent = parent;
       _geoCollection = geoCollection;
       _geoRawCollection = geoRawCollection;
     }
@@ -29,8 +33,7 @@ namespace DbLayer
       string geometry,
       string type,
       string radius,
-      string min_zoom,
-      string max_zoom
+      string zoom_level
     )
     {
       BsonDocument doc = new BsonDocument();
@@ -74,18 +77,15 @@ namespace DbLayer
 
       if (!string.IsNullOrEmpty(radius))
       {
-        update = update.Set("radius", radius);
+        if (Int32.TryParse(radius, out var result))
+          update = update.Set("radius", result);
       }
 
-      if (!string.IsNullOrEmpty(min_zoom))
+      if (!string.IsNullOrEmpty(zoom_level))
       {
-        update = update.Set("min_zoom", min_zoom);
+          update = update.Set("zoom_level", zoom_level);
       }
 
-      if (!string.IsNullOrEmpty(max_zoom))
-      {
-        update = update.Set("max_zoom", max_zoom);
-      }
 
       var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
       var options = new UpdateOptions() { IsUpsert = true };
@@ -176,8 +176,12 @@ namespace DbLayer
         }
       );
 
-      var filter = builder.GeoIntersects(t => t.location, geometry);
-      //var filter = builder.GeoWithinBox(t => t.location, box.wn[0], box.wn[1], box.es[0], box.es[1]);
+      var levels = _parent.LevelServ.GetLevelsByZoom(box.zoom);
+
+      var filter =
+          builder.Where(p => levels.Contains(p.zoom_level))
+        & builder.GeoIntersects(t => t.location, geometry);
+
       Log(filter);
       var list = await _geoCollection.Find(filter).ToListAsync();
 
@@ -228,8 +232,8 @@ namespace DbLayer
       var serializerRegistry = BsonSerializer.SerializerRegistry;
       var documentSerializer = serializerRegistry.GetSerializer<GeoPoint>();
       var rendered = filter.Render(documentSerializer, serializerRegistry);
-      Console.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
-      Console.WriteLine();
+      Debug.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
+      Debug.WriteLine("");
     }
   }
 }

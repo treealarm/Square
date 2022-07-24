@@ -177,8 +177,7 @@ namespace LeafletAlarms.Controllers
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;
             retItem.type = geoPart.location.Type.ToString();
-            retItem.min_zoom = geoPart.min_zoom;
-            retItem.max_zoom = geoPart.max_zoom;
+            retItem.zoom_level = geoPart.zoom_level?.ToString();
           }
 
         }
@@ -242,11 +241,7 @@ namespace LeafletAlarms.Controllers
         }
 
         propDTO.extra_props.Add(
-            new ObjExtraPropertyDTO() { str_val = $"{geoPart.min_zoom}", prop_name = "min_zoom" }
-          );
-
-        propDTO.extra_props.Add(
-            new ObjExtraPropertyDTO() { str_val = $"{geoPart.max_zoom}", prop_name = "max_zoom" }
+            new ObjExtraPropertyDTO() { str_val = $"{geoPart.zoom_level}", prop_name = "zoom_level" }
           );
       }
 
@@ -283,14 +278,12 @@ namespace LeafletAlarms.Controllers
       await _mapService.UpdatePropAsync(props);
 
       ObjExtraPropertyDTO radius = null;
-      ObjExtraPropertyDTO min_zoom = null;
-      ObjExtraPropertyDTO max_zoom = null;
+      ObjExtraPropertyDTO zoom_level = null;
 
       if (updatedMarker.extra_props != null)
       {
         radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
-        min_zoom = updatedMarker.extra_props.Where(p => p.prop_name == "min_zoom").FirstOrDefault();
-        max_zoom = updatedMarker.extra_props.Where(p => p.prop_name == "max_zoom").FirstOrDefault();
+        zoom_level = updatedMarker.extra_props.Where(p => p.prop_name == "zoom_level").FirstOrDefault();
       }
 
       await _mapService.GeoServ.CreateOrUpdateGeoFromStringAsync(
@@ -298,8 +291,7 @@ namespace LeafletAlarms.Controllers
         updatedMarker.geometry,
         updatedMarker.type,
         radius?.str_val,
-        min_zoom?.str_val,
-        max_zoom?.str_val
+        zoom_level?.str_val
       );
 
 

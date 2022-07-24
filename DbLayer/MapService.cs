@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DbLayer.Models;
+using Domain;
 using Domain.GeoDTO;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -34,6 +35,12 @@ namespace DbLayer
       private set;
     }
 
+    public LevelService LevelServ
+    {
+      get;
+      private set;
+    }
+
     public MapService(
         IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
@@ -62,6 +69,11 @@ namespace DbLayer
         mongoDatabase.GetCollection<TrackPoint>(geoStoreDatabaseSettings.Value.TracksCollectionName);
 
       TracksServ = new TrackService(tracksCollection);
+
+      var levelCollection =
+        mongoDatabase.GetCollection<Level>(geoStoreDatabaseSettings.Value.LevelCollectionName);
+
+      LevelServ = new LevelService(levelCollection);
     }
 
     private GeoService CreateGeoService(IMongoDatabase mongoDatabase, string collName)
@@ -71,7 +83,7 @@ namespace DbLayer
       var geoRawCollection =
         mongoDatabase.GetCollection<BsonDocument>(collName);
 
-      return new GeoService(geoCollection, geoRawCollection);
+      return new GeoService(this, geoCollection, geoRawCollection);
     }
 
     public async Task<List<Marker>> GetAsync(List<string> ids)
@@ -156,9 +168,8 @@ namespace DbLayer
 
     public async Task<DeleteResult> RemoveAsync(List<string> ids)
     {
-      //var idsFilter = Builders<Marker>.Filter.In(d => d.id, ids);
-      //return await _circleCollection.DeleteManyAsync(idsFilter);
       await GeoServ.RemoveAsync(ids);
+      await _propCollection.DeleteManyAsync(x => ids.Contains(x.id));
       return await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 

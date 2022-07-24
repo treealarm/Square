@@ -139,7 +139,10 @@ export function ObjectProperties() {
     }}>
 
       <List>
+        <ListItem>{objProps.type}</ListItem>
         <ListItem>{selected_id}</ListItem>
+        <ListItem>{objProps.parent_id}</ListItem>
+        
         <ListItem>
           <TextField size="small"
           fullWidth sx={{ width: '25ch' }}
@@ -154,8 +157,7 @@ export function ObjectProperties() {
             value={objProps?.geometry}
             onChange={handleChangeGeo} />
         </ListItem>
-        <ListItem>{objProps.parent_id}</ListItem>
-        <ListItem>{objProps.type}</ListItem>
+        
         {
           objProps?.extra_props?.map((item, index) =>
             <ListItem key={index}>
