@@ -108,6 +108,10 @@ export function ObjectProperties() {
 
   function editMe(props: IObjProps, editMode: boolean){
     dispatch(EditStore.actionCreators.setFigureEditMode(editMode));
+
+    if (!editMode) {
+      dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
+    }
   };
 
   const deleteMe = useCallback(
@@ -140,7 +144,7 @@ export function ObjectProperties() {
 
       <List>
         <ListItem>{objProps.type}</ListItem>
-        <ListItem>{selected_id}</ListItem>
+        <ListItem>{objProps.id}</ListItem>
         <ListItem>{objProps.parent_id}</ListItem>
         
         <ListItem>

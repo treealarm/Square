@@ -12,11 +12,18 @@ namespace DbLayer
   {
     private readonly IMongoCollection<Level> _collection;
     private object _locker = new object();
-    private List<Level> _cash = new List<Level>();
+    private List<Level> _cash = null;
+    private async Task<List<Level>> GetCash()
+    {
+      if (_cash == null)
+      {
+        await RebuildCash();
+      }
+      return _cash;
+    }
     public LevelService(IMongoCollection<Level> collection)
     {
       _collection = collection;
-      new Action(async () => await RebuildCash())();
     }
 
     public async Task InsertManyAsync(List<Level> newObjs)
@@ -64,9 +71,10 @@ namespace DbLayer
       }
     }
 
-    public List<string> GetLevelsByZoom(double zoom)
+    public async Task<List<string>> GetLevelsByZoom(double zoom)
     {
-      var cash = _cash;
+      var cash = await GetCash();
+
       var result = cash.Where(l => zoom <= l.zoom_max && zoom >= l.zoom_min)
         .Select(t => t.zoom_level)
         .ToList();

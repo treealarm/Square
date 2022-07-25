@@ -134,10 +134,12 @@ export function LocationMarkers() {
   const markers = useSelector((state) => state?.markersStates?.markers);
   const isChanging = useSelector((state) => state?.markersStates?.isChanging);
   const visualStates = useSelector((state) => state?.markersVisualStates?.visualStates);
+  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
 
    const mapEvents = useMapEvents({
       click(e) {
-         var ll: L.LatLng = e.latlng as L.LatLng;
+       var ll: L.LatLng = e.latlng as L.LatLng;
+       //dispatch(GuiStore.actionCreators.selectTreeItem(null));
       },
 
        moveend(e: LeafletEvent) {
@@ -201,7 +203,7 @@ export function LocationMarkers() {
   var hidden_id: string = null;
 
   if (selectedEditMode.edit_mode) {
-    hidden_id = selected_id;
+    hidden_id = objProps?.id;
   }
 
   return (

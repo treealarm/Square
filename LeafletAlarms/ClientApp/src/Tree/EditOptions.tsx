@@ -28,7 +28,8 @@ export default function EditOptions() {
 
     if (item == EditStore.PolygonTool) {
       const copy: IObjProps = {
-        name: 'New Polygon',
+        id: null,
+        name: 'New Polygon 1',
         parent_id: selected_id,
         geometry: "[]",
         type: PolygonType,
@@ -41,7 +42,8 @@ export default function EditOptions() {
 
     if (item == EditStore.PolylineTool) {
       const copy: IObjProps = {
-        name: 'New Polyline',
+        id: null,
+        name: 'New Polyline 1',
         parent_id: selected_id,
         geometry: "[]",
         type: LineStringType,
@@ -54,7 +56,8 @@ export default function EditOptions() {
 
     if (item == EditStore.CircleTool) {
       const copy: IObjProps = {
-        name: 'New Circle',
+        id: null,
+        name: 'New Circle 1',
         parent_id: selected_id,
         geometry: null,
         type: PointType,

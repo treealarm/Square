@@ -219,7 +219,7 @@ namespace LeafletAlarms.Controllers
       }
 
       List<TrackPoint> toCheckIfInBox = new List<TrackPoint>();
-      var levels = _mapService.LevelServ.GetLevelsByZoom(curBox.zoom);
+      var levels = await _mapService.LevelServ.GetLevelsByZoom(curBox.zoom);
 
       lock (_locker)
       {

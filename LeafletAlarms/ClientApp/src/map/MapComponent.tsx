@@ -18,14 +18,8 @@ export function MapComponent() {
         <MapContainer
           center={[51.5359, -0.09]}
           zoom={13}
-          scrollWheelZoom={false}
+          scrollWheelZoom={true}
         >
-      <ImageOverlay
-        url="http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg"
-        bounds={bounds}
-        opacity={0.5}
-        zIndex={10}
-      />
           <LocationMarkers />
 
           <TileLayer

@@ -78,6 +78,7 @@ export function PolygonMaker(props: any) {
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
 
   const initPolygon: IPolygon = {
+    id: null,
     name: 'New Polygon',
     parent_id: selected_id,
     geometry: [

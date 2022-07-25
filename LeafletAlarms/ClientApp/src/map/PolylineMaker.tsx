@@ -79,6 +79,7 @@ export function PolylineMaker(props: any) {
   const [movedIndex, setMovedIndex] = React.useState(-1);
 
   const initFigure: IPolyline = {
+    id: null,
     name: 'New Polyline',
     parent_id: selected_id,
     geometry: [

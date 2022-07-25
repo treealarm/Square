@@ -176,7 +176,7 @@ namespace DbLayer
         }
       );
 
-      var levels = _parent.LevelServ.GetLevelsByZoom(box.zoom);
+      var levels = await _parent.LevelServ.GetLevelsByZoom(box.zoom);
 
       var filter =
           builder.Where(p => levels.Contains(p.zoom_level))
