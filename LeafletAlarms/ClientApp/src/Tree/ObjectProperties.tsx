@@ -11,13 +11,14 @@ import { Box, ButtonGroup, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker } from '../store/Marker';
+import SearchIcon from '@mui/icons-material/Search';
+import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as TreeStore from '../store/TreeStates';
 import NotInterestedSharpIcon from '@mui/icons-material/NotInterestedSharp';
-
+import * as L from 'leaflet';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -128,6 +129,47 @@ export function ObjectProperties() {
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
+  const searchMeOnMap = useCallback(
+    (props: IObjProps, e) => {
+
+      var geo = JSON.parse(props.geometry);
+      var myFigure = null;
+      var center: L.LatLng = null;
+
+      switch (props.type) {
+        case PointType:
+          //var radius2set = 100;
+
+          //if (props.extra_props != null) {
+          //  var radius = props.extra_props.find(p => p.prop_name == "radius");
+          //  if (radius != null) {
+          //    radius2set = parseInt(radius.str_val);
+          //  }
+          //}
+          //myFigure = new L.Circle(geo, radius2set);
+          center = new L.LatLng(geo[0], geo[1]);
+          break;
+        case LineStringType:
+          myFigure = new L.Polyline(geo)
+          break;
+        case PolygonType:
+          myFigure = new L.Polygon(geo)
+          break;
+        default:
+          break;
+      }
+
+      if (center == null) {
+        let bounds: L.LatLngBounds = myFigure.getBounds();
+        center = bounds.getCenter();
+      }
+      
+      let option: ViewOption = {
+        map_center: [center.lat, center.lng]//[51.5359, -0.19]
+      };
+      dispatch(GuiStore.actionCreators.setMapOption(option));
+    }, [])
+
     if (objProps == null || objProps == undefined) {
       return null;
   }
@@ -192,6 +234,13 @@ export function ObjectProperties() {
               <DeleteIcon fontSize="inherit"/>
             </IconButton>          
           </ButtonGroup>
+
+          <ButtonGroup variant="contained" aria-label="search button group">
+            <IconButton aria-label="search" size="large" onClick={(e) => searchMeOnMap(objProps, e)}>
+              <SearchIcon fontSize="inherit" />
+            </IconButton>
+          </ButtonGroup>
+          
         </ListItem>
       </List>
     </Box>

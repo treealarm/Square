@@ -39,6 +39,7 @@
     <None Remove="ClientApp\src\components\WebSockClient.tsx" />
     <None Remove="ClientApp\src\map\CircleMaker.tsx" />
     <None Remove="ClientApp\src\map\EditableFigure.tsx" />
+    <None Remove="ClientApp\src\map\MapPositionChange.tsx" />
     <None Remove="ClientApp\src\map\PolygonMaker.tsx" />
     <None Remove="ClientApp\src\map\PolylineMaker.tsx" />
     <None Remove="ClientApp\src\store\GUIStates.ts" />

@@ -19,8 +19,7 @@ export interface GUIState {
 
 interface TreeSelectionAction {
   type: 'SELECT_TREE_ITEM';
-  selected_id: string | null;
-  map_option: ViewOption | null;
+  selected_id: string | null;  
 }
 
 interface TreeCheckingAction {
@@ -32,24 +31,33 @@ interface TreeUpdateRequestedAction {
   type: 'UPDATE_TREE';
 }
 
+interface SetMapOptionAction {
+  type: 'SET_MAP_OPTION';
+  map_option: ViewOption | null;
+}
+
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = TreeSelectionAction | TreeCheckingAction | TreeUpdateRequestedAction;
+type KnownAction = TreeSelectionAction | TreeCheckingAction | TreeUpdateRequestedAction | SetMapOptionAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-  selectTreeItem: (selected_id: string | null, map_option: ViewOption | null = null): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  selectTreeItem: (selected_id: string | null): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({
       type: 'SELECT_TREE_ITEM',
-      selected_id: selected_id,
+      selected_id: selected_id
+    });
+  },
+  setMapOption: (map_option: ViewOption | null): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({
+      type: 'SET_MAP_OPTION',
       map_option: map_option
     });
   },
-  
   checkTreeItem: (checked: string[]): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: 'CHECK_TREE_ITEM', checked: checked });
   }
@@ -79,9 +87,14 @@ export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incoming
     case 'SELECT_TREE_ITEM':
       return {
         ...state,
-        selected_id: action.selected_id,
+        selected_id: action.selected_id
+      };
+    case 'SET_MAP_OPTION':
+      return {
+        ...state,
         map_option: action.map_option
       };
+      
     case 'CHECK_TREE_ITEM':
       return {
         ...state,

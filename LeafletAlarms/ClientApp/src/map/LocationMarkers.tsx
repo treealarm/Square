@@ -4,7 +4,7 @@ import { useDispatch, useSelector} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { BoundBox, Marker } from '../store/Marker';
+import { BoundBox } from '../store/Marker';
 
 
 import { useCallback, useMemo, useEffect } from 'react'
@@ -246,10 +246,7 @@ export function LocationMarkers() {
             marker={marker}
           >
           </MyPolyline>
-        )}
-
-      <EditableFigure/>
-
+        )}      
     </React.Fragment>
   );
 }

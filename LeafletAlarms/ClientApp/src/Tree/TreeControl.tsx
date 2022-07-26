@@ -53,10 +53,8 @@ export function TreeControl() {
     if (selected_id == reduxSelectedId) {
       selected_id = null;
     }
-    let option: ViewOption ={
-      map_center: [51.5359, -0.19]
-    };
-    dispatch(GuiStore.actionCreators.selectTreeItem(selected_id, option));
+    
+    dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
   }
 
   const handleSelect = useCallback((selected: TreeMarker) => () => {
