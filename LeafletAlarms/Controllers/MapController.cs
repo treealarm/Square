@@ -298,48 +298,7 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }
 
-    [HttpPost]
-    [Route("AddTracks")]
-    public async Task<IActionResult> AddTracks(FiguresDTO movedMarkers)
-    {
-      List<TrackPoint> trackPoints = new List<TrackPoint>();
-
-      foreach (var figure in movedMarkers.circles)
-      {
-        trackPoints.Add(
-          new TrackPoint()
-          {
-            figure = await _mapService.CreateCompleteObject(figure)
-          }
-        );
-      }
-
-      foreach (var figure in movedMarkers.polygons)
-      {
-        trackPoints.Add(
-          new TrackPoint()
-          {
-            figure = await _mapService.CreateCompleteObject(figure)
-          }
-        );
-      }
-
-      foreach (var figure in movedMarkers.polylines)
-      {
-        trackPoints.Add(
-          new TrackPoint()
-          {
-            figure = await _mapService.CreateCompleteObject(figure)
-          }
-        );
-      }
-
-      await _mapService.TracksServ.InsertManyAsync(trackPoints);      
-
-      await _stateService.OnUpdatePosition(trackPoints);
-      
-      return CreatedAtAction(nameof(AddTracks), movedMarkers);
-    }
+    
 
     [HttpDelete("{id:length(24)}")]
     public async Task<IActionResult> Delete(string id)
