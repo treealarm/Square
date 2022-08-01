@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.GeoDBDTO
 {
-  public abstract class GeometryDTO<TCoordinates>: List<TCoordinates>
+  public abstract class GeometryDTO
   {
   }
 }

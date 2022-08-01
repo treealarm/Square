@@ -123,7 +123,7 @@ export function CircleMaker(props: any) {
         return;
       }
       var updatedValue = { geometry: figure.geometry};
-      updatedValue.geometry = [ll.lat, ll.lng];
+      updatedValue.geometry = { coord: [ll.lat, ll.lng] };
       setFigure(fig => ({
         ...figure,
         ...updatedValue
@@ -134,7 +134,7 @@ export function CircleMaker(props: any) {
       if (movedIndex >= 0) {
         var updatedValue = { geometry: figure.geometry };
 
-        updatedValue.geometry = [e.latlng.lat, e.latlng.lng];
+        updatedValue.geometry = { coord: [e.latlng.lat, e.latlng.lng] };
 
         setFigure(figure => ({
           ...figure,
@@ -193,7 +193,7 @@ export function CircleMaker(props: any) {
       <div key={0}>
         <Circle
           pathOptions={colorOptions}
-          center={figure.geometry}
+          center={figure.geometry.coord}
           radius={figure.radius}
           key={0}
           >

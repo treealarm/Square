@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
@@ -8,6 +9,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DbLayer
@@ -41,7 +43,10 @@ namespace DbLayer
 
       if (type == GeoJsonObjectType.Point.ToString())
       {
-        arr = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
+        GeometryCircleDTO fig = JsonSerializer.Deserialize<GeometryCircleDTO>(geometry);
+        arr = new BsonArray(fig.coord);
+        
+        //arr = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
 
         var temp = arr[0];
         arr[0] = arr[1];
@@ -49,7 +54,9 @@ namespace DbLayer
       }
       else
       {
-        var val = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
+        GeometryPolygonDTO fig = JsonSerializer.Deserialize<GeometryPolygonDTO>(geometry);
+        var val = new BsonArray(fig.coord);
+        //var val = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
 
         foreach (var element in val)
         {
@@ -99,7 +106,7 @@ namespace DbLayer
       point.radius = newObject.radius;
 
       point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
-        GeoJson.Position(newObject.geometry[1], newObject.geometry[0])
+        GeoJson.Position(newObject.geometry.coord[1], newObject.geometry.coord[0])
       );
       point.id = newObject.id;
       var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);
@@ -118,12 +125,12 @@ namespace DbLayer
 
       List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
 
-      for (int i = 0; i < newObject.geometry.Count; i++)
+      for (int i = 0; i < newObject.geometry.coord.Count; i++)
       {
-        coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
+        coordinates.Add(GeoJson.Position(newObject.geometry.coord[i][1], newObject.geometry.coord[i][0]));
       }
 
-      coordinates.Add(GeoJson.Position(newObject.geometry[0][1], newObject.geometry[0][0]));
+      coordinates.Add(GeoJson.Position(newObject.geometry.coord[0][1], newObject.geometry.coord[0][0]));
 
       point.location = GeoJson.Polygon(coordinates.ToArray());
 
@@ -144,9 +151,9 @@ namespace DbLayer
 
       List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
 
-      for (int i = 0; i < newObject.geometry.Count; i++)
+      for (int i = 0; i < newObject.geometry.coord.Count; i++)
       {
-        coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
+        coordinates.Add(GeoJson.Position(newObject.geometry.coord[i][1], newObject.geometry.coord[i][0]));
       }
 
       point.location = GeoJson.LineString(coordinates.ToArray());

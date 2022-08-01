@@ -31,7 +31,7 @@ export default function EditOptions() {
         id: null,
         name: 'New Polygon 1',
         parent_id: selected_id,
-        geometry: "[]",
+        geometry: "{\"coord\":[]}",
         type: PolygonType,
         extra_props: null
       };
@@ -39,13 +39,13 @@ export default function EditOptions() {
       dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
     }
-
+   
     if (item == EditStore.PolylineTool) {
       const copy: IObjProps = {
         id: null,
         name: 'New Polyline 1',
         parent_id: selected_id,
-        geometry: "[]",
+        geometry: "{\"coord\":[]}",
         type: LineStringType,
         extra_props: null
       };

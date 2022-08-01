@@ -6,7 +6,23 @@ using System.Threading.Tasks;
 
 namespace Domain.GeoDBDTO
 {
-  public class GeometryPolylineDTO : GeometryDTO<Geo2DCoordDTO>
+  public class GeometryPolylineDTO : GeometryDTO
   {
+    private List<Geo2DCoordDTO> _coord;
+    public List<Geo2DCoordDTO> coord 
+    {
+      get
+      {
+        if (_coord == null)
+        {
+          _coord = new List<Geo2DCoordDTO>();
+        }
+        return _coord;
+      }
+      set
+      {
+        _coord = value;
+      }
+    }
   }
 }

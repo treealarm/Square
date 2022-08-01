@@ -58,7 +58,8 @@ namespace LeafletAlarms
       {
         var figure = new FigureCircleDTO();
         var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
-        figure.geometry = new GeometryCircleDTO() { pt.Coordinates.Y, pt.Coordinates.X };
+        figure.geometry = 
+          new GeometryCircleDTO(new Geo2DCoordDTO() { pt.Coordinates.Y, pt.Coordinates.X });
         return figure;
       }
 
@@ -72,12 +73,12 @@ namespace LeafletAlarms
 
         foreach (var cur in pt.Coordinates.Exterior.Positions)
         {
-          list.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
+          list.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
         }
 
-        if (list.Count > 3)
+        if (list.coord.Count > 3)
         {
-          list.RemoveAt(list.Count - 1);
+          list.coord.RemoveAt(list.coord.Count - 1);
         }
 
         figure.geometry = list;
@@ -94,7 +95,7 @@ namespace LeafletAlarms
 
         foreach (var cur in pt.Coordinates.Positions)
         {
-          list.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
+          list.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
         }
         figure.geometry = list;
         return figure;

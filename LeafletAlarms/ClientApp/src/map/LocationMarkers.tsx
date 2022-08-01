@@ -212,7 +212,7 @@ export function LocationMarkers() {
         markers?.circles?.map((marker, index) =>
           <MyCircle
             key={marker.id}
-            center={marker.geometry}
+            center={marker.geometry.coord}
             pathOptions={getColor(marker.id)}
             radius={marker.radius > 0 ? marker.radius : 10}
             hidden={marker.id == hidden_id}
@@ -225,7 +225,7 @@ export function LocationMarkers() {
         markers?.polygons?.map((marker, index) =>
           <MyPolygon
             pathOptions={getColor(marker.id)}
-            positions={marker.geometry}
+            positions={marker.geometry.coord}
             key={marker.id}
             hidden={marker.id == hidden_id}
 
@@ -239,7 +239,7 @@ export function LocationMarkers() {
         markers?.polylines?.map((marker, index) =>
           <MyPolyline
             pathOptions={getColor(marker.id)}
-            positions={marker.geometry}
+            positions={marker.geometry.coord}
             key={marker.id}
             hidden={marker.id == hidden_id}
 

@@ -104,12 +104,12 @@ namespace TrackSender
       {
         return;
       }
-      circle.geometry = new GeometryCircleDTO() {51.512677840979485, -0.14968839124598346};
-      var stat = circle.geometry[0];
+      circle.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 }) ;
+      var stat = circle.geometry.coord[0];
 
       for (double x = 0; x < 0.1; x+=0.001)
       {
-        circle.geometry[0] = stat + x;
+        circle.geometry.coord[0] = stat + x;
         Console.WriteLine(JsonSerializer.Serialize(circle.geometry));
         await UpdateFiguresAsync(figures);
         await Task.Delay(1000);

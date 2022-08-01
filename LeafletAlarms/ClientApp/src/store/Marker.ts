@@ -12,19 +12,27 @@ export const PointType = 'Point';
 export const PolygonType = 'Polygon';
 export const LineStringType = 'LineString';
 
+export interface ICoord {
+  coord: LatLngPair;
+}
+
+export interface IArrayCoord {
+  coord: LatLngPair[];
+}
+
 export interface ICircle extends Marker {
-  geometry: LatLngPair;
+  geometry: ICoord;
   type: typeof PointType;
   radius: number;
 }
 
 export interface IPolygon extends Marker {
-  geometry: LatLngPair[];
+  geometry: IArrayCoord;
   type: typeof PolygonType;
 }
 
 export interface IPolyline extends Marker {
-  geometry: LatLngPair[];
+  geometry: IArrayCoord;
   type: typeof LineStringType;
 }
 

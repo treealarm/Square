@@ -42,7 +42,7 @@ namespace LeafletAlarms.Controllers
       _timer.Interval = 1000;
       _timer.AutoReset = false;
       _timer.Elapsed += new ElapsedEventHandler(OnElapsed);
-      _timer.Enabled = true;
+      //_timer.Enabled = true;
     }
 
     private async void OnElapsed(object sender, System.Timers.ElapsedEventArgs e)

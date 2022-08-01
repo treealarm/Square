@@ -82,9 +82,9 @@ export function PolylineMaker(props: any) {
     id: null,
     name: 'New Polyline',
     parent_id: selected_id,
-    geometry: [
-
-    ],
+    geometry:{
+      coord: []
+    },
     type: LineStringType
   };
 
@@ -125,7 +125,11 @@ export function PolylineMaker(props: any) {
       
 
       let updatedValue = {};
-      updatedValue = { geometry: [...figure.geometry, [ll.lat, ll.lng]] };
+      updatedValue = {
+        geometry: {
+          coord: [...figure.geometry.coord, [ll.lat, ll.lng]]
+        }
+        };
       setFigure(polygon => ({
         ...figure,
         ...updatedValue
@@ -138,9 +142,13 @@ export function PolylineMaker(props: any) {
 
     mousemove(e: L.LeafletMouseEvent) {
       if (movedIndex >= 0) {
-        var updatedValue = { geometry: [...figure.geometry]};
+        var updatedValue = {
+          geometry: {
+            coord: [...figure.geometry.coord]
+          }
+          };
 
-        updatedValue.geometry.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
+        updatedValue.geometry.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
 
         setFigure(polygon => ({
           ...polygon,
@@ -187,8 +195,12 @@ export function PolylineMaker(props: any) {
       parentMap.closePopup();
       setOldFigure(figure);
 
-      var updatedValue = { geometry: [...figure.geometry] };
-      updatedValue.geometry.splice(index, 0, updatedValue.geometry[index]);
+      var updatedValue = {
+        geometry: {
+          coord: [...figure.geometry.coord]
+        }
+      };
+      updatedValue.geometry.coord.splice(index, 0, updatedValue.geometry.coord[index]);
 
       setFigure(f1 => ({
         ...figure,
@@ -206,8 +218,12 @@ export function PolylineMaker(props: any) {
     (index, e) => {      
       parentMap.closePopup();
 
-      var updatedValue = { geometry: [...figure.geometry] };
-      updatedValue.geometry.splice(index, 1);
+      var updatedValue = {
+        geometry: {
+          coord: [...figure.geometry.coord]
+        }
+        };
+      updatedValue.geometry.coord.splice(index, 1);
 
       setFigure(polygon => ({
         ...polygon,
@@ -227,7 +243,7 @@ export function PolylineMaker(props: any) {
   return (
     <React.Fragment>
       {
-        figure.geometry.map((point, index) =>
+        figure.geometry.coord?.map((point, index) =>
           <div key={index}>
             <CircleMarker
               key={index}
@@ -251,9 +267,9 @@ export function PolylineMaker(props: any) {
         )
       }
       {
-        figure.geometry.length > 1 
-          ? 
-          <Polyline pathOptions={colorOptions} positions={figure.geometry}>
+        figure.geometry.coord?.length > 1 
+          ?
+          <Polyline pathOptions={colorOptions} positions={figure.geometry.coord}>
             <FigurePopup
               FigureChanged={figureChanged}
               movedIndex={movedIndex}

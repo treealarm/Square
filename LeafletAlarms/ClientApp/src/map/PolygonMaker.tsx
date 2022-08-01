@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, IPolygon, PolygonType, IObjProps } from '../store/Marker';
+import { BoundBox, IPolygon, PolygonType, IObjProps, IArrayCoord } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
 import { useCallback, useEffect } from 'react'
@@ -81,9 +81,7 @@ export function PolygonMaker(props: any) {
     id: null,
     name: 'New Polygon',
     parent_id: selected_id,
-    geometry: [
-
-    ],
+    geometry: {coord:[]},
     type: PolygonType
   };
 
@@ -129,7 +127,13 @@ export function PolygonMaker(props: any) {
       
 
       let updatedValue = {};
-      updatedValue = { geometry: [...curPolygon.geometry, [ll.lat, ll.lng]] };
+      updatedValue = {
+        geometry:
+        {
+          coord: [...curPolygon.geometry.coord, [ll.lat, ll.lng]]
+        }          
+      };
+
       setPolygon(polygon => ({
         ...polygon,
         ...updatedValue
@@ -142,16 +146,23 @@ export function PolygonMaker(props: any) {
     mousemove(e: L.LeafletMouseEvent) {
       if (isMoveAll) {
 
-        var shift_y = e.latlng.lat - oldPolygon.geometry[0][0];
-        var shift_x = e.latlng.lng - oldPolygon.geometry[0][1];
+        var shift_y = e.latlng.lat - oldPolygon.geometry.coord[0][0];
+        var shift_x = e.latlng.lng - oldPolygon.geometry.coord[0][1];
 
         const updatedValue =
         {
-          geometry: new Array<[number, number]>()
+          geometry:
+          {
+            coord: new Array<[number, number]>()
+          }            
         }
 
-        for (var _i = 0; _i < oldPolygon.geometry.length; _i++) {
-          updatedValue.geometry.push([shift_y + oldPolygon.geometry[_i][0], shift_x + oldPolygon.geometry[_i][1]]);
+        for (var _i = 0; _i < oldPolygon.geometry.coord.length; _i++) {
+          updatedValue.geometry.coord.push(
+            [
+              shift_y + oldPolygon.geometry.coord[_i][0],
+              shift_x + oldPolygon.geometry.coord[_i][1]
+            ]);
         }
 
         setPolygon(polygon => ({
@@ -161,9 +172,14 @@ export function PolygonMaker(props: any) {
       }
 
       if (movedIndex >= 0) {
-        var updatedValue = { geometry: [...curPolygon.geometry]};
+        var updatedValue = {
+          geometry:
+          {
+            coord: [...curPolygon.geometry.coord]
+          }            
+        };
 
-        updatedValue.geometry.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
+        updatedValue.geometry.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
 
         setPolygon(polygon => ({
           ...polygon,
@@ -197,8 +213,13 @@ export function PolygonMaker(props: any) {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
 
-      var updatedValue = { geometry: [...curPolygon.geometry] };
-      updatedValue.geometry.splice(index, 0, updatedValue.geometry[index]);
+      var updatedValue = {
+        geometry:
+        {
+          coord: [...curPolygon.geometry.coord]
+        }          
+      };
+      updatedValue.geometry.coord.splice(index, 0, updatedValue.geometry.coord[index]);
 
       setPolygon(polygon1 => ({
         ...curPolygon,
@@ -212,8 +233,13 @@ export function PolygonMaker(props: any) {
     (index, e) => {      
       parentMap.closePopup();
 
-      var updatedValue = { geometry: [...curPolygon.geometry] };
-      updatedValue.geometry.splice(index, 1);
+      var updatedValue = {
+        geometry:
+        {
+          coord: [...curPolygon.geometry.coord]
+        }          
+      };
+      updatedValue.geometry.coord.splice(index, 1);
 
       setPolygon(polygon1 => ({
         ...curPolygon,
@@ -242,7 +268,7 @@ export function PolygonMaker(props: any) {
   return (
     <React.Fragment>
       {
-        curPolygon.geometry.map((point, index) =>
+        curPolygon.geometry.coord.map((point, index) =>
           <div key={index}>
             <CircleMarker
               key={index}
@@ -266,16 +292,16 @@ export function PolygonMaker(props: any) {
         )
       }
       {
-        curPolygon.geometry.length > 2 
-          ? <Polygon pathOptions={colorOptions} positions={curPolygon.geometry}>
+        curPolygon.geometry.coord.length > 2
+          ? <Polygon pathOptions={colorOptions} positions={curPolygon.geometry.coord}>
             <PolygonPopup
               FigureChanged={figureChanged}
               MoveAllPoints={moveAllPoints}
               movedIndex={movedIndex}
               isMoveAll={isMoveAll}
             />
-            </Polygon>
-          : <Polyline pathOptions={colorOptions} positions={curPolygon.geometry}>
+          </Polygon>
+          : <Polyline pathOptions={colorOptions} positions={curPolygon.geometry.coord}>
             
           </Polyline>
       }
