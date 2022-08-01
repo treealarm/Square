@@ -11,15 +11,29 @@ namespace LeafletAlarms.Controllers
   public class StateWebSocketHandler: ITrackConsumer
   {
     private MapService _mapService;
-    public StateWebSocketHandler(MapService mapsService)
+    private GeoService _geoService;
+    private LevelService _levelService;
+    public StateWebSocketHandler(
+      MapService mapsService,
+      GeoService geoService,
+      LevelService levelService
+    )
     {
       _mapService = mapsService;
+      _geoService = geoService;
+      _levelService = levelService;
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
     public async Task PushAsync(HttpContext context, WebSocket webSocket)
     {
-      StateWebSocket stateWs = new StateWebSocket(context, webSocket, _mapService);
+      StateWebSocket stateWs = new StateWebSocket(
+        context,
+        webSocket,
+        _mapService,
+        _geoService,
+        _levelService
+      );
       StateSockets.TryAdd(context.Connection.Id, stateWs);
       await stateWs.ProcessAcceptedSocket();
       StateSockets.TryRemove(context.Connection.Id, out var sock);

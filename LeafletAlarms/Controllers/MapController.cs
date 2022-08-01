@@ -17,11 +17,17 @@ namespace LeafletAlarms.Controllers
   public class MapController : ControllerBase
   {
     private readonly MapService _mapService;
+    private readonly GeoService _geoService;
     private StateWebSocketHandler _stateService;
-    public MapController(MapService mapsService, StateWebSocketHandler stateService)
+    public MapController(
+      MapService mapsService,
+      GeoService geoService,
+      StateWebSocketHandler stateService
+    )
     {
       _mapService = mapsService;
       _stateService = stateService;
+      _geoService = geoService;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -191,7 +197,7 @@ namespace LeafletAlarms.Controllers
     [Route("GetByIds")]
     public async Task<ActionResult<FiguresDTO>> GetByIds(List<string> ids)
     {
-      var geo = await _mapService.GeoServ.GetGeoObjectsAsync(ids);
+      var geo = await _geoService.GetGeoObjectsAsync(ids);
       var figures = await GetFigures(geo);
 
       return CreatedAtAction(nameof(GetByIds), figures);
@@ -201,7 +207,7 @@ namespace LeafletAlarms.Controllers
     [Route("GetByBox")]
     public async Task<FiguresDTO> GetByBox(BoxDTO box)
     {
-      var geo = await _mapService.GeoServ.GetGeoAsync(box);
+      var geo = await _geoService.GetGeoAsync(box);
       return await GetFigures(geo);
     }
 
@@ -227,7 +233,7 @@ namespace LeafletAlarms.Controllers
         propDTO = new ObjPropsDTO();
       }
 
-      var geoPart = await _mapService.GeoServ.GetGeoObjectAsync(id);
+      var geoPart = await _geoService.GetGeoObjectAsync(id);
 
       if (geoPart != null)
       {
@@ -262,6 +268,7 @@ namespace LeafletAlarms.Controllers
       if (string.IsNullOrEmpty(updatedMarker.id))
       {
         await _mapService.CreateCompleteObject(updatedMarker);
+        await _geoService.CreateGeoPoint(updatedMarker);
       }
 
       var marker = await _mapService.GetAsync(updatedMarker.id);
@@ -288,7 +295,7 @@ namespace LeafletAlarms.Controllers
         zoom_level = updatedMarker.extra_props.Where(p => p.prop_name == "zoom_level").FirstOrDefault();
       }
 
-      await _mapService.GeoServ.CreateOrUpdateGeoFromStringAsync(
+      await _geoService.CreateOrUpdateGeoFromStringAsync(
         updatedMarker.id,
         updatedMarker.geometry,
         updatedMarker.type,
@@ -315,6 +322,7 @@ namespace LeafletAlarms.Controllers
       var markers = await _mapService.GetAllChildren(id);
       var ids = markers.Select(m => m.id).ToList();
       ids.Add(marker.id);
+      await _geoService.RemoveAsync(ids);
       await _mapService.RemoveAsync(ids);
       var ret = CreatedAtAction(nameof(Delete), new { id = marker.id }, ids);
 
@@ -339,7 +347,7 @@ namespace LeafletAlarms.Controllers
         var bunchIds = markers.Select(m => m.id).ToHashSet();
         idsToDelete.Add(marker.id);
         idsToDelete.UnionWith(bunchIds);
-
+        await _geoService.RemoveAsync(idsToDelete.ToList());
         await _mapService.RemoveAsync(idsToDelete.ToList());
       }
       

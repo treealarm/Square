@@ -1,4 +1,6 @@
 ﻿using DbLayer.Models;
+using Domain;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ namespace DbLayer
   public class LevelService
   {
     private readonly IMongoCollection<DBLevel> _collection;
+    private readonly MongoClient _mongoClient;
     private object _locker = new object();
     private List<DBLevel> _cash = null;
     private async Task<List<DBLevel>> GetCash()
@@ -21,9 +24,17 @@ namespace DbLayer
       }
       return _cash;
     }
-    public LevelService(IMongoCollection<DBLevel> collection)
+
+    public LevelService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
-      _collection = collection;
+      _mongoClient = new MongoClient(
+        geoStoreDatabaseSettings.Value.ConnectionString);
+
+      var mongoDatabase = _mongoClient.GetDatabase(
+          geoStoreDatabaseSettings.Value.DatabaseName);
+      
+      _collection =
+        mongoDatabase.GetCollection<DBLevel>(geoStoreDatabaseSettings.Value.LevelCollectionName);
     }
 
     public async Task InsertManyAsync(List<DBLevel> newObjs)

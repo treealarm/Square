@@ -29,6 +29,10 @@ namespace LeafletAlarms
     {
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
       services.AddSingleton<MapService>();
+      services.AddSingleton<GeoService>();
+      
+      services.AddSingleton<TrackService>();
+      services.AddSingleton<LevelService>();
       services.AddSingleton<StateWebSocketHandler>();
 
       services.AddControllersWithViews();

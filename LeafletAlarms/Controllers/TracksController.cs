@@ -16,12 +16,21 @@ namespace LeafletAlarms.Controllers
   public class TracksController : ControllerBase
   {
     private readonly MapService _mapService;
+    private readonly TrackService _tracksService;
     private StateWebSocketHandler _stateService;
+    private readonly GeoService _geoService;
 
-    public TracksController(MapService mapsService, StateWebSocketHandler stateService)
+    public TracksController(
+      MapService mapsService,
+      TrackService tracksService,
+      GeoService geoService,
+      StateWebSocketHandler stateService
+    )
     {
       _mapService = mapsService;
+      _tracksService = tracksService;
       _stateService = stateService;
+      _geoService = geoService;
     }
 
     [HttpPost]
@@ -39,35 +48,40 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in movedMarkers.circles)
       {
+        await _mapService.CreateCompleteObject(figure);
         trackPoints.Add(
           new TrackPointDTO()
           {
-            figure = await _mapService.CreateCompleteObject(figure)
+            figure = await _geoService.CreateGeoPoint(figure)
           }
         );
       }
 
       foreach (var figure in movedMarkers.polygons)
       {
+        await _mapService.CreateCompleteObject(figure);
+
         trackPoints.Add(
           new TrackPointDTO()
           {
-            figure = await _mapService.CreateCompleteObject(figure)
+            figure = await _geoService.CreateGeoPoint(figure)
           }
         );
       }
 
       foreach (var figure in movedMarkers.polylines)
       {
+        await _mapService.CreateCompleteObject(figure);
+
         trackPoints.Add(
           new TrackPointDTO()
           {
-            figure = await _mapService.CreateCompleteObject(figure)
+            figure = await _geoService.CreateGeoPoint(figure)
           }
         );
       }
 
-      await _mapService.TracksServ.InsertManyAsync(trackPoints);
+      await _tracksService.InsertManyAsync(trackPoints);
 
       await _stateService.OnUpdateTrackPosition(trackPoints);
 

@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
@@ -18,16 +19,30 @@ namespace DbLayer
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;
-    private readonly MapService _parent;
+    private readonly MapService _mapService;
+    private readonly LevelService _levelService;
+    private readonly MongoClient _mongoClient;
     public GeoService(
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
       MapService parent,
-      IMongoCollection<DBGeoObject> geoCollection,
-      IMongoCollection<BsonDocument> geoRawCollection
+      LevelService levelService
     )
     {
-      _parent = parent;
-      _geoCollection = geoCollection;
-      _geoRawCollection = geoRawCollection;
+      _mongoClient = new MongoClient(
+        geoStoreDatabaseSettings.Value.ConnectionString);
+
+      var mongoDatabase = _mongoClient.GetDatabase(
+          geoStoreDatabaseSettings.Value.DatabaseName);
+
+      _mapService = parent;
+      _levelService = levelService;
+
+      var collName = geoStoreDatabaseSettings.Value.GeoCollectionName;
+
+      _geoCollection = mongoDatabase.GetCollection<DBGeoObject>(collName);
+
+      _geoRawCollection =
+        mongoDatabase.GetCollection<BsonDocument>(collName);
     }
 
     public async Task CreateOrUpdateGeoFromStringAsync(
@@ -166,7 +181,7 @@ namespace DbLayer
         }
       );
 
-      var levels = await _parent.LevelServ.GetLevelsByZoom(box.zoom);
+      var levels = await _levelService.GetLevelsByZoom(box.zoom);
 
       var filter =
           builder.Where(p => levels.Contains(p.zoom_level))
@@ -215,6 +230,28 @@ namespace DbLayer
       //var idsFilter = Builders<Marker>.Filter.In(d => d.id, ids);
       //return await _circleCollection.DeleteManyAsync(idsFilter);
       return await _geoCollection.DeleteManyAsync(x => ids.Contains(x.id));
+    }
+
+    public async Task<GeoObjectDTO> CreateGeoPoint(FigureBaseDTO figure)
+    {
+      DBGeoObject geoPoint = null;
+
+      if (figure is FigureCircleDTO circle)
+      {
+        geoPoint = await CreateOrUpdateGeoPointAsync(circle);
+      }
+
+      if (figure is FigurePolygonDTO polygon)
+      {
+        geoPoint = await CreateOrUpdateGeoPolygonAsync(polygon);
+      }
+
+      if (figure is FigurePolylineDTO polyline)
+      {
+        geoPoint = await CreateOrUpdateGeoPolylineAsync(polyline);
+      }
+
+      return ModelGate.ConvertDB2DTO(geoPoint);
     }
 
     private static void Log(FilterDefinition<DBGeoObject> filter)

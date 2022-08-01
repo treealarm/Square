@@ -24,6 +24,8 @@ namespace LeafletAlarms.Controllers
     private HttpContext _context;
     private WebSocket _webSocket;
     private MapService _mapService;
+    private GeoService _geoService;
+    private LevelService _levelService;
     private System.Timers.Timer _timer;
     private HashSet<string> _dicIds = new HashSet<string>();
     private object _locker = new object();
@@ -38,6 +40,23 @@ namespace LeafletAlarms.Controllers
         }        
       }
     }
+
+    public StateWebSocket(
+      HttpContext context,
+      WebSocket webSocket,
+      MapService mapsService,
+      GeoService geoService,
+      LevelService levelService
+    )
+    {
+      _mapService = mapsService;
+      _geoService = geoService;
+      _context = context;
+      _webSocket = webSocket;
+      _levelService = levelService;
+      InitTimer();
+    }
+
     void InitTimer()
     {
       _timer = new System.Timers.Timer();
@@ -87,19 +106,6 @@ namespace LeafletAlarms.Controllers
       }
 
       await SendPacket(packet);            
-    }
-
-    public StateWebSocket(
-      HttpContext context,
-      WebSocket webSocket,
-      MapService mapsService
-    )
-    {
-      _mapService = mapsService;
-      _context = context;
-      _webSocket = webSocket;
-
-      InitTimer();
     }
 
     public async Task ProcessAcceptedSocket()
@@ -221,7 +227,7 @@ namespace LeafletAlarms.Controllers
       }
 
       var toCheckIfInBox = new List<TrackPointDTO>();
-      var levels = await _mapService.LevelServ.GetLevelsByZoom(curBox.zoom);
+      var levels = await _levelService.GetLevelsByZoom(curBox.zoom);
 
       lock (_locker)
       {
@@ -275,7 +281,7 @@ namespace LeafletAlarms.Controllers
 
     private async Task OnSetBox(BoxDTO box)
     {
-      var geo = await _mapService.GeoServ.GetGeoAsync(box);
+      var geo = await _geoService.GetGeoAsync(box);
 
       lock(_locker)
       {

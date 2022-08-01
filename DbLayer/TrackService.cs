@@ -1,6 +1,8 @@
-﻿using Domain.GeoDBDTO;
+﻿using Domain;
+using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.StateWebSock;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
@@ -14,9 +16,19 @@ namespace DbLayer
   public class TrackService
   {
     private readonly IMongoCollection<DBTrackPoint> _collection;
-    public TrackService(IMongoCollection<DBTrackPoint> collection)
+    private readonly MongoClient _mongoClient;
+    public TrackService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
-      _collection = collection;
+      _mongoClient = new MongoClient(
+        geoStoreDatabaseSettings.Value.ConnectionString);
+
+      var mongoDatabase = _mongoClient.GetDatabase(
+          geoStoreDatabaseSettings.Value.DatabaseName);
+
+      _collection =
+        mongoDatabase.GetCollection<DBTrackPoint>(
+          geoStoreDatabaseSettings.Value.TracksCollectionName
+        );
     }
 
     public async Task InsertManyAsync(List<TrackPointDTO> newObjs)

@@ -24,24 +24,6 @@ namespace DbLayer
 
     private readonly MongoClient _mongoClient;
 
-    public GeoService GeoServ 
-    { 
-      get; 
-      private set; 
-    }
-
-    public TrackService TracksServ
-    {
-      get;
-      private set;
-    }
-
-    public LevelService LevelServ
-    {
-      get;
-      private set;
-    }
-
     public MapService(
         IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
@@ -57,34 +39,6 @@ namespace DbLayer
       _propCollection = mongoDatabase.GetCollection<DBMarkerProperties>(
           geoStoreDatabaseSettings.Value.PropCollectionName);
 
-
-      var geoCollection = mongoDatabase.GetCollection<DBGeoObject>(
-        geoStoreDatabaseSettings.Value.GeoCollectionName);
-
-      var geoRawCollection =
-        mongoDatabase.GetCollection<BsonDocument>(geoStoreDatabaseSettings.Value.GeoCollectionName);
-
-      GeoServ = CreateGeoService(mongoDatabase, geoStoreDatabaseSettings.Value.GeoCollectionName);
-
-      var tracksCollection =
-        mongoDatabase.GetCollection<DBTrackPoint>(geoStoreDatabaseSettings.Value.TracksCollectionName);
-
-      TracksServ = new TrackService(tracksCollection);
-
-      var levelCollection =
-        mongoDatabase.GetCollection<DBLevel>(geoStoreDatabaseSettings.Value.LevelCollectionName);
-
-      LevelServ = new LevelService(levelCollection);
-    }
-
-    private GeoService CreateGeoService(IMongoDatabase mongoDatabase, string collName)
-    {
-      var geoCollection = mongoDatabase.GetCollection<DBGeoObject>(collName);
-
-      var geoRawCollection =
-        mongoDatabase.GetCollection<BsonDocument>(collName);
-
-      return new GeoService(this, geoCollection, geoRawCollection);
     }
 
     public async Task<List<DBMarker>> GetAsync(List<string> ids)
@@ -169,12 +123,12 @@ namespace DbLayer
 
     public async Task<DeleteResult> RemoveAsync(List<string> ids)
     {
-      await GeoServ.RemoveAsync(ids);
+      
       await _propCollection.DeleteManyAsync(x => ids.Contains(x.id));
       return await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
-    public async Task<GeoObjectDTO> CreateCompleteObject(FigureBaseDTO figure)
+    public async Task<FigureBaseDTO> CreateCompleteObject(FigureBaseDTO figure)
     { 
       DBMarker marker = new DBMarker();
       marker.name = figure.name;
@@ -190,34 +144,9 @@ namespace DbLayer
         await CreateAsync(marker);
       }
 
-      figure.id = marker.id;
+      figure.id = marker.id; 
 
-      // dbObject can be null if we create from properties figure type is ObjPropsDTO.
-      var dbObject =  await CreateGeoPoint(figure);      
-
-      return ModelGate.ConvertDB2DTO(dbObject);
-    }
-
-    public async Task<DBGeoObject> CreateGeoPoint(FigureBaseDTO figure)
-    {
-      DBGeoObject geoPoint = null;
-
-      if (figure is FigureCircleDTO circle)
-      {
-        geoPoint = await GeoServ.CreateOrUpdateGeoPointAsync(circle);
-      }
-
-      if (figure is FigurePolygonDTO polygon)
-      {
-        geoPoint = await GeoServ.CreateOrUpdateGeoPolygonAsync(polygon);
-      }
-
-      if (figure is FigurePolylineDTO polyline)
-      {
-        geoPoint = await GeoServ.CreateOrUpdateGeoPolylineAsync(polyline);
-      }
-
-      return geoPoint;
+      return figure;
     }
 
     public async Task UpdatePropAsync(DBMarkerProperties updatedObj)
