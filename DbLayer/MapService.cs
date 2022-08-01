@@ -192,7 +192,8 @@ namespace DbLayer
 
       figure.id = marker.id;
 
-      var dbObject =  await CreateGeoPoint(figure);
+      // dbObject can be null if we create from properties figure type is ObjPropsDTO.
+      var dbObject =  await CreateGeoPoint(figure);      
 
       return ModelGate.ConvertDB2DTO(dbObject);
     }
