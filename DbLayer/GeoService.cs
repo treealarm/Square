@@ -108,6 +108,7 @@ namespace DbLayer
       point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
         GeoJson.Position(newObject.geometry.coord[1], newObject.geometry.coord[0])
       );
+
       point.id = newObject.id;
       var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);
 

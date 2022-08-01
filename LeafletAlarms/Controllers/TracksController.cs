@@ -1,5 +1,6 @@
 ﻿using DbLayer;
 using Domain;
+using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -34,12 +35,12 @@ namespace LeafletAlarms.Controllers
     [Route("AddTracks")]
     public async Task<IActionResult> AddTracks(FiguresDTO movedMarkers)
     {
-      List<DBTrackPoint> trackPoints = new List<DBTrackPoint>();
+      var trackPoints = new List<TrackPointDTO>();
 
       foreach (var figure in movedMarkers.circles)
       {
         trackPoints.Add(
-          new DBTrackPoint()
+          new TrackPointDTO()
           {
             figure = await _mapService.CreateCompleteObject(figure)
           }
@@ -49,7 +50,7 @@ namespace LeafletAlarms.Controllers
       foreach (var figure in movedMarkers.polygons)
       {
         trackPoints.Add(
-          new DBTrackPoint()
+          new TrackPointDTO()
           {
             figure = await _mapService.CreateCompleteObject(figure)
           }
@@ -59,7 +60,7 @@ namespace LeafletAlarms.Controllers
       foreach (var figure in movedMarkers.polylines)
       {
         trackPoints.Add(
-          new DBTrackPoint()
+          new TrackPointDTO()
           {
             figure = await _mapService.CreateCompleteObject(figure)
           }
@@ -68,7 +69,7 @@ namespace LeafletAlarms.Controllers
 
       await _mapService.TracksServ.InsertManyAsync(trackPoints);
 
-      //await _stateService.OnUpdatePosition(trackPoints);
+      await _stateService.OnUpdateTrackPosition(trackPoints);
 
       return CreatedAtAction(nameof(AddTracks), movedMarkers);
     }
