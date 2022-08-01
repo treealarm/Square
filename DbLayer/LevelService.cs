@@ -10,10 +10,10 @@ namespace DbLayer
 {
   public class LevelService
   {
-    private readonly IMongoCollection<Level> _collection;
+    private readonly IMongoCollection<DBLevel> _collection;
     private object _locker = new object();
-    private List<Level> _cash = null;
-    private async Task<List<Level>> GetCash()
+    private List<DBLevel> _cash = null;
+    private async Task<List<DBLevel>> GetCash()
     {
       if (_cash == null)
       {
@@ -21,19 +21,19 @@ namespace DbLayer
       }
       return _cash;
     }
-    public LevelService(IMongoCollection<Level> collection)
+    public LevelService(IMongoCollection<DBLevel> collection)
     {
       _collection = collection;
     }
 
-    public async Task InsertManyAsync(List<Level> newObjs)
+    public async Task InsertManyAsync(List<DBLevel> newObjs)
     {
       await _collection.InsertManyAsync(newObjs);
     }
 
-    public async Task<List<Level>> GetLevelsAsync()
+    public async Task<List<DBLevel>> GetLevelsAsync()
     {
-      List<Level> obj = null;
+      List<DBLevel> obj = null;
 
       try
       {
@@ -53,11 +53,11 @@ namespace DbLayer
 
       if (_cash.Count == 0)
       {
-        List<Level> levels = new List<Level>();
+        List<DBLevel> levels = new List<DBLevel>();
 
         for (int i = 0; i < 20; i++)
         {
-          Level level = new Level()
+          DBLevel level = new DBLevel()
           {
             zoom_level = i.ToString(),
             zoom_min = i,

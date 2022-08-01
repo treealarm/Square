@@ -1,5 +1,6 @@
 ﻿using DbLayer;
 using Domain;
+using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -24,7 +25,7 @@ namespace LeafletAlarms.Controllers
     }        
 
     [HttpGet("{id:length(24)}")]
-    public async Task<ActionResult<Marker>> Get(string id)
+    public async Task<ActionResult<DBMarker>> Get(string id)
     {
       var marker = await _mapService.GetAsync(id);
 
@@ -100,7 +101,7 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    private async Task<FiguresDTO> GetFigures(List<GeoPoint> geo)
+    private async Task<FiguresDTO> GetFigures(List<DBGeoObject> geo)
     {
       var result = new FiguresDTO();
 
@@ -125,7 +126,7 @@ namespace LeafletAlarms.Controllers
             var figure = new FigureCircleDTO();
             figure.radius = geoPart.radius;
             var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
-            figure.geometry = new double[2] { pt.Coordinates.Y, pt.Coordinates.X };
+            figure.geometry = new GeometryCircleDTO() { pt.Coordinates.Y, pt.Coordinates.X };
             result.circles.Add(figure);
             retItem = figure;
           }
@@ -136,11 +137,11 @@ namespace LeafletAlarms.Controllers
 
             var pt = geoPart.location as GeoJsonPolygon<GeoJson2DCoordinates>;
 
-            List<double[]> list = new List<double[]>();
+            GeometryPolygonDTO list = new GeometryPolygonDTO();
 
             foreach (var cur in pt.Coordinates.Exterior.Positions)
             {
-              list.Add(new double[2] { cur.Y, cur.X });
+              list.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
             }
 
             if (list.Count > 3)
@@ -148,7 +149,7 @@ namespace LeafletAlarms.Controllers
               list.RemoveAt(list.Count - 1);
             }
 
-            figure.geometry = list.ToArray();
+            figure.geometry = list;
             result.polygons.Add(figure);
             retItem = figure;
           }
@@ -159,14 +160,14 @@ namespace LeafletAlarms.Controllers
 
             var pt = geoPart.location as GeoJsonLineString<GeoJson2DCoordinates>;
 
-            List<double[]> list = new List<double[]>();
+            GeometryPolylineDTO list = new GeometryPolylineDTO();
 
             foreach (var cur in pt.Coordinates.Positions)
             {
-              list.Add(new double[2] { cur.Y, cur.X });
+              list.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
             }
 
-            figure.geometry = list.ToArray();
+            figure.geometry = list;
             result.polylines.Add(figure);
             retItem = figure;
           }

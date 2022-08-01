@@ -145,7 +145,7 @@ namespace LeafletAlarms.Controllers
       );
     }
 
-    public bool IsWithinBox(BoxDTO box, GeoPoint track, List<string> levels)
+    public bool IsWithinBox(BoxDTO box, DBGeoObject track, List<string> levels)
     {
       bool IsPointInBox(BoxDTO box, GeoJson2DCoordinates coord, double dx = 0)
       {
@@ -208,7 +208,7 @@ namespace LeafletAlarms.Controllers
       return false;
     }
 
-    public async Task OnUpdatePosition(List<TrackPoint> movedMarkers)
+    public async Task OnUpdatePosition(List<DBTrackPoint> movedMarkers)
     {
       HashSet<string> toUpdate = new HashSet<string>();
       BoxDTO curBox = CurrentBox;
@@ -218,7 +218,7 @@ namespace LeafletAlarms.Controllers
         return;
       }
 
-      List<TrackPoint> toCheckIfInBox = new List<TrackPoint>();
+      List<DBTrackPoint> toCheckIfInBox = new List<DBTrackPoint>();
       var levels = await _mapService.LevelServ.GetLevelsByZoom(curBox.zoom);
 
       lock (_locker)

@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from "react-redux";
 var url = 'wss://' + window.location.hostname + ':' + window.location.port + '/state';
 var socket = new WebSocket(url);
 
-
 export function WebSockClient() {
 
   const dispatch = useDispatch();

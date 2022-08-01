@@ -5,7 +5,7 @@ using System;
 namespace DbLayer
 {
   [BsonIgnoreExtraElements]
-  public class Marker
+  public class DBMarker
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

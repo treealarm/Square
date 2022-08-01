@@ -17,9 +17,9 @@ namespace DbLayer
 {
   public class MapService
   {
-    private readonly IMongoCollection<Marker> _markerCollection;
+    private readonly IMongoCollection<DBMarker> _markerCollection;
 
-    private readonly IMongoCollection<MarkerProperties> _propCollection;
+    private readonly IMongoCollection<DBMarkerProperties> _propCollection;
 
     private readonly MongoClient _mongoClient;
 
@@ -50,14 +50,14 @@ namespace DbLayer
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
 
-      _markerCollection = mongoDatabase.GetCollection<Marker>(
+      _markerCollection = mongoDatabase.GetCollection<DBMarker>(
           geoStoreDatabaseSettings.Value.ObjectsCollectionName);
 
-      _propCollection = mongoDatabase.GetCollection<MarkerProperties>(
+      _propCollection = mongoDatabase.GetCollection<DBMarkerProperties>(
           geoStoreDatabaseSettings.Value.PropCollectionName);
 
 
-      var geoCollection = mongoDatabase.GetCollection<GeoPoint>(
+      var geoCollection = mongoDatabase.GetCollection<DBGeoObject>(
         geoStoreDatabaseSettings.Value.GeoCollectionName);
 
       var geoRawCollection =
@@ -66,19 +66,19 @@ namespace DbLayer
       GeoServ = CreateGeoService(mongoDatabase, geoStoreDatabaseSettings.Value.GeoCollectionName);
 
       var tracksCollection =
-        mongoDatabase.GetCollection<TrackPoint>(geoStoreDatabaseSettings.Value.TracksCollectionName);
+        mongoDatabase.GetCollection<DBTrackPoint>(geoStoreDatabaseSettings.Value.TracksCollectionName);
 
       TracksServ = new TrackService(tracksCollection);
 
       var levelCollection =
-        mongoDatabase.GetCollection<Level>(geoStoreDatabaseSettings.Value.LevelCollectionName);
+        mongoDatabase.GetCollection<DBLevel>(geoStoreDatabaseSettings.Value.LevelCollectionName);
 
       LevelServ = new LevelService(levelCollection);
     }
 
     private GeoService CreateGeoService(IMongoDatabase mongoDatabase, string collName)
     {
-      var geoCollection = mongoDatabase.GetCollection<GeoPoint>(collName);
+      var geoCollection = mongoDatabase.GetCollection<DBGeoObject>(collName);
 
       var geoRawCollection =
         mongoDatabase.GetCollection<BsonDocument>(collName);
@@ -86,23 +86,23 @@ namespace DbLayer
       return new GeoService(this, geoCollection, geoRawCollection);
     }
 
-    public async Task<List<Marker>> GetAsync(List<string> ids)
+    public async Task<List<DBMarker>> GetAsync(List<string> ids)
     {
       var list = await _markerCollection.Find(i => ids.Contains(i.id)).ToListAsync();
       return list;
     }
 
-    public async Task<Marker> GetAsync(string id) =>
+    public async Task<DBMarker> GetAsync(string id) =>
         await _markerCollection.Find(x => x.id == id).FirstOrDefaultAsync();
 
-    public async Task<List<Marker>> GetByParentIdAsync(string parent_id)
+    public async Task<List<DBMarker>> GetByParentIdAsync(string parent_id)
     {
       return await _markerCollection.Find(x => x.parent_id == parent_id).ToListAsync();
     }
 
-    public async Task<List<Marker>> GetByChildIdAsync(string object_id)
+    public async Task<List<DBMarker>> GetByChildIdAsync(string object_id)
     {
-      List<Marker> parents = new List<Marker>();
+      List<DBMarker> parents = new List<DBMarker>();
       var marker = await GetAsync(object_id);
 
       while (marker != null)
@@ -113,10 +113,10 @@ namespace DbLayer
       return parents;
     }
 
-    public async Task<List<Marker>> GetAllChildren(string parent_id)
+    public async Task<List<DBMarker>> GetAllChildren(string parent_id)
     {
-      List<Marker> result = new List<Marker>();
-      ConcurrentBag<List<Marker>> cb = new ConcurrentBag<List<Marker>>();
+      List<DBMarker> result = new List<DBMarker>();
+      ConcurrentBag<List<DBMarker>> cb = new ConcurrentBag<List<DBMarker>>();
 
       var children = await GetByParentIdAsync(parent_id);
       cb.Add(children);
@@ -135,7 +135,7 @@ namespace DbLayer
       return result;
     }
 
-    public async Task<List<Marker>> GetTopChildren(List<string> parentIds)
+    public async Task<List<DBMarker>> GetTopChildren(List<string> parentIds)
     {
       var result = await _markerCollection
         .Aggregate()
@@ -143,17 +143,17 @@ namespace DbLayer
         //.Group("{ _id : '$parent_id'}")
         .Group(
           z => z.parent_id,
-          g => new Marker() { id = g.Key })
+          g => new DBMarker() { id = g.Key })
         .ToListAsync();
       return result;
     }
 
-    public async Task CreateAsync(Marker newObj)
+    public async Task CreateAsync(DBMarker newObj)
     {
       await _markerCollection.InsertOneAsync(newObj);
     }
 
-    public async Task UpdateAsync(Marker updatedObj)
+    public async Task UpdateAsync(DBMarker updatedObj)
     {
       using (var session = await _mongoClient.StartSessionAsync())
       {
@@ -161,7 +161,7 @@ namespace DbLayer
       }
     }
 
-    private async Task UpdateAsync(IClientSessionHandle session, Marker updatedObj)
+    private async Task UpdateAsync(IClientSessionHandle session, DBMarker updatedObj)
     {
       await _markerCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj);
     } 
@@ -174,9 +174,9 @@ namespace DbLayer
     }
 
 
-    public async Task<GeoPoint> CreateCompleteObject(FigureBaseDTO figure)
+    public async Task<DBGeoObject> CreateCompleteObject(FigureBaseDTO figure)
     { 
-      Marker marker = new Marker();
+      DBMarker marker = new DBMarker();
       marker.name = figure.name;
       marker.parent_id = figure.parent_id;
 
@@ -195,9 +195,9 @@ namespace DbLayer
       return await CreateGeoPoint(figure);
     }
 
-    public async Task<GeoPoint> CreateGeoPoint(FigureBaseDTO figure)
+    public async Task<DBGeoObject> CreateGeoPoint(FigureBaseDTO figure)
     {
-      GeoPoint geoPoint = null;
+      DBGeoObject geoPoint = null;
 
       if (figure is FigureCircleDTO circle)
       {
@@ -217,7 +217,7 @@ namespace DbLayer
       return geoPoint;
     }
 
-    public async Task UpdatePropAsync(MarkerProperties updatedObj)
+    public async Task UpdatePropAsync(DBMarkerProperties updatedObj)
     {
       using (var session = await _mongoClient.StartSessionAsync())
       {
@@ -225,14 +225,14 @@ namespace DbLayer
       }
     }
 
-    private async Task UpdatePropAsync(IClientSessionHandle session, MarkerProperties updatedObj)
+    private async Task UpdatePropAsync(IClientSessionHandle session, DBMarkerProperties updatedObj)
     {
       ReplaceOptions opt = new ReplaceOptions();
       opt.IsUpsert = true;
       await _propCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj, opt);
     }
 
-    public async Task<MarkerProperties> GetPropAsync(string id)
+    public async Task<DBMarkerProperties> GetPropAsync(string id)
     {
       var obj = await _propCollection.Find(x => x.id == id).FirstOrDefaultAsync();
       return obj;

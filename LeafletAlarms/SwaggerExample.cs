@@ -10,11 +10,11 @@ namespace LeafletAlarms
   public class SwaggerExample
   {
   }
-  public class SingleCircle : IExamplesProvider<Marker>
+  public class SingleCircle : IExamplesProvider<DBMarker>
   {
-    public Marker GetExamples()
+    public DBMarker GetExamples()
     {
-      return new Marker
+      return new DBMarker
       {
         name = @"Test",
         parent_id = null

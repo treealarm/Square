@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
-  public class ObjExtraProperty
+  public class DBObjExtraProperty
   {
     public string visual_type { get; set; }
     [BsonExtraElements]
@@ -16,12 +16,12 @@ namespace DbLayer
     public string prop_name { get; set; }
   }
 
-  public class MarkerProperties
+  public class DBMarkerProperties
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
     [BsonIgnoreIfNull]
-    public List<ObjExtraProperty> extra_props { get; set; }
+    public List<DBObjExtraProperty> extra_props { get; set; }
   }
 }

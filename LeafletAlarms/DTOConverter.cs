@@ -1,5 +1,6 @@
 ﻿using DbLayer;
 using Domain;
+using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -12,7 +13,7 @@ namespace LeafletAlarms
 {
   public class DTOConverter
   {
-    public static MarkerDTO GetMarkerDTO(Marker marker)
+    public static MarkerDTO GetMarkerDTO(DBMarker marker)
     {
       return new MarkerDTO()
       {
@@ -22,7 +23,7 @@ namespace LeafletAlarms
       };
     }
 
-    public static TreeMarkerDTO GetTreeMarkerDTO(Marker marker)
+    public static TreeMarkerDTO GetTreeMarkerDTO(DBMarker marker)
     {
       return new TreeMarkerDTO()
       {
@@ -32,7 +33,7 @@ namespace LeafletAlarms
       };
     }
 
-    public static ObjPropsDTO GetObjPropsDTO(Marker marker)
+    public static ObjPropsDTO GetObjPropsDTO(DBMarker marker)
     {
       return new ObjPropsDTO()
       {
@@ -41,9 +42,9 @@ namespace LeafletAlarms
         parent_id = marker.parent_id
       };
     }
-    public static Marker ConvertObjPropsDTOToMarker(ObjPropsDTO marker)
+    public static DBMarker ConvertObjPropsDTOToMarker(ObjPropsDTO marker)
     {
-      return new Marker()
+      return new DBMarker()
       {
         id = marker.id,
         name = marker.name,
@@ -51,13 +52,13 @@ namespace LeafletAlarms
       };
     }
 
-    public static dynamic ConvertGeoPoint2DTO(GeoPoint geoPart)
+    public static dynamic ConvertGeoPoint2DTO(DBGeoObject geoPart)
     {
       if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Point)
       {
         var figure = new FigureCircleDTO();
         var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
-        figure.geometry = new double[2] { pt.Coordinates.Y, pt.Coordinates.X };
+        figure.geometry = new GeometryCircleDTO() { pt.Coordinates.Y, pt.Coordinates.X };
         return figure;
       }
 
@@ -67,11 +68,11 @@ namespace LeafletAlarms
 
         var pt = geoPart.location as GeoJsonPolygon<GeoJson2DCoordinates>;
 
-        List<double[]> list = new List<double[]>();
+        GeometryPolygonDTO list = new GeometryPolygonDTO();
 
         foreach (var cur in pt.Coordinates.Exterior.Positions)
         {
-          list.Add(new double[2] { cur.Y, cur.X });
+          list.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
         }
 
         if (list.Count > 3)
@@ -79,7 +80,7 @@ namespace LeafletAlarms
           list.RemoveAt(list.Count - 1);
         }
 
-        figure.geometry = list.ToArray();
+        figure.geometry = list;
         return figure;
       }
 
@@ -89,24 +90,24 @@ namespace LeafletAlarms
 
         var pt = geoPart.location as GeoJsonLineString<GeoJson2DCoordinates>;
 
-        List<double[]> list = new List<double[]>();
+        GeometryPolylineDTO list = new GeometryPolylineDTO();
 
         foreach (var cur in pt.Coordinates.Positions)
         {
-          list.Add(new double[2] { cur.Y, cur.X });
+          list.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
         }
-        figure.geometry = list.ToArray();
+        figure.geometry = list;
         return figure;
       }
 
       return null;
     }
 
-    public static MarkerProperties ConvertDTO2Property(ObjPropsDTO props)
+    public static DBMarkerProperties ConvertDTO2Property(ObjPropsDTO props)
     {
-      MarkerProperties mProps = new MarkerProperties()
+      DBMarkerProperties mProps = new DBMarkerProperties()
       {
-        extra_props = new List<ObjExtraProperty>(),
+        extra_props = new List<DBObjExtraProperty>(),
         id = props.id
       };
 
@@ -130,7 +131,7 @@ namespace LeafletAlarms
           continue;
         }
 
-        ObjExtraProperty newProp = new ObjExtraProperty()
+        DBObjExtraProperty newProp = new DBObjExtraProperty()
         {
           prop_name = prop.prop_name,          
           visual_type = prop.visual_type
@@ -155,7 +156,7 @@ namespace LeafletAlarms
 
       return mProps;
     }
-    public static ObjPropsDTO Conver2Property2DTO(MarkerProperties props)
+    public static ObjPropsDTO Conver2Property2DTO(DBMarkerProperties props)
     {
       if (props == null)
       {

@@ -6,14 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbLayer
+namespace DbLayer.Models
 {
-  public class TrackPoint
+  public class DBLevel
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
-    public GeoPoint figure { get; set; }
-    public DateTime timestamp { get; set; } = DateTime.UtcNow;
+
+    public string zoom_level { get; set; }
+    public int zoom_min { get; set; }
+    public int zoom_max { get; set; }
   }
 }

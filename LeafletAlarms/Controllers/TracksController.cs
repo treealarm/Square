@@ -34,12 +34,12 @@ namespace LeafletAlarms.Controllers
     [Route("AddTracks")]
     public async Task<IActionResult> AddTracks(FiguresDTO movedMarkers)
     {
-      List<TrackPoint> trackPoints = new List<TrackPoint>();
+      List<DBTrackPoint> trackPoints = new List<DBTrackPoint>();
 
       foreach (var figure in movedMarkers.circles)
       {
         trackPoints.Add(
-          new TrackPoint()
+          new DBTrackPoint()
           {
             figure = await _mapService.CreateCompleteObject(figure)
           }
@@ -49,7 +49,7 @@ namespace LeafletAlarms.Controllers
       foreach (var figure in movedMarkers.polygons)
       {
         trackPoints.Add(
-          new TrackPoint()
+          new DBTrackPoint()
           {
             figure = await _mapService.CreateCompleteObject(figure)
           }
@@ -59,7 +59,7 @@ namespace LeafletAlarms.Controllers
       foreach (var figure in movedMarkers.polylines)
       {
         trackPoints.Add(
-          new TrackPoint()
+          new DBTrackPoint()
           {
             figure = await _mapService.CreateCompleteObject(figure)
           }

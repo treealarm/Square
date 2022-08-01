@@ -9,13 +9,13 @@ namespace DbLayer
 {
   public class TrackService
   {
-    private readonly IMongoCollection<TrackPoint> _collection;
-    public TrackService(IMongoCollection<TrackPoint> collection)
+    private readonly IMongoCollection<DBTrackPoint> _collection;
+    public TrackService(IMongoCollection<DBTrackPoint> collection)
     {
       _collection = collection;
     }
 
-    public async Task InsertManyAsync(List<TrackPoint> newObjs)
+    public async Task InsertManyAsync(List<DBTrackPoint> newObjs)
     {
       await _collection.InsertManyAsync(newObjs);
     }

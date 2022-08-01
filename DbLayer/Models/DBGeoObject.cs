@@ -5,7 +5,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 namespace DbLayer
 {
   [BsonIgnoreExtraElements]
-  public class GeoPoint
+  public class DBGeoObject
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

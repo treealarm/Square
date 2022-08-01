@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.GeoDBDTO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace Domain.GeoDTO
 {
   public class FigurePolylineDTO : FigureZoomedDTO
   {
-    public double[][] geometry { get; set; }
+    public GeometryPolylineDTO geometry { get; set; }
   }
 }

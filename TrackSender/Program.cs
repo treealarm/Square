@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.GeoDBDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -103,7 +104,7 @@ namespace TrackSender
       {
         return;
       }
-      circle.geometry = new double[] {51.512677840979485, -0.14968839124598346};
+      circle.geometry = new GeometryCircleDTO() {51.512677840979485, -0.14968839124598346};
       var stat = circle.geometry[0];
 
       for (double x = 0; x < 0.1; x+=0.001)

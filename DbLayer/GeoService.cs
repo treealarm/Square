@@ -15,11 +15,11 @@ namespace DbLayer
   public class GeoService
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
-    private readonly IMongoCollection<GeoPoint> _geoCollection;
+    private readonly IMongoCollection<DBGeoObject> _geoCollection;
     private readonly MapService _parent;
     public GeoService(
       MapService parent,
-      IMongoCollection<GeoPoint> geoCollection,
+      IMongoCollection<DBGeoObject> geoCollection,
       IMongoCollection<BsonDocument> geoRawCollection
     )
     {
@@ -93,9 +93,9 @@ namespace DbLayer
     }
 
 
-    public async Task<GeoPoint> CreateOrUpdateGeoPointAsync(FigureCircleDTO newObject)
+    public async Task<DBGeoObject> CreateOrUpdateGeoPointAsync(FigureCircleDTO newObject)
     {
-      GeoPoint point = new GeoPoint();
+      DBGeoObject point = new DBGeoObject();
       point.radius = newObject.radius;
 
       point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
@@ -112,13 +112,13 @@ namespace DbLayer
       return point;
     }
 
-    public async Task<GeoPoint> CreateOrUpdateGeoPolygonAsync(FigurePolygonDTO newObject)
+    public async Task<DBGeoObject> CreateOrUpdateGeoPolygonAsync(FigurePolygonDTO newObject)
     {
-      GeoPoint point = new GeoPoint();
+      DBGeoObject point = new DBGeoObject();
 
       List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
 
-      for (int i = 0; i < newObject.geometry.Length; i++)
+      for (int i = 0; i < newObject.geometry.Count; i++)
       {
         coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
       }
@@ -138,13 +138,13 @@ namespace DbLayer
       return point;
     }
 
-    public async Task<GeoPoint> CreateOrUpdateGeoPolylineAsync(FigurePolylineDTO newObject)
+    public async Task<DBGeoObject> CreateOrUpdateGeoPolylineAsync(FigurePolylineDTO newObject)
     {
-      GeoPoint point = new GeoPoint();
+      DBGeoObject point = new DBGeoObject();
 
       List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
 
-      for (int i = 0; i < newObject.geometry.Length; i++)
+      for (int i = 0; i < newObject.geometry.Count; i++)
       {
         coordinates.Add(GeoJson.Position(newObject.geometry[i][1], newObject.geometry[i][0]));
       }
@@ -162,9 +162,9 @@ namespace DbLayer
       return point;
     }
 
-    public async Task<List<GeoPoint>> GetGeoAsync(BoxDTO box)
+    public async Task<List<DBGeoObject>> GetGeoAsync(BoxDTO box)
     {
-      var builder = Builders<GeoPoint>.Filter;
+      var builder = Builders<DBGeoObject>.Filter;
       var geometry = GeoJson.Polygon(
         new GeoJson2DCoordinates[]
         {
@@ -188,9 +188,9 @@ namespace DbLayer
       return list;
     }
 
-    public async Task<List<GeoPoint>> GetGeoObjectsAsync(List<string> ids)
+    public async Task<List<DBGeoObject>> GetGeoObjectsAsync(List<string> ids)
     {
-      List<GeoPoint> obj = null;
+      List<DBGeoObject> obj = null;
 
       try
       {
@@ -204,9 +204,9 @@ namespace DbLayer
       return obj;
     }
 
-    public async Task<GeoPoint> GetGeoObjectAsync(string id)
+    public async Task<DBGeoObject> GetGeoObjectAsync(string id)
     {
-      GeoPoint obj = null;
+      DBGeoObject obj = null;
 
       try
       {
@@ -227,10 +227,10 @@ namespace DbLayer
       return await _geoCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
-    private static void Log(FilterDefinition<GeoPoint> filter)
+    private static void Log(FilterDefinition<DBGeoObject> filter)
     {
       var serializerRegistry = BsonSerializer.SerializerRegistry;
-      var documentSerializer = serializerRegistry.GetSerializer<GeoPoint>();
+      var documentSerializer = serializerRegistry.GetSerializer<DBGeoObject>();
       var rendered = filter.Render(documentSerializer, serializerRegistry);
       Debug.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
       Debug.WriteLine("");
