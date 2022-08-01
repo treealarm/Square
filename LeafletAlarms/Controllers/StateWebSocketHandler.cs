@@ -1,4 +1,5 @@
 ﻿using DbLayer;
+using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
 {
-  public class StateWebSocketHandler
+  public class StateWebSocketHandler: ITrackConsumer
   {
     private MapService _mapService;
     public StateWebSocketHandler(MapService mapsService)
@@ -24,11 +25,11 @@ namespace LeafletAlarms.Controllers
       StateSockets.TryRemove(context.Connection.Id, out var sock);
     }
 
-    public async Task OnUpdatePosition(List<DBTrackPoint> movedMarkers)
+    public async Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       foreach (var sock in StateSockets)
       {
-        await sock.Value.OnUpdatePosition(movedMarkers);
+        await sock.Value.OnUpdateTrackPosition(movedMarkers);
       }
     }
   }

@@ -68,7 +68,7 @@ namespace LeafletAlarms.Controllers
 
       await _mapService.TracksServ.InsertManyAsync(trackPoints);
 
-      await _stateService.OnUpdatePosition(trackPoints);
+      //await _stateService.OnUpdatePosition(trackPoints);
 
       return CreatedAtAction(nameof(AddTracks), movedMarkers);
     }

@@ -1,5 +1,7 @@
 ﻿using DbLayer;
 using Domain;
+using Domain.GeoDBDTO;
+using Domain.GeoDTO;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -17,7 +19,7 @@ using System.Timers;
 
 namespace LeafletAlarms.Controllers
 {  
-  public class StateWebSocket
+  public class StateWebSocket : ITrackConsumer
   {
     private HttpContext _context;
     private WebSocket _webSocket;
@@ -145,9 +147,9 @@ namespace LeafletAlarms.Controllers
       );
     }
 
-    public bool IsWithinBox(BoxDTO box, DBGeoObject track, List<string> levels)
+    public bool IsWithinBox(BoxDTO box, GeoObjectDTO track, List<string> levels)
     {
-      bool IsPointInBox(BoxDTO box, GeoJson2DCoordinates coord, double dx = 0)
+      bool IsPointInBox(BoxDTO box, Geo2DCoordDTO coord, double dx = 0)
       {
         var right = box.es[0] + dx;
         var left = box.wn[0] - dx;
@@ -177,15 +179,15 @@ namespace LeafletAlarms.Controllers
         }
       }      
 
-      if (track.location is GeoJsonPoint<GeoJson2DCoordinates> point)
+      if (track.location is GeometryCircleDTO point)
       {
         var dx = track.radius / 111000;
-        return IsPointInBox(box, point.Coordinates, dx);
+        return IsPointInBox(box, point.coord, dx);
       }
 
-      if (track.location is GeoJsonPolygon<GeoJson2DCoordinates> polygon)
+      if (track.location is GeometryPolygonDTO polygon)
       {
-        foreach (var pt in polygon.Coordinates.Exterior.Positions)
+        foreach (var pt in polygon.coord)
         {
           if (IsPointInBox(box, pt))
           {
@@ -194,9 +196,9 @@ namespace LeafletAlarms.Controllers
         }
       }
 
-      if (track.location is GeoJsonLineString<GeoJson2DCoordinates> line)
+      if (track.location is GeometryPolylineDTO line)
       {
-        foreach (var pt in line.Coordinates.Positions)
+        foreach (var pt in line.coord)
         {
           if (IsPointInBox(box, pt))
           {
@@ -208,7 +210,7 @@ namespace LeafletAlarms.Controllers
       return false;
     }
 
-    public async Task OnUpdatePosition(List<DBTrackPoint> movedMarkers)
+    public async Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       HashSet<string> toUpdate = new HashSet<string>();
       BoxDTO curBox = CurrentBox;
@@ -218,7 +220,7 @@ namespace LeafletAlarms.Controllers
         return;
       }
 
-      List<DBTrackPoint> toCheckIfInBox = new List<DBTrackPoint>();
+      var toCheckIfInBox = new List<TrackPointDTO>();
       var levels = await _mapService.LevelServ.GetLevelsByZoom(curBox.zoom);
 
       lock (_locker)

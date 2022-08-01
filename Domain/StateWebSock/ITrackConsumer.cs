@@ -9,6 +9,6 @@ namespace Domain.StateWebSock
 {
   public interface ITrackConsumer
   {
-    Task OnUpdatePosition(List<TrackPointDTO> movedMarkers);
+    Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers);
   }
 }
