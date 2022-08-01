@@ -105,9 +105,7 @@ namespace DbLayer
       DBGeoObject point = new DBGeoObject();
       point.radius = newObject.radius;
 
-      point.location = new GeoJsonPoint<GeoJson2DCoordinates>(
-        GeoJson.Position(newObject.geometry.coord[1], newObject.geometry.coord[0])
-      );
+      point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
 
       point.id = newObject.id;
       var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);
@@ -124,16 +122,7 @@ namespace DbLayer
     {
       DBGeoObject point = new DBGeoObject();
 
-      List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-      for (int i = 0; i < newObject.geometry.coord.Count; i++)
-      {
-        coordinates.Add(GeoJson.Position(newObject.geometry.coord[i][1], newObject.geometry.coord[i][0]));
-      }
-
-      coordinates.Add(GeoJson.Position(newObject.geometry.coord[0][1], newObject.geometry.coord[0][0]));
-
-      point.location = GeoJson.Polygon(coordinates.ToArray());
+      point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
 
       point.id = newObject.id;
       var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);
@@ -150,14 +139,7 @@ namespace DbLayer
     {
       DBGeoObject point = new DBGeoObject();
 
-      List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-      for (int i = 0; i < newObject.geometry.coord.Count; i++)
-      {
-        coordinates.Add(GeoJson.Position(newObject.geometry.coord[i][1], newObject.geometry.coord[i][0]));
-      }
-
-      point.location = GeoJson.LineString(coordinates.ToArray());
+      point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
 
       point.id = newObject.id;
       var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);

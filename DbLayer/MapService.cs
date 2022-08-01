@@ -174,62 +174,7 @@ namespace DbLayer
       return await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
     }
 
-    GeoObjectDTO ConvertDB2DTO(DBGeoObject dbObj)
-    {
-      GeoObjectDTO retVal = new GeoObjectDTO()
-      {
-        id = dbObj.id,
-        radius = dbObj.radius,
-        zoom_level = dbObj.zoom_level,
-        location = ConvertGeoDB2DTO(dbObj.location)
-      };
-
-      return retVal;
-    }
-
-    private GeometryDTO ConvertGeoDB2DTO(GeoJsonGeometry<GeoJson2DCoordinates> location)
-    {
-      GeometryDTO ret = null;
-
-      if (location is GeoJsonPoint<GeoJson2DCoordinates>  point)
-      {
-        ret = new GeometryCircleDTO(
-          new Geo2DCoordDTO() { point.Coordinates.Y, point.Coordinates.X }
-        );
-      }
-
-      if (location is GeoJsonPolygon<GeoJson2DCoordinates> polygon)
-      {
-        List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-        var retPolygon = new GeometryPolygonDTO();
-
-        foreach (var cur in polygon.Coordinates.Exterior.Positions)
-        {
-          retPolygon.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
-        }
-
-        if (retPolygon.coord.Count > 3)
-        {
-          retPolygon.coord.RemoveAt(retPolygon.coord.Count - 1);
-        }
-        ret = retPolygon;
-      }
-
-      if (location is GeoJsonLineString<GeoJson2DCoordinates>  line)
-      {
-        var retLine = new GeometryPolylineDTO();
-        List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-        foreach (var cur in line.Coordinates.Positions)
-        {
-          retLine.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
-        }
-        ret = retLine;
-      }
-      return ret;
-    }
-
-  public async Task<GeoObjectDTO> CreateCompleteObject(FigureBaseDTO figure)
+    public async Task<GeoObjectDTO> CreateCompleteObject(FigureBaseDTO figure)
     { 
       DBMarker marker = new DBMarker();
       marker.name = figure.name;
@@ -249,7 +194,7 @@ namespace DbLayer
 
       var dbObject =  await CreateGeoPoint(figure);
 
-      return ConvertDB2DTO(dbObject);
+      return ModelGate.ConvertDB2DTO(dbObject);
     }
 
     public async Task<DBGeoObject> CreateGeoPoint(FigureBaseDTO figure)
