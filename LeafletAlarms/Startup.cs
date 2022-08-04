@@ -1,5 +1,6 @@
 using DbLayer;
 using Domain;
+using Domain.ServiceInterfaces;
 using LeafletAlarms.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,7 +29,9 @@ namespace LeafletAlarms
     public void ConfigureServices(IServiceCollection services)
     {
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
+
       services.AddSingleton<MapService>();
+      services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<GeoService>();
       
       services.AddSingleton<TrackService>();

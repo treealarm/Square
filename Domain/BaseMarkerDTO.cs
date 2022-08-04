@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class TreeMarkerDTO
+  public class BaseMarkerDTO
   {
     public string id { get; set; }
     public string parent_id { get; set; }

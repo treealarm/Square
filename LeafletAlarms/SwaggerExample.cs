@@ -1,4 +1,4 @@
-﻿using DbLayer;
+﻿using Domain;
 using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Collections.Generic;
@@ -10,11 +10,11 @@ namespace LeafletAlarms
   public class SwaggerExample
   {
   }
-  public class SingleCircle : IExamplesProvider<DBMarker>
+  public class SingleCircle : IExamplesProvider<BaseMarkerDTO>
   {
-    public DBMarker GetExamples()
+    public BaseMarkerDTO GetExamples()
     {
-      return new DBMarker
+      return new BaseMarkerDTO
       {
         name = @"Test",
         parent_id = null

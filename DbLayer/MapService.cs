@@ -2,6 +2,7 @@
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
@@ -16,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
-  public class MapService
+  public class MapService: IMapService
   {
     private readonly IMongoCollection<DBMarker> _markerCollection;
 
@@ -41,37 +42,43 @@ namespace DbLayer
 
     }
 
-    public async Task<List<DBMarker>> GetAsync(List<string> ids)
+    public async Task<List<BaseMarkerDTO>> GetAsync(List<string> ids)
     {
       var list = await _markerCollection.Find(i => ids.Contains(i.id)).ToListAsync();
-      return list;
+      return ConvertMarkerListDB2DTO(list);
     }
 
-    public async Task<DBMarker> GetAsync(string id) =>
-        await _markerCollection.Find(x => x.id == id).FirstOrDefaultAsync();
-
-    public async Task<List<DBMarker>> GetByParentIdAsync(string parent_id)
+    public async Task<BaseMarkerDTO> GetAsync(string id)
     {
-      return await _markerCollection.Find(x => x.parent_id == parent_id).ToListAsync();
+      var result = await _markerCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+      return ConvertMarkerDB2DTO(result);
+    }
+        
+
+    public async Task<List<BaseMarkerDTO>> GetByParentIdAsync(string parent_id)
+    {
+      var retVal =  await _markerCollection.Find(x => x.parent_id == parent_id).ToListAsync();
+      return ConvertMarkerListDB2DTO(retVal);
     }
 
-    public async Task<List<DBMarker>> GetByChildIdAsync(string object_id)
+    public async Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id)
     {
-      List<DBMarker> parents = new List<DBMarker>();
+      var parents = new List<BaseMarkerDTO>();
       var marker = await GetAsync(object_id);
 
       while (marker != null)
       {
         parents.Add(marker);
-        marker = await _markerCollection.Find(x => x.id == marker.parent_id).FirstOrDefaultAsync();
+        var dbMarker = await _markerCollection.Find(x => x.id == marker.parent_id).FirstOrDefaultAsync();
+        marker = ConvertMarkerDB2DTO(dbMarker);
       }
       return parents;
     }
 
-    public async Task<List<DBMarker>> GetAllChildren(string parent_id)
+    public async Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id)
     {
-      List<DBMarker> result = new List<DBMarker>();
-      ConcurrentBag<List<DBMarker>> cb = new ConcurrentBag<List<DBMarker>>();
+      var result = new List<BaseMarkerDTO>();
+      var cb = new ConcurrentBag<List<BaseMarkerDTO>>();
 
       var children = await GetByParentIdAsync(parent_id);
       cb.Add(children);
@@ -90,7 +97,30 @@ namespace DbLayer
       return result;
     }
 
-    public async Task<List<DBMarker>> GetTopChildren(List<string> parentIds)
+    BaseMarkerDTO ConvertMarkerDB2DTO(DBMarker dbMarker)
+    {
+      if (dbMarker == null)
+      {
+        return null;
+      }
+
+      BaseMarkerDTO result = new BaseMarkerDTO();
+      dbMarker.CopyAllTo(result);
+      return result;
+    }
+    List<BaseMarkerDTO> ConvertMarkerListDB2DTO(List<DBMarker> dbMarkers)
+    {
+      List<BaseMarkerDTO> result = new List<BaseMarkerDTO>();
+
+      foreach (var dbItem in dbMarkers)
+      {
+        result.Add(ConvertMarkerDB2DTO(dbItem));
+      }
+
+      return result;
+    }
+
+    public async Task<List<BaseMarkerDTO>> GetTopChildren(List<string> parentIds)
     {
       var result = await _markerCollection
         .Aggregate()
@@ -100,37 +130,36 @@ namespace DbLayer
           z => z.parent_id,
           g => new DBMarker() { id = g.Key })
         .ToListAsync();
-      return result;
+
+      return ConvertMarkerListDB2DTO(result);
     }
 
-    public async Task CreateAsync(DBMarker newObj)
+    public async Task CreateAsync(BaseMarkerDTO newObj)
     {
-      await _markerCollection.InsertOneAsync(newObj);
+      var dbObj = new DBMarker();
+      newObj.CopyAllTo(dbObj);
+      await _markerCollection.InsertOneAsync(dbObj);
     }
 
-    public async Task UpdateAsync(DBMarker updatedObj)
+    public async Task UpdateAsync(BaseMarkerDTO updatedObj)
     {
-      using (var session = await _mongoClient.StartSessionAsync())
-      {
-        await UpdateAsync(session, updatedObj);
-      }
+      var dbObj = new DBMarker();
+      updatedObj.CopyAllTo(dbObj);
+
+      await _markerCollection.ReplaceOneAsync(x => x.id == dbObj.id, dbObj);
     }
 
-    private async Task UpdateAsync(IClientSessionHandle session, DBMarker updatedObj)
-    {
-      await _markerCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj);
-    } 
-
-    public async Task<DeleteResult> RemoveAsync(List<string> ids)
+    public async Task<long> RemoveAsync(List<string> ids)
     {
       
       await _propCollection.DeleteManyAsync(x => ids.Contains(x.id));
-      return await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      var result =  await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      return result.DeletedCount;
     }
 
     public async Task<FigureBaseDTO> CreateCompleteObject(FigureBaseDTO figure)
     { 
-      DBMarker marker = new DBMarker();
+      var marker = new BaseMarkerDTO();
       marker.name = figure.name;
       marker.parent_id = figure.parent_id;
 
@@ -149,25 +178,100 @@ namespace DbLayer
       return figure;
     }
 
-    public async Task UpdatePropAsync(DBMarkerProperties updatedObj)
+    public static DBMarkerProperties ConvertDTO2Property(ObjPropsDTO props)
     {
-      using (var session = await _mongoClient.StartSessionAsync())
+      DBMarkerProperties mProps = new DBMarkerProperties()
       {
-        await UpdatePropAsync(session, updatedObj);
+        extra_props = new List<DBObjExtraProperty>(),
+        id = props.id
+      };
+
+      if (props.extra_props == null)
+      {
+        return mProps;
       }
+
+      var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
+
+      propertieNames.AddRange(
+        typeof(FigureCircleDTO).GetProperties().Select(x => x.Name)
+        );
+
+
+      foreach (var prop in props.extra_props)
+      {
+        // "radius", "min_zoom", "max_zoom"
+        if (propertieNames.Contains(prop.prop_name))
+        {
+          continue;
+        }
+
+        DBObjExtraProperty newProp = new DBObjExtraProperty()
+        {
+          prop_name = prop.prop_name,
+          visual_type = prop.visual_type
+        };
+
+        if (prop.visual_type == BsonType.DateTime.ToString())
+        {
+          newProp.MetaValue = new BsonDocument(
+            "str_val",
+            DateTime.Parse(prop.str_val)
+            );
+        }
+        else
+        {
+          newProp.MetaValue = new BsonDocument(
+            "str_val",
+            prop.str_val
+            );
+        }
+        mProps.extra_props.Add(newProp);
+      }
+
+      return mProps;
     }
 
-    private async Task UpdatePropAsync(IClientSessionHandle session, DBMarkerProperties updatedObj)
+    public async Task UpdatePropAsync(ObjPropsDTO updatedObj)
     {
+      var props = ConvertDTO2Property(updatedObj);
+
       ReplaceOptions opt = new ReplaceOptions();
       opt.IsUpsert = true;
-      await _propCollection.ReplaceOneAsync(session, x => x.id == updatedObj.id, updatedObj, opt);
+      await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
     }
 
-    public async Task<DBMarkerProperties> GetPropAsync(string id)
+    public async Task<ObjPropsDTO> GetPropAsync(string id)
     {
       var obj = await _propCollection.Find(x => x.id == id).FirstOrDefaultAsync();
-      return obj;
+      return Conver2Property2DTO(obj);
+    }
+
+    public static ObjPropsDTO Conver2Property2DTO(DBMarkerProperties props)
+    {
+      if (props == null)
+      {
+        return null;
+      }
+
+      ObjPropsDTO mProps = new ObjPropsDTO()
+      {
+        extra_props = new List<ObjExtraPropertyDTO>(),
+        id = props.id
+      };
+
+      foreach (var prop in props.extra_props)
+      {
+        ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
+        {
+          prop_name = prop.prop_name,
+          str_val = prop.MetaValue.GetValue("str_val", string.Empty).ToString(),
+          visual_type = prop.visual_type
+        };
+        mProps.extra_props.Add(newProp);
+      }
+
+      return mProps;
     }
   }
 }

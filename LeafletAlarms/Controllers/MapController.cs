@@ -2,6 +2,7 @@
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
@@ -16,11 +17,11 @@ namespace LeafletAlarms.Controllers
   [Route("api/[controller]")]
   public class MapController : ControllerBase
   {
-    private readonly MapService _mapService;
+    private readonly IMapService _mapService;
     private readonly GeoService _geoService;
     private StateWebSocketHandler _stateService;
     public MapController(
-      MapService mapsService,
+      IMapService mapsService,
       GeoService geoService,
       StateWebSocketHandler stateService
     )
@@ -31,7 +32,7 @@ namespace LeafletAlarms.Controllers
     }        
 
     [HttpGet("{id:length(24)}")]
-    public async Task<ActionResult<DBMarker>> Get(string id)
+    public async Task<ActionResult<BaseMarkerDTO>> Get(string id)
     {
       var marker = await _mapService.GetAsync(id);
 
@@ -53,11 +54,11 @@ namespace LeafletAlarms.Controllers
       // Fill out parents.
       var parents = await _mapService.GetByChildIdAsync(parent_id);
 
-      retVal.parents = new List<TreeMarkerDTO>();
+      retVal.parents = new List<BaseMarkerDTO>();
+
       foreach (var parent in parents)
       {
-        var markerDto = DTOConverter.GetTreeMarkerDTO(parent);
-        retVal.parents.Insert(0, markerDto);
+        retVal.parents.Insert(0, parent);
       }
 
       // Get children.
@@ -92,16 +93,15 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetAllChildren")]
-    public async Task<List<TreeMarkerDTO>> GetAllChildren(string parent_id)
+    public async Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id)
     {
       var markers = await _mapService.GetAllChildren(parent_id);
 
-      var retVal = new List<TreeMarkerDTO>();
+      var retVal = new List<BaseMarkerDTO>();
 
       foreach (var marker in markers)
       {
-        var markerDto = DTOConverter.GetTreeMarkerDTO(marker);
-        retVal.Add(markerDto);
+        retVal.Add(marker);
       }
 
       return retVal;
@@ -224,9 +224,8 @@ namespace LeafletAlarms.Controllers
 
       var markerDto = DTOConverter.GetObjPropsDTO(marker);
 
-      var props = await _mapService.GetPropAsync(id);
+      var propDTO = await _mapService.GetPropAsync(id);
 
-      var propDTO = DTOConverter.Conver2Property2DTO(props);
 
       if (propDTO == null)
       {
@@ -282,9 +281,10 @@ namespace LeafletAlarms.Controllers
       marker.parent_id = updatedMarker.parent_id;
 
       await _mapService.UpdateAsync(marker);
-      var props = DTOConverter.ConvertDTO2Property(updatedMarker);
 
-      await _mapService.UpdatePropAsync(props);
+
+
+      await _mapService.UpdatePropAsync(updatedMarker);
 
       ObjExtraPropertyDTO radius = null;
       ObjExtraPropertyDTO zoom_level = null;
