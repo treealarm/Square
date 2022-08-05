@@ -19,12 +19,12 @@ namespace LeafletAlarms.Controllers
     private readonly IMapService _mapService;
     private readonly TrackService _tracksService;
     private StateWebSocketHandler _stateService;
-    private readonly GeoService _geoService;
+    private readonly IGeoService _geoService;
 
     public TracksController(
       IMapService mapsService,
       TrackService tracksService,
-      GeoService geoService,
+      IGeoService geoService,
       StateWebSocketHandler stateService
     )
     {

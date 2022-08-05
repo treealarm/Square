@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Domain.GeoDBDTO
@@ -23,6 +24,11 @@ namespace Domain.GeoDBDTO
       {
         _coord = value;
       }
+    }
+
+    public override string GetJson()
+    {
+      return JsonSerializer.Serialize(this);
     }
   }
 }

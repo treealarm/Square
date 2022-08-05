@@ -12,11 +12,11 @@ namespace LeafletAlarms.Controllers
   public class StateWebSocketHandler: ITrackConsumer
   {
     private IMapService _mapService;
-    private GeoService _geoService;
+    private IGeoService _geoService;
     private LevelService _levelService;
     public StateWebSocketHandler(
       IMapService mapsService,
-      GeoService geoService,
+      IGeoService geoService,
       LevelService levelService
     )
     {

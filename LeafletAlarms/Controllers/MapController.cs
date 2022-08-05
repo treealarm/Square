@@ -18,11 +18,11 @@ namespace LeafletAlarms.Controllers
   public class MapController : ControllerBase
   {
     private readonly IMapService _mapService;
-    private readonly GeoService _geoService;
+    private readonly IGeoService _geoService;
     private StateWebSocketHandler _stateService;
     public MapController(
       IMapService mapsService,
-      GeoService geoService,
+      IGeoService geoService,
       StateWebSocketHandler stateService
     )
     {
@@ -107,7 +107,7 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    private async Task<FiguresDTO> GetFigures(List<DBGeoObject> geo)
+    private async Task<FiguresDTO> GetFigures(List<GeoObjectDTO> geo)
     {
       var result = new FiguresDTO();
 
@@ -127,56 +127,34 @@ namespace LeafletAlarms.Controllers
         {
           FigureZoomedDTO retItem = null;
 
-          if (geoPart.location.Type == GeoJsonObjectType.Point)
+          if (geoPart.location is GeometryCircleDTO circle)
           {
             var figure = new FigureCircleDTO();
             figure.radius = geoPart.radius;
-            var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
-            figure.geometry = 
-              new GeometryCircleDTO(new Geo2DCoordDTO() { pt.Coordinates.Y, pt.Coordinates.X }) ;
+            figure.geometry = circle;
             result.circles.Add(figure);
             retItem = figure;
+            retItem.type = figure.geometry.GetFigureType();
           }
 
-          if (geoPart.location.Type == GeoJsonObjectType.Polygon)
+          if (geoPart.location is GeometryPolygonDTO polygon)
           {
             var figure = new FigurePolygonDTO();
 
-            var pt = geoPart.location as GeoJsonPolygon<GeoJson2DCoordinates>;
-
-            GeometryPolygonDTO list = new GeometryPolygonDTO();
-
-            foreach (var cur in pt.Coordinates.Exterior.Positions)
-            {
-              list.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
-            }
-
-            if (list.coord.Count > 3)
-            {
-              list.coord.RemoveAt(list.coord.Count - 1);
-            }
-
-            figure.geometry = list;
+            figure.geometry = polygon;
             result.polygons.Add(figure);
             retItem = figure;
+            retItem.type = figure.geometry.GetFigureType();
           }
 
-          if (geoPart.location.Type == GeoJsonObjectType.LineString)
+          if (geoPart.location is GeometryPolylineDTO line)
           {
             var figure = new FigurePolylineDTO();
 
-            var pt = geoPart.location as GeoJsonLineString<GeoJson2DCoordinates>;
-
-            GeometryPolylineDTO list = new GeometryPolylineDTO();
-
-            foreach (var cur in pt.Coordinates.Positions)
-            {
-              list.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
-            }
-
-            figure.geometry = list;
+            figure.geometry = line;
             result.polylines.Add(figure);
             retItem = figure;
+            retItem.type = figure.geometry.GetFigureType();
           }
 
           if (retItem != null)
@@ -184,7 +162,7 @@ namespace LeafletAlarms.Controllers
             retItem.id = item.id;
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;
-            retItem.type = geoPart.location.Type.ToString();
+            
             retItem.zoom_level = geoPart.zoom_level?.ToString();
           }
 
@@ -236,11 +214,11 @@ namespace LeafletAlarms.Controllers
 
       if (geoPart != null)
       {
-        markerDto.type = geoPart.location.Type.ToString();
-        var figure = DTOConverter.ConvertGeoPoint2DTO(geoPart);
-        markerDto.geometry = JsonSerializer.Serialize(figure.geometry);
+        markerDto.type = geoPart.location.GetFigureType();
 
-        if (geoPart.location.Type == GeoJsonObjectType.Point)
+        markerDto.geometry = geoPart.location.GetJson();
+
+        if (markerDto.type == "Point")
         {          
           propDTO.extra_props.Add(
             new ObjExtraPropertyDTO() { str_val = $"{geoPart.radius}", prop_name = "radius" }

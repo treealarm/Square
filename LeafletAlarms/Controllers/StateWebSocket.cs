@@ -25,7 +25,7 @@ namespace LeafletAlarms.Controllers
     private HttpContext _context;
     private WebSocket _webSocket;
     private IMapService _mapService;
-    private GeoService _geoService;
+    private IGeoService _geoService;
     private LevelService _levelService;
     private System.Timers.Timer _timer;
     private HashSet<string> _dicIds = new HashSet<string>();
@@ -46,7 +46,7 @@ namespace LeafletAlarms.Controllers
       HttpContext context,
       WebSocket webSocket,
       IMapService mapsService,
-      GeoService geoService,
+      IGeoService geoService,
       LevelService levelService
     )
     {

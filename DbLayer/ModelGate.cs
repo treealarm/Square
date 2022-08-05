@@ -24,6 +24,30 @@ namespace DbLayer
       return res;
     }
 
+    static public List<DBGeoObject> ConvertListDTO2DB(List<GeoObjectDTO> dto)
+    {
+      var res = new List<DBGeoObject>();
+     
+      foreach (var item in dto)
+      {
+        res.Add(ConvertDTO2DB(item));
+      }
+
+      return res;
+    }
+
+    static public List<GeoObjectDTO> ConvertListDB2DTO(List<DBGeoObject> dto)
+    {
+      var res = new List<GeoObjectDTO>();
+
+      foreach (var item in dto)
+      {
+        res.Add(ConvertDB2DTO(item));
+      }
+
+      return res;
+    }
+
     static public GeoJsonGeometry<GeoJson2DCoordinates> ConvertGeoDTO2DB(GeometryDTO location)
     {
       GeoJsonGeometry<GeoJson2DCoordinates> ret = null;

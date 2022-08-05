@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
-  public class GeoService
+  public class GeoService: IGeoService
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;
@@ -168,7 +168,7 @@ namespace DbLayer
       return point;
     }
 
-    public async Task<List<DBGeoObject>> GetGeoAsync(BoxDTO box)
+    public async Task<List<GeoObjectDTO>> GetGeoAsync(BoxDTO box)
     {
       var builder = Builders<DBGeoObject>.Filter;
       var geometry = GeoJson.Polygon(
@@ -189,12 +189,13 @@ namespace DbLayer
         & builder.GeoIntersects(t => t.location, geometry);
 
       Log(filter);
+
       var list = await _geoCollection.Find(filter).ToListAsync();
 
-      return list;
+      return ModelGate.ConvertListDB2DTO(list);
     }
 
-    public async Task<List<DBGeoObject>> GetGeoObjectsAsync(List<string> ids)
+    public async Task<List<GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids)
     {
       List<DBGeoObject> obj = null;
 
@@ -207,10 +208,10 @@ namespace DbLayer
 
       }
 
-      return obj;
+      return ModelGate.ConvertListDB2DTO(obj);
     }
 
-    public async Task<DBGeoObject> GetGeoObjectAsync(string id)
+    public async Task<GeoObjectDTO> GetGeoObjectAsync(string id)
     {
       DBGeoObject obj = null;
 
@@ -223,14 +224,13 @@ namespace DbLayer
 
       }
 
-      return obj;
+      return ModelGate.ConvertDB2DTO(obj);
     }
 
-    public async Task<DeleteResult> RemoveAsync(List<string> ids)
+    public async Task<long> RemoveAsync(List<string> ids)
     {
-      //var idsFilter = Builders<Marker>.Filter.In(d => d.id, ids);
-      //return await _circleCollection.DeleteManyAsync(idsFilter);
-      return await _geoCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      var result =  await _geoCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      return result.DeletedCount;
     }
 
     public async Task<GeoObjectDTO> CreateGeoPoint(FigureBaseDTO figure)
