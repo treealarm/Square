@@ -3,6 +3,7 @@ using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
+using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
@@ -19,11 +20,11 @@ namespace LeafletAlarms.Controllers
   {
     private readonly IMapService _mapService;
     private readonly IGeoService _geoService;
-    private StateWebSocketHandler _stateService;
+    private ITrackConsumer _stateService;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
-      StateWebSocketHandler stateService
+      ITrackConsumer stateService
     )
     {
       _mapService = mapsService;

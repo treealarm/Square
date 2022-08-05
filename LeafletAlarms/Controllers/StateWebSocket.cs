@@ -20,13 +20,13 @@ using System.Timers;
 
 namespace LeafletAlarms.Controllers
 {  
-  public class StateWebSocket : ITrackConsumer
+  public class StateWebSocket
   {
     private HttpContext _context;
     private WebSocket _webSocket;
     private IMapService _mapService;
     private IGeoService _geoService;
-    private LevelService _levelService;
+    private ILevelService _levelService;
     private System.Timers.Timer _timer;
     private HashSet<string> _dicIds = new HashSet<string>();
     private object _locker = new object();
@@ -47,7 +47,7 @@ namespace LeafletAlarms.Controllers
       WebSocket webSocket,
       IMapService mapsService,
       IGeoService geoService,
-      LevelService levelService
+      ILevelService levelService
     )
     {
       _mapService = mapsService;

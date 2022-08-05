@@ -21,12 +21,12 @@ namespace DbLayer
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;
     private readonly IMapService _mapService;
-    private readonly LevelService _levelService;
+    private readonly ILevelService _levelService;
     private readonly MongoClient _mongoClient;
     public GeoService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
       IMapService parent,
-      LevelService levelService
+      ILevelService levelService
     )
     {
       _mongoClient = new MongoClient(

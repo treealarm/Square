@@ -17,15 +17,15 @@ namespace LeafletAlarms.Controllers
   public class TracksController : ControllerBase
   {
     private readonly IMapService _mapService;
-    private readonly TrackService _tracksService;
-    private StateWebSocketHandler _stateService;
+    private readonly ITrackService _tracksService;
+    private ITrackConsumer _stateService;
     private readonly IGeoService _geoService;
 
     public TracksController(
       IMapService mapsService,
-      TrackService tracksService,
+      ITrackService tracksService,
       IGeoService geoService,
-      StateWebSocketHandler stateService
+      ITrackConsumer stateService
     )
     {
       _mapService = mapsService;

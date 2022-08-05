@@ -13,11 +13,11 @@ namespace LeafletAlarms.Controllers
   {
     private IMapService _mapService;
     private IGeoService _geoService;
-    private LevelService _levelService;
+    private ILevelService _levelService;
     public StateWebSocketHandler(
       IMapService mapsService,
       IGeoService geoService,
-      LevelService levelService
+      ILevelService levelService
     )
     {
       _mapService = mapsService;

@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
-  public class TrackService
+  public class TrackService: ITrackService
   {
     private readonly IMongoCollection<DBTrackPoint> _collection;
     private readonly MongoClient _mongoClient;

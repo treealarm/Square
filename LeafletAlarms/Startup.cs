@@ -1,6 +1,7 @@
 using DbLayer;
 using Domain;
 using Domain.ServiceInterfaces;
+using Domain.StateWebSock;
 using LeafletAlarms.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -33,9 +34,9 @@ namespace LeafletAlarms
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();
       
-      services.AddSingleton<TrackService>();
-      services.AddSingleton<LevelService>();
-      services.AddSingleton<StateWebSocketHandler>();
+      services.AddSingleton<ITrackService, TrackService>();
+      services.AddSingleton<ILevelService, LevelService>();
+      services.AddSingleton<ITrackConsumer, StateWebSocketHandler>();
 
       services.AddControllersWithViews();
 
@@ -110,7 +111,7 @@ namespace LeafletAlarms
           {
             using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
             {
-              var handler = app.ApplicationServices.GetRequiredService<StateWebSocketHandler>();
+              var handler = app.ApplicationServices.GetRequiredService<ITrackConsumer>();
               await handler.PushAsync(context, webSocket);
             }
           }

@@ -1,5 +1,6 @@
 ﻿using DbLayer.Models;
 using Domain;
+using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
-  public class LevelService
+  public class LevelService: ILevelService
   {
     private readonly IMongoCollection<DBLevel> _collection;
     private readonly MongoClient _mongoClient;

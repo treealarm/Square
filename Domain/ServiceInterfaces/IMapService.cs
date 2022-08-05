@@ -8,7 +8,7 @@ namespace Domain.ServiceInterfaces
 {
   public interface IMapService
   {
-    public Task<List<BaseMarkerDTO>> GetAsync(List<string> ids);
+    Task<List<BaseMarkerDTO>> GetAsync(List<string> ids);
 
     Task<BaseMarkerDTO> GetAsync(string id);
     Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id);
