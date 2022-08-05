@@ -139,6 +139,7 @@ namespace DbLayer
       var dbObj = new DBMarker();
       newObj.CopyAllTo(dbObj);
       await _markerCollection.InsertOneAsync(dbObj);
+      newObj.id = dbObj.id;
     }
 
     public async Task UpdateAsync(BaseMarkerDTO updatedObj)

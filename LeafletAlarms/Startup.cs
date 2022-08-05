@@ -30,7 +30,6 @@ namespace LeafletAlarms
     {
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
 
-      services.AddSingleton<MapService>();
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<GeoService>();
       

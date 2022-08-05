@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.IO;
@@ -19,12 +20,12 @@ namespace DbLayer
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;
-    private readonly MapService _mapService;
+    private readonly IMapService _mapService;
     private readonly LevelService _levelService;
     private readonly MongoClient _mongoClient;
     public GeoService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
-      MapService parent,
+      IMapService parent,
       LevelService levelService
     )
     {

@@ -2,6 +2,7 @@
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -23,7 +24,7 @@ namespace LeafletAlarms.Controllers
   {
     private HttpContext _context;
     private WebSocket _webSocket;
-    private MapService _mapService;
+    private IMapService _mapService;
     private GeoService _geoService;
     private LevelService _levelService;
     private System.Timers.Timer _timer;
@@ -44,7 +45,7 @@ namespace LeafletAlarms.Controllers
     public StateWebSocket(
       HttpContext context,
       WebSocket webSocket,
-      MapService mapsService,
+      IMapService mapsService,
       GeoService geoService,
       LevelService levelService
     )

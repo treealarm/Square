@@ -1,4 +1,5 @@
 ﻿using DbLayer;
+using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Concurrent;
@@ -10,11 +11,11 @@ namespace LeafletAlarms.Controllers
 {
   public class StateWebSocketHandler: ITrackConsumer
   {
-    private MapService _mapService;
+    private IMapService _mapService;
     private GeoService _geoService;
     private LevelService _levelService;
     public StateWebSocketHandler(
-      MapService mapsService,
+      IMapService mapsService,
       GeoService geoService,
       LevelService levelService
     )

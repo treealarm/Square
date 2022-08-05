@@ -1,5 +1,6 @@
 ﻿using DbLayer;
 using Domain;
+using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -15,13 +16,13 @@ namespace LeafletAlarms.Controllers
   [ApiController]
   public class TracksController : ControllerBase
   {
-    private readonly MapService _mapService;
+    private readonly IMapService _mapService;
     private readonly TrackService _tracksService;
     private StateWebSocketHandler _stateService;
     private readonly GeoService _geoService;
 
     public TracksController(
-      MapService mapsService,
+      IMapService mapsService,
       TrackService tracksService,
       GeoService geoService,
       StateWebSocketHandler stateService
