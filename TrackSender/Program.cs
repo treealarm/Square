@@ -28,18 +28,27 @@ namespace TrackSender
       }
     }
 
-    static async Task<FiguresDTO> UpdateFiguresAsync(FiguresDTO figure)
+    static async Task<FiguresDTO> UpdateFiguresAsync(FiguresDTO figure, string action)
     {
       HttpResponseMessage response = 
         await client.PostAsJsonAsync(
-          $"api/Tracks/AddTracks", figure);
+          $"api/Tracks/{action}", figure);
 
       response.EnsureSuccessStatusCode();
 
       // Deserialize the updated product from the response body.
       var s = await response.Content.ReadAsStringAsync();
 
-      FiguresDTO json = JsonSerializer.Deserialize<FiguresDTO>(s);
+      try
+      {
+        FiguresDTO json = JsonSerializer.Deserialize<FiguresDTO>(s);
+        return json;
+      }
+      catch(Exception ex)
+      {
+
+      }
+      
       return figure;
     }
 
@@ -112,7 +121,7 @@ namespace TrackSender
         figures.circles.Add(circle);
 
         circle.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 });
-        figures = await UpdateFiguresAsync(figures);
+        figures = await UpdateFiguresAsync(figures, "AddTracks");
       }
       else
       {
@@ -143,14 +152,18 @@ namespace TrackSender
       }
 
       circle.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 }) ;
-      var stat = circle.geometry.coord[0];
+      var stat_y = circle.geometry.coord[0];
+      var stat_x = circle.geometry.coord[1];
+      Random rand = new Random();
 
-      for (double x = 0; x < 0.1; x+=0.001)
+      for (double dy = 0; dy < 0.1; dy+=0.001)
       {
-        circle.geometry.coord[0] = stat + x;
+        var dx = rand.NextDouble() / 500;
+        circle.geometry.coord[0] = stat_y + dy;
+        circle.geometry.coord[1] = stat_x + dx;
         circle.zoom_level = "13";
         Console.WriteLine(JsonSerializer.Serialize(circle.geometry));
-        await UpdateFiguresAsync(figures);
+        await UpdateFiguresAsync(figures, "UpdateTracks");
         await Task.Delay(1000);
       }      
     }

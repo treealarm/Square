@@ -10,5 +10,6 @@ namespace Domain.ServiceInterfaces
   public interface ITrackService
   {
     Task InsertManyAsync(List<TrackPointDTO> newObjs);
+    Task<List<TrackPointDTO>> GetAsync();
   }
 }

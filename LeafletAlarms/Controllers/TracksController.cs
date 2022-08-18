@@ -18,7 +18,7 @@ namespace LeafletAlarms.Controllers
     private readonly ITrackService _tracksService;
     private ITrackConsumer _stateService;
     private readonly IGeoService _geoService;
-    private BaseMarkerDTO _tracksRootFolder;    
+    private BaseMarkerDTO _tracksRootFolder;
     private const string TRACKS_ROOT_NAME = "__tracks";
 
     public TracksController(
@@ -56,12 +56,12 @@ namespace LeafletAlarms.Controllers
 
         return _tracksRootFolder;
       }
-      
+
       return _tracksRootFolder;
     }
 
     private async Task EnsureTracksRoot(BaseMarkerDTO marker)
-    { 
+    {
       if (string.IsNullOrEmpty(marker.parent_id))
       {
         var root = await GetTracksRoot();
@@ -76,9 +76,7 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(Empty), s);
     }
 
-    [HttpPost]
-    [Route("AddTracks")]
-    public async Task<ActionResult<FiguresDTO>> AddTracks(FiguresDTO movedMarkers)
+    private async Task DoUpdateTracks(FiguresDTO movedMarkers)
     {
       var trackPoints = new List<TrackPointDTO>();
 
@@ -124,8 +122,32 @@ namespace LeafletAlarms.Controllers
       await _tracksService.InsertManyAsync(trackPoints);
 
       await _stateService.OnUpdateTrackPosition(trackPoints);
+    }
 
+    [HttpPost]
+    [Route("AddTracks")]
+    public async Task<ActionResult<FiguresDTO>> AddTracks(FiguresDTO movedMarkers)
+    {
+      await DoUpdateTracks(movedMarkers);
       return CreatedAtAction(nameof(AddTracks), movedMarkers);
+    }
+
+    [HttpPost]
+    [Route("UpdateTracks")]
+    public async Task<ActionResult<bool>> UpdateTracks(FiguresDTO movedMarkers)
+    {
+      await DoUpdateTracks(movedMarkers);
+
+      return CreatedAtAction(nameof(UpdateTracks), true);
+    }
+
+    [HttpGet]
+    [Route("GetTracks")]
+    public async Task<ActionResult<List<TrackPointDTO>>> GetTracks()
+    {
+      var trackPoints = await _tracksService.GetAsync();
+
+      return CreatedAtAction(nameof(GetTracks), trackPoints);
     }
   }
 }

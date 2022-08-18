@@ -47,5 +47,25 @@ namespace DbLayer
       }
       await _collection.InsertManyAsync(list);
     }
+
+    public async Task<List<TrackPointDTO>> GetAsync()
+    { 
+      List<TrackPointDTO> list = new List<TrackPointDTO>();
+      var dbTracks = await _collection.Find(t => t.id != null).ToListAsync();
+
+      foreach (var t in dbTracks)
+      {
+        var dto = new TrackPointDTO()
+        {
+          id = t.id,
+          timestamp = t.timestamp,
+          figure = ModelGate.ConvertDB2DTO(t.figure)
+        };
+
+        list.Add(dto);
+      }
+
+      return list;
+    }
   }
 }
