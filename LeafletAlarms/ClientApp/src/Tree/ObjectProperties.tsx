@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption } from '../store/Marker';
+import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, ICoord, IArrayCoord, LatLngPair } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
@@ -138,22 +138,16 @@ export function ObjectProperties() {
 
       switch (props.type) {
         case PointType:
-          //var radius2set = 100;
-
-          //if (props.extra_props != null) {
-          //  var radius = props.extra_props.find(p => p.prop_name == "radius");
-          //  if (radius != null) {
-          //    radius2set = parseInt(radius.str_val);
-          //  }
-          //}
-          //myFigure = new L.Circle(geo, radius2set);
-          center = new L.LatLng(geo[0], geo[1]);
+          var coord: LatLngPair = geo.coord;
+          center = new L.LatLng(coord[0], coord[1]);
           break;
         case LineStringType:
-          myFigure = new L.Polyline(geo)
+          var coordArr: LatLngPair[] = geo.coord;
+          myFigure = new L.Polyline(coordArr)
           break;
         case PolygonType:
-          myFigure = new L.Polygon(geo)
+          var coordArr: LatLngPair[] = geo.coord;
+          myFigure = new L.Polygon(coordArr)
           break;
         default:
           break;
