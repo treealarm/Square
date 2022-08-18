@@ -241,7 +241,7 @@ namespace LeafletAlarms.Controllers
     {
       if (string.IsNullOrEmpty(updatedMarker.id))
       {
-        await _mapService.CreateCompleteObject(updatedMarker);
+        await _mapService.CreateOrUpdateHierarchyObject(updatedMarker);
         await _geoService.CreateGeoPoint(updatedMarker);
       }
 
@@ -255,7 +255,7 @@ namespace LeafletAlarms.Controllers
       marker.name = updatedMarker.name;
       marker.parent_id = updatedMarker.parent_id;
 
-      await _mapService.UpdateAsync(marker);
+      await _mapService.UpdateHierarchyAsync(marker);
 
 
 

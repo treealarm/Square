@@ -13,12 +13,13 @@ namespace Domain.ServiceInterfaces
     Task<BaseMarkerDTO> GetAsync(string id);
     Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id);
     Task<List<BaseMarkerDTO>> GetByParentIdAsync(string parent_id);
+    Task<List<BaseMarkerDTO>> GetByNameAsync(string name);
     Task<List<BaseMarkerDTO>> GetTopChildren(List<string> parentIds);
     Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id);
     Task<ObjPropsDTO> GetPropAsync(string id);
-    Task<FigureBaseDTO> CreateCompleteObject(FigureBaseDTO figure);
+    Task CreateOrUpdateHierarchyObject(BaseMarkerDTO marker);
     Task UpdatePropAsync(ObjPropsDTO updatedObj);
-    Task UpdateAsync(BaseMarkerDTO updatedObj);
+    Task UpdateHierarchyAsync(BaseMarkerDTO updatedObj);
     Task<long> RemoveAsync(List<string> ids);
   }
 }

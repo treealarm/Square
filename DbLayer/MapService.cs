@@ -61,6 +61,12 @@ namespace DbLayer
       return ConvertMarkerListDB2DTO(retVal);
     }
 
+    public async Task<List<BaseMarkerDTO>> GetByNameAsync(string name)
+    {
+      var retVal = await _markerCollection.Find(x => x.name == name).ToListAsync();
+      return ConvertMarkerListDB2DTO(retVal);
+    }
+
     public async Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id)
     {
       var parents = new List<BaseMarkerDTO>();
@@ -134,7 +140,7 @@ namespace DbLayer
       return ConvertMarkerListDB2DTO(result);
     }
 
-    public async Task CreateAsync(BaseMarkerDTO newObj)
+    public async Task CreateHierarchyAsync(BaseMarkerDTO newObj)
     {
       var dbObj = new DBMarker();
       newObj.CopyAllTo(dbObj);
@@ -142,7 +148,7 @@ namespace DbLayer
       newObj.id = dbObj.id;
     }
 
-    public async Task UpdateAsync(BaseMarkerDTO updatedObj)
+    public async Task UpdateHierarchyAsync(BaseMarkerDTO updatedObj)
     {
       var dbObj = new DBMarker();
       updatedObj.CopyAllTo(dbObj);
@@ -158,25 +164,16 @@ namespace DbLayer
       return result.DeletedCount;
     }
 
-    public async Task<FigureBaseDTO> CreateCompleteObject(FigureBaseDTO figure)
+    public async Task CreateOrUpdateHierarchyObject(BaseMarkerDTO marker)
     { 
-      var marker = new BaseMarkerDTO();
-      marker.name = figure.name;
-      marker.parent_id = figure.parent_id;
-
-      if (!string.IsNullOrEmpty(figure.id))
+      if (!string.IsNullOrEmpty(marker.id))
       {
-        marker.id = figure.id;
-        await UpdateAsync(marker);
+        await UpdateHierarchyAsync(marker);
       }
       else
       {
-        await CreateAsync(marker);
+        await CreateHierarchyAsync(marker);
       }
-
-      figure.id = marker.id; 
-
-      return figure;
     }
 
     public static DBMarkerProperties ConvertDTO2Property(ObjPropsDTO props)

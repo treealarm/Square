@@ -3,6 +3,7 @@ using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,6 +18,8 @@ namespace LeafletAlarms.Controllers
     private readonly ITrackService _tracksService;
     private ITrackConsumer _stateService;
     private readonly IGeoService _geoService;
+    private BaseMarkerDTO _tracksRootFolder;    
+    private const string TRACKS_ROOT_NAME = "__tracks";
 
     public TracksController(
       IMapService mapsService,
@@ -29,6 +32,41 @@ namespace LeafletAlarms.Controllers
       _tracksService = tracksService;
       _stateService = stateService;
       _geoService = geoService;
+    }
+
+    private async Task<BaseMarkerDTO> GetTracksRoot()
+    {
+      if (_tracksRootFolder == null)
+      {
+        var list_of_roots = await _mapService.GetByNameAsync(TRACKS_ROOT_NAME);
+
+        if (list_of_roots.Count == 0)
+        {
+          _tracksRootFolder = new BaseMarkerDTO()
+          {
+            name = TRACKS_ROOT_NAME
+          };
+
+          await _mapService.CreateOrUpdateHierarchyObject(_tracksRootFolder);
+        }
+        else
+        {
+          _tracksRootFolder = list_of_roots.First();
+        }
+
+        return _tracksRootFolder;
+      }
+      
+      return _tracksRootFolder;
+    }
+
+    private async Task EnsureTracksRoot(BaseMarkerDTO marker)
+    { 
+      if (string.IsNullOrEmpty(marker.parent_id))
+      {
+        var root = await GetTracksRoot();
+        marker.parent_id = root.parent_id;
+      }
     }
 
     [HttpPost]
@@ -46,7 +84,9 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in movedMarkers.circles)
       {
-        await _mapService.CreateCompleteObject(figure);
+        await EnsureTracksRoot(figure);
+        await _mapService.CreateOrUpdateHierarchyObject(figure);
+
         trackPoints.Add(
           new TrackPointDTO()
           {
@@ -57,7 +97,8 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in movedMarkers.polygons)
       {
-        await _mapService.CreateCompleteObject(figure);
+        await EnsureTracksRoot(figure);
+        await _mapService.CreateOrUpdateHierarchyObject(figure);
 
         trackPoints.Add(
           new TrackPointDTO()
@@ -69,7 +110,8 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in movedMarkers.polylines)
       {
-        await _mapService.CreateCompleteObject(figure);
+        await EnsureTracksRoot(figure);
+        await _mapService.CreateOrUpdateHierarchyObject(figure);
 
         trackPoints.Add(
           new TrackPointDTO()
