@@ -119,6 +119,8 @@ namespace DbLayer
     public async Task<DBGeoObject> CreateOrUpdateGeoPointAsync(FigureCircleDTO newObject)
     {
       DBGeoObject point = new DBGeoObject();
+
+      point.zoom_level = newObject.zoom_level;
       point.radius = newObject.radius;
 
       point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
@@ -137,7 +139,7 @@ namespace DbLayer
     public async Task<DBGeoObject> CreateOrUpdateGeoPolygonAsync(FigurePolygonDTO newObject)
     {
       DBGeoObject point = new DBGeoObject();
-
+      point.zoom_level = newObject.zoom_level;
       point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
 
       point.id = newObject.id;
@@ -156,7 +158,7 @@ namespace DbLayer
       DBGeoObject point = new DBGeoObject();
 
       point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
-
+      point.zoom_level = newObject.zoom_level;
       point.id = newObject.id;
       var result = await _geoCollection.ReplaceOneAsync(x => x.id == newObject.id, point);
 

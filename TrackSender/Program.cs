@@ -43,12 +43,27 @@ namespace TrackSender
       return figure;
     }
 
+    static async Task<List<BaseMarkerDTO>> GetByName(string name)
+    {
+      HttpResponseMessage response =
+        await client.PostAsJsonAsync(
+          $"api/Map/GetByName", name);
+      
+      response.EnsureSuccessStatusCode();
+
+      // Deserialize the updated product from the response body.
+      var s = await response.Content.ReadAsStringAsync();
+
+      var json = JsonSerializer.Deserialize<List<BaseMarkerDTO>>(s);
+      return json;
+    }
+
     static async Task<FiguresDTO> GetByIds(List<string> ids)
     {
       HttpResponseMessage response =
         await client.PostAsJsonAsync(
           $"api/Map/GetByIds", ids);
-      
+
       response.EnsureSuccessStatusCode();
 
       // Deserialize the updated product from the response body.
@@ -80,36 +95,60 @@ namespace TrackSender
       client.DefaultRequestHeaders.Accept.Add(
           new MediaTypeWithQualityHeaderValue("application/json"));
 
-      var figures = await GetByIds(new List<string>() { "62b85c84736cb579f3154917" });
+      var markers = await GetByName("test_track");
+      FiguresDTO figures;
+      FigureCircleDTO circle;
 
-      var t1 = DateTime.Now;
-
-      for (int i = 0; i< 100000; i++)
+      if (markers == null || markers.Count == 0)
       {
-        var sfigures = await Empty("62b85c84736cb579f3154917");
-
-        if (i%2000 == 0)
+        figures = new FiguresDTO();
+        figures.circles = new List<FigureCircleDTO>();
+        circle = new FigureCircleDTO()
         {
-          var t3 = (DateTime.Now - t1).TotalSeconds;
-          Console.WriteLine($"{i}-{t3}");
-          t1 = DateTime.Now;
-        }
+          name = "test_track",
+          radius = 333,
+          zoom_level = "13"
+        };
+        figures.circles.Add(circle);
+
+        circle.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 });
+        figures = await UpdateFiguresAsync(figures);
       }
+      else
+      {
+        figures = await GetByIds(new List<string>() { markers.FirstOrDefault().id });
+      }
+      
+      //var t1 = DateTime.Now;
 
-      var t2 = (DateTime.Now - t1).TotalSeconds;
+      //for (int i = 0; i< 100000; i++)
+      //{
+      //  var sfigures = await Empty("62b85c84736cb579f3154917");
 
-      var circle = figures.circles.FirstOrDefault();
+      //  if (i%2000 == 0)
+      //  {
+      //    var t3 = (DateTime.Now - t1).TotalSeconds;
+      //    Console.WriteLine($"{i}-{t3}");
+      //    t1 = DateTime.Now;
+      //  }
+      //}
+
+      //var t2 = (DateTime.Now - t1).TotalSeconds;
+
+      circle = figures.circles.FirstOrDefault();
 
       if (circle == null)
       {
         return;
       }
+
       circle.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 }) ;
       var stat = circle.geometry.coord[0];
 
       for (double x = 0; x < 0.1; x+=0.001)
       {
         circle.geometry.coord[0] = stat + x;
+        circle.zoom_level = "13";
         Console.WriteLine(JsonSerializer.Serialize(circle.geometry));
         await UpdateFiguresAsync(figures);
         await Task.Delay(1000);

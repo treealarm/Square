@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 
 namespace Domain.GeoDBDTO
 {
+  // This class is for leaflet, so Y goes first in array.
   public class Geo2DCoordDTO: List<double>
   {
     [JsonIgnore]
-    public double X 
+    public double Y 
     {
       get
       {
@@ -23,7 +24,7 @@ namespace Domain.GeoDBDTO
     }
 
     [JsonIgnore]
-    public double Y
+    public double X
     {
       get
       {

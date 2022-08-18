@@ -179,6 +179,14 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
+    [Route("GetByName")]
+    public async Task<ActionResult<List<BaseMarkerDTO>>> GetByName([FromBody] string name)
+    {
+      var figures = await _mapService.GetByNameAsync(name);
+      return CreatedAtAction(nameof(GetByName), figures);
+    }    
+
+    [HttpPost]
     [Route("GetByBox")]
     public async Task<FiguresDTO> GetByBox(BoxDTO box)
     {

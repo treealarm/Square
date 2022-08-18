@@ -65,7 +65,7 @@ namespace LeafletAlarms.Controllers
       if (string.IsNullOrEmpty(marker.parent_id))
       {
         var root = await GetTracksRoot();
-        marker.parent_id = root.parent_id;
+        marker.parent_id = root.id;
       }
     }
 
@@ -78,7 +78,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("AddTracks")]
-    public async Task<IActionResult> AddTracks(FiguresDTO movedMarkers)
+    public async Task<ActionResult<FiguresDTO>> AddTracks(FiguresDTO movedMarkers)
     {
       var trackPoints = new List<TrackPointDTO>();
 
