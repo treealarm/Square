@@ -1,7 +1,12 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
+using Domain.GeoDTO;
+using Itinero;
+using Itinero.IO.Osm;
+using Itinero.Osm.Vehicles;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -96,31 +101,124 @@ namespace TrackSender
       return s;
     }
 
+    static async Task<Itinero.LocalGeo.Coordinate[]> RunRouteAsync()
+    {
+      await Task.Delay(1);
+      var routerDb = new RouterDb();
+
+      try
+      {
+        var file2load = @"D:\TESTS\OSM_DATA\file.routerdb";
+        //var file2load = @"D:\TESTS\OSM_DATA\great-britain-latest.osm.pbf";
+
+        using (var stream = new FileInfo(file2load).OpenRead())
+        {
+          routerDb = RouterDb.Deserialize(stream);
+          
+          //routerDb.LoadOsmData(stream, Vehicle.Car); // create the network for cars only.
+        }
+
+        //using (var stream = new FileInfo(@"D:\TESTS\OSM_DATA\file.routerdb").Open(FileMode.Create))
+        //{
+        //routerDb.AddContracted(routerDb.GetSupportedProfile("car"));
+        //  routerDb.Serialize(stream);
+        //}
+
+      }
+      catch (Exception ex)
+      {
+
+      }
+      
+
+      // create a router.
+      var router = new Router(routerDb);
+
+      // get a profile.
+      var profile = Vehicle.Car.Fastest(); // the default OSM car profile.
+
+      // create a routerpoint from a location.
+      // snaps the given location to the nearest routable edge.
+      var start = router.Resolve(profile, 51.51467784097949f, -0.1486710157204226f);
+      //var end = router.Resolve(profile, 51.54685922108974f, -0.07535808869446825f);
+      var end = router.Resolve(profile, 51.1237f, 1.3134f);
+
+
+      // calculate a route.
+      var route = router.Calculate(profile, start, end);
+
+      return route.Shape;
+    }
     static async Task RunAsync()
     {
+      var root_coords = await RunRouteAsync();
       // Update port # in the following line.
       client.BaseAddress = new Uri("https://localhost:44307/");
       client.DefaultRequestHeaders.Accept.Clear();
       client.DefaultRequestHeaders.Accept.Add(
           new MediaTypeWithQualityHeaderValue("application/json"));
 
+
+      {
+        // Create Route.
+        var test_route = await GetByName("test_route");
+        FigurePolylineDTO polyline;
+        var polylines = new FiguresDTO();
+
+        if (test_route == null || test_route.Count == 0)
+        {
+          
+          polylines.polylines = new List<FigurePolylineDTO>();
+
+          polyline = new FigurePolylineDTO()
+          {
+            name = "test_route",
+            zoom_level = "13"
+          };
+
+
+          polyline.geometry = new GeometryPolylineDTO();          
+
+          polylines.polylines.Add(polyline);
+          
+        }
+        else
+        {
+          polylines = await GetByIds(new List<string>() { test_route.FirstOrDefault().id });
+        }
+
+        polyline = polylines.polylines.FirstOrDefault();
+        polyline.geometry.coord.Clear();
+
+        foreach (var coord in root_coords)
+        {
+          polyline.geometry.coord.Add(new Geo2DCoordDTO()
+            {
+              coord.Latitude,
+              coord.Longitude
+            });
+        }
+        polylines = await UpdateFiguresAsync(polylines, "AddTracks");
+      }
+
+
       var markers = await GetByName("test_track");
       FiguresDTO figures;
-      FigureCircleDTO circle;
+      FigureCircleDTO figure;
 
       if (markers == null || markers.Count == 0)
       {
         figures = new FiguresDTO();
         figures.circles = new List<FigureCircleDTO>();
-        circle = new FigureCircleDTO()
+        figure = new FigureCircleDTO()
         {
           name = "test_track",
           radius = 333,
           zoom_level = "13"
         };
-        figures.circles.Add(circle);
+        figures.circles.Add(figure);
 
-        circle.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 });
+        figure.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 });
         figures = await UpdateFiguresAsync(figures, "AddTracks");
       }
       else
@@ -144,25 +242,25 @@ namespace TrackSender
 
       //var t2 = (DateTime.Now - t1).TotalSeconds;
 
-      circle = figures.circles.FirstOrDefault();
+      figure = figures.circles.FirstOrDefault();
 
-      if (circle == null)
+      if (figure == null)
       {
         return;
       }
 
-      circle.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 }) ;
-      var stat_y = circle.geometry.coord[0];
-      var stat_x = circle.geometry.coord[1];
+      figure.geometry = new GeometryCircleDTO(new Geo2DCoordDTO() { 51.512677840979485, -0.14968839124598346 }) ;
+      var stat_y = figure.geometry.coord[0];
+      var stat_x = figure.geometry.coord[1];
       Random rand = new Random();
 
       for (double dy = 0; dy < 0.1; dy+=0.001)
       {
         var dx = rand.NextDouble() / 500;
-        circle.geometry.coord[0] = stat_y + dy;
-        circle.geometry.coord[1] = stat_x + dx;
-        circle.zoom_level = "13";
-        Console.WriteLine(JsonSerializer.Serialize(circle.geometry));
+        figure.geometry.coord[0] = stat_y + dy;
+        figure.geometry.coord[1] = stat_x + dx;
+        figure.zoom_level = "13";
+        Console.WriteLine(JsonSerializer.Serialize(figure.geometry));
         await UpdateFiguresAsync(figures, "UpdateTracks");
         await Task.Delay(1000);
       }      
