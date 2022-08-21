@@ -133,7 +133,6 @@ namespace LeafletAlarms.Controllers
       await _tracksService.InsertManyAsync(trackPoints);
 
       // Add Routs.
-
       var routs = new List<TrackPointDTO>();
 
       foreach (var trackPoint in trackPoints)
