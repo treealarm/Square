@@ -3,6 +3,7 @@ using Domain;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using LeafletAlarms.Controllers;
+using LeafletAlarmsRouter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -30,11 +31,14 @@ namespace LeafletAlarms
     public void ConfigureServices(IServiceCollection services)
     {
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
+      services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
 
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();
-      
+
+      services.AddSingleton<IRouter, TrackRouter>();
       services.AddSingleton<ITrackService, TrackService>();
+      services.AddSingleton<IRoutService, RoutService>();
       services.AddSingleton<ILevelService, LevelService>();
       services.AddSingleton<ITrackConsumer, StateWebSocketHandler>();
 

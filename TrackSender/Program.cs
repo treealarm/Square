@@ -2,7 +2,6 @@
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Itinero;
-using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
 using System;
 using System.Collections.Generic;
@@ -108,7 +107,7 @@ namespace TrackSender
 
       try
       {
-        var file2load = @"D:\TESTS\OSM_DATA\file.routerdb";
+        var file2load = @"D:\TESTS\OSM_DATA\great-britain.routerdb";
         //var file2load = @"D:\TESTS\OSM_DATA\great-britain-latest.osm.pbf";
 
         using (var stream = new FileInfo(file2load).OpenRead())
@@ -129,7 +128,8 @@ namespace TrackSender
       {
 
       }
-      
+
+      var edges = routerDb.GetGeoJsonEdges();
 
       // create a router.
       var router = new Router(routerDb);

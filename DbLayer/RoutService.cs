@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
-  public class TrackService: ITrackService
+  public class RoutService : IRoutService
   {
-    private readonly IMongoCollection<DBTrackPoint> _collFigures;
+    private readonly IMongoCollection<DBTrackPoint> _collRouts;
     private readonly MongoClient _mongoClient;
-    public TrackService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    public RoutService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
       _mongoClient = new MongoClient(
         geoStoreDatabaseSettings.Value.ConnectionString);
@@ -26,9 +26,9 @@ namespace DbLayer
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
 
-      _collFigures =
+      _collRouts =
         mongoDatabase.GetCollection<DBTrackPoint>(
-          geoStoreDatabaseSettings.Value.TracksCollectionName
+          geoStoreDatabaseSettings.Value.RoutsCollectionName
         );
     }
 
@@ -45,41 +45,24 @@ namespace DbLayer
         };
         list.Add(dbTrack);
       }
-      await _collFigures.InsertManyAsync(list);
-    }
-
-    private TrackPointDTO ConvertDB2DTO(DBTrackPoint t)
-    {
-      var dto = new TrackPointDTO()
-      {
-        id = t.id,
-        timestamp = t.timestamp,
-        figure = ModelGate.ConvertDB2DTO(t.figure)
-      };
-
-      return dto;
-    }
-
-    public async Task<TrackPointDTO> GetLastAsync(string id)
-    {
-      var dbTrack =
-        await _collFigures
-          .Find(t => t.figure.id == id)
-          .SortByDescending(t => t.id)
-          .FirstOrDefaultAsync();
-
-      return ConvertDB2DTO(dbTrack);
+      await _collRouts.InsertManyAsync(list);
     }
 
     public async Task<List<TrackPointDTO>> GetAsync()
-    { 
+    {
       List<TrackPointDTO> list = new List<TrackPointDTO>();
-      var dbTracks = 
-        await _collFigures.Find(t => t.id != null).Limit(100).ToListAsync();
+      var dbTracks =
+        await _collRouts.Find(t => t.id != null).Limit(100).ToListAsync();
 
       foreach (var t in dbTracks)
       {
-        var dto = ConvertDB2DTO(t);
+        var dto = new TrackPointDTO()
+        {
+          id = t.id,
+          timestamp = t.timestamp,
+          figure = ModelGate.ConvertDB2DTO(t.figure)
+        };
+
         list.Add(dto);
       }
 

@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace Domain.ServiceInterfaces
 {
-  public interface ITrackService
+  public interface IRoutService
   {
     Task InsertManyAsync(List<TrackPointDTO> newObjs);
     Task<List<TrackPointDTO>> GetAsync();
-    Task<TrackPointDTO> GetLastAsync(string id);
   }
 }

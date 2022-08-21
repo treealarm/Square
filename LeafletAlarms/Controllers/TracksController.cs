@@ -1,4 +1,6 @@
-﻿using Domain;
+﻿using DbLayer;
+using Domain;
+using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
@@ -19,19 +21,24 @@ namespace LeafletAlarms.Controllers
     private ITrackConsumer _stateService;
     private readonly IGeoService _geoService;
     private BaseMarkerDTO _tracksRootFolder;
+    private IRoutService _routService;
     private const string TRACKS_ROOT_NAME = "__tracks";
-
+    private IRouter _router;
     public TracksController(
       IMapService mapsService,
       ITrackService tracksService,
+      IRoutService routService,
       IGeoService geoService,
-      ITrackConsumer stateService
+      ITrackConsumer stateService,
+      IRouter router
     )
     {
       _mapService = mapsService;
       _tracksService = tracksService;
+      _routService = routService;
       _stateService = stateService;
       _geoService = geoService;
+      _router = router;
     }
 
     private async Task<BaseMarkerDTO> GetTracksRoot()
@@ -76,21 +83,25 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(Empty), s);
     }
 
+    private async Task<TrackPointDTO> GetLast(TrackPointDTO newPoint)
+    {
+      return await _tracksService.GetLastAsync(newPoint.figure.id);
+    }
     private async Task DoUpdateTracks(FiguresDTO movedMarkers)
     {
-      var trackPoints = new List<TrackPointDTO>();
+      var trackPoints = new List<TrackPointDTO>();      
 
       foreach (var figure in movedMarkers.circles)
       {
         await EnsureTracksRoot(figure);
         await _mapService.CreateOrUpdateHierarchyObject(figure);
 
-        trackPoints.Add(
-          new TrackPointDTO()
-          {
-            figure = await _geoService.CreateGeoPoint(figure)
-          }
-        );
+        var newPoint = new TrackPointDTO()
+        {
+          figure = await _geoService.CreateGeoPoint(figure)
+        };
+
+        trackPoints.Add(newPoint);        
       }
 
       foreach (var figure in movedMarkers.polygons)
@@ -121,6 +132,46 @@ namespace LeafletAlarms.Controllers
 
       await _tracksService.InsertManyAsync(trackPoints);
 
+      // Add Routs.
+
+      var routs = new List<TrackPointDTO>();
+
+      foreach (var trackPoint in trackPoints)
+      {
+        if (trackPoint.figure.location is not GeometryCircleDTO)
+        {
+          continue;
+        }
+
+        var newPoint = trackPoint;
+        var lastPoint = await GetLast(newPoint);
+
+        if (lastPoint != null)
+        {
+          var coords = new List<Geo2DCoordDTO>();
+          var p1 = (newPoint.figure.location as GeometryCircleDTO).coord;
+          coords.Add(p1);
+          var p2 = (lastPoint.figure.location as GeometryCircleDTO).coord;
+          coords.Add(p2);
+          var routRet = await _router.GetRoute(string.Empty, coords);
+
+          if (routRet != null && routRet.Count > 0)
+          {
+            routRet.Insert(0, p1);
+            routRet.Add(p2);
+            var polyLine = new GeometryPolylineDTO();
+            newPoint.figure.location = polyLine;
+            polyLine.coord = routRet;
+            routs.Add(newPoint);
+          }
+        }
+      }
+
+      if (routs.Count > 0)
+      {
+        await _routService.InsertManyAsync(routs);
+      }      
+
       await _stateService.OnUpdateTrackPosition(trackPoints);
     }
 
@@ -148,6 +199,15 @@ namespace LeafletAlarms.Controllers
       var trackPoints = await _tracksService.GetAsync();
 
       return CreatedAtAction(nameof(GetTracks), trackPoints);
+    }
+
+    [HttpPost]
+    [Route("GetRoute")]
+    public async Task<ActionResult<List<Geo2DCoordDTO>>> GetRoute(RoutDTO routData)
+    {
+      var routRet = await _router.GetRoute(routData.InstanceName, routData.Coordinates);
+
+      return CreatedAtAction(nameof(GetTracks), routRet);
     }
   }
 }
