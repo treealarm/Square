@@ -4,7 +4,7 @@ import * as MarkersStates from './MarkersStates';
 import * as TreeStates from './TreeStates';
 import * as GUIStates from './GUIStates';
 import * as MarkersVisualStates from './MarkersVisualStates';
-
+import * as TracksStates from './TracksStates';
 // The top-level state object
 export interface ApplicationState {
   editState: EditStates.EditState | undefined;
@@ -13,6 +13,7 @@ export interface ApplicationState {
   treeStates: TreeStates.TreeState | undefined;
   guiStates: GUIStates.GUIState | undefined;
   markersVisualStates: MarkersVisualStates.MarkersVisualStates | undefined;
+  tracksStates: TracksStates.TracksState | undefined;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -24,7 +25,8 @@ export const reducers = {
   markersStates: MarkersStates.reducer,
   treeStates: TreeStates.reducer,
   guiStates: GUIStates.reducer,
-  markersVisualStates: MarkersVisualStates.reducer
+  markersVisualStates: MarkersVisualStates.reducer,
+  tracksStates: TracksStates.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
@@ -34,3 +36,4 @@ export interface AppThunkAction<TAction> {
 }
 
 export const ApiRootString = 'api/map';
+export const ApiTracksRootString = 'api/tracks';

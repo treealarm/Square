@@ -80,3 +80,20 @@ export interface MarkerVisualState {
   id: string;
   color: string;
 }
+
+export interface IGeometryDTO {
+  coord: any[];
+}
+
+export interface IGeoObjectDTO {
+  id: string;
+  radius: number;
+  zoom_level: string;
+  location: IGeometryDTO;
+}
+
+export interface ITrackPointDTO {
+  id: string;
+  timestamp: Date;
+  figure: IGeoObjectDTO;
+}

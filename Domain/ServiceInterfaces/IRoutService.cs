@@ -11,5 +11,6 @@ namespace Domain.ServiceInterfaces
   {
     Task InsertManyAsync(List<TrackPointDTO> newObjs);
     Task<List<TrackPointDTO>> GetAsync();
+    Task<List<TrackPointDTO>> GetRoutsByBox(BoxDTO box);
   }
 }

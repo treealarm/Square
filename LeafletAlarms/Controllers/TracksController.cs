@@ -6,6 +6,7 @@ using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -207,6 +208,14 @@ namespace LeafletAlarms.Controllers
       var routRet = await _router.GetRoute(routData.InstanceName, routData.Coordinates);
 
       return CreatedAtAction(nameof(GetTracks), routRet);
+    }
+
+    [HttpPost]
+    [Route("GetRoutsByBox")]
+    public async Task<List<TrackPointDTO>> GetRoutsByBox(BoxDTO box)
+    {
+      var geo = await _routService.GetRoutsByBox(box);
+      return geo;
     }
   }
 }

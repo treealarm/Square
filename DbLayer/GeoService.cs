@@ -20,12 +20,10 @@ namespace DbLayer
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;
-    private readonly IMapService _mapService;
     private readonly ILevelService _levelService;
     private readonly MongoClient _mongoClient;
     public GeoService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
-      IMapService parent,
       ILevelService levelService
     )
     {
@@ -35,7 +33,6 @@ namespace DbLayer
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
 
-      _mapService = parent;
       _levelService = levelService;
 
       var collName = geoStoreDatabaseSettings.Value.GeoCollectionName;

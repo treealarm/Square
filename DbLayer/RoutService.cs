@@ -18,7 +18,11 @@ namespace DbLayer
   {
     private readonly IMongoCollection<DBTrackPoint> _collRouts;
     private readonly MongoClient _mongoClient;
-    public RoutService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    private readonly ILevelService _levelService;
+    public RoutService(
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
+      ILevelService levelService
+    )
     {
       _mongoClient = new MongoClient(
         geoStoreDatabaseSettings.Value.ConnectionString);
@@ -30,6 +34,8 @@ namespace DbLayer
         mongoDatabase.GetCollection<DBTrackPoint>(
           geoStoreDatabaseSettings.Value.RoutsCollectionName
         );
+
+      _levelService = levelService;
     }
 
     public async Task InsertManyAsync(List<TrackPointDTO> newObjs)
@@ -54,6 +60,13 @@ namespace DbLayer
       var dbTracks =
         await _collRouts.Find(t => t.id != null).Limit(100).ToListAsync();
 
+      return ConvertListDB2DTO(dbTracks);
+    }
+
+    private List<TrackPointDTO> ConvertListDB2DTO(List<DBTrackPoint> dbTracks)
+    {
+      var list = new List<TrackPointDTO>();
+
       foreach (var t in dbTracks)
       {
         var dto = new TrackPointDTO()
@@ -67,6 +80,32 @@ namespace DbLayer
       }
 
       return list;
+    }
+
+    public async Task<List<TrackPointDTO>> GetRoutsByBox(BoxDTO box)
+    {
+      var builder = Builders<DBTrackPoint>.Filter;
+      var geometry = GeoJson.Polygon(
+        new GeoJson2DCoordinates[]
+        {
+          GeoJson.Position(box.wn[0], box.wn[1]),
+          GeoJson.Position(box.es[0], box.wn[1]),
+          GeoJson.Position(box.es[0], box.es[1]),
+          GeoJson.Position(box.wn[0], box.es[1]),
+          GeoJson.Position(box.wn[0], box.wn[1])
+        }
+      );
+
+      var levels = await _levelService.GetLevelsByZoom(box.zoom);
+
+      var filter =
+          builder.Where(p => levels.Contains(p.figure.zoom_level))
+        & builder.GeoIntersects(t => t.figure.location, geometry);
+
+
+      var list = await _collRouts.Find(filter).ToListAsync();
+
+      return ConvertListDB2DTO(list);
     }
   }
 }

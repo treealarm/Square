@@ -18,7 +18,6 @@ import {
 
 
 import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
-import { EditableFigure } from './EditableFigure';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }

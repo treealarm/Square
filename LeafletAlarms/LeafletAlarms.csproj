@@ -48,6 +48,7 @@
     <None Remove="ClientApp\src\store\MarkersVisualStates.ts" />
     <None Remove="ClientApp\src\store\ObjPropsStates.ts" />
     <None Remove="ClientApp\src\store\TreeStates.ts" />
+    <None Remove="ClientApp\src\tracks\TrackViewer.tsx" />
     <None Remove="ClientApp\src\Tree\EditOptions.tsx" />
     <None Remove="ClientApp\src\Tree\ObjectProperties.tsx" />
     <None Remove="ClientApp\src\Tree\TabControl.tsx" />
@@ -56,6 +57,7 @@
   <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\src\map\LocationMarkers.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\map\MapComponent.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\store\TracksStates.ts" />
   </ItemGroup>
 
   <ItemGroup>

@@ -33,9 +33,7 @@ namespace Domain.GeoDBDTO
 
     public virtual string GetJson()
     {
-      JsonSerializerOptions options = new JsonSerializerOptions();
-      options.WriteIndented = true;
-      return JsonSerializer.Serialize(this, options);
+      return JsonSerializer.Serialize(this);
     }
   }
 
@@ -54,7 +52,8 @@ namespace Domain.GeoDBDTO
         GeometryDTO geometry,
         JsonSerializerOptions options) 
     {
-      writer.WriteStringValue(geometry.GetJson());
+      var s = geometry.GetJson();
+      writer.WriteRawValue(s);
     }            
   }
 }
