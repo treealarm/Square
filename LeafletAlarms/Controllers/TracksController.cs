@@ -86,7 +86,7 @@ namespace LeafletAlarms.Controllers
 
     private async Task<TrackPointDTO> GetLast(TrackPointDTO newPoint)
     {
-      return await _tracksService.GetLastAsync(newPoint.figure.id);
+      return await _tracksService.GetLastAsync(newPoint.figure.id, newPoint.id);
     }
     private async Task DoUpdateTracks(FiguresDTO movedMarkers)
     {
@@ -131,12 +131,12 @@ namespace LeafletAlarms.Controllers
         );
       }
 
-      await _tracksService.InsertManyAsync(trackPoints);
+      var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
 
       // Add Routs.
       var routs = new List<TrackPointDTO>();
 
-      foreach (var trackPoint in trackPoints)
+      foreach (var trackPoint in trackPointsInserted)
       {
         if (trackPoint.figure.location is not GeometryCircleDTO)
         {
@@ -162,6 +162,7 @@ namespace LeafletAlarms.Controllers
             var polyLine = new GeometryPolylineDTO();
             newPoint.figure.location = polyLine;
             polyLine.coord = routRet;
+            newPoint.figure.radius = null;
             routs.Add(newPoint);
           }
         }

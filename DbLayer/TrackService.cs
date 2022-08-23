@@ -32,7 +32,7 @@ namespace DbLayer
         );
     }
 
-    public async Task InsertManyAsync(List<TrackPointDTO> newObjs)
+    public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
       List<DBTrackPoint> list = new List<DBTrackPoint>();
 
@@ -46,10 +46,17 @@ namespace DbLayer
         list.Add(dbTrack);
       }
       await _collFigures.InsertManyAsync(list);
+
+      return DBListToDTO(list);
     }
 
     private TrackPointDTO ConvertDB2DTO(DBTrackPoint t)
     {
+      if (t == null)
+      {
+        return null;
+      }
+
       var dto = new TrackPointDTO()
       {
         id = t.id,
@@ -60,30 +67,33 @@ namespace DbLayer
       return dto;
     }
 
-    public async Task<TrackPointDTO> GetLastAsync(string id)
+    public async Task<TrackPointDTO> GetLastAsync(string figure_id, string ignoreTrackId)
     {
       var dbTrack =
         await _collFigures
-          .Find(t => t.figure.id == id)
+          .Find(t => t.figure.id == figure_id && t.id != ignoreTrackId)
           .SortByDescending(t => t.id)
           .FirstOrDefaultAsync();
 
       return ConvertDB2DTO(dbTrack);
     }
 
-    public async Task<List<TrackPointDTO>> GetAsync()
-    { 
+    private List<TrackPointDTO> DBListToDTO(List<DBTrackPoint> dbTracks)
+    {
       List<TrackPointDTO> list = new List<TrackPointDTO>();
-      var dbTracks = 
-        await _collFigures.Find(t => t.id != null).Limit(100).ToListAsync();
-
       foreach (var t in dbTracks)
       {
         var dto = ConvertDB2DTO(t);
         list.Add(dto);
       }
-
       return list;
+    }
+    public async Task<List<TrackPointDTO>> GetAsync()
+    { 
+      var dbTracks = 
+        await _collFigures.Find(t => t.id != null).Limit(100).ToListAsync();
+
+      return DBListToDTO(dbTracks);
     }
   }
 }

@@ -182,7 +182,7 @@ namespace LeafletAlarms.Controllers
 
       if (track.location is GeometryCircleDTO point)
       {
-        var dx = track.radius / 111000;
+        double dx = (double)(track.radius == null ? 0.0 : track.radius / 111000);
         return IsPointInBox(box, point.coord, dx);
       }
 
