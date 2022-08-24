@@ -92,8 +92,9 @@ export interface IGeoObjectDTO {
   location: IGeometryDTO;
 }
 
-export interface ITrackPointDTO {
+export interface IRoutLineDTO {
   id: string;
-  timestamp: Date;
+  id_start: string;
+  id_end: string;
   figure: IGeoObjectDTO;
 }

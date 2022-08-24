@@ -134,7 +134,7 @@ namespace LeafletAlarms.Controllers
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
 
       // Add Routs.
-      var routs = new List<TrackPointDTO>();
+      var routs = new List<RoutLineDTO>();
 
       foreach (var trackPoint in trackPointsInserted)
       {
@@ -143,11 +143,12 @@ namespace LeafletAlarms.Controllers
           continue;
         }
 
-        var newPoint = trackPoint;
+        var newPoint = trackPoint;        
         var lastPoint = await GetLast(newPoint);
 
         if (lastPoint != null)
         {
+          var newRout = new RoutLineDTO();
           var coords = new List<Geo2DCoordDTO>();
           var p1 = (newPoint.figure.location as GeometryCircleDTO).coord;
           coords.Add(p1);
@@ -155,15 +156,18 @@ namespace LeafletAlarms.Controllers
           coords.Add(p2);
           var routRet = await _router.GetRoute(string.Empty, coords);
 
+          newRout.id_start = lastPoint.id;
+          newRout.id_end = newPoint.id;
+
           if (routRet != null && routRet.Count > 0)
           {
             routRet.Insert(0, p1);
             routRet.Add(p2);
             var polyLine = new GeometryPolylineDTO();
-            newPoint.figure.location = polyLine;
+            newRout.figure.location = polyLine;
             polyLine.coord = routRet;
-            newPoint.figure.radius = null;
-            routs.Add(newPoint);
+
+            routs.Add(newRout);
           }
         }
       }
@@ -213,7 +217,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetRoutsByBox")]
-    public async Task<List<TrackPointDTO>> GetRoutsByBox(BoxDTO box)
+    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxDTO box)
     {
       var geo = await _routService.GetRoutsByBox(box);
       return geo;

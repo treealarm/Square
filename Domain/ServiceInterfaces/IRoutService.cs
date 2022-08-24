@@ -9,8 +9,8 @@ namespace Domain.ServiceInterfaces
 {
   public interface IRoutService
   {
-    Task InsertManyAsync(List<TrackPointDTO> newObjs);
-    Task<List<TrackPointDTO>> GetAsync();
-    Task<List<TrackPointDTO>> GetRoutsByBox(BoxDTO box);
+    Task InsertManyAsync(List<RoutLineDTO> newObjs);
+    Task<List<RoutLineDTO>> GetAsync();
+    Task<List<RoutLineDTO>> GetRoutsByBox(BoxDTO box);
   }
 }

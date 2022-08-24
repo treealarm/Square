@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DbLayer.Models;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
@@ -16,7 +17,7 @@ namespace DbLayer
 {
   public class RoutService : IRoutService
   {
-    private readonly IMongoCollection<DBTrackPoint> _collRouts;
+    private readonly IMongoCollection<DBRoutLine> _collRouts;
     private readonly MongoClient _mongoClient;
     private readonly ILevelService _levelService;
     public RoutService(
@@ -31,22 +32,23 @@ namespace DbLayer
           geoStoreDatabaseSettings.Value.DatabaseName);
 
       _collRouts =
-        mongoDatabase.GetCollection<DBTrackPoint>(
+        mongoDatabase.GetCollection<DBRoutLine>(
           geoStoreDatabaseSettings.Value.RoutsCollectionName
         );
 
       _levelService = levelService;
     }
 
-    public async Task InsertManyAsync(List<TrackPointDTO> newObjs)
+    public async Task InsertManyAsync(List<RoutLineDTO> newObjs)
     {
-      List<DBTrackPoint> list = new List<DBTrackPoint>();
+      List<DBRoutLine> list = new List<DBRoutLine>();
 
       foreach (var track in newObjs)
       {
-        var dbTrack = new DBTrackPoint()
+        var dbTrack = new DBRoutLine()
         {
-          timestamp = track.timestamp,
+          id_start = track.id_start,
+          id_end = track.id_end,
           figure = ModelGate.ConvertDTO2DB(track.figure)
         };
         list.Add(dbTrack);
@@ -54,25 +56,25 @@ namespace DbLayer
       await _collRouts.InsertManyAsync(list);
     }
 
-    public async Task<List<TrackPointDTO>> GetAsync()
+    public async Task<List<RoutLineDTO>> GetAsync()
     {
-      List<TrackPointDTO> list = new List<TrackPointDTO>();
       var dbTracks =
         await _collRouts.Find(t => t.id != null).Limit(100).ToListAsync();
 
       return ConvertListDB2DTO(dbTracks);
     }
 
-    private List<TrackPointDTO> ConvertListDB2DTO(List<DBTrackPoint> dbTracks)
+    private List<RoutLineDTO> ConvertListDB2DTO(List<DBRoutLine> dbTracks)
     {
-      var list = new List<TrackPointDTO>();
+      var list = new List<RoutLineDTO>();
 
       foreach (var t in dbTracks)
       {
-        var dto = new TrackPointDTO()
+        var dto = new RoutLineDTO()
         {
           id = t.id,
-          timestamp = t.timestamp,
+          id_start = t.id_start,
+          id_end = t.id_end,
           figure = ModelGate.ConvertDB2DTO(t.figure)
         };
 
@@ -82,9 +84,9 @@ namespace DbLayer
       return list;
     }
 
-    public async Task<List<TrackPointDTO>> GetRoutsByBox(BoxDTO box)
+    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxDTO box)
     {
-      var builder = Builders<DBTrackPoint>.Filter;
+      var builder = Builders<DBRoutLine>.Filter;
       var geometry = GeoJson.Polygon(
         new GeoJson2DCoordinates[]
         {

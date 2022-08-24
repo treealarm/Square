@@ -1,12 +1,12 @@
 import { Action, Reducer } from "redux";
 import { ApiTracksRootString, AppThunkAction } from "./";
-import { BoundBox, ITrackPointDTO } from "./Marker";
+import { BoundBox, IRoutLineDTO } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface TracksState {
   isLoading: boolean;
-  tracks: ITrackPointDTO[];
+  tracks: IRoutLineDTO[];
   box: BoundBox;
 }
 
@@ -22,7 +22,7 @@ interface RequestTracksAction {
 interface ReceiveTracksAction {
   type: "RECEIVE_TRACKS";
   box: BoundBox;
-  tracks: ITrackPointDTO[];
+  tracks: IRoutLineDTO[];
 }
 
 
@@ -64,13 +64,13 @@ export const actionCreators = {
         .then(response => {
           if (!response.ok) throw response.statusText;
           var json = response.json();
-          return json as Promise<ITrackPointDTO[]>;
+          return json as Promise<IRoutLineDTO[]>;
         })
         .then(data => {
           dispatch({ type: "RECEIVE_TRACKS", box: box, tracks: data });
         })
         .catch((error) => {
-          const emtyMarkers = {} as ITrackPointDTO[];
+          const emtyMarkers = {} as IRoutLineDTO[];
           dispatch({ type: "RECEIVE_TRACKS", box: box, tracks: emtyMarkers });
         });
 
