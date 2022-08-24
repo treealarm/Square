@@ -83,12 +83,14 @@ export interface MarkerVisualState {
 
 export interface IGeometryDTO {
   coord: any[];
+  figure_type: string;
 }
 
 export interface IGeoObjectDTO {
   id: string;
   radius: number;
   zoom_level: string;
+  
   location: IGeometryDTO;
 }
 
@@ -96,5 +98,11 @@ export interface IRoutLineDTO {
   id: string;
   id_start: string;
   id_end: string;
+  figure: IGeoObjectDTO;
+}
+
+export interface ITrackPointDTO {
+  id: string;
+  timestamp: Date;
   figure: IGeoObjectDTO;
 }

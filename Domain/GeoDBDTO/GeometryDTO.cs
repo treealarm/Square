@@ -11,6 +11,7 @@ namespace Domain.GeoDBDTO
   [JsonConverter(typeof(GeometryDTOConverter))]
   public class GeometryDTO
   {
+    public string figure_type { get; set; }
     public string GetFigureType()
     {
       if (this is GeometryCircleDTO)

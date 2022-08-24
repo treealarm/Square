@@ -3,14 +3,15 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
 import { ApplicationState } from '../store';
-import { BoundBox } from '../store/Marker';
+import { BoundBox, IGeoObjectDTO, LineStringType, PointType } from '../store/Marker';
 
 
 import { useCallback, useEffect } from 'react'
 import {
   useMap,
   Polyline,
-  useMapEvents
+  useMapEvents,
+  Circle
 } from 'react-leaflet'
 
 declare module 'react-redux' {
@@ -19,19 +20,68 @@ declare module 'react-redux' {
 
 
 function TrackPolyline(props: any) {
-  if (props.hidden == true || props.positions == null) {
-    return null;
-  }
 
+  var pathOptions = { color: "red" };
+  let figure = props.figure as IGeoObjectDTO;
+  var positions = figure.location.coord;
   return (
     <React.Fragment>
       <Polyline
-        pathOptions={props.pathOptions}
-        positions={props.positions}
+        pathOptions={pathOptions}
+        positions={positions}
       >
       </Polyline>
     </React.Fragment>
   );
+}
+
+function TrackCircle(props: any) {
+
+  var pathOptions = { color: "red" };
+  let figure = props.figure as IGeoObjectDTO;
+  var positions = figure.location.coord as any;
+
+  return (
+    <React.Fragment>
+      <Circle
+        pathOptions={pathOptions}
+        center={positions}
+        radius={figure.radius}
+      >
+      </Circle>
+    </React.Fragment>
+  );
+}
+
+function CommonTrack(props: any) {
+  if (props.hidden == true || props.marker == null) {
+    return null;
+  }
+
+  let figure = props.marker as IGeoObjectDTO; 
+
+  if (figure.location.figure_type == LineStringType) {
+    return (
+      <React.Fragment>
+        <TrackPolyline
+          figure={figure}
+        >
+        </TrackPolyline>
+      </React.Fragment>
+    );
+  }
+  if (figure.location.figure_type == PointType) {
+    return (
+      <React.Fragment>
+        <TrackCircle
+          figure={figure}
+        >
+        </TrackCircle>
+      </React.Fragment>
+    );
+  }
+
+  return null;
 }
 
 export function TrackViewer() {
@@ -48,6 +98,7 @@ export function TrackViewer() {
       es: [bounds.getEast(), bounds.getSouth()],
       zoom: parentMap.getZoom()
     };
+    dispatch(TracksStore.actionCreators.requestRouts(boundBox));
     dispatch(TracksStore.actionCreators.requestTracks(boundBox));
   }, []);
 
@@ -61,37 +112,34 @@ export function TrackViewer() {
         zoom: e.target.getZoom()
       };
 
+      dispatch(TracksStore.actionCreators.requestRouts(boundBox));
       dispatch(TracksStore.actionCreators.requestTracks(boundBox));
     }
   });
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
+  const routs = useSelector((state) => state?.tracksStates?.routs);
   const tracks = useSelector((state) => state?.tracksStates?.tracks);
-
-
-
-  const colorOptionsUnselected = { color: "red" };
-
-
-  const getColor = useCallback(
-    (id: string) => {
-      return colorOptionsUnselected;
-    }, [selected_id])
-
 
   return (
     <React.Fragment>
       {
+        routs?.map((rout, index) =>
+          <CommonTrack
+            key={rout.id}
+            hidden={false}
+            marker={rout.figure}
+          >
+          </CommonTrack>
+        )}
+      {
         tracks?.map((track, index) =>
-          <TrackPolyline
-            pathOptions={getColor(track.figure.id)}
-            positions={track.figure.location.coord}
+          <CommonTrack
             key={track.id}
             hidden={false}
-
             marker={track.figure}
           >
-          </TrackPolyline>
+          </CommonTrack>
         )}
     </React.Fragment>
   );

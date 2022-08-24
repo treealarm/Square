@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DbLayer.Models;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
@@ -18,7 +19,11 @@ namespace DbLayer
   {
     private readonly IMongoCollection<DBTrackPoint> _collFigures;
     private readonly MongoClient _mongoClient;
-    public TrackService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    private readonly ILevelService _levelService;
+    public TrackService(
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
+      ILevelService levelService
+    )
     {
       _mongoClient = new MongoClient(
         geoStoreDatabaseSettings.Value.ConnectionString);
@@ -30,6 +35,7 @@ namespace DbLayer
         mongoDatabase.GetCollection<DBTrackPoint>(
           geoStoreDatabaseSettings.Value.TracksCollectionName
         );
+      _levelService = levelService;
     }
 
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
@@ -88,10 +94,29 @@ namespace DbLayer
       }
       return list;
     }
-    public async Task<List<TrackPointDTO>> GetAsync()
-    { 
-      var dbTracks = 
-        await _collFigures.Find(t => t.id != null).Limit(100).ToListAsync();
+    public async Task<List<TrackPointDTO>> GetTracksByBox(BoxDTO box)
+    {
+      var builder = Builders<DBTrackPoint>.Filter;
+      var geometry = GeoJson.Polygon(
+        new GeoJson2DCoordinates[]
+        {
+          GeoJson.Position(box.wn[0], box.wn[1]),
+          GeoJson.Position(box.es[0], box.wn[1]),
+          GeoJson.Position(box.es[0], box.es[1]),
+          GeoJson.Position(box.wn[0], box.es[1]),
+          GeoJson.Position(box.wn[0], box.wn[1])
+        }
+      );
+
+      var levels = await _levelService.GetLevelsByZoom(box.zoom);
+
+      var filter =
+          builder.Where(p => levels.Contains(p.figure.zoom_level))
+        & builder.GeoIntersects(t => t.figure.location, geometry);
+
+
+      var dbTracks = await _collFigures.Find(filter).ToListAsync();
+
 
       return DBListToDTO(dbTracks);
     }

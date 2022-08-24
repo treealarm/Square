@@ -197,13 +197,13 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(UpdateTracks), true);
     }
 
-    [HttpGet]
-    [Route("GetTracks")]
-    public async Task<ActionResult<List<TrackPointDTO>>> GetTracks()
+    [HttpPost]
+    [Route("GetTracksByBox")]
+    public async Task<ActionResult<List<TrackPointDTO>>> GetTracksByBox(BoxDTO box)
     {
-      var trackPoints = await _tracksService.GetAsync();
+      var trackPoints = await _tracksService.GetTracksByBox(box);
 
-      return CreatedAtAction(nameof(GetTracks), trackPoints);
+      return CreatedAtAction(nameof(GetTracksByBox), trackPoints);
     }
 
     [HttpPost]
@@ -212,7 +212,7 @@ namespace LeafletAlarms.Controllers
     {
       var routRet = await _router.GetRoute(routData.InstanceName, routData.Coordinates);
 
-      return CreatedAtAction(nameof(GetTracks), routRet);
+      return CreatedAtAction(nameof(GetRoute), routRet);
     }
 
     [HttpPost]
