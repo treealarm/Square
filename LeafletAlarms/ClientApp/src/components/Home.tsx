@@ -7,6 +7,7 @@ import { ObjectProperties } from "../Tree/ObjectProperties";
 import { Box, Grid, Stack, Tab } from "@mui/material";
 import { WebSockClient } from "./WebSockClient";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { RetroSearch } from "../Tree/RetroSearch";
 
 export function Home() {
 
@@ -16,7 +17,7 @@ export function Home() {
   };
 
   return (
-    <Grid container spacing={1} sx={{ height: "100%" }}>
+    <Grid container spacing={1} sx={{ height: "100%", p: "2px" }}>
       <Grid item xs={12} sx={{ height: "8%" }}>
         <Stack direction="row" spacing={2}><TabControl /><WebSockClient /></Stack>
       </Grid>
@@ -49,7 +50,9 @@ export function Home() {
               <ObjectProperties />
             </Stack>
           </TabPanel>
-          <TabPanel value="2">Item Two</TabPanel>
+          <TabPanel value="2">
+            <RetroSearch></RetroSearch>
+          </TabPanel>
         </TabContext>
 
         

@@ -4,13 +4,12 @@ import Layout from "./components/Layout";
 import { Home } from "./components/Home";
 import "./custom.css";
 import { Box, createMuiTheme, ThemeProvider } from "@mui/material";
-import { green, red } from "@mui/material/colors";
 
 const theme = createMuiTheme({
-  typography: {
+  typography: {    
     button: {
       textTransform: 'none'
-    }
+    }    
   }
 });
 

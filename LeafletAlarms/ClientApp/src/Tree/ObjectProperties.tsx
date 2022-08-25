@@ -211,7 +211,7 @@ export function ObjectProperties() {
             label='Type'
             size="small"
             value={objProps.type}
-            inputProps={{ readOnly: true, }}>
+            inputProps={{ readOnly: true}}>
           </TextField>
         </ListItem>
         <ListItem>
@@ -220,7 +220,7 @@ export function ObjectProperties() {
           label='Id'
           size="small"
           value={objProps.id}
-          inputProps={{ readOnly: true, }}>
+          inputProps={{ readOnly: true}}>
           </TextField>
         </ListItem>
         <ListItem>
@@ -229,7 +229,7 @@ export function ObjectProperties() {
             label='ParentId'
             size="small"
             value={objProps.parent_id}
-            inputProps={{ readOnly: true, }}>
+            inputProps={{ readOnly: true}}>
           </TextField>
           </ListItem>
         
