@@ -3,19 +3,29 @@ import { Route } from "react-router";
 import Layout from "./components/Layout";
 import { Home } from "./components/Home";
 import "./custom.css";
-import { Box } from "@mui/material";
-import { red } from "@mui/material/colors";
+import { Box, createMuiTheme, ThemeProvider } from "@mui/material";
+import { green, red } from "@mui/material/colors";
+
+const theme = createMuiTheme({
+  typography: {
+    button: {
+      textTransform: 'none'
+    }
+  }
+});
 
 export default () => (
+  <ThemeProvider theme={theme}>
   <Box
     sx={{
       height: "95vh",
-      border: 5,
-      borderColor: red
+      border: 1,
+      borderColor: 'primary.main'
     }}
   >
     <Layout>
       <Route exact path="/" component={Home} />
     </Layout>
-  </Box>
+    </Box>
+  </ThemeProvider>
 );
