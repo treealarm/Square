@@ -1,7 +1,7 @@
 ﻿import * as React from 'react';
 
 import Button from '@mui/material/Button';
-import { Menu, MenuItem} from '@mui/material';
+import { Box, Menu, MenuItem} from '@mui/material';
 import * as EditStore from '../store/EditStates';
 import { useDispatch, useSelector } from 'react-redux';
 import { IObjProps, LineStringType, PointType, PolygonType } from '../store/Marker';
@@ -75,9 +75,16 @@ export default function EditOptions() {
   };
 
   return (
-    <div>
+    <Box
+      key="Edit_Options"
+      sx={{
+      width: '100%',
+      bgcolor: 'background.paper',
+
+      height: 'auto',
+      border: 1,
       
-      <React.Fragment key={"Edit_Options"}>
+    }}>
         <Button onClick={handleClickListItem} style={{ textTransform: 'none' }}>
           New object
         </Button>
@@ -101,7 +108,6 @@ export default function EditOptions() {
                 ))}
                 
             </Menu>
-        </React.Fragment>
-    </div>
+    </Box>
   );
 }

@@ -179,20 +179,70 @@ export function ObjectProperties() {
     }}>
 
       <List>
-        <ListItem>{objProps.type}</ListItem>
-        <ListItem>{objProps.id}</ListItem>
-        <ListItem>{objProps.parent_id}</ListItem>
+        <ListItem>
+          <ButtonGroup variant="contained" aria-label="outlined primary button group">
+            <IconButton aria-label="save" size="large" onClick={handleSave}>
+              <SaveIcon fontSize="inherit" />
+            </IconButton>
+            <IconButton aria-label="edit" size="large" onClick={(e) => editMe(objProps, !selectedEditMode.edit_mode)} >
+              {
+                selectedEditMode.edit_mode ?
+                  <NotInterestedSharpIcon fontSize="inherit" /> :
+                  <EditIcon fontSize="inherit" />
+              }
+
+            </IconButton>
+            <IconButton aria-label="delete" size="large" onClick={(e) => deleteMe(objProps, e)}>
+              <DeleteIcon fontSize="inherit" />
+            </IconButton>
+          </ButtonGroup>
+
+          <ButtonGroup variant="contained" aria-label="search button group">
+            <IconButton aria-label="search" size="large" onClick={(e) => searchMeOnMap(objProps, e)}>
+              <SearchIcon fontSize="inherit" />
+            </IconButton>
+          </ButtonGroup>
+
+        </ListItem>
+
+        <ListItem>
+          <TextField
+            fullWidth
+            label='Type'
+            size="small"
+            value={objProps.type}
+            inputProps={{ readOnly: true, }}>
+          </TextField>
+        </ListItem>
+        <ListItem>
+          <TextField
+            fullWidth
+          label='Id'
+          size="small"
+          value={objProps.id}
+          inputProps={{ readOnly: true, }}>
+          </TextField>
+        </ListItem>
+        <ListItem>
+          <TextField
+            fullWidth
+            label='ParentId'
+            size="small"
+            value={objProps.parent_id}
+            inputProps={{ readOnly: true, }}>
+          </TextField>
+          </ListItem>
         
         <ListItem>
           <TextField size="small"
-          fullWidth sx={{ width: '25ch' }}
+          fullWidth
           id="outlined" label='Name'
             value={objProps?.name}
             onChange={handleChangeName} />
         </ListItem>
         <ListItem>
           <TextField size="small"
-            fullWidth sx={{ width: '25ch' }}
+            fullWidth
             id="outlined" label='Geo'
             value={objProps?.geometry}
             onChange={handleChangeGeo} />
@@ -203,7 +253,7 @@ export function ObjectProperties() {
             <ListItem key={index}>
 
               <TextField size="small"
-                fullWidth sx={{ width: '25ch' }}
+                fullWidth
                 id={item.prop_name} label={item.prop_name}
                 value={item.str_val}
                 onChange={handleChangeProp} />
@@ -211,31 +261,7 @@ export function ObjectProperties() {
             </ListItem>
             )
         }
-        <ListItem>
-          <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <IconButton aria-label="save" size="large" onClick={handleSave}>
-              <SaveIcon fontSize="inherit"/>
-            </IconButton>
-            <IconButton aria-label="edit" size="large" onClick={(e) => editMe(objProps, !selectedEditMode.edit_mode)} >
-              {
-                selectedEditMode.edit_mode ? 
-                  <NotInterestedSharpIcon fontSize="inherit"/> :
-                  <EditIcon fontSize="inherit"/>
-              }            
-              
-            </IconButton>
-            <IconButton aria-label="delete" size="large" onClick={(e) => deleteMe(objProps, e)}>
-              <DeleteIcon fontSize="inherit"/>
-            </IconButton>          
-          </ButtonGroup>
 
-          <ButtonGroup variant="contained" aria-label="search button group">
-            <IconButton aria-label="search" size="large" onClick={(e) => searchMeOnMap(objProps, e)}>
-              <SearchIcon fontSize="inherit" />
-            </IconButton>
-          </ButtonGroup>
-          
-        </ListItem>
       </List>
     </Box>
   );

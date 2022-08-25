@@ -20,12 +20,14 @@ export function Home() {
         </Stack>
       </Grid>
 
-      <Grid item xs={8} sx={{ height: "90%" }}>
+      <Grid item xs={7} sx={{ height: "90%" }}>
         <MapComponent />
       </Grid>
-      <Grid item xs={2} sx={{ height: "90%" }}>
-        <EditOptions />
-        <ObjectProperties />
+      <Grid item xs={3} sx={{ height: "90%" }}>
+        <Stack sx={{ height: "100%" }}>  
+          <EditOptions />
+          <ObjectProperties />
+        </Stack>
       </Grid>
     </Grid>
   );
