@@ -36,8 +36,27 @@ namespace DbLayer
           geoStoreDatabaseSettings.Value.TracksCollectionName
         );
       _levelService = levelService;
+
+      CreateIndexes();
     }
 
+    private void CreateIndexes()
+    {
+      IndexKeysDefinition<DBTrackPoint> keys =
+        new IndexKeysDefinitionBuilder<DBTrackPoint>()
+        .Ascending(d => d.figure.zoom_level)
+        .Geo2DSphere(d => d.figure.location)
+        .Ascending(d => d.timestamp)
+        
+        ;
+
+      var indexModel = new CreateIndexModel<DBTrackPoint>(
+        keys, new CreateIndexOptions()
+        { Name = "location" }
+      );
+
+      _collFigures.Indexes.CreateOneAsync(indexModel);
+    }
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
       List<DBTrackPoint> list = new List<DBTrackPoint>();

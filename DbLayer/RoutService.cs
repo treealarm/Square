@@ -37,6 +37,25 @@ namespace DbLayer
         );
 
       _levelService = levelService;
+
+      CreateIndexes();
+    }
+
+    private void CreateIndexes()
+    {
+      IndexKeysDefinition<DBRoutLine> keys =
+      new IndexKeysDefinitionBuilder<DBRoutLine>()
+      .Geo2DSphere(d => d.figure.location)
+      .Ascending(d => d.figure.zoom_level)
+      .Ascending(d => d.ts_start)
+      .Ascending(d => d.ts_end);
+      //"{ 'figure.location': '2dsphere', ts_start: 1, ts_end: 1 }";
+      var indexModel = new CreateIndexModel<DBRoutLine>(
+        keys, new CreateIndexOptions()
+        { Name = "location" }
+      );
+
+      _collRouts.Indexes.CreateOneAsync(indexModel);
     }
 
     public async Task InsertManyAsync(List<RoutLineDTO> newObjs)

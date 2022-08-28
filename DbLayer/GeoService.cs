@@ -41,6 +41,19 @@ namespace DbLayer
 
       _geoRawCollection =
         mongoDatabase.GetCollection<BsonDocument>(collName);
+
+      CreateIndexes();
+    }
+
+    private void CreateIndexes()
+    {
+      IndexKeysDefinition<DBGeoObject> keys = "{ location: \"2dsphere\" }";
+      var indexModel = new CreateIndexModel<DBGeoObject>(
+        keys, new CreateIndexOptions()
+        { Name = "location" }
+      );
+
+      _geoCollection.Indexes.CreateOneAsync(indexModel);
     }
 
     public async Task CreateOrUpdateGeoFromStringAsync(
@@ -101,11 +114,11 @@ namespace DbLayer
           update = update.Set("radius", result);
       }
 
-      if (!string.IsNullOrEmpty(zoom_level))
+      if (string.IsNullOrEmpty(zoom_level))
       {
-          update = update.Set("zoom_level", zoom_level);
+        zoom_level = null;          
       }
-
+      update = update.Set("zoom_level", zoom_level);
 
       var filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
       var options = new UpdateOptions() { IsUpsert = true };
@@ -184,7 +197,8 @@ namespace DbLayer
       var levels = await _levelService.GetLevelsByZoom(box.zoom);
 
       var filter =
-          builder.Where(p => levels.Contains(p.zoom_level))
+          builder.Where(p => levels.Contains(p.zoom_level) 
+          || string.IsNullOrEmpty(p.zoom_level))
         & builder.GeoIntersects(t => t.location, geometry);
 
       Log(filter);
