@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Itinero.Profiles;
 using Itinero;
+using System.Reflection;
 
 namespace TrackSender
 {
@@ -35,7 +36,7 @@ namespace TrackSender
           radius = 333,
           zoom_level = "13"
         };
-        figures.circles.Add(figure);        
+        figures.circles.Add(figure);
       }
       else
       {
@@ -59,20 +60,30 @@ namespace TrackSender
       figure.geometry = end;
       await TestClient.UpdateFiguresAsync(figures, "UpdateTracks");
 
-      //var stat_y = figure.geometry.coord[0];
-      //var stat_x = figure.geometry.coord[1];
-      //Random rand = new Random();
+      var arr = new List<Geo2DCoordDTO>(){
 
-      //for (double dy = 0; dy < 0.1; dy += 0.01)
-      //{
-      //  var dx = rand.NextDouble() / 500;
-      //  figure.geometry.coord[0] = stat_y + dy;
-      //  figure.geometry.coord[1] = stat_x + dx;
-      //  figure.zoom_level = "13";
-      //  Console.WriteLine(JsonSerializer.Serialize(figure.geometry));
-      //  await TestClient.UpdateFiguresAsync(figures, "UpdateTracks");
-      //  await Task.Delay(1000);
-      //}
+      new Geo2DCoordDTO() { 51.495073250207454,-0.09910842912095097},
+      new Geo2DCoordDTO() { 51.489442587472304,-0.08674137515201298},
+      new Geo2DCoordDTO() { 51.48020988778832,-0.07271508090717972},
+      new Geo2DCoordDTO() { 51.47408776490977,-0.04717537252039384},
+      new Geo2DCoordDTO() { 51.46459705992192,-0.014692935387021768},
+      new Geo2DCoordDTO() { 51.45379220805116,0.023852708531175718},
+      new Geo2DCoordDTO() { 51.428481730180884,0.08471876986305917},
+      new Geo2DCoordDTO() { 51.39950760193541,0.15812816896559667},
+      new Geo2DCoordDTO() { 51.319762897207085,0.28257579952874595},
+      new Geo2DCoordDTO() { 51.309835036411144,0.4230368643846383},
+      new Geo2DCoordDTO() { 51.32603686286704,0.6587805195935516},
+      new Geo2DCoordDTO() { 51.11042711691025,1.1636906018400597},
+      new Geo2DCoordDTO() { 51.10407463108633,1.2476501253820251},
+      };
+
+      foreach(var coord in arr)
+      {
+        await Task.Delay(5000);
+        figure.geometry.coord = coord;
+        await TestClient.UpdateFiguresAsync(figures, "UpdateTracks");
+        Console.WriteLine(coord.ToString());
+      }
     }
   }
 }

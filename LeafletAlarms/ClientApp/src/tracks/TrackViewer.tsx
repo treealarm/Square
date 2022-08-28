@@ -118,6 +118,12 @@ export function TrackViewer() {
   const mapEvents = useMapEvents({
     moveend(e: L.LeafletEvent) {
       UpdateTracks();
+    },
+    async click(e: L.LeafletMouseEvent) {
+      var ll: L.LatLng = e.latlng as L.LatLng;
+      if (e.originalEvent.ctrlKey) {
+        await navigator.clipboard.writeText(JSON.stringify(ll));
+      }      
     }
   });
 
