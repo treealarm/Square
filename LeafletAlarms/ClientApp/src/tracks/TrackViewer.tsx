@@ -3,8 +3,7 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
 import { ApplicationState } from '../store';
-import { BoundBox, IGeoObjectDTO, LineStringType, PointType } from '../store/Marker';
-
+import { BoxTrackDTO, IGeoObjectDTO, LineStringType, PointType } from '../store/Marker';
 
 import { useCallback, useEffect } from 'react'
 import {
@@ -13,6 +12,7 @@ import {
   useMapEvents,
   Circle
 } from 'react-leaflet'
+
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -89,40 +89,44 @@ export function TrackViewer() {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  useEffect(() => {
-    console.log('ComponentDidMount TrackViewer');
+  const searchFilter = useSelector((state) => state?.tracksStates?.searchFilter);
+
+  function UpdateTracks() {
     var bounds: L.LatLngBounds;
     bounds = parentMap.getBounds();
-    var boundBox: BoundBox = {
+    var boundBox: BoxTrackDTO = {
       wn: [bounds.getWest(), bounds.getNorth()],
       es: [bounds.getEast(), bounds.getSouth()],
-      zoom: parentMap.getZoom()
+      zoom: parentMap.getZoom(),
+      time_start: searchFilter?.time_start,
+      time_end: searchFilter?.time_end
     };
     dispatch(TracksStore.actionCreators.requestRouts(boundBox));
     dispatch(TracksStore.actionCreators.requestTracks(boundBox));
+  }
+
+  useEffect(() => {
+    console.log('ComponentDidMount TrackViewer');
+    UpdateTracks();
   }, []);
+
+  useEffect(() => {
+    console.log('Search Filter Updated TrackViewer');
+    UpdateTracks();
+  }, [searchFilter]);
 
   const mapEvents = useMapEvents({
     moveend(e: L.LeafletEvent) {
-      var bounds: L.LatLngBounds;
-      bounds = e.target.getBounds();
-      var boundBox: BoundBox = {
-        wn: [bounds.getWest(), bounds.getNorth()],
-        es: [bounds.getEast(), bounds.getSouth()],
-        zoom: e.target.getZoom()
-      };
-
-      dispatch(TracksStore.actionCreators.requestRouts(boundBox));
-      dispatch(TracksStore.actionCreators.requestTracks(boundBox));
+      UpdateTracks();
     }
   });
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const routs = useSelector((state) => state?.tracksStates?.routs);
   const tracks = useSelector((state) => state?.tracksStates?.tracks);
 
   return (
     <React.Fragment>
+
       {
         routs?.map((rout, index) =>
           <CommonTrack

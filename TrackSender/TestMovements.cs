@@ -52,6 +52,10 @@ namespace TrackSender
       figure.geometry = start;
       await TestClient.UpdateFiguresAsync(figures, "AddTracks");
 
+      markers = await TestClient.GetByName("test_track");
+      figures = await TestClient.GetByIds(new List<string>() { markers.FirstOrDefault().id });
+      figure = figures.circles.FirstOrDefault();
+
       figure.geometry = end;
       await TestClient.UpdateFiguresAsync(figures, "UpdateTracks");
 

@@ -1,6 +1,7 @@
 ﻿using DbLayer;
 using Domain;
 using Domain.GeoDBDTO;
+using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
@@ -149,15 +150,24 @@ namespace LeafletAlarms.Controllers
         if (lastPoint != null)
         {
           var newRout = new RoutLineDTO();
+          
+
+          newRout.figure = new GeoObjectDTO();
+          newRout.figure.zoom_level = newPoint.figure.zoom_level;
+
           var coords = new List<Geo2DCoordDTO>();
           var p1 = (newPoint.figure.location as GeometryCircleDTO).coord;
           coords.Add(p1);
+
           var p2 = (lastPoint.figure.location as GeometryCircleDTO).coord;
           coords.Add(p2);
+
           var routRet = await _router.GetRoute(string.Empty, coords);
 
           newRout.id_start = lastPoint.id;
           newRout.id_end = newPoint.id;
+          newRout.ts_start = lastPoint.timestamp;
+          newRout.ts_end = newPoint.timestamp;
 
           if (routRet != null && routRet.Count > 0)
           {
@@ -199,7 +209,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetTracksByBox")]
-    public async Task<ActionResult<List<TrackPointDTO>>> GetTracksByBox(BoxDTO box)
+    public async Task<ActionResult<List<TrackPointDTO>>> GetTracksByBox(BoxTrackDTO box)
     {
       var trackPoints = await _tracksService.GetTracksByBox(box);
 
@@ -217,7 +227,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetRoutsByBox")]
-    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxDTO box)
+    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
     {
       var geo = await _routService.GetRoutsByBox(box);
       return geo;

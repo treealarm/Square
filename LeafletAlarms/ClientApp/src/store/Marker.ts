@@ -72,6 +72,17 @@ export interface BoundBox {
   zoom: number;
 }
 
+export interface SearchFilter {
+  time_start?: Date;
+  time_end?: Date;
+}
+
+export interface BoxTrackDTO extends BoundBox
+{
+  time_start?: Date;
+  time_end?: Date;
+}
+
 export interface ViewOption {
   map_center: LatLngPair;
 }

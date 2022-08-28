@@ -1,4 +1,5 @@
-﻿using Domain.StateWebSock;
+﻿using Domain.GeoDTO;
+using Domain.StateWebSock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,6 @@ namespace Domain.ServiceInterfaces
   {
     Task InsertManyAsync(List<RoutLineDTO> newObjs);
     Task<List<RoutLineDTO>> GetAsync();
-    Task<List<RoutLineDTO>> GetRoutsByBox(BoxDTO box);
+    Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box);
   }
 }

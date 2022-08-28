@@ -4,19 +4,23 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import { ApplicationState } from '../store';
-import { Box } from '@mui/material';
+import { Box, ButtonGroup, IconButton } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import * as TracksStore from '../store/TracksStates';
+import { SearchFilter } from '../store/Marker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
 export function RetroSearch() {
-  const INPUT_FORMAT = "YYYY-MM-DDThh:mm:ss";
+  const INPUT_FORMAT = "YYYY-MM-DDTHH:mm:ss";
+
+  const dispatch = useDispatch();
 
   const [value1, setValue1] = React.useState<Dayjs | null>(
     //dayjs('2014-08-18T21:11:54'),
@@ -34,6 +38,16 @@ export function RetroSearch() {
   const handleChange2 = (newValue: Dayjs | null) => {
     setValue2(newValue);
   };
+
+  const searchTracks = useCallback(
+    (e) => {
+      var filter: SearchFilter =
+      {
+        time_start:new Date(value1.toISOString()),
+        time_end: new Date(value2.toISOString())
+      };
+      dispatch(TracksStore.actionCreators.applyFilter(filter));
+    }, [value1, value2]);
 
   return (
     <Box
@@ -80,8 +94,16 @@ export function RetroSearch() {
                   }
                 } />}
           />
+
+          <ButtonGroup variant="contained" aria-label="search button group">
+            <IconButton aria-label="search" size="large" onClick={(e) => searchTracks(e)}>
+              <SearchIcon fontSize="inherit" />
+            </IconButton>
+          </ButtonGroup>
+
         </Stack>
       </LocalizationProvider>
     </Box>
   );
 }
+

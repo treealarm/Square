@@ -8,6 +8,6 @@ namespace Domain.ServiceInterfaces
 {
   public interface ILevelService
   {
-    Task<List<string>> GetLevelsByZoom(double zoom);
+    Task<List<string>> GetLevelsByZoom(double? zoom);
   }
 }

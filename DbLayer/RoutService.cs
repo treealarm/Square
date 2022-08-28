@@ -49,8 +49,11 @@ namespace DbLayer
         {
           id_start = track.id_start,
           id_end = track.id_end,
-          figure = ModelGate.ConvertDTO2DB(track.figure)
+          figure = ModelGate.ConvertDTO2DB(track.figure),
+          ts_start = track.ts_start,
+          ts_end = track.ts_end,
         };
+
         list.Add(dbTrack);
       }
       await _collRouts.InsertManyAsync(list);
@@ -75,7 +78,9 @@ namespace DbLayer
           id = t.id,
           id_start = t.id_start,
           id_end = t.id_end,
-          figure = ModelGate.ConvertDB2DTO(t.figure)
+          figure = ModelGate.ConvertDB2DTO(t.figure),
+          ts_start = t.ts_start,
+          ts_end = t.ts_end,
         };
 
         list.Add(dto);
@@ -84,7 +89,7 @@ namespace DbLayer
       return list;
     }
 
-    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxDTO box)
+    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
     {
       var builder = Builders<DBRoutLine>.Filter;
       var geometry = GeoJson.Polygon(
@@ -98,11 +103,30 @@ namespace DbLayer
         }
       );
 
-      var levels = await _levelService.GetLevelsByZoom(box.zoom);
+      FilterDefinition<DBRoutLine> filter = FilterDefinition<DBRoutLine>.Empty;
 
-      var filter =
-          builder.Where(p => levels.Contains(p.figure.zoom_level))
-        & builder.GeoIntersects(t => t.figure.location, geometry);
+      if (box.zoom != null)
+      {
+        var levels = await _levelService.GetLevelsByZoom(box.zoom);
+
+        filter =
+          builder.Where(p => levels.Contains(p.figure.zoom_level)
+          || p.figure.zoom_level == null);
+      }
+
+      if (box.time_start != null)
+      {
+        filter = filter & builder
+          .Where(t => t.ts_start >= box.time_start || t.ts_start == null);
+      }
+
+      if (box.time_end != null)
+      {
+        filter = filter & builder
+          .Where(t => t.ts_end <= box.time_end || t.ts_end == null);
+      }
+
+      filter = filter & builder.GeoIntersects(t => t.figure.location, geometry);
 
 
       var list = await _collRouts.Find(filter).ToListAsync();

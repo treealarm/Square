@@ -5,6 +5,6 @@ namespace Domain
   {
     public double[] wn { get; set; }
     public double[] es { get; set; }
-    public double zoom { get; set; }
+    public double? zoom { get; set; }
   }
 }

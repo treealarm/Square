@@ -1,13 +1,14 @@
 import { Action, Reducer } from "redux";
 import { ApiTracksRootString, AppThunkAction } from "./";
-import { BoundBox, IRoutLineDTO, ITrackPointDTO } from "./Marker";
+import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilter } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface TracksState {
   routs: IRoutLineDTO[];
   tracks: ITrackPointDTO[]
-  box: BoundBox;
+  box: BoxTrackDTO;
+  searchFilter: SearchFilter;
 }
 
 // -----------------
@@ -16,24 +17,29 @@ export interface TracksState {
 
 interface RequestRoutsAction {
   type: "REQUEST_ROUTS";
-  box: BoundBox;
+  box: BoxTrackDTO;
 }
 
 interface ReceiveRoutsAction {
   type: "RECEIVE_ROUTS";
-  box: BoundBox;
+  box: BoxTrackDTO;
   routs: IRoutLineDTO[];
 }
 
 interface RequestTracksAction {
   type: "REQUEST_TRACKS";
-  box: BoundBox;
+  box: BoxTrackDTO;
 }
 
 interface ReceiveTracksAction {
   type: "RECEIVE_TRACKS";
-  box: BoundBox;
+  box: BoxTrackDTO;
   tracks: ITrackPointDTO[];
+}
+
+interface ApplySearchFilterAction {
+  type: "APPLY_FILTER";
+  searchFilter: SearchFilter
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -43,6 +49,7 @@ type KnownAction =
   | ReceiveRoutsAction
   | RequestTracksAction
   | ReceiveTracksAction
+  | ApplySearchFilterAction
   ;
 
 // ----------------
@@ -50,7 +57,7 @@ type KnownAction =
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-  requestRouts: (box: BoundBox): AppThunkAction<KnownAction> => (
+  requestRouts: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
@@ -90,7 +97,7 @@ export const actionCreators = {
     }
   },
   ///////////////////////////////////////////////////////////
-  requestTracks: (box: BoundBox): AppThunkAction<KnownAction> => (
+  requestTracks: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
@@ -129,6 +136,14 @@ export const actionCreators = {
       dispatch({ type: "REQUEST_TRACKS", box: box });
     }
   }
+  ,
+  ///////////////////////////////////////////////////////////
+  applyFilter: (filter: SearchFilter): AppThunkAction<KnownAction> => (
+    dispatch
+  ) => {
+    dispatch({ type: "APPLY_FILTER", searchFilter: filter });
+    }
+  
 };
 
 // ----------------
@@ -137,7 +152,8 @@ export const actionCreators = {
 const unloadedState: TracksState = {
   routs: null,
   tracks: null,
-  box: null
+  box: null,
+  searchFilter: null
 };
 
 export const reducer: Reducer<TracksState> = (
@@ -181,6 +197,13 @@ export const reducer: Reducer<TracksState> = (
           tracks: action.tracks
         };
       }
+      break;
+
+    case "APPLY_FILTER":
+        return {
+          ...state,
+          searchFilter: action.searchFilter
+        };
       break;
   }
 

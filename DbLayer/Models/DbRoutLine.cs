@@ -15,9 +15,13 @@ namespace DbLayer.Models
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
     public DBGeoObject figure { get; set; }
+
     [BsonRepresentation(BsonType.ObjectId)]
     public string id_start { get; set; }
     [BsonRepresentation(BsonType.ObjectId)]
     public string id_end { get; set; }
+
+    public DateTime? ts_start { get; set; }
+    public DateTime? ts_end { get; set; }
   }
 }

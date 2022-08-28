@@ -89,9 +89,14 @@ namespace DbLayer
       }
     }
 
-    public async Task<List<string>> GetLevelsByZoom(double zoom)
+    public async Task<List<string>> GetLevelsByZoom(double? zoom)
     {
       var cash = await GetCash();
+
+      if (zoom == null)
+      {
+        return new List<string>();
+      }
 
       var result = cash.Where(l => zoom <= l.zoom_max && zoom >= l.zoom_min)
         .Select(t => t.zoom_level)

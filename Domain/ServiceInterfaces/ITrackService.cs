@@ -1,4 +1,5 @@
-﻿using Domain.StateWebSock;
+﻿using Domain.GeoDTO;
+using Domain.StateWebSock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Domain.ServiceInterfaces
   public interface ITrackService
   {
     Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs);
-    Task<List<TrackPointDTO>> GetTracksByBox(BoxDTO box);
+    Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box);
     Task<TrackPointDTO> GetLastAsync(string figure_id, string ignoreTrackId);
   }
 }

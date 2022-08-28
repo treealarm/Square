@@ -94,7 +94,7 @@ namespace DbLayer
       }
       return list;
     }
-    public async Task<List<TrackPointDTO>> GetTracksByBox(BoxDTO box)
+    public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
       var builder = Builders<DBTrackPoint>.Filter;
       var geometry = GeoJson.Polygon(
@@ -108,11 +108,28 @@ namespace DbLayer
         }
       );
 
-      var levels = await _levelService.GetLevelsByZoom(box.zoom);
+      FilterDefinition<DBTrackPoint> filter = FilterDefinition<DBTrackPoint>.Empty;
 
-      var filter =
-          builder.Where(p => levels.Contains(p.figure.zoom_level))
-        & builder.GeoIntersects(t => t.figure.location, geometry);
+      if (box.zoom != null)
+      {
+        var levels = await _levelService.GetLevelsByZoom(box.zoom);
+
+        filter =
+          builder.Where(p => levels.Contains(p.figure.zoom_level)
+          || p.figure.zoom_level == null);
+      }
+
+      if (box.time_start != null)
+      {
+        filter = filter & builder.Where(t => t.timestamp >= box.time_start);
+      }
+
+      if (box.time_end != null)
+      {
+        filter = filter & builder.Where(t => t.timestamp <= box.time_end);
+      }
+
+      filter = filter & builder.GeoIntersects(t => t.figure.location, geometry);
 
 
       var dbTracks = await _collFigures.Find(filter).ToListAsync();
