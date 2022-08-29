@@ -245,6 +245,48 @@ namespace DbLayer
       return Conver2Property2DTO(obj);
     }
 
+    public async Task<List<ObjPropsDTO>> GetPropByValuesAsync(ObjPropsSearchDTO propFilter)
+    {
+      List<ObjPropsDTO> ret = new List<ObjPropsDTO>();
+
+      var builder = Builders<DBMarkerProperties>.Filter;
+      var filter = builder.Empty;
+
+      foreach ( var prop in propFilter.Props)
+      {
+        var request =
+          string.Format("{prop_name:'{0}', str_val:'{1}'}",
+          prop.prop_name,
+          prop.str_val);
+
+        var f1 = Builders<DBMarkerProperties>
+          .Filter
+          .ElemMatch(t => t.extra_props, request)
+          ;
+
+        var metaValue = new BsonDocument(
+            "str_val",
+            prop.str_val
+            );
+
+        //var f1 = Builders<DBMarkerProperties>
+        //  .Filter
+        //  .ElemMatch(e => e.extra_props,
+        //  r => r.prop_name == prop.prop_name && r.MetaValue.Equals(metaValue));
+
+        filter &= f1;
+      }
+
+      var objs = await _propCollection.Find(filter).ToListAsync();
+
+      foreach ( var obj in objs)
+      {
+        ret.Add(Conver2Property2DTO(obj));
+      }
+
+      return ret;
+    }
+
     public static ObjPropsDTO Conver2Property2DTO(DBMarkerProperties props)
     {
       if (props == null)

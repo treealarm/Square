@@ -21,5 +21,6 @@ namespace Domain.ServiceInterfaces
     Task UpdatePropAsync(ObjPropsDTO updatedObj);
     Task UpdateHierarchyAsync(BaseMarkerDTO updatedObj);
     Task<long> RemoveAsync(List<string> ids);
+    Task<List<ObjPropsDTO>> GetPropByValuesAsync(ObjPropsSearchDTO propFilter);
   }
 }

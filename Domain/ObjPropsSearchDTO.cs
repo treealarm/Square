@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class ObjExtraPropertyDTO: KeyValueDTO
+  public class ObjPropsSearchDTO
   {
-    public string visual_type { get; set; }
+    public List<KeyValueDTO> Props { get; set; }
   }
 }

@@ -179,6 +179,17 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
+    [Route("GetByParams")]
+    public async Task<ActionResult<FiguresDTO>> GetByParams(ObjPropsSearchDTO propFilter)
+    {
+      var props = await _mapService.GetPropByValuesAsync(propFilter);
+      var geo = await _geoService.GetGeoObjectsAsync(props.Select(i => i.id).ToList());
+      var figures = await GetFigures(geo);
+
+      return CreatedAtAction(nameof(GetByParams), figures);
+    }
+
+    [HttpPost]
     [Route("GetByName")]
     public async Task<ActionResult<List<BaseMarkerDTO>>> GetByName([FromBody] string name)
     {
@@ -243,6 +254,14 @@ namespace LeafletAlarms.Controllers
       return markerDto;
     }
 
+    [HttpPost]
+    [Route("UpdateOnlyProperties")]
+    public async Task<IActionResult> UpdateOnlyProperties(ObjPropsDTO updatedMarker)
+    {
+      await _mapService.UpdatePropAsync(updatedMarker);
+      return CreatedAtAction(nameof(UpdateOnlyProperties), updatedMarker);
+    }
+    
     [HttpPost]
     [Route("UpdateProperties")]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)

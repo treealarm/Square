@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class ObjExtraPropertyDTO: KeyValueDTO
+  public class KeyValueDTO
   {
-    public string visual_type { get; set; }
+    public string str_val { get; set; }
+    public string prop_name { get; set; }
   }
 }
