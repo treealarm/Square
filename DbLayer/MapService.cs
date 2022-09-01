@@ -255,7 +255,7 @@ namespace DbLayer
       foreach ( var prop in propFilter.Props)
       {
         var request =
-          string.Format("{prop_name:'{0}', str_val:'{1}'}",
+          string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
           prop.prop_name,
           prop.str_val);
 

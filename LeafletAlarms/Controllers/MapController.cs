@@ -232,7 +232,11 @@ namespace LeafletAlarms.Controllers
       {
         markerDto.type = geoPart.location.GetFigureType();
 
-        markerDto.geometry = geoPart.location.GetJson();
+        var geometry = geoPart.location.GetJson();
+
+        propDTO.extra_props.Add(
+          new ObjExtraPropertyDTO() { str_val = $"{geometry}", prop_name = "geometry" }
+        );
 
         if (markerDto.type == "Point")
         {          
@@ -290,16 +294,18 @@ namespace LeafletAlarms.Controllers
 
       ObjExtraPropertyDTO radius = null;
       ObjExtraPropertyDTO zoom_level = null;
+      ObjExtraPropertyDTO geometry = null;
 
       if (updatedMarker.extra_props != null)
       {
         radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
         zoom_level = updatedMarker.extra_props.Where(p => p.prop_name == "zoom_level").FirstOrDefault();
+        geometry = updatedMarker.extra_props.Where(p => p.prop_name == "geometry").FirstOrDefault();
       }
 
       await _geoService.CreateOrUpdateGeoFromStringAsync(
         updatedMarker.id,
-        updatedMarker.geometry,
+        geometry?.str_val,
         updatedMarker.type,
         radius?.str_val,
         zoom_level?.str_val

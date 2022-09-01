@@ -44,7 +44,45 @@ export interface ObjExtraPropertyDTO {
 
 export interface IObjProps extends Marker {
   extra_props: ObjExtraPropertyDTO[];
-  geometry: string;
+}
+
+export function setExtraProp(
+  obj: IObjProps,
+  propName: string,
+  propValue: string,
+  visual_type: string
+) {
+  if (obj.extra_props == null) {
+    obj.extra_props = [{
+      prop_name: propName,
+      str_val: propValue,
+      visual_type: visual_type
+    }];
+    return;
+  }
+  var newElem: ObjExtraPropertyDTO = {
+    prop_name: propName,
+    str_val: propValue,
+    visual_type: visual_type
+  };
+
+  var g = obj?.extra_props.find(p => p.prop_name == propName);
+  if (g != null) {
+    Object.assign(g, newElem);
+    return;
+  }
+  obj.extra_props = [...obj.extra_props,...[newElem]];
+}
+
+export function getExtraProp(
+  obj: IObjProps,
+  propName: string
+): string {
+  if (obj?.extra_props == null) {
+    return null;
+  }
+  var g = obj?.extra_props?.find(p => p.prop_name == propName);
+  return g?.str_val;
 }
 
 export interface IFigures {

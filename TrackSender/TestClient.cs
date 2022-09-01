@@ -8,6 +8,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace TrackSender
 {
@@ -59,6 +60,28 @@ namespace TrackSender
       var s = await response.Content.ReadAsStringAsync();
 
       var json = JsonSerializer.Deserialize<List<BaseMarkerDTO>>(s);
+      return json;
+    }
+
+    public static async Task<FiguresDTO> GetByParams(string paramName, string paramValue)
+    {
+      ObjPropsSearchDTO propFilter = new ObjPropsSearchDTO();
+      propFilter.Props.Add(new KeyValueDTO()
+      {
+        prop_name = paramName,
+        str_val = paramValue
+      });
+
+      HttpResponseMessage response =
+        await client.PostAsJsonAsync(
+          $"api/Map/GetByParams", propFilter);
+
+      response.EnsureSuccessStatusCode();
+
+      // Deserialize the updated product from the response body.
+      var s = await response.Content.ReadAsStringAsync();
+
+      var json = JsonSerializer.Deserialize<FiguresDTO>(s);
       return json;
     }
 

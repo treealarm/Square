@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, ICoord, IArrayCoord, LatLngPair } from '../store/Marker';
+import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, ICoord, IArrayCoord, LatLngPair, getExtraProp, setExtraProp } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
@@ -48,16 +48,6 @@ export function ObjectProperties() {
       return;
     }
     copy.name = value;
-    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  };
-
-  function handleChangeGeo(e: any) {
-    const { target: { id, value } } = e;
-    var copy = Object.assign({}, objProps);
-    if (copy == null) {
-      return;
-    }
-    copy.geometry = value;
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
@@ -132,7 +122,7 @@ export function ObjectProperties() {
   const searchMeOnMap = useCallback(
     (props: IObjProps, e) => {
 
-      var geo = JSON.parse(props.geometry);
+      var geo = JSON.parse(getExtraProp(props, "geometry"));
       var myFigure = null;
       var center: L.LatLng = null;
 
@@ -239,13 +229,6 @@ export function ObjectProperties() {
           id="outlined" label='Name'
             value={objProps?.name}
             onChange={handleChangeName} />
-        </ListItem>
-        <ListItem>
-          <TextField size="small"
-            fullWidth
-            id="outlined" label='Geo'
-            value={objProps?.geometry}
-            onChange={handleChangeGeo} />
         </ListItem>
         
         {

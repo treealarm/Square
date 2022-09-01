@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, IObjProps, IPolyline, LineStringType } from '../store/Marker';
+import { BoundBox, getExtraProp, IObjProps, IPolyline, LineStringType, setExtraProp } from '../store/Marker';
 
 import { useCallback, useMemo, useEffect } from 'react'
 import {
@@ -94,7 +94,7 @@ export function PolylineMaker(props: any) {
 
       initFigure.name = obj2Edit.name;
       initFigure.parent_id = obj2Edit.parent_id;
-      initFigure.geometry = JSON.parse(obj2Edit.geometry);
+      initFigure.geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
       initFigure.id = obj2Edit.id;
     }
   }, [props.obj2Edit]);
@@ -109,7 +109,8 @@ export function PolylineMaker(props: any) {
     if (copy == null) {
       return;
     }
-    copy.geometry = JSON.stringify(figure.geometry);
+
+    setExtraProp(copy, "geometry", JSON.stringify(figure.geometry), null);
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   }, [figure]);
     

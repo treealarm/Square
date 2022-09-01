@@ -3,7 +3,7 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ApplicationState } from '../store';
-import { ICircle, IObjProps, PointType } from '../store/Marker';
+import { getExtraProp, ICircle, IObjProps, PointType, setExtraProp } from '../store/Marker';
 
 import { useCallback, useEffect } from 'react'
 import {
@@ -71,15 +71,15 @@ export function CircleMaker(props: any) {
 
       initFigure.name = obj2Edit.name;
       initFigure.parent_id = obj2Edit.parent_id;
-      initFigure.geometry = JSON.parse(obj2Edit.geometry);
+      initFigure.geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
       initFigure.id = obj2Edit.id;
 
       var radius2set = 100;
 
       if (obj2Edit.extra_props != null) {
-        var radius = obj2Edit.extra_props.find(p => p.prop_name == "radius");
+        var radius = getExtraProp(obj2Edit, "radius");
         if (radius != null) {
-          radius2set = parseInt(radius.str_val);
+          radius2set = parseInt(radius);
         }
       }
 
@@ -102,13 +102,9 @@ export function CircleMaker(props: any) {
       return;
     }
 
-    copy.extra_props = [{
-      prop_name: "radius",
-      str_val: figure.radius.toString(),
-      visual_type: null
-    }];
+    setExtraProp(copy, "radius", figure.radius.toString(), null);
+    setExtraProp(copy, "geometry", JSON.stringify(figure.geometry), null);
 
-    copy.geometry = JSON.stringify(figure.geometry);
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   }, [figure]);
 

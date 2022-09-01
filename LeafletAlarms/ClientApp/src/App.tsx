@@ -3,9 +3,9 @@ import { Route } from "react-router";
 import Layout from "./components/Layout";
 import { Home } from "./components/Home";
 import "./custom.css";
-import { Box, createMuiTheme, ThemeProvider } from "@mui/material";
+import { Box, createTheme, ThemeProvider } from "@mui/material";
 
-const theme = createMuiTheme({
+const theme = createTheme({
   typography: {    
     button: {
       textTransform: 'none'

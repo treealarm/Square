@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import { Box, Menu, MenuItem} from '@mui/material';
 import * as EditStore from '../store/EditStates';
 import { useDispatch, useSelector } from 'react-redux';
-import { IObjProps, LineStringType, PointType, PolygonType } from '../store/Marker';
+import { IObjProps, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
 export default function EditOptions() {
@@ -31,10 +31,11 @@ export default function EditOptions() {
         id: null,
         name: 'New Polygon 1',
         parent_id: selected_id,
-        geometry: "{\"coord\":[]}",
         type: PolygonType,
         extra_props: null
       };
+
+      setExtraProp(copy, "geometry", "{\"coord\":[]}", null);
       dispatch(EditStore.actionCreators.setFigureEditMode(true));
       dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
@@ -45,10 +46,10 @@ export default function EditOptions() {
         id: null,
         name: 'New Polyline 1',
         parent_id: selected_id,
-        geometry: "{\"coord\":[]}",
         type: LineStringType,
         extra_props: null
       };
+      setExtraProp(copy, "geometry", "{\"coord\":[]}", null);
       dispatch(EditStore.actionCreators.setFigureEditMode(true));
       dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
@@ -59,7 +60,6 @@ export default function EditOptions() {
         id: null,
         name: 'New Circle 1',
         parent_id: selected_id,
-        geometry: null,
         type: PointType,
         extra_props: null
       };
