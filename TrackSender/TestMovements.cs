@@ -22,24 +22,38 @@ namespace TrackSender
       var end =
         new GeometryCircleDTO(new Geo2DCoordDTO() { 51.1237f, 1.3134f });
 
-      FiguresDTO figures = new FiguresDTO(); ;
-      figures.circles = new List<FigureCircleDTO>();
-
-      for (int i = 0; i < 10; i++)
-      {        
-        var figure = new FigureCircleDTO()
+      var extra_props = new List<ObjExtraPropertyDTO>()
         {
-          name = $"test_track{i}",
-          radius = 222,
-          zoom_level = "13",
-          geometry = start
+          new ObjExtraPropertyDTO()
+          {
+            prop_name = "track_name",
+            str_val = "lisa_alert"
+          }
         };
-        figures.circles.Add(figure);
+
+      FiguresDTO figures;
+      figures = await TestClient.GetByParams("track_name", "lisa_alert");
+
+      if (figures == null || figures.circles.Count == 0)
+      {
+        figures = new FiguresDTO();
+        figures.circles = new List<FigureCircleDTO>();
+
+        for (int i = 0; i < 10; i++)
+        {
+          var figure = new FigureCircleDTO()
+          {
+            name = $"test_track{i}",
+            radius = 222,
+            zoom_level = "13",
+            geometry = start,
+            extra_props = extra_props
+          };
+          figures.circles.Add(figure);
+        }
+
+        figures = await TestClient.UpdateFiguresAsync(figures, "AddTracks");
       }
-
-
-      
-      figures = await TestClient.UpdateFiguresAsync(figures, "AddTracks");
 
       var arr = new List<Geo2DCoordDTO>(){
         new Geo2DCoordDTO() { 51.51467784097949, -0.1486710157204226 },
@@ -63,9 +77,10 @@ namespace TrackSender
       {
         foreach (var figure in figures.circles)
         {          
-          figure.geometry.coord = coord;          
+          figure.geometry.coord = coord;
+          figure.extra_props = extra_props;
         }
-        await Task.Delay(5000);
+        await Task.Delay(2000);
         await TestClient.UpdateFiguresAsync(figures, "UpdateTracks");
         Console.WriteLine(coord.ToString());
       }

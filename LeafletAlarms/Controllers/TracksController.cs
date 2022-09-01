@@ -97,6 +97,7 @@ namespace LeafletAlarms.Controllers
       {
         await EnsureTracksRoot(figure);
         await _mapService.CreateOrUpdateHierarchyObject(figure);
+        await _mapService.UpdatePropNotDeleteAsync(figure);
 
         var newPoint = new TrackPointDTO()
         {
@@ -110,6 +111,7 @@ namespace LeafletAlarms.Controllers
       {
         await EnsureTracksRoot(figure);
         await _mapService.CreateOrUpdateHierarchyObject(figure);
+        await _mapService.UpdatePropNotDeleteAsync(figure);
 
         trackPoints.Add(
           new TrackPointDTO()
@@ -123,6 +125,7 @@ namespace LeafletAlarms.Controllers
       {
         await EnsureTracksRoot(figure);
         await _mapService.CreateOrUpdateHierarchyObject(figure);
+        await _mapService.UpdatePropNotDeleteAsync(figure);
 
         trackPoints.Add(
           new TrackPointDTO()
@@ -153,6 +156,7 @@ namespace LeafletAlarms.Controllers
           
 
           newRout.figure = new GeoObjectDTO();
+          newRout.figure.id = newPoint.figure.id;
           newRout.figure.zoom_level = newPoint.figure.zoom_level;
 
           var coords = new List<Geo2DCoordDTO>();

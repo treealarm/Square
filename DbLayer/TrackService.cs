@@ -5,10 +5,14 @@ using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.IO;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,7 +74,11 @@ namespace DbLayer
         };
         list.Add(dbTrack);
       }
-      await _collFigures.InsertManyAsync(list);
+
+      if (list.Count > 0)
+      {
+        await _collFigures.InsertManyAsync(list);
+      }      
 
       return DBListToDTO(list);
     }
@@ -113,8 +121,24 @@ namespace DbLayer
       }
       return list;
     }
+
+    private static void Log(FilterDefinition<BsonDocument> filter)
+    {
+      var serializerRegistry = BsonSerializer.SerializerRegistry;
+      var documentSerializer = serializerRegistry.GetSerializer<BsonDocument>();
+      var rendered = filter.Render(documentSerializer, serializerRegistry);
+      Debug.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
+      Debug.WriteLine("");
+    }
+
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
+      //List<ObjectId> ids = new List<ObjectId>();
+      //ids.Add(new ObjectId("6310c598131d54f2b292b61f"));
+      //var filter1 = Builders<BsonDocument>.Filter.In("figure._id", ids);
+      //Log(filter1);
+
+
       var builder = Builders<DBTrackPoint>.Filter;
       var geometry = GeoJson.Polygon(
         new GeoJson2DCoordinates[]

@@ -65,24 +65,33 @@ namespace TrackSender
 
     public static async Task<FiguresDTO> GetByParams(string paramName, string paramValue)
     {
-      ObjPropsSearchDTO propFilter = new ObjPropsSearchDTO();
-      propFilter.Props.Add(new KeyValueDTO()
+      try
       {
-        prop_name = paramName,
-        str_val = paramValue
-      });
+        ObjPropsSearchDTO propFilter = new ObjPropsSearchDTO();
+        propFilter.props = new List<KeyValueDTO>();
+        propFilter.props.Add(new KeyValueDTO()
+        {
+          prop_name = paramName,
+          str_val = paramValue
+        });
 
-      HttpResponseMessage response =
-        await client.PostAsJsonAsync(
-          $"api/Map/GetByParams", propFilter);
+        HttpResponseMessage response =
+          await client.PostAsJsonAsync(
+            $"api/Map/GetByParams", propFilter);
 
-      response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
 
-      // Deserialize the updated product from the response body.
-      var s = await response.Content.ReadAsStringAsync();
+        // Deserialize the updated product from the response body.
+        var s = await response.Content.ReadAsStringAsync();
 
-      var json = JsonSerializer.Deserialize<FiguresDTO>(s);
-      return json;
+        var json = JsonSerializer.Deserialize<FiguresDTO>(s);
+        return json;
+      }
+      catch(Exception ex)
+      {
+
+      }
+      return null;
     }
 
     public static async Task<FiguresDTO> GetByIds(List<string> ids)

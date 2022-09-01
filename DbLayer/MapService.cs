@@ -24,20 +24,23 @@ namespace DbLayer
     private readonly IMongoCollection<DBMarkerProperties> _propCollection;
 
     private readonly MongoClient _mongoClient;
+    private readonly IMongoDatabase _mongoDB;
+    private readonly IOptions<MapDatabaseSettings> _geoStoreDBSettings;
 
     public MapService(
         IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
+      _geoStoreDBSettings = geoStoreDatabaseSettings;
       _mongoClient = new MongoClient(
           geoStoreDatabaseSettings.Value.ConnectionString);
 
-      var mongoDatabase = _mongoClient.GetDatabase(
+      _mongoDB = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
 
-      _markerCollection = mongoDatabase.GetCollection<DBMarker>(
+      _markerCollection = _mongoDB.GetCollection<DBMarker>(
           geoStoreDatabaseSettings.Value.ObjectsCollectionName);
 
-      _propCollection = mongoDatabase.GetCollection<DBMarkerProperties>(
+      _propCollection = _mongoDB.GetCollection<DBMarkerProperties>(
           geoStoreDatabaseSettings.Value.PropCollectionName);
 
     }
@@ -158,9 +161,20 @@ namespace DbLayer
 
     public async Task<long> RemoveAsync(List<string> ids)
     {
-      
+      List<ObjectId> objIds = ids.Select(s => new ObjectId(s)).ToList(); ;
+      var filter = Builders<BsonDocument>.Filter.In("figure._id", objIds);
+
+      var tracks = _mongoDB.GetCollection<BsonDocument>(
+          _geoStoreDBSettings.Value.TracksCollectionName);
+      var res1 = await tracks.DeleteManyAsync(filter);
+
+      var routs = _mongoDB.GetCollection<BsonDocument>(
+          _geoStoreDBSettings.Value.RoutsCollectionName);
+      await routs.DeleteManyAsync(filter);
+
       await _propCollection.DeleteManyAsync(x => ids.Contains(x.id));
-      var result =  await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      var result = await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
+
       return result.DeletedCount;
     }
 
@@ -176,19 +190,9 @@ namespace DbLayer
       }
     }
 
-    public static DBMarkerProperties ConvertDTO2Property(ObjPropsDTO props)
+    private static List<DBObjExtraProperty> ConvertExtraPropsToDB(List<ObjExtraPropertyDTO> extra_props)
     {
-      DBMarkerProperties mProps = new DBMarkerProperties()
-      {
-        extra_props = new List<DBObjExtraProperty>(),
-        id = props.id
-      };
-
-      if (props.extra_props == null)
-      {
-        return mProps;
-      }
-
+      var ep_db = new List<DBObjExtraProperty>();
       var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
 
       propertieNames.AddRange(
@@ -196,9 +200,9 @@ namespace DbLayer
         );
 
 
-      foreach (var prop in props.extra_props)
+      foreach (var prop in extra_props)
       {
-        // "radius", "min_zoom", "max_zoom"
+        // "radius", "zoom_level"
         if (propertieNames.Contains(prop.prop_name))
         {
           continue;
@@ -224,8 +228,26 @@ namespace DbLayer
             prop.str_val
             );
         }
-        mProps.extra_props.Add(newProp);
+        ep_db.Add(newProp);
       }
+      return ep_db;
+    }
+    private static DBMarkerProperties ConvertDTO2Property(FigureBaseDTO propsIn)
+    {
+      var props = propsIn as IObjectProps;
+
+      DBMarkerProperties mProps = new DBMarkerProperties()
+      {
+        extra_props = new List<DBObjExtraProperty>(),
+        id = propsIn.id
+      };
+
+      if (props.extra_props == null)
+      {
+        return mProps;
+      }
+
+      mProps.extra_props = ConvertExtraPropsToDB(props.extra_props);
 
       return mProps;
     }
@@ -238,6 +260,38 @@ namespace DbLayer
       opt.IsUpsert = true;
       await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
     }
+
+    public async Task UpdatePropNotDeleteAsync(FigureBaseDTO updatedObj)
+    {
+      var props = updatedObj as IObjectProps;
+
+      if(props?.extra_props == null || props.extra_props.Count == 0)
+      {
+        return;
+      }
+
+      DBMarkerProperties propToUpdate;
+      var curObj = await GetPropAsync(updatedObj.id);
+
+      if (curObj != null)
+      {        
+        curObj.extra_props.RemoveAll(x => props.extra_props.Any(y => y.prop_name == x.prop_name));
+
+        foreach (var prop in props.extra_props)
+        {
+          curObj.extra_props.Add(prop);
+        }
+        propToUpdate = ConvertDTO2Property(curObj);        
+      }
+      else
+      {
+        propToUpdate = ConvertDTO2Property(updatedObj);
+      }
+
+      ReplaceOptions opt = new ReplaceOptions();
+      opt.IsUpsert = true;
+      await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, propToUpdate, opt);
+    }    
 
     public async Task<ObjPropsDTO> GetPropAsync(string id)
     {
@@ -252,7 +306,7 @@ namespace DbLayer
       var builder = Builders<DBMarkerProperties>.Filter;
       var filter = builder.Empty;
 
-      foreach ( var prop in propFilter.Props)
+      foreach ( var prop in propFilter.props)
       {
         var request =
           string.Format("{{prop_name:'{0}', str_val:'{1}'}}",

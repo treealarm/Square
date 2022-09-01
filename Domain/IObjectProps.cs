@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class ObjPropsSearchDTO
+  public interface IObjectProps
   {
-    public List<KeyValueDTO> props { get; set; }
+    public List<ObjExtraPropertyDTO> extra_props { get; set; }
   }
 }
