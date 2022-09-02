@@ -1,7 +1,8 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
-
+using LeafletAlarmsRouter;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,16 +24,13 @@ namespace TrackSender
     {
       try
       {
-        RunAsync().GetAwaiter().GetResult();
+        var testMove = new TestMovements();
+        testMove.RunAsync().GetAwaiter().GetResult();
       }
       catch(Exception ex)
       {
         Console.WriteLine(ex.Message);
       }
-    }
-    static async Task RunAsync()
-    {
-      await TestMovements.RunAsync();
     }
   }
 }

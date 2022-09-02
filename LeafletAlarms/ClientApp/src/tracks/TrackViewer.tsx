@@ -132,16 +132,6 @@ export function TrackViewer() {
 
   return (
     <React.Fragment>
-
-      {
-        routs?.map((rout, index) =>
-          <CommonTrack
-            key={rout.id}
-            hidden={false}
-            marker={rout.figure}
-          >
-          </CommonTrack>
-        )}
       {
         tracks?.map((track, index) =>
           <CommonTrack
@@ -151,6 +141,16 @@ export function TrackViewer() {
           >
           </CommonTrack>
         )}
+      {
+        routs?.map((rout, index) =>
+          <CommonTrack
+            key={rout.id}
+            hidden={false}
+            marker={rout.figure}
+          >
+          </CommonTrack>
+        )}
+
     </React.Fragment>
   );
 }

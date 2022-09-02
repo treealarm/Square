@@ -14,9 +14,9 @@ namespace TrackSender
 {
   internal class TestClient
   {
-    static HttpClient client = new HttpClient();
+    HttpClient client = new HttpClient();
 
-    static TestClient()
+    public TestClient()
     {
       // Update port # in the following line.
       client.BaseAddress = new Uri("https://localhost:44307/");
@@ -24,7 +24,7 @@ namespace TrackSender
       client.DefaultRequestHeaders.Accept.Add(
           new MediaTypeWithQualityHeaderValue("application/json"));
     }
-    public static async Task<FiguresDTO> UpdateFiguresAsync(FiguresDTO figure, string action)
+    public async Task<FiguresDTO> UpdateFiguresAsync(FiguresDTO figure, string action)
     {
       HttpResponseMessage response =
         await client.PostAsJsonAsync(
@@ -48,7 +48,7 @@ namespace TrackSender
       return figure;
     }
 
-    public static async Task<List<BaseMarkerDTO>> GetByName(string name)
+    public async Task<List<BaseMarkerDTO>> GetByName(string name)
     {
       HttpResponseMessage response =
         await client.PostAsJsonAsync(
@@ -63,7 +63,7 @@ namespace TrackSender
       return json;
     }
 
-    public static async Task<FiguresDTO> GetByParams(string paramName, string paramValue)
+    public async Task<FiguresDTO> GetByParams(string paramName, string paramValue)
     {
       try
       {
@@ -94,7 +94,7 @@ namespace TrackSender
       return null;
     }
 
-    public static async Task<FiguresDTO> GetByIds(List<string> ids)
+    public async Task<FiguresDTO> GetByIds(List<string> ids)
     {
       HttpResponseMessage response =
         await client.PostAsJsonAsync(
@@ -109,7 +109,7 @@ namespace TrackSender
       return json;
     }
 
-    public static async Task<string> Empty(string ids)
+    public async Task<string> Empty(string ids)
     {
       HttpResponseMessage response =
         await client.PostAsJsonAsync(

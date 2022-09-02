@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain;
+using Domain.ServiceInterfaces;
+using Itinero.LocalGeo;
 
 namespace TrackSender
 {
@@ -66,6 +68,7 @@ namespace TrackSender
     static async Task RunAsync()
     {
       var root_coords = await RunRouteAsync();
+      var TestClient = new TestClient();
 
       if (root_coords != null)
       {

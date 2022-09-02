@@ -9,18 +9,67 @@ using System.Threading.Tasks;
 using Itinero.Profiles;
 using Itinero;
 using System.Reflection;
+using LeafletAlarmsRouter;
+using Microsoft.Extensions.Options;
 
 namespace TrackSender
 {
   internal class TestMovements
   {
-    public static async Task RunAsync()
+    TestClient _testClient = new TestClient();
+    TrackRouter _router;
+
+    public TestMovements()
+    {
+      var settings = new RoutingSettings()
+      {
+        RoutingFilePath = "D:\\TESTS\\OSM_DATA\\"
+      };
+      var appSettingsOptions = Options.Create(settings);
+
+      _router = new TrackRouter(appSettingsOptions);
+
+      while (!_router.IsMapExist(String.Empty))
+      {
+        Task.Delay(10);
+      }
+    }
+
+    private static Random random = new Random();
+
+    private async Task<List<Geo2DCoordDTO>> GetTestCoords(Geo2DCoordDTO from)
+    {
+      var coords = new List<Geo2DCoordDTO>();
+      coords.Add(from);
+      coords.Add(new Geo2DCoordDTO()
+      { from.X, from.Y });
+
+      double b = Math.PI +random.NextDouble() * 4;
+
+      for (double rad = 0.05; rad < 1; rad += 0.01)
+      {
+        for (double a = b; a < (b + Math.PI * 2); a += 0.016)
+        {
+          var x = from.X + Math.Cos(a)* rad;
+          var y = from.Y + Math.Sin(a)* rad;
+          coords[1].X = x;
+          coords[1].Y = y;
+
+          var ret = await _router.GetRoute(string.Empty, coords);
+
+          if (ret != null && ret.Count > 2)
+          {
+            return ret;
+          }
+        }
+      }
+      
+      return coords;
+    }
+    public async Task RunAsync()
     {
       var start =
         new GeometryCircleDTO(new Geo2DCoordDTO() { 51.51467784097949, -0.1486710157204226 });
-
-      var end =
-        new GeometryCircleDTO(new Geo2DCoordDTO() { 51.1237f, 1.3134f });
 
       var extra_props = new List<ObjExtraPropertyDTO>()
         {
@@ -32,7 +81,7 @@ namespace TrackSender
         };
 
       FiguresDTO figures;
-      figures = await TestClient.GetByParams("track_name", "lisa_alert");
+      figures = await _testClient.GetByParams("track_name", "lisa_alert");
 
       if (figures == null || figures.circles.Count == 0)
       {
@@ -52,37 +101,20 @@ namespace TrackSender
           figures.circles.Add(figure);
         }
 
-        figures = await TestClient.UpdateFiguresAsync(figures, "AddTracks");
+        figures = await _testClient.UpdateFiguresAsync(figures, "AddTracks");
       }
 
-      var arr = new List<Geo2DCoordDTO>(){
-        new Geo2DCoordDTO() { 51.51467784097949, -0.1486710157204226 },
-        new Geo2DCoordDTO() { 51.495073250207454,-0.09910842912095097},
-        new Geo2DCoordDTO() { 51.489442587472304,-0.08674137515201298},
-        new Geo2DCoordDTO() { 51.48020988778832,-0.07271508090717972},
-        new Geo2DCoordDTO() { 51.47408776490977,-0.04717537252039384},
-        new Geo2DCoordDTO() { 51.46459705992192,-0.014692935387021768},
-        new Geo2DCoordDTO() { 51.45379220805116,0.023852708531175718},
-        new Geo2DCoordDTO() { 51.428481730180884,0.08471876986305917},
-        new Geo2DCoordDTO() { 51.39950760193541,0.15812816896559667},
-        new Geo2DCoordDTO() { 51.319762897207085,0.28257579952874595},
-        new Geo2DCoordDTO() { 51.309835036411144,0.4230368643846383},
-        new Geo2DCoordDTO() { 51.32603686286704,0.6587805195935516},
-        new Geo2DCoordDTO() { 51.11042711691025,1.1636906018400597},
-        new Geo2DCoordDTO() { 51.10407463108633,1.2476501253820251},
-        new Geo2DCoordDTO() { 51.1237f, 1.3134f }
-      };
-
-      foreach(var coord in arr)
+      for(int i = 0; i < 20; i++)
       {
         foreach (var figure in figures.circles)
-        {          
-          figure.geometry.coord = coord;
+        {
+          var rout = await GetTestCoords(figure.geometry.coord);
+          figure.geometry.coord = rout.Last();
           figure.extra_props = extra_props;
         }
         await Task.Delay(2000);
-        await TestClient.UpdateFiguresAsync(figures, "UpdateTracks");
-        Console.WriteLine(coord.ToString());
+        await _testClient.UpdateFiguresAsync(figures, "UpdateTracks");
+        Console.WriteLine(i.ToString());
       }
     }
   }

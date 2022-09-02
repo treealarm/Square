@@ -47,6 +47,15 @@ namespace LeafletAlarmsRouter
       return list_out;
     }
 
+    public bool IsMapExist(string inst)
+    {
+      if (InstanceManager.TryGet(inst, out var instance))
+      {
+        return true;
+      }
+      return false;
+    }
+
     public async Task<List<Geo2DCoordDTO>> GetRoute(string inst, List<Geo2DCoordDTO> coords)
     {
       await Task.Delay(0);
@@ -62,7 +71,14 @@ namespace LeafletAlarmsRouter
         // calculate a route.
         var route = instance.Calculate(profile.FullName, list_native.ToArray());
 
-        return ConvertNativeToCoords(route.Value.Shape.ToList());
+        try
+        {
+          return ConvertNativeToCoords(route.Value.Shape.ToList());
+        }
+        catch(Exception ex)
+        {
+
+        }        
       }
 
       return coords;
