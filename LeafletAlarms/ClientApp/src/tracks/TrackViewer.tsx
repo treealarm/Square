@@ -99,7 +99,8 @@ export function TrackViewer() {
       es: [bounds.getEast(), bounds.getSouth()],
       zoom: parentMap.getZoom(),
       time_start: searchFilter?.time_start,
-      time_end: searchFilter?.time_end
+      time_end: searchFilter?.time_end,
+      property_filter: searchFilter?.property_filter
     };
     dispatch(TracksStore.actionCreators.requestRouts(boundBox));
     dispatch(TracksStore.actionCreators.requestTracks(boundBox));

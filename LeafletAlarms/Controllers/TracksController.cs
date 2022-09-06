@@ -211,10 +211,29 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(UpdateTracks), true);
     }
 
+    private async Task AddIdsByProperties(BoxTrackDTO box)
+    {
+      List<string> ids = null;
+
+      if (box.property_filter != null && box.property_filter.props.Count > 0)
+      {
+        var props = await _mapService.GetPropByValuesAsync(box.property_filter);
+        ids = props.Select(i => i.id).ToList();
+
+        if (box.ids == null)
+        {
+          box.ids = new List<string>();
+        }
+        box.ids.AddRange(ids);
+      }
+    }
+
     [HttpPost]
     [Route("GetTracksByBox")]
     public async Task<ActionResult<List<TrackPointDTO>>> GetTracksByBox(BoxTrackDTO box)
     {
+      await AddIdsByProperties(box);
+
       var trackPoints = await _tracksService.GetTracksByBox(box);
 
       return CreatedAtAction(nameof(GetTracksByBox), trackPoints);
@@ -233,6 +252,7 @@ namespace LeafletAlarms.Controllers
     [Route("GetRoutsByBox")]
     public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
     {
+      await AddIdsByProperties(box);
       var geo = await _routService.GetRoutsByBox(box);
       return geo;
     }

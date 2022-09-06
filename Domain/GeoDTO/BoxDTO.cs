@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace Domain
 {
   public class BoxDTO
@@ -6,5 +8,6 @@ namespace Domain
     public double[] wn { get; set; }
     public double[] es { get; set; }
     public double? zoom { get; set; }
+    public List<string> ids { get; set; }
   }
 }

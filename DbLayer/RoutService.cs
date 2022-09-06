@@ -145,6 +145,11 @@ namespace DbLayer
           .Where(t => t.ts_end <= box.time_end || t.ts_end == null);
       }
 
+      if (box.ids != null)
+      {
+        filter = filter & builder.Where(t => box.ids.Contains(t.figure.id));
+      }
+
       filter = filter & builder.GeoIntersects(t => t.figure.location, geometry);
 
 

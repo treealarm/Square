@@ -10,5 +10,6 @@ namespace Domain.GeoDTO
   {
     public DateTime? time_start { get; set; }
     public DateTime? time_end { get; set; }
+    public ObjPropsSearchDTO? property_filter { get; set; }    
   }
 }

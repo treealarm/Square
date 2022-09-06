@@ -37,7 +37,7 @@ export interface IPolyline extends Marker {
 }
 
 export interface ObjExtraPropertyDTO {
-  visual_type: string;
+  visual_type?: string;
   str_val: string;
   prop_name: string;
 }
@@ -108,17 +108,29 @@ export interface BoundBox {
   wn: number[];
   es: number[];
   zoom: number;
+  ids?: string[]
+}
+
+export interface KeyValueDTO {
+  str_val: string
+  prop_name: string
+}
+
+export interface ObjPropsSearchDTO {
+  props?: KeyValueDTO[];
 }
 
 export interface SearchFilter {
   time_start?: Date;
   time_end?: Date;
+  property_filter?: ObjPropsSearchDTO;
 }
 
 export interface BoxTrackDTO extends BoundBox
 {
   time_start?: Date;
   time_end?: Date;
+  property_filter?: ObjPropsSearchDTO;
 }
 
 export interface ViewOption {

@@ -11,7 +11,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
-import { SearchFilter } from '../store/Marker';
+import { ObjPropsSearchDTO, SearchFilter } from '../store/Marker';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -31,6 +31,9 @@ export function RetroSearch() {
     dayjs()
   );
 
+  const [propName, setPropName] = React.useState("track_name");
+  const [propVal, setPropVal] = React.useState("lisa_alert");
+
   const handleChange1 = (newValue: Dayjs | null) => {
     setValue1(newValue);
   };
@@ -39,15 +42,30 @@ export function RetroSearch() {
     setValue2(newValue);
   };
 
+  function handleChangePropName(e: any) {
+    const { target: { id, value } } = e;
+    setPropName(value);
+  };
+  function handleChangePropVal(e: any) {
+    const { target: { id, value } } = e;
+    setPropVal(value);
+  };
+
   const searchTracks = useCallback(
     (e) => {
+      var pfilter: ObjPropsSearchDTO =
+      {
+        props: [{ prop_name: propName, str_val: propVal }]
+      }
+
       var filter: SearchFilter =
       {
         time_start:new Date(value1.toISOString()),
-        time_end: new Date(value2.toISOString())
+        time_end: new Date(value2.toISOString()),
+        property_filter: pfilter
       };
       dispatch(TracksStore.actionCreators.applyFilter(filter));
-    }, [value1, value2]);
+    }, [value1, value2, propName, propVal]);
 
   return (
     <Box
@@ -94,6 +112,16 @@ export function RetroSearch() {
                   }
                 } />}
           />
+          <TextField size="small"
+            fullWidth
+            id="prop_name" label="prop_name"
+            value={propName}
+            onChange={handleChangePropName} />
+          <TextField size="small"
+            fullWidth
+            id="prop_val" label="prop_val"
+            value={propVal}
+            onChange={handleChangePropVal} />
 
           <ButtonGroup variant="contained" aria-label="search button group">
             <IconButton aria-label="search" size="large" onClick={(e) => searchTracks(e)}>
