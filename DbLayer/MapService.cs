@@ -327,8 +327,14 @@ namespace DbLayer
         //  .Filter
         //  .ElemMatch(e => e.extra_props,
         //  r => r.prop_name == prop.prop_name && r.MetaValue.Equals(metaValue));
-
-        filter &= f1;
+        if (filter == builder.Empty)
+        {
+          filter = f1;
+        }
+        else
+        {
+          filter |= f1;
+        }        
       }
 
       var objs = await _propCollection.Find(filter).ToListAsync();

@@ -4,7 +4,7 @@ import { TreeControl } from "../Tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
 import EditOptions from "../Tree/EditOptions";
 import { ObjectProperties } from "../Tree/ObjectProperties";
-import { Box, Grid, Stack, Tab } from "@mui/material";
+import { Box, Grid, Paper, Stack, Tab } from "@mui/material";
 import { WebSockClient } from "./WebSockClient";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { RetroSearch } from "../Tree/RetroSearch";
@@ -32,7 +32,7 @@ export function Home() {
         <MapComponent />
       </Grid>
       <Grid item xs={3} sx={{ height: "90%" }}>
-
+        <Paper sx={{ maxHeight: "100%", overflow: 'auto' }}>
         <TabContext value={value}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <TabList
@@ -51,10 +51,12 @@ export function Home() {
             </Stack>
           </TabPanel>
           <TabPanel value="2">
-            <RetroSearch></RetroSearch>
+            
+              <RetroSearch></RetroSearch>
+ 
           </TabPanel>
-        </TabContext>
-
+          </TabContext>
+        </Paper>
         
       </Grid>
     </Grid>
