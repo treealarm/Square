@@ -114,7 +114,7 @@ export function TrackViewer() {
   useEffect(() => {
     console.log('Search Filter Updated TrackViewer');
     UpdateTracks();
-  }, [searchFilter]);
+  }, [searchFilter?.changeNum]);
 
   const mapEvents = useMapEvents({
     moveend(e: L.LeafletEvent) {

@@ -124,6 +124,7 @@ export interface SearchFilter {
   time_start?: Date;
   time_end?: Date;
   property_filter?: ObjPropsSearchDTO;
+  changeNum: number;
 }
 
 export interface BoxTrackDTO extends BoundBox

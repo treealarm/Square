@@ -8,7 +8,7 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApplicationState } from '../store';
 import { Box, ButtonGroup, IconButton, List, ListItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
 import { ObjPropsSearchDTO, SearchFilter } from '../store/Marker';
@@ -23,46 +23,72 @@ export function RetroSearch() {
   const INPUT_FORMAT = "YYYY-MM-DDTHH:mm:ss";
 
   const dispatch = useDispatch();
+  const searchFilter = useSelector((state) => state?.tracksStates?.searchFilter);
 
-  const [value1, setValue1] = React.useState<Dayjs | null>(
-    //dayjs('2014-08-18T21:11:54'),
-    dayjs()
-  );
-  const [value2, setValue2] = React.useState<Dayjs | null>(
-    //dayjs('2014-08-18T21:11:54'),
-    dayjs()
-  );
+  function GetCopyOfSearchFilter(): SearchFilter {
+    let filter = Object.assign({}, searchFilter);
+    return filter;
+  }
 
-  const [propsFilter, setPropsFilter] = React.useState<ObjPropsSearchDTO>({
-    props: [{ prop_name: "track_name", str_val: "lisa_alert"}]
-  });
+  useEffect(() => {
+    if (searchFilter == null) {
+      var filter: SearchFilter =
+      {
+        time_start: new Date(dayjs().subtract(1,"day").toISOString()),
+        time_end: new Date(dayjs().toISOString()),
+        property_filter: {
+          props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
+        },
+        changeNum: 0
+      };
+      dispatch(TracksStore.actionCreators.applyFilter(filter));
+    }
+  }, []);
 
   const handleChange1 = (newValue: Dayjs | null) => {
-    setValue1(newValue);
+    try {
+      var filter = GetCopyOfSearchFilter();
+      filter.time_start = new Date(newValue.toISOString());
+      dispatch(TracksStore.actionCreators.applyFilter(filter));
+    }
+    catch (err)
+    {
+
+    }
   };
 
   const handleChange2 = (newValue: Dayjs | null) => {
-    setValue2(newValue);
+    try {
+      var filter = GetCopyOfSearchFilter();
+      filter.time_end = new Date(newValue.toISOString());
+      dispatch(TracksStore.actionCreators.applyFilter(filter));
+    }
+    catch (err) {
+
+    }
   };
 
   const searchTracks = useCallback(
     (e) => {
-
-      var filter: SearchFilter =
-      {
-        time_start:new Date(value1.toISOString()),
-        time_end: new Date(value2.toISOString()),
-        property_filter: propsFilter
-      };
+      var filter: SearchFilter = GetCopyOfSearchFilter();
+      filter.changeNum = searchFilter.changeNum + 1;
       dispatch(TracksStore.actionCreators.applyFilter(filter));
-    }, [value1, value2, propsFilter]);
+    }, [searchFilter]);
 
   const addProperty = useCallback(
     (e) => {
-      let copy = Object.assign({}, propsFilter);
-      copy.props.push({ prop_name: "test_name", str_val: "test_val" });
-      setPropsFilter(copy);
-    }, [propsFilter]);
+      var filter: SearchFilter = GetCopyOfSearchFilter();
+      filter.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
+      dispatch(TracksStore.actionCreators.applyFilter(filter));
+    }, [searchFilter]);
+
+  const setPropsFilter = useCallback(
+    (propsFilter: ObjPropsSearchDTO) => {
+      var filter: SearchFilter = GetCopyOfSearchFilter();
+      filter.property_filter = propsFilter;
+      dispatch(TracksStore.actionCreators.applyFilter(filter));
+    }, [searchFilter]);
+
 
   return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -80,7 +106,7 @@ export function RetroSearch() {
           <ListItem>
           <DateTimePicker
             label="begin (ISO 8601)"
-            value={value1}
+            value={searchFilter?.time_start}
             onChange={handleChange1}
             inputFormat={INPUT_FORMAT}
 
@@ -97,7 +123,7 @@ export function RetroSearch() {
           <ListItem>
           <DateTimePicker
             label="end (ISO 8601)"
-            value={value2}
+            value={searchFilter?.time_end}
             onChange={handleChange2}
             inputFormat={INPUT_FORMAT}
             renderInput={(params) =>
@@ -110,8 +136,10 @@ export function RetroSearch() {
                 } />}
           />
           </ListItem>
-          <ListItem>
-          <PropertyFilter propsFilter={propsFilter} setPropsFilter={setPropsFilter} />
+        <ListItem>
+          <PropertyFilter
+            propsFilter={searchFilter?.property_filter}
+            setPropsFilter={setPropsFilter} />
           </ListItem>
         </List>
       </LocalizationProvider>

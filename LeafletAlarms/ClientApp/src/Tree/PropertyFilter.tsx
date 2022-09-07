@@ -17,6 +17,7 @@ export function PropertyFilter(props:any) {
     const { target: { id, value } } = e;
 
     let copy = Object.assign({}, props.propsFilter);
+
     if (copy == null) {
       return;
     }
@@ -66,8 +67,8 @@ export function PropertyFilter(props:any) {
     <List>
       {
         props.propsFilter?.props?.map((item: KeyValueDTO, index: { toString: () => string; }) =>
-          
-          <ListItem>
+
+          <ListItem key={index.toString()}>
             <Stack spacing={2}
               
               sx={{

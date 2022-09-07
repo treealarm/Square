@@ -153,7 +153,7 @@ const unloadedState: TracksState = {
   routs: null,
   tracks: null,
   box: null,
-  searchFilter: null
+  searchFilter: null,
 };
 
 export const reducer: Reducer<TracksState> = (
