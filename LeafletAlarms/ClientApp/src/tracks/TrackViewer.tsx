@@ -90,6 +90,8 @@ export function TrackViewer() {
   const parentMap = useMap();
 
   const searchFilter = useSelector((state) => state?.tracksStates?.searchFilter);
+  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
+  const checked_ids = useSelector((state) => state?.guiStates?.checked);
 
   function UpdateTracks() {
     var bounds: L.LatLngBounds;
@@ -102,6 +104,16 @@ export function TrackViewer() {
       time_end: searchFilter?.time_end,
       property_filter: searchFilter?.property_filter
     };
+
+    if (selected_id != null || checked_ids != null) {
+      boundBox.ids = [];
+      if (checked_ids != null) {
+        boundBox.ids = [... checked_ids];
+      }
+      if (selected_id != null) {
+        boundBox.ids.push(selected_id);
+      }
+    }
     dispatch(TracksStore.actionCreators.requestRouts(boundBox));
     dispatch(TracksStore.actionCreators.requestTracks(boundBox));
   }
@@ -114,7 +126,7 @@ export function TrackViewer() {
   useEffect(() => {
     console.log('Search Filter Updated TrackViewer');
     UpdateTracks();
-  }, [searchFilter?.changeNum]);
+  }, [searchFilter?.changeNum, selected_id, checked_ids]);
 
   const mapEvents = useMapEvents({
     moveend(e: L.LeafletEvent) {
