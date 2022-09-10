@@ -64,18 +64,34 @@ namespace DbLayer
 
       foreach (var track in newObjs)
       {
-        var dbTrack = new DBRoutLine()
-        {
-          id_start = track.id_start,
-          id_end = track.id_end,
-          figure = ModelGate.ConvertDTO2DB(track.figure),
-          ts_start = track.ts_start,
-          ts_end = track.ts_end,
-        };
-
+        var dbTrack = ConvertDTO2DB(track);
         list.Add(dbTrack);
       }
       await _collRouts.InsertManyAsync(list);
+    }
+
+    private DBRoutLine ConvertDTO2DB(RoutLineDTO track)
+    {
+      var dbTrack = new DBRoutLine()
+      {
+        id = track.id,
+        id_start = track.id_start,
+        id_end = track.id_end,
+        figure = ModelGate.ConvertDTO2DB(track.figure),
+        ts_start = track.ts_start,
+        ts_end = track.ts_end,
+        processed = track.processed
+      };
+      return dbTrack;
+    }
+
+    public async Task UpdateAsync(RoutLineDTO updatedObj)
+    {
+      var props = ConvertDTO2DB(updatedObj);
+
+      ReplaceOptions opt = new ReplaceOptions();
+      opt.IsUpsert = true;
+      await _collRouts.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
     }
 
     public async Task<List<RoutLineDTO>> GetAsync()
@@ -85,7 +101,15 @@ namespace DbLayer
 
       return ConvertListDB2DTO(dbTracks);
     }
+    public async Task<List<RoutLineDTO>> GetNotProcessedAsync(int limit)
+    {
+      var dbTracks =
+        await _collRouts.Find(t => t.processed != true)
+        .Limit(limit)
+        .ToListAsync();
 
+      return ConvertListDB2DTO(dbTracks);
+    }
     private List<RoutLineDTO> ConvertListDB2DTO(List<DBRoutLine> dbTracks)
     {
       var list = new List<RoutLineDTO>();

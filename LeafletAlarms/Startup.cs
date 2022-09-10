@@ -36,7 +36,7 @@ namespace LeafletAlarms
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();
 
-      services.AddSingleton<IRouter, TrackRouter>();
+      services.AddSingleton<ITrackRouter, TrackRouter>();
       services.AddSingleton<ITrackService, TrackService>();
       services.AddSingleton<IRoutService, RoutService>();
       services.AddSingleton<ILevelService, LevelService>();

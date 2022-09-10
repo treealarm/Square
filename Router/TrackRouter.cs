@@ -9,7 +9,7 @@ using System.Diagnostics.Metrics;
 
 namespace LeafletAlarmsRouter
 {
-  public class TrackRouter: IRouter
+  public class TrackRouter: ITrackRouter
   {
     public TrackRouter(IOptions<RoutingSettings> routingSettings)
     {

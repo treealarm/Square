@@ -1,5 +1,5 @@
 import { Action, Reducer } from "redux";
-import { ApiTracksRootString, AppThunkAction } from "./";
+import { ApiRouterRootString, ApiTracksRootString, AppThunkAction } from "./";
 import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilter } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -71,7 +71,7 @@ export const actionCreators = {
     ) {
 
       let body = JSON.stringify(box);
-      var request = ApiTracksRootString + "/GetRoutsByBox";
+      var request = ApiRouterRootString + "/GetRoutsByBox";
 
       var fetched = fetch(request, {
         method: "POST",

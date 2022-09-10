@@ -15,5 +15,6 @@ namespace Domain.StateWebSock
     public string id_end { get; set; }
     public DateTime? ts_start { get; set; }
     public DateTime? ts_end { get; set; }
+    public bool processed { get; set; }
   }
 }

@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace LeafletAlarms.Controllers
 {
@@ -25,14 +24,13 @@ namespace LeafletAlarms.Controllers
     private BaseMarkerDTO _tracksRootFolder;
     private IRoutService _routService;
     private const string TRACKS_ROOT_NAME = "__tracks";
-    private IRouter _router;
+    
     public TracksController(
       IMapService mapsService,
       ITrackService tracksService,
       IRoutService routService,
       IGeoService geoService,
-      ITrackConsumer stateService,
-      IRouter router
+      ITrackConsumer stateService
     )
     {
       _mapService = mapsService;
@@ -40,7 +38,6 @@ namespace LeafletAlarms.Controllers
       _routService = routService;
       _stateService = stateService;
       _geoService = geoService;
-      _router = router;
     }
 
     private async Task<BaseMarkerDTO> GetTracksRoot()
@@ -159,30 +156,23 @@ namespace LeafletAlarms.Controllers
           newRout.figure.id = newPoint.figure.id;
           newRout.figure.zoom_level = newPoint.figure.zoom_level;
 
-          var coords = new List<Geo2DCoordDTO>();
+          var lineCoord = new List<Geo2DCoordDTO>();
           var p1 = (newPoint.figure.location as GeometryCircleDTO).coord;
-          coords.Add(p1);
+          lineCoord.Add(p1);
 
           var p2 = (lastPoint.figure.location as GeometryCircleDTO).coord;
-          coords.Add(p2);
-
-          var routRet = await _router.GetRoute(string.Empty, coords);
+          lineCoord.Add(p2);
 
           newRout.id_start = lastPoint.id;
           newRout.id_end = newPoint.id;
           newRout.ts_start = lastPoint.timestamp;
           newRout.ts_end = newPoint.timestamp;
 
-          if (routRet != null && routRet.Count > 0)
-          {
-            routRet.Insert(0, p1);
-            routRet.Add(p2);
-            var polyLine = new GeometryPolylineDTO();
-            newRout.figure.location = polyLine;
-            polyLine.coord = routRet;
+          var polyLine = new GeometryPolylineDTO();
+          newRout.figure.location = polyLine;
+          polyLine.coord = lineCoord;
 
-            routs.Add(newRout);
-          }
+          routs.Add(newRout);
         }
       }
 
@@ -237,24 +227,6 @@ namespace LeafletAlarms.Controllers
       var trackPoints = await _tracksService.GetTracksByBox(box);
 
       return CreatedAtAction(nameof(GetTracksByBox), trackPoints);
-    }
-
-    [HttpPost]
-    [Route("GetRoute")]
-    public async Task<ActionResult<List<Geo2DCoordDTO>>> GetRoute(RoutDTO routData)
-    {
-      var routRet = await _router.GetRoute(routData.InstanceName, routData.Coordinates);
-
-      return CreatedAtAction(nameof(GetRoute), routRet);
-    }
-
-    [HttpPost]
-    [Route("GetRoutsByBox")]
-    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
-    {
-      await AddIdsByProperties(box);
-      var geo = await _routService.GetRoutsByBox(box);
-      return geo;
     }
   }
 }
