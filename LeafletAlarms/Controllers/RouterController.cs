@@ -75,17 +75,5 @@ namespace LeafletAlarms.Controllers
         await _routService.InsertManyAsync(newObjs);
       }
     }
-
-    private void BuildRoutsAndSave()
-    {
-      //var routRet = new List<Geo2DCoordDTO>();
-      //var p1 = (newPoint.figure.location as GeometryCircleDTO).coord;
-      //routRet.Add(p1);
-
-      //var p2 = (lastPoint.figure.location as GeometryCircleDTO).coord;
-      //routRet.Add(p2);
-
-      //var routRet = await _router.GetRoute(string.Empty, coords);
-    }
   }
 }

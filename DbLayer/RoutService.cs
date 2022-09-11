@@ -94,10 +94,10 @@ namespace DbLayer
       await _collRouts.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
     }
 
-    public async Task<List<RoutLineDTO>> GetAsync()
+    public async Task<List<RoutLineDTO>> GetAsync(int nLimit)
     {
       var dbTracks =
-        await _collRouts.Find(t => t.id != null).Limit(100).ToListAsync();
+        await _collRouts.Find(t => t.id != null).Limit(nLimit).ToListAsync();
 
       return ConvertListDB2DTO(dbTracks);
     }
@@ -131,7 +131,6 @@ namespace DbLayer
 
       return list;
     }
-
     public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
     {
       var builder = Builders<DBRoutLine>.Filter;

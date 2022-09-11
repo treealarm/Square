@@ -1,5 +1,7 @@
 using Dapr.Client;
+using DbLayer;
 using Domain.ServiceInterfaces;
+using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 
 namespace RouterMicroService.Controllers
@@ -9,24 +11,23 @@ namespace RouterMicroService.Controllers
   public class RouterController : ControllerBase
   {    
     private readonly ILogger<RouterController> _logger;
-
+    private IRoutService _routService;
+    private ITrackRouter _router;
     public RouterController(
-      ILogger<RouterController> logger
+      ILogger<RouterController> logger,
+      ITrackRouter router,
+      IRoutService routService
     )
     {
+      _routService = routService;
+      _router = router;
       _logger = logger;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    [HttpGet(Name = "GetRouts")]
+    public async Task<IEnumerable<RoutLineDTO>> Get()
     {
-      return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-      {
-        Date = DateTime.Now.AddDays(index),
-        TemperatureC = Random.Shared.Next(-20, 55),
-        Summary = "Hello world!"
-      })
-      .ToArray();
+      return await _routService.GetAsync(10);
     }
   }
 }

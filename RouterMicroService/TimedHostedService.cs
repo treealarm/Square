@@ -45,7 +45,8 @@ namespace RouterMicroService
       {
         sr.WriteLine(DateTime.Now.ToString());
       }
-        var count = Interlocked.Increment(ref executionCount);
+
+      var count = Interlocked.Increment(ref executionCount);
       _logger.LogInformation(
               "Timed Hosted Service is working. Count: {Count}", count);
 

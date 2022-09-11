@@ -8,11 +8,11 @@ services:
       dockerfile: RouterMicroService/Dockerfile
     ports: 
      - "52000:50001"
+     - "27017:27017"
     volumes:
      - //d/tests/osm_data/:/osm_data
-     - type: bind
-       source: D:/TESTS/OSM_DATA/
-       target: /TESTS/OSM_DATA/
+    extra_hosts:
+     - "host.docker.internal:host-gateway"
 
   routermicroservice-dapr:
     image: "daprio/daprd:latest"
