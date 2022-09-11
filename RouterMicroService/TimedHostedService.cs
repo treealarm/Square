@@ -41,10 +41,10 @@ namespace RouterMicroService
 
     private async void DoWork()
     {
-      using (StreamWriter sr = new StreamWriter(@"/osm_data/tmp1234.txt"))
-      {
-        sr.WriteLine(DateTime.Now.ToString());
-      }
+      //using (StreamWriter sr = new StreamWriter(@"/osm_data/tmp1234.txt"))
+      //{
+      //  sr.WriteLine(DateTime.Now.ToString());
+      //}
 
       var count = Interlocked.Increment(ref executionCount);
       _logger.LogInformation(

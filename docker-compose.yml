@@ -12,7 +12,7 @@ services:
     volumes:
      - //d/tests/osm_data/:/osm_data
     extra_hosts:
-     - "host.docker.internal:host-gateway"
+     - "mongoservice:host-gateway"
 
   routermicroservice-dapr:
     image: "daprio/daprd:latest"
