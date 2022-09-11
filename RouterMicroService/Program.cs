@@ -12,6 +12,7 @@ builder.Services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDat
 builder.Services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
 
 // Add services to the container.
+builder.Services.AddDaprClient();
 builder.Services.AddSingleton<ILevelService, LevelService>();
 builder.Services.AddSingleton<IRoutService, RoutService>();
 builder.Services.AddSingleton<ITrackRouter, TrackRouter>();

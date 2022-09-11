@@ -3,17 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeafletAlarms", "LeafletAlarms.csproj", "{86EBDB8E-666D-4BA8-85FD-BEBA6BD76198}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeafletAlarms", "LeafletAlarms\LeafletAlarms.csproj", "{86EBDB8E-666D-4BA8-85FD-BEBA6BD76198}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbLayer", "..\DbLayer\DbLayer.csproj", "{1205FD20-5B18-427D-811B-90E31A97C8EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbLayer", "DbLayer\DbLayer.csproj", "{1205FD20-5B18-427D-811B-90E31A97C8EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "..\Domain\Domain.csproj", "{9C17B58C-C570-4422-A411-68E6C513E71E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{9C17B58C-C570-4422-A411-68E6C513E71E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrackSender", "..\TrackSender\TrackSender.csproj", "{BA71EC63-F4CC-474F-9D45-45F5D88AC6AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrackSender", "TrackSender\TrackSender.csproj", "{BA71EC63-F4CC-474F-9D45-45F5D88AC6AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Router", "..\Router\Router.csproj", "{6CEF326E-B12F-4FE9-8E71-23AADFE7955B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Router", "Router\Router.csproj", "{6CEF326E-B12F-4FE9-8E71-23AADFE7955B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouterMicroService", "..\RouterMicroService\RouterMicroService.csproj", "{D37553DD-0C45-4027-B117-0B98DB5DA87A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RouterMicroService", "RouterMicroService\RouterMicroService.csproj", "{D7965BBB-250C-4B9B-8A23-99A1E90E6BA3}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{97157DAD-0A6E-4F60-B94B-23C552605FEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +43,14 @@ Global
 		{6CEF326E-B12F-4FE9-8E71-23AADFE7955B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6CEF326E-B12F-4FE9-8E71-23AADFE7955B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6CEF326E-B12F-4FE9-8E71-23AADFE7955B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D37553DD-0C45-4027-B117-0B98DB5DA87A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D37553DD-0C45-4027-B117-0B98DB5DA87A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D37553DD-0C45-4027-B117-0B98DB5DA87A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D37553DD-0C45-4027-B117-0B98DB5DA87A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7965BBB-250C-4B9B-8A23-99A1E90E6BA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7965BBB-250C-4B9B-8A23-99A1E90E6BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7965BBB-250C-4B9B-8A23-99A1E90E6BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7965BBB-250C-4B9B-8A23-99A1E90E6BA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97157DAD-0A6E-4F60-B94B-23C552605FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97157DAD-0A6E-4F60-B94B-23C552605FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97157DAD-0A6E-4F60-B94B-23C552605FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97157DAD-0A6E-4F60-B94B-23C552605FEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

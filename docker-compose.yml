@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  routermicroservice:
+    image: ${DOCKER_REGISTRY-}routermicroservice
+    build:
+      context: .
+      dockerfile: RouterMicroService/Dockerfile
+    ports: 
+     - "52000:50001"
+    volumes:
+     - //d/tests/osm_data/:/osm_data
+     - type: bind
+       source: D:/TESTS/OSM_DATA/
+       target: /TESTS/OSM_DATA/
+
+  routermicroservice-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "RouterMicroService", "-app-port", "80" ]
+    depends_on:
+      - routermicroservice
+    network_mode: "service:routermicroservice"

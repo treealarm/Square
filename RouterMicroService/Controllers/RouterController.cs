@@ -1,3 +1,4 @@
+using Dapr.Client;
 using Domain.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,12 +7,7 @@ namespace RouterMicroService.Controllers
   [ApiController]
   [Route("[controller]")]
   public class RouterController : ControllerBase
-  {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
+  {    
     private readonly ILogger<RouterController> _logger;
 
     public RouterController(
@@ -28,7 +24,7 @@ namespace RouterMicroService.Controllers
       {
         Date = DateTime.Now.AddDays(index),
         TemperatureC = Random.Shared.Next(-20, 55),
-        Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+        Summary = "Hello world!"
       })
       .ToArray();
     }

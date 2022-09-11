@@ -1,4 +1,5 @@
-﻿using DbLayer;
+﻿using Dapr.Client;
+using DbLayer;
 using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
@@ -13,17 +14,21 @@ namespace RouterMicroService
     CancellationToken _cancellationToken = new CancellationToken();
     private IRoutService _routService;
     private ITrackRouter _router;
+    private readonly DaprClient _daprClient;
     public TimedHostedService(
       ILogger<TimedHostedService> logger,
       ITrackRouter router,
-      IRoutService routService
+      IRoutService routService,
+      DaprClient daprClient
      )
     {
       _routService = routService;
       _router = router;
       _logger = logger;
+      _daprClient = daprClient;
     }
 
+    // 
     public Task StartAsync(CancellationToken stoppingToken)
     {
       _logger.LogInformation("Timed Hosted Service running.");
@@ -36,17 +41,21 @@ namespace RouterMicroService
 
     private async void DoWork()
     {
+      using (StreamWriter sr = new StreamWriter(@"/osm_data/tmp1234.txt"))
+      {
+        sr.WriteLine(DateTime.Now.ToString());
+      }
+        var count = Interlocked.Increment(ref executionCount);
+      _logger.LogInformation(
+              "Timed Hosted Service is working. Count: {Count}", count);
+
       while (!_cancellationToken.IsCancellationRequested)
       {
         if (!_router.IsMapExist(String.Empty))
         {
           await Task.Delay(1000);
           continue;
-        }
-
-        var count = Interlocked.Increment(ref executionCount);
-        _logger.LogInformation(
-                "Timed Hosted Service is working. Count: {Count}", count);
+        }        
 
         var notProcessed = await _routService.GetNotProcessedAsync(1);
 
