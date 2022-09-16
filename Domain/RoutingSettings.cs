@@ -9,5 +9,6 @@ namespace Domain
   public class RoutingSettings
   {
     public string RoutingFilePath { get; set; }
+    public string RoutingFilePathWin { get; set; }
   }
 }

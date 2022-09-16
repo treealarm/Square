@@ -1,5 +1,4 @@
 using Dapr.Client;
-using DbLayer;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
@@ -9,25 +8,40 @@ namespace RouterMicroService.Controllers
   [ApiController]
   [Route("[controller]")]
   public class RouterController : ControllerBase
-  {    
+  {
     private readonly ILogger<RouterController> _logger;
     private IRoutService _routService;
     private ITrackRouter _router;
+    private readonly DaprClient _daprClient;
     public RouterController(
       ILogger<RouterController> logger,
       ITrackRouter router,
-      IRoutService routService
+      IRoutService routService,
+      DaprClient daprClient
     )
     {
       _routService = routService;
       _router = router;
       _logger = logger;
+      _daprClient = daprClient;
     }
 
     [HttpGet(Name = "GetRouts")]
-    public async Task<IEnumerable<RoutLineDTO>> Get()
+    public async Task<IEnumerable<RoutLineDTO>> GetRouts()
     {
       return await _routService.GetAsync(10);
+    }
+
+    [HttpGet()]
+    [Route("GetHello")]
+    public async Task<IEnumerable<string>> GetHello()
+    {
+      var forecasts = await _daprClient.InvokeMethodAsync<IEnumerable<string>>(
+            HttpMethod.Get,
+            "leafletalarms",
+            "GetHello");
+
+      return forecasts;
     }
   }
 }

@@ -31,7 +31,15 @@ namespace LeafletAlarms
     public void ConfigureServices(IServiceCollection services)
     {
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
-      services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
+      var rt = Configuration.GetSection("RoutingSettings");
+      var routingSettings = rt.Get(typeof(RoutingSettings)) as RoutingSettings;
+
+      if (!InDocker)
+      {
+        routingSettings.RoutingFilePath = routingSettings.RoutingFilePathWin;
+      }
+      
+      services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));      
 
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();
@@ -64,6 +72,14 @@ namespace LeafletAlarms
         //setUpAction.AddFluentValidationRules();
       });
       services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
+    }
+
+    private bool InDocker 
+    { 
+      get 
+      { 
+        return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true"; 
+      } 
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -135,7 +151,7 @@ namespace LeafletAlarms
       {
         spa.Options.SourcePath = "ClientApp";
 
-        if (env.IsDevelopment())
+        if (env.IsDevelopment() && !InDocker)
         {
           spa.UseReactDevelopmentServer(npmScript: "start");
         }

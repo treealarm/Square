@@ -7,6 +7,7 @@ using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace LeafletAlarms.Controllers
     private BaseMarkerDTO _tracksRootFolder;
     private IRoutService _routService;
     private const string TRACKS_ROOT_NAME = "__tracks";
-    
+
     public TracksController(
       IMapService mapsService,
       ITrackService tracksService,
@@ -75,11 +76,11 @@ namespace LeafletAlarms.Controllers
       }
     }
 
-    [HttpPost]
-    [Route("Empty")]
-    public ActionResult<string> Empty([FromBody] string s)
+    [HttpGet()]
+    [Route("GetHello")]
+    public  List<string> GetHello()
     {
-      return CreatedAtAction(nameof(Empty), s);
+      return new List<string>() { "Hello world" };
     }
 
     private async Task<TrackPointDTO> GetLast(TrackPointDTO newPoint)

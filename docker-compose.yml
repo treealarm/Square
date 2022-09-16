@@ -1,14 +1,28 @@
 version: '3.4'
 
 services:
+  leafletalarms:
+    image: ${DOCKER_REGISTRY-}leafletalarms
+    build:
+      context: .
+      dockerfile: LeafletAlarms/Dockerfile
+    volumes:
+     - //d/tests/osm_data/:/osm_data
+    extra_hosts:
+     - "mongoservice:host-gateway"
+
+  leafletalarms-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "80" ]
+    depends_on:
+      - leafletalarms
+    network_mode: "service:leafletalarms"
+
   routermicroservice:
     image: ${DOCKER_REGISTRY-}routermicroservice
     build:
       context: .
       dockerfile: RouterMicroService/Dockerfile
-    ports: 
-     - "52000:50001"
-     - "27017:27017"
     volumes:
      - //d/tests/osm_data/:/osm_data
     extra_hosts:
@@ -16,7 +30,7 @@ services:
 
   routermicroservice-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "RouterMicroService", "-app-port", "80" ]
+    command: [ "./daprd", "-app-id", "routermicroservice", "-app-port", "80" ]
     depends_on:
       - routermicroservice
     network_mode: "service:routermicroservice"
