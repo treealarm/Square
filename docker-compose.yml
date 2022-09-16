@@ -1,5 +1,10 @@
 version: '3.4'
-
+networks:
+    netBackEnd:
+        ipam:
+            driver: default
+            config:
+                 - subnet: 192.168.0.0/24
 services:
   leafletalarms:
     image: ${DOCKER_REGISTRY-}leafletalarms
@@ -9,7 +14,10 @@ services:
     volumes:
      - //d/tests/osm_data/:/osm_data
     extra_hosts:
-     - "mongoservice:host-gateway"
+     - "mongoservice:192.168.0.10"
+    networks:
+      netBackEnd:
+        ipv4_address: 192.168.0.2
 
   leafletalarms-dapr:
     image: "daprio/daprd:latest"
@@ -26,7 +34,10 @@ services:
     volumes:
      - //d/tests/osm_data/:/osm_data
     extra_hosts:
-     - "mongoservice:host-gateway"
+     - "mongoservice:192.168.0.10"
+    networks:
+      netBackEnd:
+        ipv4_address: 192.168.0.3
 
   routermicroservice-dapr:
     image: "daprio/daprd:latest"
@@ -34,3 +45,17 @@ services:
     depends_on:
       - routermicroservice
     network_mode: "service:routermicroservice"
+
+  mongodbservice:
+    image : mongo
+    container_name: mongodb
+    restart: always
+    volumes: 
+      - //d/tests/mongo_data/:/data/db
+    ports:
+     - "27018:27017"
+    expose:
+     - "27017"
+    networks:
+      netBackEnd:
+        ipv4_address: 192.168.0.10

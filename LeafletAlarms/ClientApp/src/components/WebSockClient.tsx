@@ -71,7 +71,7 @@ export function WebSockClient() {
   return (
       <React.Fragment key={"WebSock1"}>
       <Box sx={{ border: 1 }}>
-        <Tooltip title={JSON.stringify(box)}>
+        <Tooltip title={url+JSON.stringify(box)}>
         <IconButton
           onClick={sendPing}
           style={{ textTransform: 'none' }}
