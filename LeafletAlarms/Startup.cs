@@ -93,7 +93,7 @@ namespace LeafletAlarms
         app.UseSwaggerUI(setUpAction =>
         {
           setUpAction.SwaggerEndpoint(@"/swagger/v1/swagger.json", "Map API");
-          setUpAction.RoutePrefix = @"api";
+          setUpAction.RoutePrefix = @"swagger";
         });
       }
       else

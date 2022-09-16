@@ -38,8 +38,8 @@ namespace RouterMicroService.Controllers
     {
       var forecasts = await _daprClient.InvokeMethodAsync<IEnumerable<string>>(
             HttpMethod.Get,
-            "leafletalarms",
-            "GetHello");
+            @"leafletalarms",
+            @"api/Tracks/GetHello");
 
       return forecasts;
     }
