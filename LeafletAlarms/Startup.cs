@@ -1,4 +1,4 @@
-using DbLayer;
+using DbLayer.Services;
 using Domain;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
@@ -18,7 +18,7 @@ using System.Reflection;
 
 namespace LeafletAlarms
 {
-  public class Startup
+    public class Startup
   {
     public Startup(IConfiguration configuration)
     {
@@ -48,6 +48,7 @@ namespace LeafletAlarms
       services.AddSingleton<ITrackService, TrackService>();
       services.AddSingleton<IRoutService, RoutService>();
       services.AddSingleton<ILevelService, LevelService>();
+      services.AddSingleton<IStateService, StateService>();
       services.AddSingleton<ITrackConsumer, StateWebSocketHandler>();
 
       services.AddControllersWithViews();
