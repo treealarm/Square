@@ -6,7 +6,12 @@ import { useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
 import { useDispatch, useSelector } from "react-redux";
 //"wss://localhost:44307/push"
-var url = 'wss://' + window.location.hostname + ':' + window.location.port + '/state';
+var url = 'ws://';
+
+if (window.location.protocol == "https:") {
+  url = 'wss://';
+}
+url = url + window.location.hostname + ':' + window.location.port + '/state';
 var socket = new WebSocket(url);
 
 export function WebSockClient() {
