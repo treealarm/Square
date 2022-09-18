@@ -189,10 +189,13 @@ export function LocationMarkers() {
         return colorOptionsSelected;
       }
 
-      var vState = visualStates.find(i => i.id == id);
+      var vState = visualStates.states.find(i => i.id == id);
 
-      if (vState != null) {
-        return vState;
+      if (vState != null && vState.states.length > 0) {
+        var vStateFirst = vState.states[0];
+        var vStateDescr = visualStates.states_descr.find(s => s.state == vStateFirst);
+        if (vStateDescr != null)
+          return { color: vStateDescr.state_color };
       }
 
       return colorOptionsUnselected;

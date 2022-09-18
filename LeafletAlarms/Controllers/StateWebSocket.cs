@@ -1,11 +1,15 @@
-﻿using Domain;
+﻿using DbLayer.Services;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
+using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading;
@@ -18,7 +22,7 @@ namespace LeafletAlarms.Controllers
   {
     private HttpContext _context;
     private WebSocket _webSocket;
-    private IMapService _mapService;
+    IStateService _stateService;
     private IGeoService _geoService;
     private ILevelService _levelService;
     private System.Timers.Timer _timer;
@@ -39,12 +43,12 @@ namespace LeafletAlarms.Controllers
     public StateWebSocket(
       HttpContext context,
       WebSocket webSocket,
-      IMapService mapsService,
       IGeoService geoService,
-      ILevelService levelService
+      ILevelService levelService,
+      IStateService stateService
     )
     {
-      _mapService = mapsService;
+      _stateService = stateService;
       _geoService = geoService;
       _context = context;
       _webSocket = webSocket;
@@ -65,42 +69,7 @@ namespace LeafletAlarms.Controllers
     {
       // let timer start ticking
       _timer.Enabled = true;
-
-      List<MarkerVisualState> stateList = new List<MarkerVisualState>();
-
-      StateBaseDTO packet = new StateBaseDTO()
-      {
-        action = "set_visual_states",
-        data = stateList
-      };      
-
-      lock (_locker)
-      {
-        if (_dicIds.Count == 0)
-        {
-          return;
-        }
-
-        int i = 1;
-        Random rnd = new Random();
-
-        foreach (var id in _dicIds)
-        {
-          i++;
-          
-
-          MarkerVisualState state = new MarkerVisualState()
-          {
-            id = id,
-            color = System.Drawing.ColorTranslator.ToHtml(
-              System.Drawing.Color.FromArgb(255, rnd.Next(1, 254), rnd.Next(1, 254), rnd.Next(1, 254)))
-          };
-
-          stateList.Add(state);
-        }
-      }
-
-      await SendPacket(packet);            
+      await Task.Delay(0);
     }
 
     public async Task ProcessAcceptedSocket()
@@ -257,6 +226,40 @@ namespace LeafletAlarms.Controllers
           action = "set_ids2update",
           data = toUpdate
         };
+
+        await SendPacket(packet);
+      }
+    }
+
+    public async Task OnStateChanged(List<ObjectStateDTO> states)
+    {
+      List<ObjectStateDTO> toUpdate = new List<ObjectStateDTO>();
+
+      lock (_locker)
+      {
+        foreach (var state in states)
+        {
+          if (_dicIds.Contains(state.id))
+          {
+            toUpdate.Add(state);
+          }
+        }
+      }
+
+
+      if (toUpdate.Count > 0)
+      {
+        MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
+
+        StateBaseDTO packet = new StateBaseDTO()
+        {
+          action = "set_visual_states",
+          data = vStateDTO
+        };
+
+        vStateDTO.states = toUpdate;
+        vStateDTO.states_descr = 
+          await _stateService.GetStateDescrAsync(null, null);
 
         await SendPacket(packet);
       }

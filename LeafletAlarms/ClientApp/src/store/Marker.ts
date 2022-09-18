@@ -138,9 +138,23 @@ export interface ViewOption {
   map_center: LatLngPair;
 }
 
-export interface MarkerVisualState {
+export interface ObjectStateDTO {
   id: string;
-  color: string;
+  states: string[];
+}
+
+export interface ObjectStateDescriptionDTO {
+  id: string;
+  alarm: boolean;
+  state: string;
+  state_descr: string;
+  state_color: string;
+  external_type: string
+}
+
+export interface MarkerVisualStateDTO {
+  states: ObjectStateDTO[];
+  states_descr: ObjectStateDescriptionDTO[];
 }
 
 export interface IGeometryDTO {

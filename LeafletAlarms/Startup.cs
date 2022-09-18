@@ -39,7 +39,9 @@ namespace LeafletAlarms
         routingSettings.RoutingFilePath = routingSettings.RoutingFilePathWin;
       }
       
-      services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));      
+      services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
+
+      services.AddHostedService<InitHostedService>();
 
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();
@@ -50,6 +52,10 @@ namespace LeafletAlarms
       services.AddSingleton<ILevelService, LevelService>();
       services.AddSingleton<IStateService, StateService>();
       services.AddSingleton<ITrackConsumer, StateWebSocketHandler>();
+
+      services.AddSingleton<StateWebSocketHandler>(); // We must explicitly register Foo
+      services.AddSingleton<ITrackConsumer>(x => x.GetRequiredService<StateWebSocketHandler>()); // Forward requests to Foo
+      services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<StateWebSocketHandler>()); // Forward requests to Foo
 
       services.AddControllersWithViews();
 

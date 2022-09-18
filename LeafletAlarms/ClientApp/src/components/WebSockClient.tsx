@@ -36,7 +36,7 @@ export function WebSockClient() {
       var received = JSON.parse(event.data);
 
       if (received.action == "set_visual_states") {
-        dispatch(MarkersVisualStore.actionCreators.setMarkersVisualStates(received.data));
+        dispatch(MarkersVisualStore.actionCreators.updateMarkersVisualStates(received.data));
       }
 
       if (received.action == "set_ids2update") {

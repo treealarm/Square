@@ -13,6 +13,7 @@ namespace Domain.States
     public bool alarm { get; set; }
     public string state { get; set; }
     public string state_descr { get; set; }
-    public Color state_color { get; set; }
+    public string state_color { get; set; }
+    public string external_type { get; set; }
   }
 }

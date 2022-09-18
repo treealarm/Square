@@ -2,6 +2,7 @@
 using Domain;
 using Domain.ServiceInterfaces;
 using Domain.States;
+using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -14,18 +15,24 @@ namespace LeafletAlarms.Controllers
   public class StatesController : ControllerBase
   {
     private readonly IStateService _stateService;
-    public StatesController(IStateService stateService)
+    private readonly IStateConsumer _stateConsumerService;
+    public StatesController(
+      IStateService stateService,
+      IStateConsumer stateConsumerService
+    )
     {
       _stateService = stateService;
+      _stateConsumerService = stateConsumerService;
     }
 
     [HttpPost()]
     [Route("GetStateDescr")]
     public async Task<List<ObjectStateDescriptionDTO>> GetStateDescr(
+      string external_type,
       List<string> states
     )
     {
-      var data = await _stateService.GetStateDescrAsync(states);
+      var data = await _stateService.GetStateDescrAsync(external_type, states);
       return data;
     }
 
@@ -41,6 +48,7 @@ namespace LeafletAlarms.Controllers
     [Route("InsertStates")]
     public async Task<ActionResult<int>> InsertStates(List<ObjectStateDTO> newObjs)
     {
+      await _stateConsumerService.OnStateChanged(newObjs);
       await _stateService.InsertStatesAsync(newObjs);
       return CreatedAtAction(nameof(InsertStates), StatusCodes.Status200OK);
     }

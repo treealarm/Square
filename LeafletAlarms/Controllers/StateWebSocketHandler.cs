@@ -1,4 +1,5 @@
 ﻿using Domain.ServiceInterfaces;
+using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Concurrent;
@@ -8,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
 {
-  public class StateWebSocketHandler: ITrackConsumer
+  public class StateWebSocketHandler: ITrackConsumer, IStateConsumer
   {
-    private IMapService _mapService;
+    private IStateService _stateService;
     private IGeoService _geoService;
     private ILevelService _levelService;
     public StateWebSocketHandler(
-      IMapService mapsService,
+      IStateService stateService,
       IGeoService geoService,
       ILevelService levelService
     )
     {
-      _mapService = mapsService;
+      _stateService = stateService;
       _geoService = geoService;
       _levelService = levelService;
     }
@@ -30,9 +31,9 @@ namespace LeafletAlarms.Controllers
       StateWebSocket stateWs = new StateWebSocket(
         context,
         webSocket,
-        _mapService,
         _geoService,
-        _levelService
+        _levelService,
+        _stateService
       );
       StateSockets.TryAdd(context.Connection.Id, stateWs);
       await stateWs.ProcessAcceptedSocket();
@@ -44,6 +45,14 @@ namespace LeafletAlarms.Controllers
       foreach (var sock in StateSockets)
       {
         await sock.Value.OnUpdateTrackPosition(movedMarkers);
+      }
+    }
+
+    public async Task OnStateChanged(List<ObjectStateDTO> state)
+    {
+      foreach (var sock in StateSockets)
+      {
+        await sock.Value.OnStateChanged(state);
       }
     }
   }
