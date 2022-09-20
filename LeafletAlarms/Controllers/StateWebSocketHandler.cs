@@ -14,15 +14,18 @@ namespace LeafletAlarms.Controllers
     private IStateService _stateService;
     private IGeoService _geoService;
     private ILevelService _levelService;
+    IMapService _mapService;
     public StateWebSocketHandler(
       IStateService stateService,
       IGeoService geoService,
-      ILevelService levelService
+      ILevelService levelService,
+      IMapService mapService
     )
     {
       _stateService = stateService;
       _geoService = geoService;
       _levelService = levelService;
+      _mapService = mapService;
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
@@ -33,7 +36,8 @@ namespace LeafletAlarms.Controllers
         webSocket,
         _geoService,
         _levelService,
-        _stateService
+        _stateService,
+        _mapService
       );
       StateSockets.TryAdd(context.Connection.Id, stateWs);
       await stateWs.ProcessAcceptedSocket();

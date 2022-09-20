@@ -25,6 +25,7 @@ namespace LeafletAlarms.Controllers
     IStateService _stateService;
     private IGeoService _geoService;
     private ILevelService _levelService;
+    private IMapService _mapService;
     private System.Timers.Timer _timer;
     private HashSet<string> _dicIds = new HashSet<string>();
     private object _locker = new object();
@@ -45,7 +46,8 @@ namespace LeafletAlarms.Controllers
       WebSocket webSocket,
       IGeoService geoService,
       ILevelService levelService,
-      IStateService stateService
+      IStateService stateService,
+      IMapService mapService
     )
     {
       _stateService = stateService;
@@ -53,6 +55,7 @@ namespace LeafletAlarms.Controllers
       _context = context;
       _webSocket = webSocket;
       _levelService = levelService;
+      _mapService = mapService;
       InitTimer();
     }
 
@@ -244,12 +247,47 @@ namespace LeafletAlarms.Controllers
             toUpdate.Add(state);
           }
         }
-      }
-
+      }      
 
       if (toUpdate.Count > 0)
       {
+        List<string> objIds = toUpdate.Select(el => el.id).ToList();
+        var objsToUpdate = await _mapService.GetAsync(objIds);
+        Dictionary<string, List<string>> mapExTypeToStates = new Dictionary<string, List<string>>();
+        
+        foreach (var objState in toUpdate)
+        {
+          var objToUpdate = objsToUpdate.Where(o => o.id == objState.id).FirstOrDefault();
+
+          if (objToUpdate == null)
+          {
+            continue;
+          }
+
+          List<string> listOfStates;
+
+          if (objToUpdate.external_type == null)
+          {
+            objToUpdate.external_type = String.Empty;
+          }
+
+          if (!mapExTypeToStates.TryGetValue(objToUpdate.external_type, out listOfStates))
+          {
+            listOfStates = new List<string>();
+            mapExTypeToStates.Add(objToUpdate.external_type, listOfStates);
+          }
+
+          listOfStates.AddRange(objState.states);
+        }
+
         MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
+        vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
+
+        foreach (var pair in mapExTypeToStates)
+        {
+          vStateDTO.states_descr.AddRange(
+            await _stateService.GetStateDescrAsync(pair.Key, pair.Value));
+        }
 
         StateBaseDTO packet = new StateBaseDTO()
         {
@@ -258,8 +296,6 @@ namespace LeafletAlarms.Controllers
         };
 
         vStateDTO.states = toUpdate;
-        vStateDTO.states_descr = 
-          await _stateService.GetStateDescrAsync(null, null);
 
         await SendPacket(packet);
       }

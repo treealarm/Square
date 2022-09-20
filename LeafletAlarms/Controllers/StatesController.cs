@@ -45,21 +45,21 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
-    [Route("InsertStates")]
-    public async Task<ActionResult<int>> InsertStates(List<ObjectStateDTO> newObjs)
+    [Route("UpdateStates")]
+    public async Task<ActionResult<int>> UpdateStates(List<ObjectStateDTO> newObjs)
     {
       await _stateConsumerService.OnStateChanged(newObjs);
-      await _stateService.InsertStatesAsync(newObjs);
-      return CreatedAtAction(nameof(InsertStates), StatusCodes.Status200OK);
+      await _stateService.UpdateStatesAsync(newObjs);
+      return CreatedAtAction(nameof(UpdateStates), StatusCodes.Status200OK);
     }
 
     [HttpPost]
-    [Route("InsertStateDescrs")]
-    public async Task<ActionResult<int>> InsertStateDescrs(List<ObjectStateDescriptionDTO> newObjs)
+    [Route("UpdateStateDescrs")]
+    public async Task<ActionResult<int>> UpdateStateDescrs(List<ObjectStateDescriptionDTO> newObjs)
     {
-      await _stateService.InsertStateDescrsAsync(newObjs);
+      await _stateService.UpdateStateDescrsAsync(newObjs);
 
-      return CreatedAtAction(nameof(InsertStateDescrs), StatusCodes.Status200OK);
+      return CreatedAtAction(nameof(UpdateStateDescrs), StatusCodes.Status200OK);
     }
   }
 }

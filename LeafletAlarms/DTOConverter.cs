@@ -33,7 +33,8 @@ namespace LeafletAlarms
       {
         id = marker.id,
         name = marker.name,
-        parent_id = marker.parent_id
+        parent_id = marker.parent_id,
+        external_type = marker.external_type
       };
     }
 

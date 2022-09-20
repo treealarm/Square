@@ -70,12 +70,12 @@ namespace DbLayer.Services
         };
         newObjs.Add(pObj);
 
-        await InsertStateDescrsAsync(newObjs);
+        await UpdateStateDescrsAsync(newObjs);
       }
       await Task.Delay(0);
     }
 
-    public async Task InsertStatesAsync(List<ObjectStateDTO> newObjs)
+    public async Task UpdateStatesAsync(List<ObjectStateDTO> newObjs)
     {
       var objsToUpdate = ConvertListStateDTO2DB(newObjs);
       ReplaceOptions opt = new ReplaceOptions();
@@ -86,7 +86,7 @@ namespace DbLayer.Services
         await _collState.ReplaceOneAsync(x => x.id == updatedObj.id, updatedObj, opt);
       }
     }
-    public async Task InsertStateDescrsAsync(List<ObjectStateDescriptionDTO> newObjs)
+    public async Task UpdateStateDescrsAsync(List<ObjectStateDescriptionDTO> newObjs)
     {
       var objsToUpdate = ConvertListStateDescrDTO2DB(newObjs);
 
@@ -221,17 +221,44 @@ namespace DbLayer.Services
 
       try
       {
-        if (states ==null || states.Count == 0)
+        var f1 = Builders<DBObjectStateDescription>.Filter.Exists(external_type, false)
+              | Builders<DBObjectStateDescription>.Filter.Eq(el => el.external_type, null)
+              | Builders<DBObjectStateDescription>.Filter.Eq(el => el.external_type, String.Empty);
+
+        if (states == null || states.Count == 0)
         {
-          obj = await _collStateDescr
+          if (string.IsNullOrEmpty(external_type))
+          {
+            obj = await _collStateDescr
+            .Find(f1)
+            .ToListAsync();
+          }
+          else
+          {
+            obj = await _collStateDescr
             .Find(t => t.external_type == external_type)
             .ToListAsync();
+          }          
         }
         else
         {
-          obj = await _collStateDescr
-            .Find(s =>s.external_type == external_type && states.Contains(s.state))
+          if (string.IsNullOrEmpty(external_type))
+          {
+            var builder = Builders<DBObjectStateDescription>.Filter;
+            var filter = builder.Where(el => states.Contains(el.state));            
+
+            filter = filter & f1;
+
+            obj = await _collStateDescr
+            .Find(filter)
             .ToListAsync();
+          }
+          else
+          {
+            obj = await _collStateDescr
+            .Find(s => s.external_type == external_type && states.Contains(s.state))
+            .ToListAsync();
+          }          
         }        
       }
       catch (Exception)

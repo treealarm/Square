@@ -15,6 +15,7 @@ namespace DbLayer
     public string parent_id { get; set; }
 
     [BsonElement("name")]
-    public string name { get; set; } = null;
+    public string name { get; set; }
+    public string external_type { get; set; }
   }
 }
