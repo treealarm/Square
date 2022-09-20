@@ -1,5 +1,5 @@
 ﻿import { Action, Reducer } from "redux";
-import { ApiRootString, AppThunkAction } from "./";
+import { ApiRootString, ApiStatesRootString, AppThunkAction } from "./";
 import { MarkerVisualStateDTO } from "./Marker";
 
 
@@ -17,9 +17,15 @@ interface UpdateMarkersVisualStates {
   visualStates: MarkerVisualStateDTO;
 }
 
+interface GetMarkersVisualStates {
+  type: "GET_MARKERS_VISUAL_STATES";
+  visualStates: MarkerVisualStateDTO;
+}
+
 type KnownAction =
   | SetMarkersVisualStates
   | UpdateMarkersVisualStates
+  | GetMarkersVisualStates
   ;
 
 export const actionCreators = {
@@ -35,7 +41,36 @@ export const actionCreators = {
       getState
     ) => {
     dispatch({ type: "UPDATE_MARKERS_VISUAL_STATES", visualStates: visualStates });
-  }
+  },
+  requestMarkersVisualStates: (ids: string[]): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+ {
+
+      let body = JSON.stringify(ids);
+      var request = ApiStatesRootString + "/GetVisualStates";
+
+      var fetched = fetch(request, {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+      fetched
+        .then(response => {
+          if (!response.ok) throw response.statusText;
+          var json = response.json();
+          return json as Promise<MarkerVisualStateDTO>;
+        })
+        .then(data => {
+          dispatch({ type: "SET_MARKERS_VISUAL_STATES", visualStates: data});
+        })
+        .catch((error) => {
+
+        });
+    }
+  },
 }
 
 const unloadedState: MarkersVisualStates = {

@@ -3,6 +3,7 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
+import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import { ApplicationState } from '../store';
 import { BoundBox } from '../store/Marker';
 
@@ -134,6 +135,18 @@ export function LocationMarkers() {
   const isChanging = useSelector((state) => state?.markersStates?.isChanging);
   const visualStates = useSelector((state) => state?.markersVisualStates?.visualStates);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
+
+  useEffect(
+    () => {
+      if (markers == null) {
+        return;
+      }
+      var objArray2: string[] = [];
+      markers.circles?.forEach(arr => objArray2.push(arr.id));
+      markers.polygons?.forEach(arr => objArray2.push(arr.id));
+      markers.polylines?.forEach(arr => objArray2.push(arr.id));
+      dispatch(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
+    }, [markers]);
 
    const mapEvents = useMapEvents({
       click(e) {

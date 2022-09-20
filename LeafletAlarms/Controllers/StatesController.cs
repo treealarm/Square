@@ -5,7 +5,9 @@ using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
@@ -16,13 +18,16 @@ namespace LeafletAlarms.Controllers
   {
     private readonly IStateService _stateService;
     private readonly IStateConsumer _stateConsumerService;
+    private readonly IMapService _mapService;
     public StatesController(
       IStateService stateService,
-      IStateConsumer stateConsumerService
+      IStateConsumer stateConsumerService,
+      IMapService mapService
     )
     {
       _stateService = stateService;
       _stateConsumerService = stateConsumerService;
+      _mapService = mapService;
     }
 
     [HttpPost()]
@@ -61,5 +66,55 @@ namespace LeafletAlarms.Controllers
 
       return CreatedAtAction(nameof(UpdateStateDescrs), StatusCodes.Status200OK);
     }
+
+    [HttpPost]
+    [Route("GetVisualStates")]
+
+    public async Task<ActionResult<MarkersVisualStatesDTO>> GetVisualStates(List<string> objIds)
+    {
+      var objsToUpdate = await _mapService.GetAsync(objIds);
+      var objStates = await _stateService.GetStatesAsync(objIds);
+      Dictionary<string, List<string>> mapExTypeToStates = new Dictionary<string, List<string>>();
+
+      foreach (var objState in objStates)
+      {
+        var objToUpdate = objsToUpdate.Where(o => o.id == objState.id).FirstOrDefault();
+
+        if (objToUpdate == null)
+        {
+          continue;
+        }
+
+        List<string> listOfStates;
+
+        if (objToUpdate.external_type == null)
+        {
+          objToUpdate.external_type = String.Empty;
+        }
+
+        if (!mapExTypeToStates.TryGetValue(objToUpdate.external_type, out listOfStates))
+        {
+          listOfStates = new List<string>();
+          mapExTypeToStates.Add(objToUpdate.external_type, listOfStates);
+        }
+
+        listOfStates.AddRange(objState.states);
+      }
+
+      MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
+      vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
+
+      foreach (var pair in mapExTypeToStates)
+      {
+        vStateDTO.states_descr.AddRange(
+          await _stateService.GetStateDescrAsync(pair.Key, pair.Value));
+      }
+
+      vStateDTO.states = objStates;
+
+      return CreatedAtAction(nameof(GetVisualStates), vStateDTO);
+    }
+
+    
   }
 }

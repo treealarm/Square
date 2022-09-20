@@ -38,3 +38,4 @@ export interface AppThunkAction<TAction> {
 export const ApiRootString = 'api/map';
 export const ApiTracksRootString = 'api/tracks';
 export const ApiRouterRootString = 'api/router';
+export const ApiStatesRootString = 'api/states';
