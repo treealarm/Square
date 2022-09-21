@@ -59,5 +59,13 @@ namespace LeafletAlarms.Controllers
         await sock.Value.OnStateChanged(state);
       }
     }
+
+    public async Task OnBlinkStateChanged(List<AlarmObject> state)
+    {
+      foreach (var sock in StateSockets)
+      {
+        await sock.Value.OnBlinkStateChanged(state);
+      }
+    }
   }
 }

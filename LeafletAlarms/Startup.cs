@@ -3,6 +3,7 @@ using Domain;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using LeafletAlarms.Controllers;
+using LeafletAlarms.Services;
 using LeafletAlarmsRouter;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,7 +57,8 @@ namespace LeafletAlarms
       services.AddSingleton<StateWebSocketHandler>(); // We must explicitly register Foo
       services.AddSingleton<ITrackConsumer>(x => x.GetRequiredService<StateWebSocketHandler>()); // Forward requests to Foo
       services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<StateWebSocketHandler>()); // Forward requests to Foo
-
+      
+      services.AddSingleton<IHierarhyStateService, HierarhyStateService>();
       services.AddControllersWithViews();
 
       // In production, the React files will be served from this directory

@@ -301,6 +301,11 @@ namespace LeafletAlarms.Controllers
       }
     }
 
+    public async Task OnBlinkStateChanged(List<AlarmObject> state)
+    {
+      await Task.Delay(0);
+    }
+
     private async Task SendPacket(StateBaseDTO packet)
     {
       var buffer = JsonSerializer.SerializeToUtf8Bytes(packet);
