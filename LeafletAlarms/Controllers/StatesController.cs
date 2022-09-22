@@ -19,15 +19,18 @@ namespace LeafletAlarms.Controllers
     private readonly IStateService _stateService;
     private readonly IStateConsumer _stateConsumerService;
     private readonly IMapService _mapService;
+    private readonly IHierarhyStateService _hierarhyStateService;
     public StatesController(
       IStateService stateService,
       IStateConsumer stateConsumerService,
-      IMapService mapService
+      IMapService mapService,
+      IHierarhyStateService hierarhyStateService
     )
     {
       _stateService = stateService;
       _stateConsumerService = stateConsumerService;
       _mapService = mapService;
+      _hierarhyStateService = hierarhyStateService;
     }
 
     [HttpPost()]
@@ -55,6 +58,8 @@ namespace LeafletAlarms.Controllers
     {
       await _stateConsumerService.OnStateChanged(newObjs);
       await _stateService.UpdateStatesAsync(newObjs);
+      await _hierarhyStateService.OnStatesChanged(newObjs);
+
       return CreatedAtAction(nameof(UpdateStates), StatusCodes.Status200OK);
     }
 

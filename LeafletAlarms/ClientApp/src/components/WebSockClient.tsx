@@ -42,6 +42,10 @@ export function WebSockClient() {
       if (received.action == "set_ids2update") {
         dispatch(MarkersStore.actionCreators.requestMarkersByIds(received.data));
       }
+
+      if (received.action == "set_alarm_states") {
+        dispatch(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
+      }
       
     } catch (err) {
       console.log(err);

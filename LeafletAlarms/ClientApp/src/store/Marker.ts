@@ -2,7 +2,7 @@
 export type LatLngPair = [number, number];
 
 export interface Marker {
-  id?: string | null;
+  id: string;
   parent_id?: string | null;
   name: string;
   type: string;
@@ -92,7 +92,7 @@ export interface IFigures {
 }
 
 export interface TreeMarker {
-  id?: string | null;
+  id: string;
   parent_id?: string | null;
   name: string;
   has_children?: boolean;
@@ -152,9 +152,15 @@ export interface ObjectStateDescriptionDTO {
   external_type: string
 }
 
+export interface AlarmObject {
+  id: string;
+  alarm: boolean;
+  children_alarms: number;
+}
+
 export interface MarkerVisualStateDTO {
   states: ObjectStateDTO[];
-  states_descr: ObjectStateDescriptionDTO[];
+  states_descr: ObjectStateDescriptionDTO[];  
 }
 
 export interface IGeometryDTO {

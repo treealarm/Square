@@ -134,6 +134,7 @@ export function LocationMarkers() {
   const markers = useSelector((state) => state?.markersStates?.markers);
   const isChanging = useSelector((state) => state?.markersStates?.isChanging);
   const visualStates = useSelector((state) => state?.markersVisualStates?.visualStates);
+  const alarmedObjects = useSelector((state) => state?.markersVisualStates?.alarmed_objects);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
 
   useEffect(
@@ -186,34 +187,62 @@ export function LocationMarkers() {
       dispatch(GuiStore.actionCreators.requestTreeUpdate());
     }, [isChanging]);
 
-  const colorOptionsUnselected = { color: "green" };
-  const colorOptionsSelected = { color: "yellow" };
-  const colorOptionsChecked = { color: "blue" };
+  const colorOptionsUnselected = { fillColor: "green" };
+  const colorOptionsSelected = { fillColor: "yellow" };
+  const colorOptionsChecked = { fillColor: "blue" };
   
 
   const getColor = useCallback(
     (id: string) => {
 
+      var retColor: L.PathOptions    = {    };
+      retColor.fillColor = colorOptionsUnselected.fillColor;
+      retColor.dashArray = '';
+      retColor.color = 'green';
+      
       if (checked_ids.indexOf(id) !== -1) {
-        return colorOptionsChecked;
+        //retColor.fillColor = colorOptionsChecked.fillColor;
+        retColor.dashArray = '5,10';
       }
 
       if (selected_id == id) {
-        return colorOptionsSelected;
+        //retColor.fillColor = colorOptionsSelected.fillColor;
+        retColor.dashArray = '5,10';
       }
 
-      var vState = visualStates.states.find(i => i.id == id);
+      {
+        var vState = visualStates.states.find(i => i.id == id);
 
-      if (vState != null && vState.states.length > 0) {
-        var vStateFirst = vState.states[0];
-        var vStateDescr = visualStates.states_descr.find(s => s.state == vStateFirst);
-        if (vStateDescr != null)
-          return { color: vStateDescr.state_color };
+        if (vState != null && vState.states.length > 0) {
+          var vStateFirst = vState.states[0];
+          var vStateDescr = visualStates.states_descr.find(s => s.state == vStateFirst);
+          if (vStateDescr != null) {
+            retColor.fillColor = vStateDescr.state_color
+            retColor.color = vStateDescr.state_color
+          }
+        }
       }
 
-      return colorOptionsUnselected;
+      var vAlarmState = alarmedObjects.find(i => i.id == id);
 
-    }, [visualStates, selected_id, checked_ids])
+      if (vAlarmState != null
+        && (vAlarmState.alarm || vAlarmState.children_alarms > 0)) {
+        //const colorOptions = {
+        //  fillColor: 'yellow',
+        //  fillOpacity: 0.5,
+        //  color: 'yellow',
+        //  opacity: 1,
+        //  dashArray: '5,10'
+        //}
+        retColor.color = 'red';
+      }
+      else {
+
+      }
+
+      return retColor;
+
+    }, [visualStates, alarmedObjects, selected_id, checked_ids])
 
   var hidden_id: string = null;
 

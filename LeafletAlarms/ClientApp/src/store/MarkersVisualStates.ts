@@ -1,10 +1,11 @@
 ﻿import { Action, Reducer } from "redux";
-import { ApiRootString, ApiStatesRootString, AppThunkAction } from "./";
-import { MarkerVisualStateDTO } from "./Marker";
+import { ApiStatesRootString, AppThunkAction } from "./";
+import { AlarmObject, MarkerVisualStateDTO } from "./Marker";
 
 
 export interface MarkersVisualStates {
   visualStates: MarkerVisualStateDTO;
+  alarmed_objects: AlarmObject[];
 }
 
 interface SetMarkersVisualStates {
@@ -22,10 +23,16 @@ interface GetMarkersVisualStates {
   visualStates: MarkerVisualStateDTO;
 }
 
+interface UpdateMarkersAlarmStates {
+  type: "UPDATE_MARKERS_ALARM_STATES";
+  alarmed_objects: AlarmObject[];
+}
+
 type KnownAction =
   | SetMarkersVisualStates
   | UpdateMarkersVisualStates
   | GetMarkersVisualStates
+  | UpdateMarkersAlarmStates
   ;
 
 export const actionCreators = {
@@ -47,7 +54,6 @@ export const actionCreators = {
     getState
   ) => {
  {
-
       let body = JSON.stringify(ids);
       var request = ApiStatesRootString + "/GetVisualStates";
 
@@ -70,14 +76,22 @@ export const actionCreators = {
 
         });
     }
-  },
+  }
+    ,
+  updateMarkersAlarmStates: (alarmed_objects: AlarmObject[]): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "UPDATE_MARKERS_ALARM_STATES", alarmed_objects: alarmed_objects });
+  }
 }
 
 const unloadedState: MarkersVisualStates = {
   visualStates: {
     states: [],
     states_descr: []
-  } 
+  },
+  alarmed_objects:[]
 };
 
 export const reducer: Reducer<MarkersVisualStates> = (
@@ -95,6 +109,7 @@ export const reducer: Reducer<MarkersVisualStates> = (
     case "UPDATE_MARKERS_VISUAL_STATES":
       var newStates = state.visualStates.states
         .filter(item => null == action.visualStates.states.find(i => i.id == item.id));
+
       newStates = [...newStates, ...action.visualStates.states];
 
       var newDescrs = state.visualStates.states_descr
@@ -114,6 +129,17 @@ export const reducer: Reducer<MarkersVisualStates> = (
       return {
         ...state,
         visualStates: action.visualStates
+      };
+
+    case "UPDATE_MARKERS_ALARM_STATES":
+      var newAlarms = state.alarmed_objects
+        .filter(item => null == action.alarmed_objects.find(i => i.id == item.id));
+
+      newAlarms = [...newAlarms, ...action.alarmed_objects];
+
+      return {
+        ...state,
+        alarmed_objects: newAlarms
       };
     }
 

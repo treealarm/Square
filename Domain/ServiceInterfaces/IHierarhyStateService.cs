@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.States;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,6 @@ namespace Domain.ServiceInterfaces
   public interface IHierarhyStateService
   {
     Task Init();
-    Task SetAlarm(string id, bool alarm);
+    Task OnStatesChanged(List<ObjectStateDTO> newObjs);
   }
 }
