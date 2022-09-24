@@ -13,6 +13,7 @@ namespace Domain.ServiceInterfaces
     public Task UpdateStatesAsync(List<ObjectStateDTO> newObjs);
     public Task UpdateStateDescrsAsync(List<ObjectStateDescriptionDTO> newObjs);
     public Task<List<ObjectStateDTO>> GetStatesAsync(List<string> ids);
+    public Task<List<ObjectStateDTO>> GetStatesByTimeAsync(DateTime from_timestamp, int take);
     public Task<List<ObjectStateDescriptionDTO>> GetStateDescrAsync(
       string external_type,
       List<string> states

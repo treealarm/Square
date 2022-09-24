@@ -10,6 +10,6 @@ namespace Domain.States
   {
     public string id { get; set; }
     public List<string> states { get; set; }
-    public DateTime timestamp { get; set; } = DateTime.UtcNow;
+    public DateTime timestamp { get; set; }
   }
 }

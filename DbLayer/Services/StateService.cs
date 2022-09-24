@@ -196,6 +196,28 @@ namespace DbLayer.Services
       return newObjs;
     }
 
+    public async Task<List<ObjectStateDTO>> GetStatesByTimeAsync(
+      DateTime from_timestamp,
+      int nLimit
+    )
+    {
+      List<DBObjectState> obj = null;
+
+      try
+      {
+        obj = await _collState
+          .Find(s => s.timestamp > from_timestamp)
+          .Limit(nLimit)
+          .ToListAsync();
+      }
+      catch (Exception)
+      {
+
+      }
+
+      return ConvertListStateDB2DTO(obj);
+    }
+
     public async Task<List<ObjectStateDTO>> GetStatesAsync(List<string> ids)
     {
       List<DBObjectState> obj = null;
