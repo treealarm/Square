@@ -3,29 +3,39 @@ using Domain;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
+using Microsoft.Extensions.Hosting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services
 {
-  public class HierarhyStateService : IHierarhyStateService
+  public class HierarhyStateService : IHostedService, IDisposable
   {
+    private Task _timer;
+    private CancellationToken _cancellationToken = new CancellationToken();
+
     private IStateConsumer _stateConsumer;
     private IMapService _mapService;
     private IStateService _stateService;
+    private readonly IIdsQueue _stateIdsQueueService;
 
     private Dictionary<string, AlarmObject> m_Hierarhy = new Dictionary<string, AlarmObject>();
-    private object _locker = new object();
+
     public HierarhyStateService(
       IStateConsumer scService,
       IMapService mapService,
-      IStateService stateService
+      IStateService stateService,
+      IIdsQueue stateIdsQueueService
     )
     {
       _stateConsumer = scService;
       _mapService = mapService;
       _stateService = stateService;
+      _stateIdsQueueService = stateIdsQueueService;
     }
 
     public async Task Init()
@@ -33,100 +43,93 @@ namespace LeafletAlarms.Services
       await Task.Delay(0);
     }
 
-    private async Task BuildBranch(string id)
+    private async Task<AlarmObject> GetAlarmObject(string id)
     {
-      var obj = await _mapService.GetAsync(id);
+      AlarmObject alarmObject = null;
 
-      while (obj != null)
+      if (m_Hierarhy.TryGetValue(id, out alarmObject))
       {
-        var alarmObject = new AlarmObject();
-        obj.CopyAllTo(alarmObject);
-
-        lock (_locker)
-        {
-          m_Hierarhy.Add(obj.id, alarmObject);
-
-          if (string.IsNullOrEmpty(obj.parent_id) ||
-            m_Hierarhy.ContainsKey(obj.parent_id))
-          {
-            break;
-          }
-        }
-
-        obj = await _mapService.GetAsync(obj.parent_id);
+        return alarmObject;
       }
+
+      var marker = await _mapService.GetAsync(id);
+
+      if (marker == null)
+      {
+        return null;
+      }
+
+      alarmObject = new AlarmObject();
+      marker.CopyAllTo(alarmObject);
+
+      m_Hierarhy.Add(alarmObject.id, alarmObject);        
+
+      // Add Id for new object, So if it is alarmed we support actual state.
+      _stateIdsQueueService.AddId(alarmObject.id);
+
+      return alarmObject;
     }
+
     private async Task<List<AlarmObject>> SetAlarm(string id, bool alarm)
     {
-      AlarmObject alarmObject;
+      AlarmObject alarmObject = await GetAlarmObject(id);
       List<AlarmObject> blinkChanges = new List<AlarmObject>();
-
-      lock (_locker)
-      {
-        m_Hierarhy.TryGetValue(id, out alarmObject);
-      }
 
       if (alarmObject == null)
       {
-        await BuildBranch(id);
+        return blinkChanges;
       }
 
-      lock (_locker)
+      if (alarmObject.alarm == alarm)
       {
-        if (!m_Hierarhy.TryGetValue(id, out alarmObject))
+        return blinkChanges;
+      }
+
+      alarmObject.alarm = alarm;
+
+      blinkChanges.Add(alarmObject);
+
+      while (alarmObject != null)
+      {
+        if (string.IsNullOrEmpty(alarmObject.parent_id))
         {
-          return blinkChanges;
+          break;
         }
 
-        if (alarmObject.alarm == alarm)
+        alarmObject = await GetAlarmObject(alarmObject.parent_id);
+
+        // Here is parent.
+        if (alarm)
         {
-          return blinkChanges;
+          if (alarmObject.children_alarms == 0)
+          {
+            blinkChanges.Add(alarmObject);
+          }
+
+          alarmObject.children_alarms++;
         }
-
-        alarmObject.alarm = alarm;
-
-        blinkChanges.Add(alarmObject);
-
-        while (alarmObject != null)
+        else
         {
-          if (
-            string.IsNullOrEmpty(alarmObject.parent_id) ||
-            !m_Hierarhy.TryGetValue(alarmObject.parent_id, out alarmObject))
-          {
-            break;
-          }
+          alarmObject.children_alarms--;
 
-          // Here is parent.
-          if (alarm)
+          if (alarmObject.children_alarms == 0)
           {
-            if (alarmObject.children_alarms == 0)
-            {
-              blinkChanges.Add(alarmObject);
-            }
-
-            alarmObject.children_alarms++;
-          }
-          else
-          {
-            alarmObject.children_alarms--;
-
-            if (alarmObject.children_alarms == 0)
-            {
-              blinkChanges.Add(alarmObject);
-            }
+            blinkChanges.Add(alarmObject);
           }
         }
-      }      
+      }
 
       return blinkChanges;
     }
 
-    public async Task OnStatesChanged(List<ObjectStateDTO> objStates)
+
+    private async Task ProcessIds(List<string> objIds)
     {
       List<AlarmObject> blinkChanges = new List<AlarmObject>();
 
-      List<string> objIds = objStates.Select(el => el.id).ToList();
+      var objStates = await _stateService.GetStatesAsync(objIds);
       var objsToUpdate = await _mapService.GetAsync(objIds);
+
       Dictionary<string, List<string>> mapExTypeToStates = new Dictionary<string, List<string>>();
 
       foreach (var objState in objStates)
@@ -155,6 +158,43 @@ namespace LeafletAlarms.Services
       if (blinkChanges.Count > 0)
       {
         await _stateConsumer.OnBlinkStateChanged(blinkChanges);
+      }
+    }
+
+    Task IHostedService.StartAsync(CancellationToken cancellationToken)
+    {
+      _timer = new Task(() => DoWork(), _cancellationToken);
+      _timer.Start();
+
+      return Task.CompletedTask;
+    }
+
+    Task IHostedService.StopAsync(CancellationToken cancellationToken)
+    {
+      _timer?.Wait();
+
+      return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+      _timer?.Dispose();
+    }
+
+    private async void DoWork()
+    {
+      while (!_cancellationToken.IsCancellationRequested)
+      {
+        List<string> objIds = _stateIdsQueueService.GetIds();
+
+        if (objIds.Count == 0)
+        {
+          await Task.Delay(1000);
+          continue;
+        }
+        
+        await ProcessIds(objIds);
+        continue;
       }
     }
   }

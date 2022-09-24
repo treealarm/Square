@@ -13,20 +13,17 @@ namespace LeafletAlarms.Services
   {
     private readonly ILogger<InitHostedService> _logger;
     private Task _timer;
-    CancellationToken _cancellationToken = new CancellationToken();
+    private CancellationToken _cancellationToken = new CancellationToken();
     private ILevelService _levelService;
     private IStateService _stateService;
-    private IHierarhyStateService _hierarhyStateService;
     public InitHostedService(
       ILogger<InitHostedService> logger,
       ILevelService lService,
-      IStateService sService,
-      IHierarhyStateService hierarhyStateService
+      IStateService sService
      )
     {
       _stateService = sService;
       _levelService = lService;
-      _hierarhyStateService = hierarhyStateService;
       _logger = logger;
     }
 
@@ -48,7 +45,6 @@ namespace LeafletAlarms.Services
 
       await _levelService.Init();
       await _stateService.Init();
-      await _hierarhyStateService.Init();
 
       while (!_cancellationToken.IsCancellationRequested)
       {

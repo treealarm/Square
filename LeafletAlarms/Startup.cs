@@ -52,7 +52,10 @@ namespace LeafletAlarms
       services.AddSingleton<ILevelService, LevelService>();
       services.AddSingleton<IStateService, StateService>();
       services.AddSingleton<ITrackConsumer, StateWebSocketHandler>();
-      services.AddSingleton<IHierarhyStateService, HierarhyStateService>();
+      
+
+      services.AddSingleton<IIdsQueue, StateQueueForUpdate>();
+      services.AddHostedService<HierarhyStateService>();
 
       services.AddSingleton<StateWebSocketHandler>(); // We must explicitly register Foo
       services.AddSingleton<ITrackConsumer>(x => x.GetRequiredService<StateWebSocketHandler>()); // Forward requests to Foo
