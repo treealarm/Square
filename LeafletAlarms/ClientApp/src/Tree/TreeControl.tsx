@@ -99,12 +99,12 @@ export function TreeControl() {
     (next: boolean, e) => {
       if (next) {
         dispatch(
-          TreeStore.actionCreators.getByParent(parent_marker_id, treeStates.start_id, null)
+          TreeStore.actionCreators.getByParent(parent_marker_id, treeStates.end_id, null)
         );
       }
       else {
         dispatch(
-          TreeStore.actionCreators.getByParent(parent_marker_id, null, treeStates.end_id)
+          TreeStore.actionCreators.getByParent(parent_marker_id, null, treeStates.start_id)
         );
       }
     }, [treeStates])

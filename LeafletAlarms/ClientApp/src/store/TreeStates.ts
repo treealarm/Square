@@ -70,7 +70,7 @@ export const actionCreators = {
     }
 
     if (end_id != null) {
-      request += "&start_id=" + end_id;
+      request += "&end_id=" + end_id;
     }
 
     var fetched = fetch(request);

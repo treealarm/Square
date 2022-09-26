@@ -77,8 +77,14 @@ namespace LeafletAlarms.Controllers
         parentIds.Add(marker.id);
       }
 
+      
       retVal.start_id = retVal.children.FirstOrDefault()?.id;
       retVal.end_id = retVal.children.LastOrDefault()?.id;
+
+      if (markers.Count < count)
+      {
+        //retVal.end_id = null;
+      }
 
       // Set flag has_children.
       var withChildren = await _mapService.GetTopChildren(parentIds);

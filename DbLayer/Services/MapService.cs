@@ -69,7 +69,7 @@ namespace DbLayer.Services
 
       if (start_id != null)
       {
-        var filter = Builders<DBMarker>.Filter.Gt("_id", new ObjectId(start_id))
+        var filter = Builders<DBMarker>.Filter.Gte("_id", new ObjectId(start_id))
           & Builders<DBMarker>.Filter.Eq("parent_id", parent_id);
 
         retVal = await _markerCollection
@@ -79,13 +79,17 @@ namespace DbLayer.Services
       }
       else if (end_id != null)
       {
-        var filter = Builders<DBMarker>.Filter.Lt("_id", new ObjectId(end_id))
+        var filter = Builders<DBMarker>.Filter.Lte("_id", new ObjectId(end_id))
           & Builders<DBMarker>.Filter.Eq("parent_id", parent_id);
 
         retVal = await _markerCollection
           .Find(filter)
+          .SortByDescending(x => x.id)
           .Limit(count)
-          .ToListAsync();
+          .ToListAsync()
+          ;
+
+        retVal.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
       }
       else
       {
