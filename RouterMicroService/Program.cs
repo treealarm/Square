@@ -2,13 +2,14 @@ using DbLayer.Services;
 using Domain;
 using Domain.ServiceInterfaces;
 using LeafletAlarmsRouter;
-using Microsoft.Extensions.Configuration;
 using RouterMicroService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var Configuration = builder.Configuration;
 builder.Services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
+
+
 builder.Services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
 
 // Add services to the container.
@@ -39,3 +40,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

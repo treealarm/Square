@@ -43,7 +43,12 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetByParent")]
-    public async Task<GetByParentDTO> GetByParent(string parent_id)
+    public async Task<GetByParentDTO> GetByParent(
+      string parent_id,
+      string start_id,
+      string end_id,
+      int count
+    )
     {
       GetByParentDTO retVal = new GetByParentDTO();
       retVal.parent_id = parent_id;
@@ -59,7 +64,7 @@ namespace LeafletAlarms.Controllers
       }
 
       // Get children.
-      var markers = await _mapService.GetByParentIdAsync(parent_id);
+      var markers = await _mapService.GetByParentIdAsync(parent_id, start_id, end_id, count);
 
       retVal.children = new List<MarkerDTO>();
 
@@ -71,6 +76,9 @@ namespace LeafletAlarms.Controllers
         retVal.children.Add(markerDto);
         parentIds.Add(marker.id);
       }
+
+      retVal.start_id = retVal.children.FirstOrDefault()?.id;
+      retVal.end_id = retVal.children.LastOrDefault()?.id;
 
       // Set flag has_children.
       var withChildren = await _mapService.GetTopChildren(parentIds);

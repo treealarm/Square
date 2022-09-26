@@ -14,17 +14,17 @@ import { useCallback } from 'react';
 export default function TabControl() {
 
   const treeState = useSelector((state) => state?.treeStates);
-  const parent_list = treeState.parent_list;
+  const parent_list = treeState.parents;
 
   let curMarker = parent_list.find((element) => {
-    return element?.id == treeState?.parent_marker_id;
+    return element?.id == treeState?.parent_id;
   });
 
   curMarker = curMarker == undefined ? null : curMarker;
   const dispatch = useDispatch();
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker|null) => {
-    dispatch(TreeStore.actionCreators.getByParent(newValue?.id));
+    dispatch(TreeStore.actionCreators.getByParent(newValue?.id, null, null));
   };
   
 

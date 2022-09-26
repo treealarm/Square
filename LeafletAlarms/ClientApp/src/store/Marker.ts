@@ -102,6 +102,8 @@ export interface GetByParentDTO {
   parent_id?: string | null;
   parents?: TreeMarker[];
   children?: TreeMarker[];
+  start_id?: string;
+  end_id?: string;
 }
 
 export interface BoundBox {

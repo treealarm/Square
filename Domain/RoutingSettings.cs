@@ -8,7 +8,25 @@ namespace Domain
 {
   public class RoutingSettings
   {
-    public string RoutingFilePath { get; set; }
+    private string _routingFilePath;
+    public string RoutingFilePath { 
+      get
+      {
+        if (!InDocker())
+        {
+          return RoutingFilePathWin;
+        }
+        return _routingFilePath;
+      }
+      set
+      {
+        _routingFilePath = value;
+      }
+    }
     public string RoutingFilePathWin { get; set; }
+    bool InDocker()
+    {
+      return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+    }
   }
 }

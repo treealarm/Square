@@ -63,11 +63,8 @@ namespace LeafletAlarmsRouter
         }
 
         // check if there are folder with OSM-XML or OSM-PBF file.
-        var subDirs = dataDirectory.EnumerateDirectories();
-        foreach (var subDir in subDirs)
-        {
-          var osmFiles = subDir.EnumerateFiles("*.osm").Concat(
-              subDir.EnumerateFiles("*.osm.pbf")).ToArray();
+          var osmFiles = dataDirectory.EnumerateFiles("*.osm.pbf").ToArray();
+
           if (osmFiles.Length > 0)
           {
             var thread = new Thread((state) =>
@@ -76,26 +73,11 @@ namespace LeafletAlarmsRouter
 
               if (Bootstrapper.LoadInstanceFromFolder(localDirectory))
               {
-                var monitor = new FilesMonitor<DirectoryInfo>((f) =>
-                {
-                  return Bootstrapper.LoadInstanceFromFolder(f);
-                }, localDirectory);
-                monitor.Start();
-                // add osm and osm-pbf files.
-                foreach (var osmFile in osmFiles)
-                {
-                  monitor.AddFile(osmFile.FullName);
-                }
-                foreach (var luaFile in subDir.EnumerateFiles("*.lua"))
-                {
-                  monitor.AddFile(luaFile.FullName);
-                }
-                _fileMonitors.Add(monitor);
+                
               }
             });
-            thread.Start(subDir);
+            thread.Start(dataDirectory);
           }
-        }
       }
       catch (Exception ex)
       {
@@ -162,54 +144,37 @@ namespace LeafletAlarmsRouter
         Logger.Log("Bootstrapper", TraceEventType.Information,
             "Loading instance {1} from: {0}", folder.FullName, folder.Name);
 
-        var profiles = new List<Itinero.Profiles.Vehicle>();
-        foreach (var luaFile in folder.EnumerateFiles("*.lua"))
-        {
-          try
-          {
-            using (var stream = luaFile.OpenRead())
-            {
-              profiles.Add(Itinero.Profiles.DynamicVehicle.LoadFromStream(stream));
-            }
+        var notConverted = folder.EnumerateFiles("*.osm.pbf");
+        var converted = folder.EnumerateFiles("*.routerdb");
 
-            Logger.Log("Bootstrapper", TraceEventType.Information,
-                "Loaded profile {0}.", luaFile.FullName);
-          }
-          catch (Exception ex)
-          {
-            Logger.Log("Bootstrapper", TraceEventType.Error,
-                "Failed loading profile {0}:{1}", luaFile.FullName, ex.ToInvariantString());
-          }
-        }
-
-        if (profiles.Count == 0)
+        foreach (var osmFile in notConverted)
         {
-          Logger.Log("Bootstrapper", TraceEventType.Information,
-              "Loading instance {1} from: {0}, no vehicle profiles found or they could not be loaded.", folder.FullName,
-              folder.Name);
-          return true;
-        }
+          var routerDb = new RouterDb();
+          var convertedFileName = osmFile.FullName.Replace("osm.pbf", "routerdb");
 
-        var osmFile = folder.EnumerateFiles("*.osm").Concat(
-                folder.EnumerateFiles("*.osm.pbf")).First();
-        var routerDb = new RouterDb();
-        using (var osmFileStream = osmFile.OpenRead())
-        {
-          OsmStreamSource source;
-          if (osmFile.FullName.EndsWith(".osm"))
+          if (converted.Where(f => f.FullName.ToLower() == convertedFileName.ToLower()).Any())
           {
-            source = new XmlOsmStreamSource(osmFileStream);
+            continue;
           }
-          else
+
+          using (var osmFileStream = osmFile.OpenRead())
           {
+            OsmStreamSource source;
+
             source = new PBFOsmStreamSource(osmFileStream);
+            routerDb.LoadOsmData(source, Vehicle.Car);
+
+            using (var stream = new FileInfo(convertedFileName).Open(FileMode.Create))
+            {
+              routerDb.AddContracted(routerDb.GetSupportedProfile("car"));
+              routerDb.Serialize(stream);
+            }            
           }
 
-          routerDb.LoadOsmData(source, profiles.ToArray());
+          var multimodalRouter = new Router(routerDb);
+          var instance = new Instance(multimodalRouter);
+          InstanceManager.Register(folder.Name, instance);
         }
-        var multimodalRouter = new Router(routerDb);
-        var instance = new Instance(multimodalRouter);
-        InstanceManager.Register(folder.Name, instance);
 
         Logger.Log("Bootstrapper", TraceEventType.Information,
             "Loaded instance {1} from: {0}", folder.FullName, folder.Name);

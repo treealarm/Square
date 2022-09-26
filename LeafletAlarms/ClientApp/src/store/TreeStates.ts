@@ -7,9 +7,11 @@ import { GetByParentDTO, TreeMarker } from "./Marker";
 
 export interface TreeState {
   isLoading: boolean;
-  parent_marker_id: string | null;
-  markers: TreeMarker[];
-  parent_list: TreeMarker[];
+  parent_id: string | null;
+  parents: TreeMarker[];
+  children: TreeMarker[];  
+  start_id?: string;
+  end_id?: string;
 }
 
 // -----------------
@@ -47,16 +49,28 @@ type KnownAction =
 
 export const actionCreators = {
 
-  getByParent: (parent_id: string | null): AppThunkAction<KnownAction> => (
+  getByParent: (
+    parent_id: string | null,
+    start_id: string | null,
+    end_id: string | null
+  ): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
 
     console.log("fetching by parent_id=", parent_id);
-    var request = ApiRootString + "/GetByParent?parent_id=";
+    var request = ApiRootString + "/GetByParent?count=100&parent_id=";
 
     if (parent_id != null) {
       request += parent_id;
+    }
+
+    if (start_id != null) {
+      request += "&start_id=" + start_id;
+    }
+
+    if (end_id != null) {
+      request += "&start_id=" + end_id;
     }
 
     var fetched = fetch(request);
@@ -87,10 +101,10 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: TreeState = {
-  markers: [],
+  children: [],
   isLoading: false,
-  parent_marker_id: null,
-  parent_list:[]
+  parent_id: null,
+  parents:[]
 };
 
 export const reducer: Reducer<TreeState> = (
@@ -107,30 +121,32 @@ export const reducer: Reducer<TreeState> = (
     case "REQUEST_TREE_STATE":
       return {
         ...state,
-        parent_marker_id: action.parent_marker_id,
-        markers: state.markers,
+        parent_id: action.parent_marker_id,
+        children: state.children,
         isLoading: true
       };
     case "RECEIVE_TREE_STATE":
-      if (action.data.parent_id == state.parent_marker_id) {
+      if (action.data.parent_id == state.parent_id) {
         return {
           ...state,
-          parent_marker_id: action.data.parent_id,
-          markers: action.data.children,
+          parent_id: action.data.parent_id,
+          children: action.data.children,
           isLoading: false,
-          parent_list: [null, ...action.data.parents]
+          parents: [null, ...action.data.parents],
+          start_id: action.data.start_id,
+          end_id: action.data.end_id
         };
       }
       break;
     case "SET_TREE_ITEM":
 
-      var found = state.markers.find(i => i.id == action.item.id);
+      var found = state.children.find(i => i.id == action.item.id);
 
       if (found == null) {
         return state;
       }
 
-      var newMarkers = state.markers.map((item : any): TreeMarker => {
+      var newMarkers = state.children.map((item : any): TreeMarker => {
         if (item.id == action.item.id) {
           item.name = action.item.name;
         }
@@ -140,7 +156,7 @@ export const reducer: Reducer<TreeState> = (
 
         return {
           ...state,
-          markers: newMarkers,
+          children: newMarkers,
         };
 
       break;

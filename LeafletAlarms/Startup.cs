@@ -31,14 +31,6 @@ namespace LeafletAlarms
     public void ConfigureServices(IServiceCollection services)
     {
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
-      var rt = Configuration.GetSection("RoutingSettings");
-      var routingSettings = rt.Get(typeof(RoutingSettings)) as RoutingSettings;
-
-      if (!InDocker)
-      {
-        routingSettings.RoutingFilePath = routingSettings.RoutingFilePathWin;
-      }
-      
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
 
       services.AddHostedService<InitHostedService>();

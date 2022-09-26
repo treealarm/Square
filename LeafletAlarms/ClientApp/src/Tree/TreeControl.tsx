@@ -16,7 +16,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box } from '@mui/material';
+import { Box, Button, ButtonGroup } from '@mui/material';
 
 
 declare module 'react-redux' {
@@ -30,7 +30,7 @@ export function TreeControl() {
   function getTreeItemsByParent(parent_marker_id: string | null)
   {
     dispatch(
-      TreeStore.actionCreators.getByParent(parent_marker_id)
+      TreeStore.actionCreators.getByParent(parent_marker_id, null, null)
     );
   }
 
@@ -39,9 +39,10 @@ export function TreeControl() {
     getTreeItemsByParent(null);
   }, []);
 
+  const treeStates = useSelector((state) => state?.treeStates);
 
-  const markers = useSelector((state) => state?.treeStates?.markers);
-  const parent_marker_id = useSelector((state) => state?.treeStates?.parent_marker_id);
+  const markers = useSelector((state) => state?.treeStates?.children);
+  const parent_marker_id = useSelector((state) => state?.treeStates?.parent_id);
 
   // Selected.
   const reduxSelectedId = useSelector((state) => state?.guiStates?.selected_id);
@@ -94,6 +95,20 @@ export function TreeControl() {
     getTreeItemsByParent(parent_marker_id);
   }, [requestTreeUpdate, parent_marker_id]);
 
+  const OnNavigate = useCallback(
+    (next: boolean, e) => {
+      if (next) {
+        dispatch(
+          TreeStore.actionCreators.getByParent(parent_marker_id, treeStates.start_id, null)
+        );
+      }
+      else {
+        dispatch(
+          TreeStore.actionCreators.getByParent(parent_marker_id, null, treeStates.end_id)
+        );
+      }
+    }, [treeStates])
+
     return (
       <Box sx={{
               width: '100%',
@@ -105,6 +120,12 @@ export function TreeControl() {
             }}>
 
         <List>
+          <ListItem>
+            <ButtonGroup variant="contained" aria-label="navigation button group">
+              <Button onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
+              <Button onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
+            </ButtonGroup>
+          </ListItem>
         {
           markers?.map((marker, index) =>
             <ListItem
