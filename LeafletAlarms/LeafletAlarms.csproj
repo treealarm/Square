@@ -63,7 +63,9 @@
   <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\src\map\LocationMarkers.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\map\MapComponent.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\store\SearchResultStates.ts" />
     <TypeScriptCompile Remove="ClientApp\src\store\TracksStates.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\Tree\SearchResult.tsx" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,19 +12,19 @@ import { TrackViewer } from "../tracks/TrackViewer";
 export function MapComponent() {
 
   return (
-        <MapContainer
-          center={[51.5359, -0.09]}
-          zoom={13}
-          scrollWheelZoom={true}    >
+    <MapContainer
+      center={[55.752696480817086, 37.583007383349745]}
+      zoom={13}
+      scrollWheelZoom={true}    >
       <TrackViewer />
-          <LocationMarkers />
-          <EditableFigure />
-          <MapPositionChange />
-          
-          <TileLayer
-            attribution="&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        </MapContainer>
+      <LocationMarkers />
+      <EditableFigure />
+      <MapPositionChange />
+
+      <TileLayer
+        attribution="&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+    </MapContainer>
   );
 }

@@ -106,6 +106,13 @@ export interface GetByParentDTO {
   end_id?: string;
 }
 
+export interface GetBySearchDTO {
+  list?: TreeMarker[];
+  start_id?: string;
+  end_id?: string;
+  search_id: string;
+}
+
 export interface BoundBox {
   wn: number[];
   es: number[];
