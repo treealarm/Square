@@ -57,11 +57,12 @@ export function SearchResult() {
     (next: boolean, e) => {
 
       let filter = Object.assign({}, searchStates.filter);
+      filter.forward = next;
+      filter.start_id = null;
 
       if (next) {
-        if (searchStates.list.length > 0) {
+        if (searchStates.list.length > 0) {          
           filter.start_id = searchStates.list[searchStates.list.length - 1].id;
-          filter.end_id = null;
         }
         
         dispatch(          
@@ -70,8 +71,7 @@ export function SearchResult() {
       }
       else {
         if (searchStates.list.length > 0) {
-          filter.end_id = searchStates.list[0].id;
-          filter.start_id = null;
+          filter.start_id = searchStates.list[0].id;
         }
         
         dispatch(

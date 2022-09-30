@@ -13,7 +13,7 @@ namespace Domain
     public ObjPropsSearchDTO? property_filter { get; set; }
     public string search_id { get; set; }
     public string start_id { get; set; }
-    public string end_id { get; set; }
+    public bool forward { get; set; }
     public int count { get; set; }
   }
 }

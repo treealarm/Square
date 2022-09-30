@@ -112,12 +112,11 @@ namespace LeafletAlarms.Controllers
         var props = await _mapService.GetPropByValuesAsync(
           filter.property_filter,
           filter.start_id,
-          filter.end_id,
+          filter.forward,
           filter.count
         );
         retVal.AddRange(props);
       }
-
 
       return retVal;
     }
@@ -129,14 +128,40 @@ namespace LeafletAlarms.Controllers
     )
     {
       GetBySearchDTO retVal = new GetBySearchDTO();
-
-      var propsObjs = await GetPropObjsByFilter(filter);
+      retVal.list = new List<BaseMarkerDTO>();
       retVal.search_id = filter.search_id;
 
-      var ids = propsObjs.Select(i => i.id).ToList();
-      var tree = await _mapService.GetAsync(ids);
+      while (retVal.list.Count < filter.count)
+      {
+        var propsObjs = await GetPropObjsByFilter(filter);
+
+        if (propsObjs.Count == 0)
+        {
+          break;
+        }
+
+        var ids = propsObjs.Select(i => i.id).ToList();
+        var tree = await _mapService.GetAsync(ids);
+
+        retVal.list.AddRange(tree);
+
+        if (!string.IsNullOrEmpty(filter.start_id))
+        {
+          if (filter.forward)
+          {
+            filter.start_id = propsObjs.LastOrDefault().id;
+          }
+          else
+          {
+            filter.start_id = propsObjs.FirstOrDefault().id;
+          }
+        }
+        else
+        {
+          break;
+        }        
+      }
       
-      retVal.list = tree;
 
       return CreatedAtAction(nameof(GetByFilter), retVal);
     }
@@ -238,7 +263,7 @@ namespace LeafletAlarms.Controllers
       var props = await _mapService.GetPropByValuesAsync(
         propFilter,
         null,
-        null,
+        true,
         1000
       );
       var geo = await _geoService.GetGeoObjectsAsync(props.Select(i => i.id).ToList());

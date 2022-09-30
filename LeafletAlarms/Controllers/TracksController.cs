@@ -211,7 +211,7 @@ namespace LeafletAlarms.Controllers
         var props = await _mapService.GetPropByValuesAsync(
           box.property_filter,
           null,
-          null,
+          true,
           1000
         );
         ids = props.Select(i => i.id).ToList();

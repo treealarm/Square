@@ -137,7 +137,7 @@ export interface SearchFilter {
 
 export interface SearchFilterDTO extends SearchFilter {
   start_id?: string;
-  end_id?: string;
+  forward: boolean;
   count: number;
 }
 

@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { ApplicationState } from '../store';
+import { ApiDefaultPagingNum, ApplicationState } from '../store';
 import { Box, ButtonGroup, IconButton, List, ListItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
@@ -80,11 +80,12 @@ export function RetroSearch() {
       UpdateFilterInRedux(filter);
 
       var filterDto: SearchFilterDTO = {
-        count: 100,
         search_id: (new Date()).toISOString(),
         property_filter: filter.property_filter,
         time_start: filter.time_start,
-        time_end: filter.time_end        
+        time_end: filter.time_end,
+        forward: true,
+        count: ApiDefaultPagingNum
       }
       dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
 

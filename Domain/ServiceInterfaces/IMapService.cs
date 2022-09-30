@@ -29,7 +29,7 @@ namespace Domain.ServiceInterfaces
     Task<List<ObjPropsDTO>> GetPropByValuesAsync(
       ObjPropsSearchDTO propFilter,
       string start_id,
-      string end_id,
+      bool forward,
       int count
     );
     Task UpdatePropNotDeleteAsync(FigureBaseDTO updatedObj);

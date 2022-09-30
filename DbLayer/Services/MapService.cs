@@ -351,7 +351,7 @@ namespace DbLayer.Services
     public async Task<List<ObjPropsDTO>> GetPropByValuesAsync(
       ObjPropsSearchDTO propFilter,
       string start_id,
-      string end_id,
+      bool forward,
       int count
     )
     {
@@ -363,13 +363,12 @@ namespace DbLayer.Services
 
       var filterPaging = builder.Empty;
 
-      if (start_id != null)
+      if (!string.IsNullOrEmpty(start_id))
       {
-        filterPaging = Builders<DBMarkerProperties>.Filter.Gte("_id", new ObjectId(start_id));
-      }
-      else if (end_id != null)
-      {
-        filterPaging = Builders<DBMarkerProperties>.Filter.Lte("_id", new ObjectId(end_id));
+        if (forward)
+          filterPaging = Builders<DBMarkerProperties>.Filter.Gt("_id", new ObjectId(start_id));
+        else
+          filterPaging = Builders<DBMarkerProperties>.Filter.Lt("_id", new ObjectId(start_id));
       }
 
       foreach (var prop in propFilter.props)
@@ -404,24 +403,26 @@ namespace DbLayer.Services
         filter = filter & filterPaging;
       }
 
-      if (end_id != null)
+
+      if (forward)
       {
         retObjProps = await _propCollection
-          .Find(filter)
-          .SortByDescending(x => x.id)
-          .Limit(count)
-          .ToListAsync()
-          ;
-
-        retObjProps.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
+        .Find(filter)
+        .Limit(count)
+        .ToListAsync();
       }
       else
       {
         retObjProps = await _propCollection
-          .Find(filter)
-          .Limit(count)
-          .ToListAsync();
-      }      
+                  .Find(filter)
+                  .SortByDescending(x => x.id)
+                  .Limit(count)
+                  .ToListAsync()
+                  ;
+
+        retObjProps.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
+      }
+     
 
       foreach (var obj in retObjProps)
       {
