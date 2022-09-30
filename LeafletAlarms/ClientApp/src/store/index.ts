@@ -42,4 +42,4 @@ export const ApiRootString = 'api/map';
 export const ApiTracksRootString = 'api/tracks';
 export const ApiRouterRootString = 'api/router';
 export const ApiStatesRootString = 'api/states';
-export const ApiDefaultPagingNum = 4;
+export const ApiDefaultPagingNum = 100;

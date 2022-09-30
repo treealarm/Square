@@ -18,15 +18,18 @@ namespace LeafletAlarms.Controllers
     private readonly IMapService _mapService;
     private readonly IGeoService _geoService;
     private ITrackConsumer _stateService;
+    private readonly ITrackService _tracksService;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
-      ITrackConsumer stateService
+      ITrackConsumer stateService,
+      ITrackService tracksService
     )
     {
       _mapService = mapsService;
       _stateService = stateService;
       _geoService = geoService;
+      _tracksService = tracksService;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -141,6 +144,19 @@ namespace LeafletAlarms.Controllers
         }
 
         var ids = propsObjs.Select(i => i.id).ToList();
+
+        if (filter.time_start != null || filter.time_end != null)
+        {
+          // History, so limit by time.
+          var tracks = await _tracksService.GetTracksByTime(
+            filter.time_start,
+            filter.time_end,
+            ids
+          );
+
+          ids = tracks.Select(t => t.figure.id).ToList();
+        }
+
         var tree = await _mapService.GetAsync(ids);
 
         retVal.list.AddRange(tree);
@@ -161,7 +177,6 @@ namespace LeafletAlarms.Controllers
           break;
         }        
       }
-      
 
       return CreatedAtAction(nameof(GetByFilter), retVal);
     }
