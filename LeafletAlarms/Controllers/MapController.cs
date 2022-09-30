@@ -4,6 +4,7 @@ using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
+using OsmSharp.API;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -100,6 +101,38 @@ namespace LeafletAlarms.Controllers
       }
 
       return retVal;
+    }
+
+    private async Task<List<ObjPropsDTO>> GetPropObjsByFilter(SearchFilterDTO filter)
+    {
+      List<ObjPropsDTO> retVal = new List<ObjPropsDTO>();
+
+      if (filter.property_filter != null && filter.property_filter.props.Count > 0)
+      {
+        var props = await _mapService.GetPropByValuesAsync(filter.property_filter);
+        retVal.AddRange(props);
+      }
+
+      return retVal;
+    }
+
+    [HttpPost]
+    [Route("GetByFilter")]
+    public async Task<ActionResult<List<GetBySearchDTO>>> GetByFilter(
+      SearchFilterDTO filter
+    )
+    {
+      GetBySearchDTO retVal = new GetBySearchDTO();
+
+      var propsObjs = await GetPropObjsByFilter(filter);
+      retVal.search_id = filter.search_id;
+
+      var ids = propsObjs.Select(i => i.id).ToList();
+      var tree = await _mapService.GetAsync(ids);
+      
+      retVal.list = tree;
+
+      return CreatedAtAction(nameof(GetByFilter), retVal);
     }
 
     [HttpGet()]

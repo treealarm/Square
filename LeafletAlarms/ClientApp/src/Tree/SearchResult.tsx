@@ -3,7 +3,6 @@
 import { useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector, useStore } from "react-redux";
 
-import * as TreeStore from '../store/TreeStates';
 import * as SearchResultStore from '../store/SearchResultStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
@@ -57,16 +56,16 @@ export function SearchResult() {
   const OnNavigate = useCallback(
     (next: boolean, e) => {
       if (next) {
-        dispatch(
-          SearchResultStore.actionCreators.getByFilter(searchStates.end_id, null)
-        );
+        //dispatch(
+        //  SearchResultStore.actionCreators.getByFilter(searchStates.end_id, null)
+        //);
       }
       else {
-        dispatch(
-          SearchResultStore.actionCreators.getByFilter(null, searchStates.start_id)
-        );
+        //dispatch(
+        //  SearchResultStore.actionCreators.getByFilter(null, searchStates.start_id)
+        //);
       }
-    }, [searchStates?.search_id])
+    }, [searchStates?.filter])
 
   return (
     <Box sx={{

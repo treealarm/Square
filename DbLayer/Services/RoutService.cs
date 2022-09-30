@@ -137,11 +137,11 @@ namespace DbLayer.Services
             var geometry = GeoJson.Polygon(
               new GeoJson2DCoordinates[]
               {
-          GeoJson.Position(box.wn[0], box.wn[1]),
-          GeoJson.Position(box.es[0], box.wn[1]),
-          GeoJson.Position(box.es[0], box.es[1]),
-          GeoJson.Position(box.wn[0], box.es[1]),
-          GeoJson.Position(box.wn[0], box.wn[1])
+                GeoJson.Position(box.wn[0], box.wn[1]),
+                GeoJson.Position(box.es[0], box.wn[1]),
+                GeoJson.Position(box.es[0], box.es[1]),
+                GeoJson.Position(box.wn[0], box.es[1]),
+                GeoJson.Position(box.wn[0], box.wn[1])
               }
             );
 

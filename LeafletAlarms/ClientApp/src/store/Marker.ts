@@ -133,8 +133,15 @@ export interface SearchFilter {
   time_start?: Date;
   time_end?: Date;
   property_filter?: ObjPropsSearchDTO;
-  changeNum: number;
+  search_id: string;
 }
+
+export interface SearchFilterDTO extends SearchFilter {
+  start_id?: string;
+  end_id?: string;
+  count: number;
+}
+
 
 export interface BoxTrackDTO extends BoundBox
 {

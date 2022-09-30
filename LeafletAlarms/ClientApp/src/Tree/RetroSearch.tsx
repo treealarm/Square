@@ -11,7 +11,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
-import { ObjPropsSearchDTO, SearchFilter } from '../store/Marker';
+import * as SearchResultStore from '../store/SearchResultStates';
+import { ObjPropsSearchDTO, SearchFilter, SearchFilterDTO } from '../store/Marker';
 import { PropertyFilter } from './PropertyFilter';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 
@@ -39,17 +40,21 @@ export function RetroSearch() {
         property_filter: {
           props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
         },
-        changeNum: 0
+        search_id: "0"
       };
       dispatch(TracksStore.actionCreators.applyFilter(filter));
     }
   }, []);
 
+  function UpdateFilterInRedux(filter: SearchFilter) {
+    dispatch(TracksStore.actionCreators.applyFilter(filter));    
+  }
+
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
       var filter = GetCopyOfSearchFilter();
       filter.time_start = new Date(newValue.toISOString());
-      dispatch(TracksStore.actionCreators.applyFilter(filter));
+      UpdateFilterInRedux(filter);
     }
     catch (err)
     {
@@ -61,7 +66,7 @@ export function RetroSearch() {
     try {
       var filter = GetCopyOfSearchFilter();
       filter.time_end = new Date(newValue.toISOString());
-      dispatch(TracksStore.actionCreators.applyFilter(filter));
+      UpdateFilterInRedux(filter);
     }
     catch (err) {
 
@@ -71,22 +76,32 @@ export function RetroSearch() {
   const searchTracks = useCallback(
     (e) => {
       var filter: SearchFilter = GetCopyOfSearchFilter();
-      filter.changeNum = searchFilter.changeNum + 1;
-      dispatch(TracksStore.actionCreators.applyFilter(filter));
+      filter.search_id = (new Date()).toISOString();
+      UpdateFilterInRedux(filter);
+
+      var filterDto: SearchFilterDTO = {
+        count: 100,
+        search_id: (new Date()).toISOString(),
+        property_filter: filter.property_filter,
+        time_start: filter.time_start,
+        time_end: filter.time_end        
+      }
+      dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
+
     }, [searchFilter]);
 
   const addProperty = useCallback(
     (e) => {
       var filter: SearchFilter = GetCopyOfSearchFilter();
       filter.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
-      dispatch(TracksStore.actionCreators.applyFilter(filter));
+      UpdateFilterInRedux(filter);
     }, [searchFilter]);
 
   const setPropsFilter = useCallback(
     (propsFilter: ObjPropsSearchDTO) => {
       var filter: SearchFilter = GetCopyOfSearchFilter();
       filter.property_filter = propsFilter;
-      dispatch(TracksStore.actionCreators.applyFilter(filter));
+      UpdateFilterInRedux(filter);
     }, [searchFilter]);
 
 

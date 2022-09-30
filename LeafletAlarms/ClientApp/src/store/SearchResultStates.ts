@@ -1,16 +1,13 @@
 ﻿import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
-import { GetBySearchDTO, SearchFilter, TreeMarker } from "./Marker";
+import { GetBySearchDTO, SearchFilterDTO, TreeMarker } from "./Marker";
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface SearchResultState {
   list: TreeMarker[];
-  start_id?: string;
-  end_id?: string;
-  searchFilter: SearchFilter;
-  search_id: string
+  filter: SearchFilterDTO;
 }
 
 // -----------------
@@ -19,7 +16,7 @@ export interface SearchResultState {
 
 interface RequestSearchStateAction {
   type: "REQUEST_SEARCH_STATE";
-  search_id: string;
+  filter: SearchFilterDTO;
 }
 
 interface ReceiveSearchStateAction {
@@ -27,19 +24,12 @@ interface ReceiveSearchStateAction {
   data: GetBySearchDTO
 }
 
-interface ApplySearchFilterAction {
-  type: "APPLY_SEARCH_FILTER";
-  searchFilter: SearchFilter
-}
-
-
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction =
   | RequestSearchStateAction
   | ReceiveSearchStateAction
-  | ApplySearchFilterAction
   ;
 
 // ----------------
@@ -49,28 +39,21 @@ type KnownAction =
 export const actionCreators = {
 
   getByFilter: (
-    start_id: string | null,
-    end_id: string | null
+    filter: SearchFilterDTO
   ): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
 
-      console.log("fetching by filter");
-      var request = ApiRootString + "/GetByFilter?count=100";
 
+    let body = JSON.stringify(filter);
+    var request = ApiRootString + "/GetByFilter";
 
-      if (start_id != null) {
-        request += "&start_id=" + start_id;
-      }
-
-      if (end_id != null) {
-        request += "&end_id=" + end_id;
-      }
-
-      var fetched = fetch(request);
-
-      console.log("fetched:", fetched);
+    var fetched = fetch(request, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: body
+    });
 
       fetched
         .then(response => response.json() as Promise<GetBySearchDTO>)
@@ -81,8 +64,8 @@ export const actionCreators = {
           });
         });
 
-    dispatch({ type: "REQUEST_SEARCH_STATE", search_id: (new Date()).toISOString() });
-    },
+    dispatch({ type: "REQUEST_SEARCH_STATE", filter: filter });
+    }
 };
 
 // ----------------
@@ -90,10 +73,7 @@ export const actionCreators = {
 
 const unloadedState: SearchResultState = {
   list: [],
-  start_id: null,
-  end_id: null,
-  searchFilter: null,
-  search_id: ""
+  filter: null
 };
 
 export const reducer: Reducer<SearchResultState> = (
@@ -110,16 +90,14 @@ export const reducer: Reducer<SearchResultState> = (
     case "REQUEST_SEARCH_STATE":
       return {
         ...state,
-        search_id: action.search_id
+        filter: action.filter
       };
 
     case "RECEIVE_SEARCH_STATE":
-      if (action.data.search_id == state.search_id) {
+      if (action.data.search_id == state.filter.search_id) {
         return {
           ...state,
-          list: action.data.list,
-          start_id: action.data.start_id,
-          end_id: action.data.end_id
+          list: action.data.list
         };
       }
       break;
