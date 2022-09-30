@@ -55,17 +55,30 @@ export function SearchResult() {
 
   const OnNavigate = useCallback(
     (next: boolean, e) => {
+
+      let filter = Object.assign({}, searchStates.filter);
+
       if (next) {
-        //dispatch(
-        //  SearchResultStore.actionCreators.getByFilter(searchStates.end_id, null)
-        //);
+        if (searchStates.list.length > 0) {
+          filter.start_id = searchStates.list[searchStates.list.length - 1].id;
+          filter.end_id = null;
+        }
+        
+        dispatch(          
+          SearchResultStore.actionCreators.getByFilter(filter)
+        );
       }
       else {
-        //dispatch(
-        //  SearchResultStore.actionCreators.getByFilter(null, searchStates.start_id)
-        //);
+        if (searchStates.list.length > 0) {
+          filter.end_id = searchStates.list[0].id;
+          filter.start_id = null;
+        }
+        
+        dispatch(
+          SearchResultStore.actionCreators.getByFilter(filter)
+        );
       }
-    }, [searchStates?.filter])
+    }, [searchStates?.list])
 
   return (
     <Box sx={{

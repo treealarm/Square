@@ -208,7 +208,12 @@ namespace LeafletAlarms.Controllers
 
       if (box.property_filter != null && box.property_filter.props.Count > 0)
       {
-        var props = await _mapService.GetPropByValuesAsync(box.property_filter);
+        var props = await _mapService.GetPropByValuesAsync(
+          box.property_filter,
+          null,
+          null,
+          1000
+        );
         ids = props.Select(i => i.id).ToList();
 
         if (box.ids == null)

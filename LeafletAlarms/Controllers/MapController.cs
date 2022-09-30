@@ -109,9 +109,15 @@ namespace LeafletAlarms.Controllers
 
       if (filter.property_filter != null && filter.property_filter.props.Count > 0)
       {
-        var props = await _mapService.GetPropByValuesAsync(filter.property_filter);
+        var props = await _mapService.GetPropByValuesAsync(
+          filter.property_filter,
+          filter.start_id,
+          filter.end_id,
+          filter.count
+        );
         retVal.AddRange(props);
       }
+
 
       return retVal;
     }
@@ -229,7 +235,12 @@ namespace LeafletAlarms.Controllers
     [Route("GetByParams")]
     public async Task<ActionResult<FiguresDTO>> GetByParams(ObjPropsSearchDTO propFilter)
     {
-      var props = await _mapService.GetPropByValuesAsync(propFilter);
+      var props = await _mapService.GetPropByValuesAsync(
+        propFilter,
+        null,
+        null,
+        1000
+      );
       var geo = await _geoService.GetGeoObjectsAsync(props.Select(i => i.id).ToList());
       var figures = await GetFigures(geo);
 

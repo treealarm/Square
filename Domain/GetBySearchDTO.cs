@@ -10,7 +10,5 @@ namespace Domain
   {
     public List<BaseMarkerDTO> list { get; set; }
     public string search_id { get; set; }
-    public string start_id { get; set; }
-    public string end_id { get; set; }
   }
 }

@@ -348,12 +348,29 @@ namespace DbLayer.Services
       return Conver2Property2DTO(obj);
     }
 
-    public async Task<List<ObjPropsDTO>> GetPropByValuesAsync(ObjPropsSearchDTO propFilter)
+    public async Task<List<ObjPropsDTO>> GetPropByValuesAsync(
+      ObjPropsSearchDTO propFilter,
+      string start_id,
+      string end_id,
+      int count
+    )
     {
       List<ObjPropsDTO> ret = new List<ObjPropsDTO>();
+      List<DBMarkerProperties> retObjProps = new List<DBMarkerProperties>();
 
       var builder = Builders<DBMarkerProperties>.Filter;
       var filter = builder.Empty;
+
+      var filterPaging = builder.Empty;
+
+      if (start_id != null)
+      {
+        filterPaging = Builders<DBMarkerProperties>.Filter.Gte("_id", new ObjectId(start_id));
+      }
+      else if (end_id != null)
+      {
+        filterPaging = Builders<DBMarkerProperties>.Filter.Lte("_id", new ObjectId(end_id));
+      }
 
       foreach (var prop in propFilter.props)
       {
@@ -372,10 +389,6 @@ namespace DbLayer.Services
             prop.str_val
             );
 
-        //var f1 = Builders<DBMarkerProperties>
-        //  .Filter
-        //  .ElemMatch(e => e.extra_props,
-        //  r => r.prop_name == prop.prop_name && r.MetaValue.Equals(metaValue));
         if (filter == builder.Empty)
         {
           filter = f1;
@@ -386,9 +399,31 @@ namespace DbLayer.Services
         }
       }
 
-      var objs = await _propCollection.Find(filter).ToListAsync();
+      if (filterPaging != builder.Empty)
+      {
+        filter = filter & filterPaging;
+      }
 
-      foreach (var obj in objs)
+      if (end_id != null)
+      {
+        retObjProps = await _propCollection
+          .Find(filter)
+          .SortByDescending(x => x.id)
+          .Limit(count)
+          .ToListAsync()
+          ;
+
+        retObjProps.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
+      }
+      else
+      {
+        retObjProps = await _propCollection
+          .Find(filter)
+          .Limit(count)
+          .ToListAsync();
+      }      
+
+      foreach (var obj in retObjProps)
       {
         ret.Add(Conver2Property2DTO(obj));
       }
