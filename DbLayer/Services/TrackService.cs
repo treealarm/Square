@@ -137,26 +137,60 @@ namespace DbLayer.Services
       List<string> ids
     )
     {
+      List<DBTrackPoint> dbTracks = new List<DBTrackPoint>();
+
       var builder = Builders<DBTrackPoint>.Filter;
 
       FilterDefinition<DBTrackPoint> filter = FilterDefinition<DBTrackPoint>.Empty;
 
-      if (time_start != null)
+      if (ids != null && ids.Count > 0 && time_start != null && time_end == null)
       {
-        filter = filter & builder.Where(t => t.timestamp >= time_start);
-      }
+        foreach (var id in ids)
+        {
+          var dbTracksTemp = await _collFigures
+            .Find(t => t.figure.id == id && t.timestamp >= time_start)
+            .FirstOrDefaultAsync();
 
-      if (time_end != null)
+          if ( dbTracksTemp!= null)
+          {
+            dbTracks.Add(dbTracksTemp);
+          }
+        }
+      }
+      else if (ids != null && ids.Count > 0 && time_start == null && time_end != null)
       {
-        filter = filter & builder.Where(t => t.timestamp <= time_end);
-      }
+        foreach (var id in ids)
+        {
+          var dbTracksTemp = await _collFigures
+            .Find(t => t.figure.id == id && t.timestamp <= time_end)
+            .SortByDescending(t => t.timestamp)
+            .FirstOrDefaultAsync();
 
-      if (ids != null && ids.Count > 0)
+          if (dbTracksTemp != null)
+          {
+            dbTracks.Add(dbTracksTemp);
+          }
+        }
+      }
+      else
       {
-        filter = filter & builder.Where(t => ids.Contains(t.figure.id));
-      }
+        if (time_start != null)
+        {
+          filter = filter & builder.Where(t => t.timestamp >= time_start);
+        }
 
-      var dbTracks = await _collFigures.Find(filter).ToListAsync();
+        if (time_end != null)
+        {
+          filter = filter & builder.Where(t => t.timestamp <= time_end);
+        }
+
+        if (ids != null && ids.Count > 0)
+        {
+          filter = filter & builder.Where(t => ids.Contains(t.figure.id));
+        }
+
+        dbTracks.AddRange(await _collFigures.Find(filter).ToListAsync());
+      }
 
       return DBListToDTO(dbTracks);
     }

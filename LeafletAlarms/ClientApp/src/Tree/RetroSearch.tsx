@@ -1,12 +1,11 @@
 ﻿import * as React from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
-import { Box, ButtonGroup, IconButton, List, ListItem } from '@mui/material';
+import { Box, ButtonGroup, FormControlLabel, IconButton, List, ListItem, Switch } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +23,18 @@ export function RetroSearch() {
   const INPUT_FORMAT = "YYYY-MM-DDTHH:mm:ss";
 
   const dispatch = useDispatch();
+
+  const [checkedTimeBegin, setCheckedTimeBegin] = React.useState(true);
+  const [checkedTimeEnd, setCheckedTimeEnd] = React.useState(true);
+
+  const handleCheckTimeBegin = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckedTimeBegin(event.target.checked);
+  };
+
+  const handleCheckTimeEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckedTimeEnd(event.target.checked);
+  };
+
   const searchFilter = useSelector((state) => state?.tracksStates?.searchFilter);
 
   function GetCopyOfSearchFilter(): SearchFilter {
@@ -87,6 +98,13 @@ export function RetroSearch() {
         forward: true,
         count: ApiDefaultPagingNum
       }
+
+      if (!checkedTimeBegin) {
+        filterDto.time_start = null;
+      }
+      if (!checkedTimeEnd) {
+        filterDto.time_end = null;
+      }
       dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
 
     }, [searchFilter]);
@@ -125,7 +143,7 @@ export function RetroSearch() {
             value={searchFilter?.time_start}
             onChange={handleChange1}
             inputFormat={INPUT_FORMAT}
-
+            disabled={!checkedTimeBegin}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -134,7 +152,13 @@ export function RetroSearch() {
                     placeholder: INPUT_FORMAT
                   } 
                 }/>}
-            />
+          />
+          <FormControlLabel sx={{ padding: 1 }} control={
+            <Switch defaultChecked size="small"
+              checked={checkedTimeBegin}
+              onChange={handleCheckTimeBegin} />
+          } label="" />
+
           </ListItem>
           <ListItem>
           <DateTimePicker
@@ -142,6 +166,7 @@ export function RetroSearch() {
             value={searchFilter?.time_end}
             onChange={handleChange2}
             inputFormat={INPUT_FORMAT}
+            disabled={!checkedTimeEnd}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -151,6 +176,12 @@ export function RetroSearch() {
                   }
                 } />}
           />
+
+          <FormControlLabel sx={{ padding: 1 }} control={
+            <Switch defaultChecked size="small"
+              checked={checkedTimeEnd}
+              onChange={handleCheckTimeEnd} />
+          } label="" />
           </ListItem>
         <ListItem>
           <PropertyFilter
