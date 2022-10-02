@@ -105,11 +105,11 @@ export function TrackViewer() {
       property_filter: searchFilter?.property_filter
     };
 
-    if (!searchFilter.time_start_enabled) {
+    if (!searchFilter?.time_start_enabled) {
       boundBox.time_start = null;
     }
 
-    if (!searchFilter.time_end_enabled) {
+    if (!searchFilter?.time_end_enabled) {
       boundBox.time_end = null;
     }
 

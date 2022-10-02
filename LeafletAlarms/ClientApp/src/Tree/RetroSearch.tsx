@@ -105,10 +105,10 @@ export function RetroSearch() {
         count: ApiDefaultPagingNum
       }
 
-      if (!searchFilter.time_start_enabled) {
+      if (!searchFilter?.time_start_enabled) {
         filterDto.time_start = null;
       }
-      if (!searchFilter.time_end_enabled) {
+      if (!searchFilter?.time_end_enabled) {
         filterDto.time_end = null;
       }
       dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
@@ -149,7 +149,7 @@ export function RetroSearch() {
             value={searchFilter?.time_start}
             onChange={handleChange1}
             inputFormat={INPUT_FORMAT}
-            disabled={!searchFilter.time_start_enabled}
+            disabled={!searchFilter?.time_start_enabled}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -161,7 +161,7 @@ export function RetroSearch() {
           />
           <FormControlLabel sx={{ padding: 1 }} control={
             <Switch defaultChecked size="small"
-              checked={searchFilter.time_start_enabled}
+              checked={searchFilter?.time_start_enabled}
               onChange={handleCheckTimeBegin} />
           } label="" />
 
@@ -172,7 +172,7 @@ export function RetroSearch() {
             value={searchFilter?.time_end}
             onChange={handleChange2}
             inputFormat={INPUT_FORMAT}
-            disabled={!searchFilter.time_end_enabled}
+            disabled={!searchFilter?.time_end_enabled}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -185,7 +185,7 @@ export function RetroSearch() {
 
           <FormControlLabel sx={{ padding: 1 }} control={
             <Switch defaultChecked size="small"
-              checked={searchFilter.time_end_enabled}
+              checked={searchFilter?.time_end_enabled}
               onChange={handleCheckTimeEnd} />
           } label="" />
           </ListItem>

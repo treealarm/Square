@@ -208,7 +208,8 @@ namespace DbLayer.Services
         }
       );
 
-      FilterDefinition<DBTrackPoint> filter = FilterDefinition<DBTrackPoint>.Empty;
+      FilterDefinition<DBTrackPoint> filter =
+        builder.GeoIntersects(t => t.figure.location, geometry);
 
       if (box.zoom != null)
       {
@@ -218,6 +219,10 @@ namespace DbLayer.Services
           builder.Where(p => levels.Contains(p.figure.zoom_level)
           || p.figure.zoom_level == null);
       }
+
+      bool distinct = (box.time_start == null && box.time_end != null) 
+        || (box.time_start != null && box.time_end == null);
+
 
       if (box.time_start != null)
       {
@@ -229,17 +234,53 @@ namespace DbLayer.Services
         filter = filter & builder.Where(t => t.timestamp <= box.time_end);
       }
 
-      if (box.ids != null)
+
+      List<DBTrackPoint> dbTracks = new List<DBTrackPoint>();
+
+      if (distinct)
       {
-        filter = filter & builder.Where(t => box.ids.Contains(t.figure.id));
+        var ids = await _collFigures
+          .Distinct(el => el.figure.id, filter).ToListAsync();
+
+        foreach (var id in ids)
+        {
+          var f1 = builder.Where(o => o.figure.id == id) & filter;
+          DBTrackPoint el = null;
+
+          if (box.time_end != null)
+          {
+            el = await _collFigures
+            .Find(f1)
+            .SortByDescending(o => o.id)
+            .FirstOrDefaultAsync();
+          }
+          else
+          {
+            el = await _collFigures
+            .Find(f1)
+            .FirstOrDefaultAsync();
+          }
+            
+
+          if (el != null)
+          {
+            dbTracks.Add(el);
+          }
+        }        
       }
+      else
+      {
+        if (box.ids != null)
+        {
+          filter = filter & builder.Where(t => box.ids.Contains(t.figure.id));
+        }
 
-      filter = filter & builder.GeoIntersects(t => t.figure.location, geometry);
-
-
-      var dbTracks = await _collFigures.Find(filter).ToListAsync();
-
-
+        dbTracks.AddRange(
+          await _collFigures
+          .Find(filter)
+          .ToListAsync()
+          );
+      }
       return DBListToDTO(dbTracks);
     }
   }
