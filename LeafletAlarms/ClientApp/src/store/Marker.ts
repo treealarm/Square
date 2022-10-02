@@ -128,14 +128,20 @@ export interface ObjPropsSearchDTO {
   props?: KeyValueDTO[];
 }
 
-export interface SearchFilter {
+export interface SearchFilterGUI {
   time_start?: Date;
   time_end?: Date;
+  time_start_enabled: boolean;
+  time_end_enabled: boolean;
   property_filter?: ObjPropsSearchDTO;
   search_id: string;
 }
 
-export interface SearchFilterDTO extends SearchFilter {
+export interface SearchFilterDTO{
+  time_start?: Date;
+  time_end?: Date;
+  property_filter?: ObjPropsSearchDTO;
+  search_id: string;
   start_id?: string;
   forward: boolean;
   count: number;

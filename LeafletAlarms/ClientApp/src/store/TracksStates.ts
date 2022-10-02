@@ -1,14 +1,13 @@
 import { Action, Reducer } from "redux";
 import { ApiRouterRootString, ApiTracksRootString, AppThunkAction } from "./";
-import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilter } from "./Marker";
+import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface TracksState {
   routs: IRoutLineDTO[];
   tracks: ITrackPointDTO[]
-  box: BoxTrackDTO;
-  searchFilter: SearchFilter;
+  box: BoxTrackDTO;  
 }
 
 // -----------------
@@ -37,10 +36,6 @@ interface ReceiveTracksAction {
   tracks: ITrackPointDTO[];
 }
 
-interface ApplySearchFilterAction {
-  type: "APPLY_FILTER";
-  searchFilter: SearchFilter
-}
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
@@ -48,8 +43,7 @@ type KnownAction =
   | RequestRoutsAction
   | ReceiveRoutsAction
   | RequestTracksAction
-  | ReceiveTracksAction
-  | ApplySearchFilterAction
+  | ReceiveTracksAction  
   ;
 
 // ----------------
@@ -136,13 +130,7 @@ export const actionCreators = {
       dispatch({ type: "REQUEST_TRACKS", box: box });
     }
   }
-  ,
-  ///////////////////////////////////////////////////////////
-  applyFilter: (filter: SearchFilter): AppThunkAction<KnownAction> => (
-    dispatch
-  ) => {
-    dispatch({ type: "APPLY_FILTER", searchFilter: filter });
-    }
+
   
 };
 
@@ -152,8 +140,7 @@ export const actionCreators = {
 const unloadedState: TracksState = {
   routs: null,
   tracks: null,
-  box: null,
-  searchFilter: null,
+  box: null
 };
 
 export const reducer: Reducer<TracksState> = (
@@ -199,12 +186,6 @@ export const reducer: Reducer<TracksState> = (
       }
       break;
 
-    case "APPLY_FILTER":
-        return {
-          ...state,
-          searchFilter: action.searchFilter
-        };
-      break;
   }
 
   return state;

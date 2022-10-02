@@ -1,6 +1,6 @@
 ﻿import { Action, Reducer } from 'redux';
 import { ApiRootString, AppThunkAction } from './';
-import { ViewOption } from './Marker';
+import { SearchFilterGUI, ViewOption } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -10,6 +10,7 @@ export interface GUIState {
   checked: string[],
   requestedTreeUpdate?: number,
   map_option: ViewOption | null;
+  searchFilter: SearchFilterGUI;
 }
 
 
@@ -36,10 +37,20 @@ interface SetMapOptionAction {
   map_option: ViewOption | null;
 }
 
+interface ApplySearchFilterAction {
+  type: "APPLY_FILTER";
+  searchFilter: SearchFilterGUI
+}
+
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = TreeSelectionAction | TreeCheckingAction | TreeUpdateRequestedAction | SetMapOptionAction;
+type KnownAction = TreeSelectionAction
+  | TreeCheckingAction
+  | TreeUpdateRequestedAction
+  | SetMapOptionAction
+  | ApplySearchFilterAction
+  ;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -66,13 +77,22 @@ export const actionCreators = {
   requestTreeUpdate: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: 'UPDATE_TREE'});
   }
+  ,
+  ///////////////////////////////////////////////////////////
+  applyFilter: (filter: SearchFilterGUI): AppThunkAction<KnownAction> => (
+    dispatch
+  ) => {
+    dispatch({ type: "APPLY_FILTER", searchFilter: filter });
+  }
 };
 
 const unloadedState: GUIState = {
   selected_id: null,
   checked: [],
   requestedTreeUpdate: 0,
-  map_option: {map_center:null}
+  map_option: { map_center: null }
+  ,
+  searchFilter: null,
 };
 
 export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incomingAction: Action): GUIState => {
@@ -105,6 +125,13 @@ export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incoming
         ...state,
         requestedTreeUpdate: state.requestedTreeUpdate + 1
       };
+
+    case "APPLY_FILTER":
+      return {
+        ...state,
+        searchFilter: action.searchFilter
+      };
+      break;
     default:
       break;
   };

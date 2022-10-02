@@ -89,7 +89,7 @@ export function TrackViewer() {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  const searchFilter = useSelector((state) => state?.tracksStates?.searchFilter);
+  const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
 
@@ -104,6 +104,14 @@ export function TrackViewer() {
       time_end: searchFilter?.time_end,
       property_filter: searchFilter?.property_filter
     };
+
+    if (!searchFilter.time_start_enabled) {
+      boundBox.time_start = null;
+    }
+
+    if (!searchFilter.time_end_enabled) {
+      boundBox.time_end = null;
+    }
 
     if (selected_id != null || checked_ids != null) {
       boundBox.ids = [];

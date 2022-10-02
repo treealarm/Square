@@ -11,9 +11,10 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
 import * as SearchResultStore from '../store/SearchResultStates';
-import { ObjPropsSearchDTO, SearchFilter, SearchFilterDTO } from '../store/Marker';
+import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO } from '../store/Marker';
 import { PropertyFilter } from './PropertyFilter';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
+import * as GuiStore from '../store/GUIStates';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -24,41 +25,46 @@ export function RetroSearch() {
 
   const dispatch = useDispatch();
 
-  const [checkedTimeBegin, setCheckedTimeBegin] = React.useState(true);
-  const [checkedTimeEnd, setCheckedTimeEnd] = React.useState(true);
+  const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
 
   const handleCheckTimeBegin = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckedTimeBegin(event.target.checked);
+    var filter = GetCopyOfSearchFilter();
+    filter.time_start_enabled = event.target.checked;
+    UpdateFilterInRedux(filter);
   };
 
   const handleCheckTimeEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckedTimeEnd(event.target.checked);
+    var filter = GetCopyOfSearchFilter();
+    filter.time_end_enabled = event.target.checked;
+    UpdateFilterInRedux(filter);
   };
 
-  const searchFilter = useSelector((state) => state?.tracksStates?.searchFilter);
+  
 
-  function GetCopyOfSearchFilter(): SearchFilter {
+  function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = Object.assign({}, searchFilter);
     return filter;
   }
 
   useEffect(() => {
     if (searchFilter == null) {
-      var filter: SearchFilter =
+      var filter: SearchFilterGUI =
       {
         time_start: new Date(dayjs().subtract(1,"day").toISOString()),
         time_end: new Date(dayjs().toISOString()),
         property_filter: {
           props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
         },
-        search_id: "0"
+        search_id: "0",
+        time_start_enabled: true,
+        time_end_enabled: true
       };
-      dispatch(TracksStore.actionCreators.applyFilter(filter));
+      dispatch(GuiStore.actionCreators.applyFilter(filter));
     }
   }, []);
 
-  function UpdateFilterInRedux(filter: SearchFilter) {
-    dispatch(TracksStore.actionCreators.applyFilter(filter));    
+  function UpdateFilterInRedux(filter: SearchFilterGUI) {
+    dispatch(GuiStore.actionCreators.applyFilter(filter));    
   }
 
   const handleChange1 = (newValue: Dayjs | null) => {
@@ -86,7 +92,7 @@ export function RetroSearch() {
 
   const searchTracks = useCallback(
     (e) => {
-      var filter: SearchFilter = GetCopyOfSearchFilter();
+      var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.search_id = (new Date()).toISOString();
       UpdateFilterInRedux(filter);
 
@@ -99,10 +105,10 @@ export function RetroSearch() {
         count: ApiDefaultPagingNum
       }
 
-      if (!checkedTimeBegin) {
+      if (!searchFilter.time_start_enabled) {
         filterDto.time_start = null;
       }
-      if (!checkedTimeEnd) {
+      if (!searchFilter.time_end_enabled) {
         filterDto.time_end = null;
       }
       dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
@@ -111,14 +117,14 @@ export function RetroSearch() {
 
   const addProperty = useCallback(
     (e) => {
-      var filter: SearchFilter = GetCopyOfSearchFilter();
+      var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
       UpdateFilterInRedux(filter);
     }, [searchFilter]);
 
   const setPropsFilter = useCallback(
     (propsFilter: ObjPropsSearchDTO) => {
-      var filter: SearchFilter = GetCopyOfSearchFilter();
+      var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.property_filter = propsFilter;
       UpdateFilterInRedux(filter);
     }, [searchFilter]);
@@ -143,7 +149,7 @@ export function RetroSearch() {
             value={searchFilter?.time_start}
             onChange={handleChange1}
             inputFormat={INPUT_FORMAT}
-            disabled={!checkedTimeBegin}
+            disabled={!searchFilter.time_start_enabled}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -155,7 +161,7 @@ export function RetroSearch() {
           />
           <FormControlLabel sx={{ padding: 1 }} control={
             <Switch defaultChecked size="small"
-              checked={checkedTimeBegin}
+              checked={searchFilter.time_start_enabled}
               onChange={handleCheckTimeBegin} />
           } label="" />
 
@@ -166,7 +172,7 @@ export function RetroSearch() {
             value={searchFilter?.time_end}
             onChange={handleChange2}
             inputFormat={INPUT_FORMAT}
-            disabled={!checkedTimeEnd}
+            disabled={!searchFilter.time_end_enabled}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -179,7 +185,7 @@ export function RetroSearch() {
 
           <FormControlLabel sx={{ padding: 1 }} control={
             <Switch defaultChecked size="small"
-              checked={checkedTimeEnd}
+              checked={searchFilter.time_end_enabled}
               onChange={handleCheckTimeEnd} />
           } label="" />
           </ListItem>
