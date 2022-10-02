@@ -1,8 +1,10 @@
 ﻿using Dapr.Client;
 using DbLayer;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using Microsoft.Extensions.Options;
 
 namespace RouterMicroService
 {
@@ -15,17 +17,20 @@ namespace RouterMicroService
     private IRoutService _routService;
     private ITrackRouter _router;
     private readonly DaprClient _daprClient;
+    private string _routeInstanse;
     public TimedHostedService(
       ILogger<TimedHostedService> logger,
       ITrackRouter router,
       IRoutService routService,
-      DaprClient daprClient
+      DaprClient daprClient,
+      IOptions<RoutingSettings> routingSettings
      )
     {
       _routService = routService;
       _router = router;
       _logger = logger;
       _daprClient = daprClient;
+      _routeInstanse = routingSettings.Value.RouteInstanse;
     }
 
     // 
@@ -52,7 +57,7 @@ namespace RouterMicroService
 
       while (!_cancellationToken.IsCancellationRequested)
       {
-        if (!_router.IsMapExist(String.Empty))
+        if (!_router.IsMapExist(_routeInstanse))
         {
           await Task.Delay(1000);
           continue;
@@ -89,7 +94,7 @@ namespace RouterMicroService
       coords.Add(p1);      
       coords.Add(p2);
 
-      var routRet = await _router.GetRoute(string.Empty, coords);
+      var routRet = await _router.GetRoute(_routeInstanse, coords);
 
       if (routRet != null && routRet.Count > 0)
       {

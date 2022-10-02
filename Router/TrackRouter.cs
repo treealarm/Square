@@ -69,10 +69,11 @@ namespace LeafletAlarmsRouter
         List<Coordinate> list_native = ConvertCoordsToNative(coords);
 
         // calculate a route.
-        var route = instance.Calculate(profile.FullName, list_native.ToArray());
+        
 
         try
         {
+          var route = instance.Calculate(profile.FullName, list_native.ToArray());
           return ConvertNativeToCoords(route.Value.Shape.ToList());
         }
         catch(Exception ex)
@@ -81,7 +82,7 @@ namespace LeafletAlarmsRouter
         }        
       }
 
-      return coords;
+      return null;
     }
   }
 }

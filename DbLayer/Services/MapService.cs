@@ -12,6 +12,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -267,7 +268,9 @@ namespace DbLayer.Services
         {
           newProp.MetaValue = new BsonDocument(
             "str_val",
-            DateTime.Parse(prop.str_val)
+            DateTime
+              .Parse(prop.str_val)
+              .ToUniversalTime()
             );
         }
         else

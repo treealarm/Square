@@ -62,17 +62,24 @@ namespace LeafletAlarmsRouter
     {
       var profile = _router.Db.GetSupportedProfile(profileName);
 
-      var points = new RouterPoint[coordinates.Length];
+      var points = new List<RouterPoint>();
 
       for (var i = 0; i < coordinates.Length; i++)
       {
         var result = _router.TryResolve(profile, coordinates[i], 200);
+
         if (result.IsError)
         {
           result = _router.TryResolve(profile, coordinates[i], 2000);
         }
 
-        points[i] = result.Value;
+        if (result.IsError)
+        {
+        }
+        else
+        {
+          points.Add(result.Value);
+        }        
       }
 
       if (!_router.Db.HasContractedFor(profile))
@@ -81,7 +88,11 @@ namespace LeafletAlarmsRouter
             "RouterDb is not optimized for profile {0}, it doesn't contain a contracted graph for this profile.", profileName);
       }
 
-      return _router.TryCalculate(profile, points);
+      if (points.Count < 2)
+      {
+        return new Result<Route>("bad data", null);
+      }
+      return _router.TryCalculate(profile, points.ToArray());
     }
 
     /// <summary>

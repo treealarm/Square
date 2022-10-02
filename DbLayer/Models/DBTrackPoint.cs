@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace DbLayer
 {
+  [BsonIgnoreExtraElements]
   public class DBTrackPoint
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
     public DBGeoObject figure { get; set; }
-    public DateTime timestamp { get; set; } = DateTime.UtcNow;
+    public DateTime timestamp { get; set; }
   }
 }

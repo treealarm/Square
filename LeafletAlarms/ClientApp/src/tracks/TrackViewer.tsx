@@ -18,16 +18,18 @@ declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
+var pathOptionsTracks = { color: "yellow" };
+var pathOptionsRouts = { color: "blue" };
 
 function TrackPolyline(props: any) {
 
-  var pathOptions = { color: "red" };
+
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord;
   return (
     <React.Fragment>
       <Polyline
-        pathOptions={pathOptions}
+        pathOptions={props.pathOptions}
         positions={positions}
       >
       </Polyline>
@@ -37,14 +39,14 @@ function TrackPolyline(props: any) {
 
 function TrackCircle(props: any) {
 
-  var pathOptions = { color: "red" };
+  
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord as any;
 
   return (
     <React.Fragment>
       <Circle
-        pathOptions={pathOptions}
+        pathOptions={props.pathOptions}
         center={positions}
         radius={figure.radius}
       >
@@ -65,6 +67,7 @@ function CommonTrack(props: any) {
       <React.Fragment>
         <TrackPolyline
           figure={figure}
+          pathOptions={ props.pathOptions }
         >
         </TrackPolyline>
       </React.Fragment>
@@ -75,6 +78,7 @@ function CommonTrack(props: any) {
       <React.Fragment>
         <TrackCircle
           figure={figure}
+          pathOptions={props.pathOptions}
         >
         </TrackCircle>
       </React.Fragment>
@@ -159,6 +163,7 @@ export function TrackViewer() {
             key={track.id}
             hidden={false}
             marker={track.figure}
+            pathOptions={pathOptionsTracks}
           >
           </CommonTrack>
         )}
@@ -168,6 +173,7 @@ export function TrackViewer() {
             key={rout.id}
             hidden={false}
             marker={rout.figure}
+            pathOptions={pathOptionsRouts}
           >
           </CommonTrack>
         )}

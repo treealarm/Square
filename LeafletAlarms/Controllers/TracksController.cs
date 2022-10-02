@@ -4,8 +4,11 @@ using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -93,15 +96,30 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in movedMarkers.circles)
       {
-        await EnsureTracksRoot(figure);
-        await _mapService.CreateOrUpdateHierarchyObject(figure);
-        await _mapService.UpdatePropNotDeleteAsync(figure);
+        var propTimeStamp = figure.extra_props
+          .Where(p => p.prop_name == "timestamp")
+          .FirstOrDefault();
 
         var newPoint = new TrackPointDTO()
         {
           figure = await _geoService.CreateGeoPoint(figure)
         };
 
+        if (propTimeStamp != null)
+        {
+          newPoint.timestamp = DateTime
+            .Parse(
+              propTimeStamp.str_val
+            ).ToUniversalTime();
+          figure.extra_props.Remove(propTimeStamp);
+        }
+
+        await EnsureTracksRoot(figure);
+        await _mapService.CreateOrUpdateHierarchyObject(figure);
+        await _mapService.UpdatePropNotDeleteAsync(figure);
+
+        
+        
         trackPoints.Add(newPoint);        
       }
 
