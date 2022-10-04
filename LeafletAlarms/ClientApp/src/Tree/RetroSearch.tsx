@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
-import { Box, ButtonGroup, FormControlLabel, IconButton, List, ListItem, Switch } from '@mui/material';
+import { Box, Button, ButtonGroup, FormControlLabel, IconButton, List, ListItem, Switch } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +26,7 @@ export function RetroSearch() {
   const dispatch = useDispatch();
 
   const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
+  const tracks = useSelector((state) => state?.tracksStates?.tracks);
 
   const handleCheckTimeBegin = (event: React.ChangeEvent<HTMLInputElement>) => {
     var filter = GetCopyOfSearchFilter();
@@ -90,28 +91,33 @@ export function RetroSearch() {
     }
   };
 
+  function DoSearchTracks(filter: SearchFilterGUI) {
+    filter.search_id = (new Date()).toISOString();
+    UpdateFilterInRedux(filter);
+
+    var filterDto: SearchFilterDTO = {
+      search_id: (new Date()).toISOString(),
+      property_filter: filter.property_filter,
+      time_start: filter.time_start,
+      time_end: filter.time_end,
+      forward: true,
+      count: ApiDefaultPagingNum
+    }
+
+    if (!searchFilter?.time_start_enabled) {
+      filterDto.time_start = null;
+    }
+    if (!searchFilter?.time_end_enabled) {
+      filterDto.time_end = null;
+    }
+    dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
+  }
+
   const searchTracks = useCallback(
     (e) => {
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();
-      filter.search_id = (new Date()).toISOString();
-      UpdateFilterInRedux(filter);
 
-      var filterDto: SearchFilterDTO = {
-        search_id: (new Date()).toISOString(),
-        property_filter: filter.property_filter,
-        time_start: filter.time_start,
-        time_end: filter.time_end,
-        forward: true,
-        count: ApiDefaultPagingNum
-      }
-
-      if (!searchFilter?.time_start_enabled) {
-        filterDto.time_start = null;
-      }
-      if (!searchFilter?.time_end_enabled) {
-        filterDto.time_end = null;
-      }
-      dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
+      DoSearchTracks(filter);
 
     }, [searchFilter]);
 
@@ -129,6 +135,42 @@ export function RetroSearch() {
       UpdateFilterInRedux(filter);
     }, [searchFilter]);
 
+  const OnNavigate = useCallback(
+    (next: boolean, e) => {
+      if (next) {
+        if (tracks != null && tracks.length > 0) {
+          var maxDate = tracks[0].timestamp;
+
+          tracks.forEach(function (e) {
+            if (e.timestamp < maxDate) {
+              maxDate = e.timestamp;
+            }
+          });
+
+          var t1 = dayjs(maxDate).add(1, 's');
+
+          var filter: SearchFilterGUI = GetCopyOfSearchFilter();
+          filter.time_start = new Date(t1.toISOString())
+          DoSearchTracks(filter);
+        }
+      }
+      else {
+        var maxDate = tracks[tracks.length - 1].timestamp;
+
+        tracks.forEach(function (e) {
+          if (e.timestamp > maxDate) {
+            maxDate = e.timestamp;
+          }
+        });
+
+        var t1 = dayjs(maxDate).subtract(1, 's');
+
+        var filter: SearchFilterGUI = GetCopyOfSearchFilter();
+        filter.time_end = new Date(t1.toISOString())
+        DoSearchTracks(filter);
+      }
+    }, [searchFilter, tracks])
+
 
   return (
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -140,7 +182,9 @@ export function RetroSearch() {
               </IconButton>
               <IconButton aria-label="addProp" size="large" onClick={(e) => addProperty(e)}>
                 <LibraryAddIcon fontSize="inherit" />
-              </IconButton>
+            </IconButton>
+            <Button onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
+            <Button onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
             </ButtonGroup>
           </ListItem>
           <ListItem>
@@ -159,11 +203,10 @@ export function RetroSearch() {
                   } 
                 }/>}
           />
-          <FormControlLabel sx={{ padding: 1 }} control={
-            <Switch defaultChecked size="small"
-              checked={searchFilter?.time_start_enabled}
+            <Switch size="small"
+            checked={searchFilter == null ? true : searchFilter.time_start_enabled}
               onChange={handleCheckTimeBegin} />
-          } label="" />
+
 
           </ListItem>
           <ListItem>
@@ -183,11 +226,10 @@ export function RetroSearch() {
                 } />}
           />
 
-          <FormControlLabel sx={{ padding: 1 }} control={
-            <Switch defaultChecked size="small"
-              checked={searchFilter?.time_end_enabled}
+            <Switch size="small"
+            checked={ searchFilter == null ? true : searchFilter.time_end_enabled}
               onChange={handleCheckTimeEnd} />
-          } label="" />
+      
           </ListItem>
         <ListItem>
           <PropertyFilter
