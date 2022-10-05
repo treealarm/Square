@@ -27,6 +27,7 @@ export function RetroSearch() {
 
   const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state) => state?.tracksStates?.tracks);
+  const routs = useSelector((state) => state?.tracksStates?.routs);
 
   const handleCheckTimeBegin = (event: React.ChangeEvent<HTMLInputElement>) => {
     var filter = GetCopyOfSearchFilter();
@@ -137,39 +138,74 @@ export function RetroSearch() {
 
   const OnNavigate = useCallback(
     (next: boolean, e) => {
+
+      if ((tracks == null
+        || tracks.length == 0)
+        && (routs == null
+        || routs.length == 0)) {
+        return;
+      }
+      var filter: SearchFilterGUI = GetCopyOfSearchFilter();      
+
       if (next) {
-        if (tracks != null && tracks.length > 0) {
-          var maxDate = tracks[0].timestamp;
+        var minDate = new Date('2045-10-05T11:03:21');
+
+        if (tracks != null && tracks.length > 0) {         
 
           tracks.forEach(function (e) {
-            if (e.timestamp < maxDate) {
-              maxDate = e.timestamp;
+            var curTs = new Date(e.timestamp);
+
+            if (curTs < minDate) {
+              minDate = curTs;
             }
           });
-
-          var t1 = dayjs(maxDate).add(1, 's');
-
-          var filter: SearchFilterGUI = GetCopyOfSearchFilter();
-          filter.time_start = new Date(t1.toISOString())
-          DoSearchTracks(filter);
         }
+
+        if (routs != null && routs.length > 0) {
+          routs.forEach(function (e) {
+            var curTs = new Date(e.ts_start);
+
+            if (curTs < minDate) {
+              minDate = curTs;
+            }
+          });
+        }
+
+        var t1 = dayjs(minDate).add(1, 's');
+          
+        filter.time_start = new Date(t1.toISOString());          
+        
       }
       else {
-        var maxDate = tracks[tracks.length - 1].timestamp;
+        var maxDate = new Date("1945-01-01T00:00:00");
 
-        tracks.forEach(function (e) {
-          if (e.timestamp > maxDate) {
-            maxDate = e.timestamp;
-          }
-        });
+        if (tracks != null && tracks.length > 0) {
+          tracks.forEach(function (e) {
+            var curTs = new Date(e.timestamp);
+
+            if (curTs > maxDate) {
+              maxDate = curTs;
+            }
+          });
+        }
+
+        if (routs != null && routs.length > 0) {
+          routs.forEach(function (e) {
+            var curTs = new Date(e.ts_end);
+
+            if (curTs > maxDate) {
+              maxDate = curTs;
+            }
+          });
+        }
 
         var t1 = dayjs(maxDate).subtract(1, 's');
-
-        var filter: SearchFilterGUI = GetCopyOfSearchFilter();
         filter.time_end = new Date(t1.toISOString())
-        DoSearchTracks(filter);
       }
-    }, [searchFilter, tracks])
+
+      DoSearchTracks(filter);
+
+    }, [searchFilter, tracks, routs])
 
 
   return (

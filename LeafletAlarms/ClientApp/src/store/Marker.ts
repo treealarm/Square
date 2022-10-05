@@ -202,6 +202,8 @@ export interface IRoutLineDTO {
   id_start: string;
   id_end: string;
   figure: IGeoObjectDTO;
+  ts_start: Date;
+  ts_end: Date;
 }
 
 export interface ITrackPointDTO {
