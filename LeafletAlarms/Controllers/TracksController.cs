@@ -105,18 +105,21 @@ namespace LeafletAlarms.Controllers
             figure = await _geoService.CreateGeoPoint(figure)
           };
 
-        var propTimeStamp = figure.extra_props
+        if (figure.extra_props != null)
+        {
+          var propTimeStamp = figure.extra_props
           .Where(p => p.prop_name == "timestamp")
           .FirstOrDefault();
 
-        if (propTimeStamp != null)
-        {
-          newPoint.timestamp = DateTime
-            .Parse(
-              propTimeStamp.str_val
-            ).ToUniversalTime();
-          figure.extra_props.Remove(propTimeStamp);
-        }
+          if (propTimeStamp != null)
+          {
+            newPoint.timestamp = DateTime
+              .Parse(
+                propTimeStamp.str_val
+              ).ToUniversalTime();
+            figure.extra_props.Remove(propTimeStamp);
+          }
+        }        
 
         trackPoints.Add(newPoint);
       }

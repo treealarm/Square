@@ -11,29 +11,34 @@ using Itinero;
 using System.Reflection;
 using LeafletAlarmsRouter;
 using Microsoft.Extensions.Options;
+using System.Diagnostics.Metrics;
 
 namespace TrackSender
 {
   internal class TestMovements
   {
     TestClient _testClient = new TestClient();
-    TrackRouter _router;
+    //TrackRouter _router;
+    FiguresDTO _figures = new FiguresDTO();
+    Random _random = new Random();
 
     public TestMovements()
     {
-      var settings = new RoutingSettings()
-      {
-        RoutingFilePath = "D:\\TESTS\\OSM_DATA\\",
-        RoutingFilePathWin = "D:\\TESTS\\OSM_DATA\\"
-      };
-      var appSettingsOptions = Options.Create(settings);
+      _figures.circles = new List<FigureCircleDTO>();
 
-      _router = new TrackRouter(appSettingsOptions);
+      //var settings = new RoutingSettings()
+      //{
+      //  RoutingFilePath = "D:\\TESTS\\OSM_DATA\\",
+      //  RoutingFilePathWin = "D:\\TESTS\\OSM_DATA\\"
+      //};
+      //var appSettingsOptions = Options.Create(settings);
 
-      while (!_router.IsMapExist("russia-latest"))
-      {
-        Task.Delay(10);
-      }
+      //_router = new TrackRouter(appSettingsOptions);
+
+      //while (!_router.IsMapExist("russia-latest"))
+      //{
+      //  Task.Delay(10);
+      //}
     }
 
     private static Random random = new Random();
@@ -56,39 +61,47 @@ namespace TrackSender
           coords[1].X = x;
           coords[1].Y = y;
 
-          var ret = await _router.GetRoute("russia-latest", coords);
+          //var ret = await _router.GetRoute("russia-latest", coords);
 
-          if (ret != null && ret.Count > 2)
-          {
-            return ret;
-          }
+          //if (ret != null && ret.Count > 2)
+          //{
+          //  return ret;
+          //}
         }
       }
 
       return coords;
     }
-    public async Task RunAsync()
+
+    double GetRandomDouble(double min, double max)
     {
-      var start =
-        new GeometryCircleDTO(new Geo2DCoordDTO() { 55.977606, 37.186745 });
+      return min + (_random.NextDouble() * (max - min));
+    }
 
+    private async Task GetOrBuildFiguresAsync()
+    {
+      var figures = new FiguresDTO();
+      figures.circles = new List<FigureCircleDTO>();
 
-      FiguresDTO figures;
-      figures = await _testClient.GetByParams("track_name", "lisa_alert");
-
-      if (figures == null || figures.circles.Count == 0)
+      List<string> existedIds = new List<string>();
+      for (int i = 0; i < 100; i++)
       {
-        figures = new FiguresDTO();
-        figures.circles = new List<FigureCircleDTO>();
+        var obj_name = $"test_track{i}";
+        Console.WriteLine("Getting:" + obj_name);
+        var marker = await _testClient.GetByName(obj_name);
 
-        for (int i = 0; i < 10; i++)
+        if (marker != null && marker.Count > 0)
+        {
+          existedIds.AddRange(marker.Select(m => m.id));
+        }
+        else
         {
           var extra_props = new List<ObjExtraPropertyDTO>()
           {
             new ObjExtraPropertyDTO()
             {
               prop_name = "track_name",
-              str_val = "lisa_alert"
+              str_val = $"lisa_alert"
             },
             new ObjExtraPropertyDTO()
             {
@@ -98,9 +111,18 @@ namespace TrackSender
             }
           };
 
+          //55.872425, 37.456428 -> 55.621026, 37.786127
+
+          var y = GetRandomDouble(55.872425, 55.621026);
+          var x = GetRandomDouble(37.456428, 37.786127);
+          var start =
+              new GeometryCircleDTO(
+                new Geo2DCoordDTO() { y, x }
+                );
+
           var figure = new FigureCircleDTO()
           {
-            name = $"test_track{i}",
+            name = obj_name,
             radius = 222,
             zoom_level = "13",
             geometry = start,
@@ -108,57 +130,64 @@ namespace TrackSender
           };
           figures.circles.Add(figure);
         }
-
-        figures = await _testClient.UpdateFiguresAsync(figures, "AddTracks");
       }
+
+      if (figures != null && figures.circles.Count > 0)
+      {
+        figures = await _testClient.UpdateFiguresAsync(figures, "AddTracks");
+        _figures.circles.AddRange(figures.circles);
+      }
+
+      if (existedIds.Count > 0)
+      {
+        figures = await _testClient.GetByIds(existedIds);
+        _figures.circles.AddRange(figures.circles);
+      }
+    }
+
+
+    public async Task RunAsync()
+    {
+      await GetOrBuildFiguresAsync();
+
+
+      var start =
+        new GeometryCircleDTO(new Geo2DCoordDTO() { 55.977606, 37.186745 });
+
 
       //55.872425, 37.456428 -> 55.621026, 37.786127
 
-      var x_start = 37.456428;
-      var x_end = 37.786127;
-      var x_step = (x_end - x_start) / 10;
-
-      var y_start = 55.621026;
-      var y_end = 55.872425;
-      var y_step = (y_end - y_start) / 10;
 
       int counter = 0;
+      int steps = 100;
 
-      for (double x = x_start; x < x_end; x += x_step)
+      for (int j = 0; j < steps; j++)
       {
-        
-        double y = y_start;
+        foreach (var figure in _figures.circles)
         {
-          foreach (var figure in figures.circles)
-          {
-            counter++;
-            var coord = new Geo2DCoordDTO() { y, x };
-            //var rout = await GetTestCoords(figure.geometry.coord);
-            var extra_props = new List<ObjExtraPropertyDTO>()
-            {
-              new ObjExtraPropertyDTO()
-              {
-                prop_name = "track_name",
-                str_val = "lisa_alert"
-              },
-              new ObjExtraPropertyDTO()
-              {
-                prop_name = "timestamp",
-                str_val = (DateTime.UtcNow
-                + new TimeSpan(0,0,counter, 0)
-                )
-              .ToString("o", System.Globalization.CultureInfo.InvariantCulture)
-              }
-            };
-            figure.geometry.coord = coord;
-            figure.extra_props = extra_props;
-            y += y_step;
-          }
+          counter++;
+          var coord = figure.geometry.coord;
 
-          //await Task.Delay(2000);
-          await _testClient.UpdateFiguresAsync(figures, "UpdateTracks");
-          Console.WriteLine(counter.ToString());
+          coord.X = GetRandomDouble(coord.X - 0.01, coord.X + 0.01);
+          coord.Y = GetRandomDouble(coord.Y - 0.01, coord.Y + 0.01);
+          //var rout = await GetTestCoords(figure.geometry.coord);
+          var extra_props = new List<ObjExtraPropertyDTO>() {
+            new ObjExtraPropertyDTO()
+            {
+              prop_name = "timestamp",
+              str_val = (DateTime.UtcNow
+              + new TimeSpan(0,0,counter, 0)
+              )
+            .ToString("o", System.Globalization.CultureInfo.InvariantCulture)
+            }
+          };
+
+          figure.extra_props = extra_props;
         }
+
+        //await Task.Delay(2000);
+        await _testClient.UpdateFiguresAsync(_figures, "UpdateTracks");
+        Console.WriteLine(j.ToString());
       }
     }
   }

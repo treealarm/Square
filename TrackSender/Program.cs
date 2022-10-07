@@ -25,7 +25,15 @@ namespace TrackSender
       try
       {
         var testMove = new TestMovements();
-        testMove.RunAsync().GetAwaiter().GetResult();
+        var testStates = new TestStates();
+        List<Task> tasks = new List<Task>();
+
+        var taskStates = testStates.RunAsync();
+        //var taskMove = testMove.RunAsync();
+        tasks.Add(taskStates);
+        //tasks.Add(taskMove);
+
+        Task.WaitAll(tasks.ToArray());
       }
       catch(Exception ex)
       {
