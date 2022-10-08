@@ -24,7 +24,7 @@ namespace TrackSender
     //https://nominatim.openstreetmap.org/details?place_id=337939658&format=json&pretty=1
     string main_city = @"https://nominatim.openstreetmap.org/search.php?city=moscow&country=russia&polygon_geojson=1&format=json";
     TestClient _testClient = new TestClient();
-    FiguresDTO _figures = new FiguresDTO();
+    FiguresDTO m_figures = new FiguresDTO();
     HttpClient _client = new HttpClient();
     public async Task RunAsync()
     {
@@ -79,20 +79,16 @@ namespace TrackSender
       return null;
       
     }
-    public async Task<List<Root>> GetMoscow()
+    public async Task<Root> GetMoscowDistrictFromDisk(int osmid)
     {
-      HttpResponseMessage response =
-        await _client.GetAsync(
-          $"search?city=moscow&country=russia&polygon_geojson=1&format=json");
-
-      response.EnsureSuccessStatusCode();
+      string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";
 
       // Deserialize the updated product from the response body.
-      var s = await response.Content.ReadAsStringAsync();
+      var s = await File.ReadAllTextAsync(filename);
 
       try
-      {
-        var json = JsonSerializer.Deserialize<List<Root>>(s);
+      {        
+        var json = JsonSerializer.Deserialize<Root>(s);
         return json;
       }
       catch (Exception ex)
@@ -103,25 +99,56 @@ namespace TrackSender
       return null;
     }
 
-    public async Task BuildMoscow()
+    private async Task<FiguresDTO> CreateOrGetDistrict(int osmid)
     {
-      FiguresDTO figures = new FiguresDTO();
-      figures.circles = new List<FigureCircleDTO>();
-      figures.polygons = new List<Domain.GeoDTO.FigurePolygonDTO>();
-
-      var root = await GetMoscow();
-
-      if (root == null || root.Count == 0)
+      FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString());
+      
+      if (figures != null && !figures.IsEmpty())
       {
-        return;
+        return figures;        
       }
 
-      foreach (var geoObj in root)
+      figures = new FiguresDTO();
+      figures.circles = new List<FigureCircleDTO>();
+      figures.polygons = new List<FigurePolygonDTO>();
+
+      var root = await GetMoscowDistrictFromDisk(osmid);
+
+      if (root == null)
       {
-        if (geoObj.geojson.type == "MultiPolygon")
+        return null;
+      }
+
+      var me = MoscowOsm.osmids.Where(o => o[0] == osmid).FirstOrDefault();
+      var parent = me[1];
+
+      var parentPolygon = m_figures.polygons
+        .Where(p => p.extra_props
+          .Any(e => e.prop_name == "osmid" && e.str_val == parent.ToString())   
+        ).FirstOrDefault();
+
+      var geoObj = root;
+      {
+        if (geoObj.geometry.type == "MultiPolygon" ||
+          geoObj.geometry.type == "Polygon")
         {
-          MultiPolygon coords =
-            JsonSerializer.Deserialize<MultiPolygon>(geoObj.geojson.coordinates.ToString());
+          MultiPolygon coords;
+
+          if (geoObj.geometry.type == "Polygon")
+          {
+            var polygon =
+              JsonSerializer.Deserialize<Polygon>(geoObj.geometry.coordinates.ToString());
+            coords = new MultiPolygon()
+            {
+              polygon
+            };
+          }
+          else
+          {
+            coords = 
+              JsonSerializer.Deserialize<MultiPolygon>(geoObj.geometry.coordinates.ToString());
+          }
+            
 
           foreach (var coord in coords)
           {
@@ -144,15 +171,39 @@ namespace TrackSender
               zoom_level = "13",
               geometry = start
             };
+
+            figure.extra_props = new List<ObjExtraPropertyDTO>()
+            {
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = "osmid",
+                str_val = osmid.ToString()
+              }
+            };
+
+            if (parentPolygon != null)
+            {
+              figure.parent_id = parentPolygon.parent_id;
+
+              if (parent == MoscowOsm.osmids.First()[0])
+              {
+                figure.zoom_level = "9";
+              }
+            }
+            else
+            {
+              figure.zoom_level = "8";
+            }
+
             figures.polygons.Add(figure);
           }
 
         }
-
-        if (geoObj.geojson.type == "Point")
+        else
+        if (geoObj.geometry.type == "Point")
         {
           var coords =
-            JsonSerializer.Deserialize<Geo2DCoordDTO>(geoObj.geojson.coordinates.ToString());
+            JsonSerializer.Deserialize<Geo2DCoordDTO>(geoObj.geometry.coordinates.ToString());
           var start =
               new GeometryCircleDTO(
                 new Geo2DCoordDTO() {
@@ -167,11 +218,60 @@ namespace TrackSender
             zoom_level = "13",
             geometry = start
           };
+
+          figure.extra_props = new List<ObjExtraPropertyDTO>()
+            {
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = "osmid",
+                str_val = osmid.ToString()
+              }
+            };
+
+          if (parentPolygon != null)
+          {
+            figure.parent_id = parentPolygon.parent_id;
+
+            if (parent == MoscowOsm.osmids.First()[0])
+            {
+              figure.zoom_level = "8";
+            }
+          }
+          else
+          {
+            figure.zoom_level = "8";
+          }
+
           figures.circles.Add(figure);
+        }
+        else
+        {
+          // Undefined.
         }
       }
 
-      var figuresCreated = await _testClient.UpdateFiguresAsync(figures, "AddTracks");
+      return figures;
+    }
+    public async Task BuildMoscow()
+    {      
+      foreach (var osmid in MoscowOsm.osmids)
+      {
+        var figure = await CreateOrGetDistrict(osmid[0]);
+
+        if (figure != null && !figure.IsEmpty())
+        {
+          m_figures?.polylines.AddRange(figure?.polylines);
+          m_figures?.circles.AddRange(figure?.circles);
+          m_figures?.polygons.AddRange(figure?.polygons);
+        }
+        else
+        {
+          figure = await CreateOrGetDistrict(osmid[0]);
+          // Empty figure?
+        }
+      }
+
+      var figuresCreated = await _testClient.UpdateFiguresAsync(m_figures, "AddTracks");
     }
   }
 }
