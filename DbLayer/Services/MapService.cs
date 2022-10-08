@@ -112,12 +112,22 @@ namespace DbLayer.Services
     public async Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id)
     {
       var parents = new List<BaseMarkerDTO>();
-      var marker = await GetAsync(object_id);
+      var marker = await GetAsync(object_id);      
 
       while (marker != null)
       {
+        if (string.IsNullOrEmpty(marker.id))
+        {
+          // Normally id == null is impossible.
+          break;
+        }
+
         parents.Add(marker);
-        var dbMarker = await _markerCollection.Find(x => x.id == marker.parent_id).FirstOrDefaultAsync();
+
+        var dbMarker = await _markerCollection
+          .Find(x => x.id == marker.parent_id)
+          .FirstOrDefaultAsync();
+
         marker = ConvertMarkerDB2DTO(dbMarker);
       }
       return parents;
@@ -183,20 +193,23 @@ namespace DbLayer.Services
       return ConvertMarkerListDB2DTO(result);
     }
 
-    public async Task CreateHierarchyAsync(BaseMarkerDTO newObj)
-    {
-      var dbObj = new DBMarker();
-      newObj.CopyAllTo(dbObj);
-      await _markerCollection.InsertOneAsync(dbObj);
-      newObj.id = dbObj.id;
-    }
-
     public async Task UpdateHierarchyAsync(BaseMarkerDTO updatedObj)
     {
       var dbObj = new DBMarker();
       updatedObj.CopyAllTo(dbObj);
 
-      await _markerCollection.ReplaceOneAsync(x => x.id == dbObj.id, dbObj);
+      if (string.IsNullOrEmpty(dbObj.id))
+      {
+        await _markerCollection.InsertOneAsync(dbObj);
+      }
+      else
+      {
+        ReplaceOptions opt = new ReplaceOptions();
+        opt.IsUpsert = true;
+        await _markerCollection.ReplaceOneAsync(x => x.id == dbObj.id, dbObj, opt);
+      }
+      
+      updatedObj.id = dbObj.id;
     }
 
     public async Task<long> RemoveAsync(List<string> ids)
@@ -230,14 +243,7 @@ namespace DbLayer.Services
 
     public async Task CreateOrUpdateHierarchyObject(BaseMarkerDTO marker)
     {
-      if (!string.IsNullOrEmpty(marker.id))
-      {
-        await UpdateHierarchyAsync(marker);
-      }
-      else
-      {
-        await CreateHierarchyAsync(marker);
-      }
+        await UpdateHierarchyAsync(marker);      
     }
 
     private static List<DBObjExtraProperty> ConvertExtraPropsToDB(List<ObjExtraPropertyDTO> extra_props)

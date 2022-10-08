@@ -99,6 +99,12 @@ namespace TrackSender
       return null;
     }
 
+    private string GenerateBsonId()
+    {
+      //var bytes = new byte[16];
+      //return string.Join("", bytes.Select(b => b.ToString("x2")));
+      return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+    }
     private async Task<FiguresDTO> CreateOrGetDistrict(int osmid)
     {
       FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString());
@@ -152,6 +158,7 @@ namespace TrackSender
 
           foreach (var coord in coords)
           {
+            var nameOfpolygon = $"{geoObj.names.name} {coords.IndexOf(coord)}";
             var start =
               new GeometryPolygonDTO();
 
@@ -167,8 +174,8 @@ namespace TrackSender
 
             var figure = new FigurePolygonDTO()
             {
-              name = geoObj.osm_id.ToString(),
-              zoom_level = "13",
+              name = nameOfpolygon,
+              zoom_level = "11",
               geometry = start
             };
 
@@ -183,21 +190,25 @@ namespace TrackSender
 
             if (parentPolygon != null)
             {
-              figure.parent_id = parentPolygon.parent_id;
+              figure.parent_id = parentPolygon.id;
 
               if (parent == MoscowOsm.osmids.First()[0])
               {
-                figure.zoom_level = "9";
+                figure.zoom_level = "10";
               }
             }
             else
             {
-              figure.zoom_level = "8";
+              figure.zoom_level = "9";
+            }
+
+            if (string.IsNullOrEmpty(figure.id))
+            {
+              figure.id = GenerateBsonId();
             }
 
             figures.polygons.Add(figure);
           }
-
         }
         else
         if (geoObj.geometry.type == "Point")
@@ -213,9 +224,9 @@ namespace TrackSender
 
           var figure = new FigureCircleDTO()
           {
-            name = geoObj.osm_id.ToString(),
+            name = geoObj.names.name,
             radius = 222,
-            zoom_level = "13",
+            zoom_level = "11",
             geometry = start
           };
 
@@ -230,16 +241,21 @@ namespace TrackSender
 
           if (parentPolygon != null)
           {
-            figure.parent_id = parentPolygon.parent_id;
+            figure.parent_id = parentPolygon.id;
 
             if (parent == MoscowOsm.osmids.First()[0])
             {
-              figure.zoom_level = "8";
+              figure.zoom_level = "10";
             }
           }
           else
           {
-            figure.zoom_level = "8";
+            figure.zoom_level = "9";
+          }
+
+          if (string.IsNullOrEmpty(figure.id))
+          {
+            figure.id = GenerateBsonId();
           }
 
           figures.circles.Add(figure);
