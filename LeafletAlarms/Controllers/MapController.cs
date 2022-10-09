@@ -261,9 +261,7 @@ namespace LeafletAlarms.Controllers
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;            
             retItem.zoom_level = geoPart.zoom_level?.ToString();
-            var objProp = props.Where(p => p.id == retItem.id).First();
-
-            
+            var objProp = props.Where(p => p.id == retItem.id).FirstOrDefault();            
             
             if (objProp != null)
             {

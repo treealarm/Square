@@ -108,6 +108,34 @@ namespace TrackSender
       //return string.Join("", bytes.Select(b => b.ToString("x2")));
       return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
     }
+    private void AddStateObjects(Root geoObj, FigurePolygonDTO parentPolygon)
+    {
+      if (geoObj.centroid.type == "Point")
+      {
+        var start =
+            new GeometryCircleDTO(
+              new Geo2DCoordDTO() {
+                  geoObj.centroid.coordinates[1],
+                  geoObj.centroid.coordinates[0] }
+              );
+
+        var figure = new FigureCircleDTO()
+        {
+          name = geoObj.names.name,
+          radius = 222,
+          zoom_level = "12",
+          geometry = start
+        };
+        figure.parent_id = parentPolygon.id;
+
+        if (string.IsNullOrEmpty(figure.id))
+        {
+          figure.id = GenerateBsonId();
+        }
+
+        m_figures.circles.Add(figure);
+      }
+    }
     private async Task<FiguresDTO> CreateOrGetDistrict(int osmid)
     {
       Console.WriteLine(osmid);
@@ -223,80 +251,33 @@ namespace TrackSender
               }
             };
 
+            if (string.IsNullOrEmpty(figure.id))
+            {
+              figure.id = GenerateBsonId();
+            }
+
             if (parentPolygon != null)
             {
               figure.parent_id = parentPolygon.id;
 
               if (parent == MoscowOsm.osmids.First()[0])
               {
-                figure.zoom_level = "10";
+                figure.zoom_level = "10";                
+              }
+              else
+              {
+                AddStateObjects(root, figure);
               }
             }
             else
             {
               figure.zoom_level = "9";
               figure.parent_id = _main_id;
-            }
-
-            if (string.IsNullOrEmpty(figure.id))
-            {
-              figure.id = GenerateBsonId();
-            }
+            }        
 
             figures.polygons.Add(figure);
           }
-        }
-        else
-        if (geoObj.geometry.type == "Point")
-        {
-          var coords =
-            JsonSerializer.Deserialize<Geo2DCoordDTO>(geoObj.geometry.coordinates.ToString());
-          var start =
-              new GeometryCircleDTO(
-                new Geo2DCoordDTO() {
-                  coords.X,
-                  coords.Y }
-                );
-
-          var figure = new FigureCircleDTO()
-          {
-            name = geoObj.names.name,
-            radius = 222,
-            zoom_level = "11",
-            geometry = start
-          };
-
-          figure.extra_props = new List<ObjExtraPropertyDTO>()
-            {
-              new ObjExtraPropertyDTO()
-              {
-                prop_name = "osmid",
-                str_val = osmid.ToString()
-              }
-            };
-
-          if (parentPolygon != null)
-          {
-            figure.parent_id = parentPolygon.id;
-
-            if (parent == MoscowOsm.osmids.First()[0])
-            {
-              figure.zoom_level = "10";
-            }
-          }
-          else
-          {
-            figure.zoom_level = "9";
-            figure.parent_id = _main_id;
-          }
-
-          if (string.IsNullOrEmpty(figure.id))
-          {
-            figure.id = GenerateBsonId();
-          }
-
-          figures.circles.Add(figure);
-        }
+        }       
         else
         {
           // Undefined.
