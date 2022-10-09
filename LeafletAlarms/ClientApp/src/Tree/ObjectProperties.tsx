@@ -148,11 +148,14 @@ export function ObjectProperties() {
         center = bounds.getCenter();
       }
       
-      let option: ViewOption = {
-        map_center: [center.lat, center.lng]//[51.5359, -0.19]
+      var viewOption: ViewOption = {
+        map_center: [center.lat, center.lng],
+        zoom: props.zoom_min
       };
-      dispatch(GuiStore.actionCreators.setMapOption(option));
-    }, [])
+
+      dispatch(GuiStore.actionCreators.setMapOption(viewOption));
+
+    }, [objProps])
 
     if (objProps == null || objProps == undefined) {
       return null;

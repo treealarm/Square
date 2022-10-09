@@ -1,10 +1,12 @@
-﻿using Domain;
+﻿using DbLayer.Services;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 using OsmSharp.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,17 +21,20 @@ namespace LeafletAlarms.Controllers
     private readonly IGeoService _geoService;
     private ITrackConsumer _stateService;
     private readonly ITrackService _tracksService;
+    private readonly ILevelService _levelService;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
       ITrackConsumer stateService,
-      ITrackService tracksService
+      ITrackService tracksService,
+      ILevelService levelService
     )
     {
       _mapService = mapsService;
       _stateService = stateService;
       _geoService = geoService;
       _tracksService = tracksService;
+      _levelService = levelService;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -257,6 +262,8 @@ namespace LeafletAlarms.Controllers
             retItem.parent_id = item.parent_id;            
             retItem.zoom_level = geoPart.zoom_level?.ToString();
             var objProp = props.Where(p => p.id == retItem.id).First();
+
+            
             
             if (objProp != null)
             {
@@ -267,8 +274,9 @@ namespace LeafletAlarms.Controllers
                 if (retItem.extra_props == null)
                 {
                   retItem.extra_props = new List<ObjExtraPropertyDTO>();
-                  retItem.extra_props.Add(color);
                 }
+
+                retItem.extra_props.Add(color);
               }
             }
           }
@@ -363,13 +371,21 @@ namespace LeafletAlarms.Controllers
         propDTO.extra_props.Add(
             new ObjExtraPropertyDTO() { str_val = $"{geoPart.zoom_level}", prop_name = "zoom_level" }
           );
+
+        var zoomLevel = await _levelService.GetByZoomLevel(geoPart.zoom_level);
+
+        if (zoomLevel != null)
+        {
+          markerDto.zoom_min = zoomLevel.zoom_min;
+          markerDto.zoom_max = zoomLevel.zoom_max;
+        }
       }
 
       if (propDTO != null && propDTO.extra_props.Count > 0)
       {
         markerDto.extra_props = propDTO.extra_props;
       }
-
+      
       return markerDto;
     }
 
@@ -380,6 +396,14 @@ namespace LeafletAlarms.Controllers
       await _mapService.UpdatePropAsync(updatedMarker);
       return CreatedAtAction(nameof(UpdateOnlyProperties), updatedMarker);
     }
+
+    [HttpPost]
+    [Route("UpdateBase")]
+    public async Task<ActionResult<BaseMarkerDTO>> UpdateBase(BaseMarkerDTO updatedMarker)
+    {
+      await _mapService.UpdateHierarchyAsync(updatedMarker);
+      return CreatedAtAction(nameof(UpdateBase), updatedMarker);
+    }
     
     [HttpPost]
     [Route("UpdateProperties")]
@@ -387,7 +411,7 @@ namespace LeafletAlarms.Controllers
     {
       if (string.IsNullOrEmpty(updatedMarker.id))
       {
-        await _mapService.CreateOrUpdateHierarchyObject(updatedMarker);
+        await _mapService.UpdateHierarchyAsync(updatedMarker);
         await _geoService.CreateGeoPoint(updatedMarker);
       }
 
@@ -476,6 +500,33 @@ namespace LeafletAlarms.Controllers
       
       var ret = CreatedAtAction(nameof(Delete), null, idsToDelete);
       return ret;
+    }
+
+    [HttpPost]
+    [Route("UpdateFigures")]
+    public async Task<ActionResult<FiguresDTO>> UpdateFigures(FiguresDTO statMarkers)
+    {
+      foreach (var figure in statMarkers.circles)
+      {
+        await _mapService.UpdateHierarchyAsync(figure);
+        await _mapService.UpdatePropNotDeleteAsync(figure);
+        await _geoService.CreateGeoPoint(figure);
+      }
+
+      foreach (var figure in statMarkers.polygons)
+      {
+        await _mapService.UpdateHierarchyAsync(figure);
+        await _mapService.UpdatePropNotDeleteAsync(figure);
+        await _geoService.CreateGeoPoint(figure);
+      }
+
+      foreach (var figure in statMarkers.polylines)
+      {
+        await _mapService.UpdateHierarchyAsync(figure);
+        await _mapService.UpdatePropNotDeleteAsync(figure);
+        await _geoService.CreateGeoPoint(figure);
+      }
+      return CreatedAtAction(nameof(UpdateFigures), statMarkers);
     }
   }
 }

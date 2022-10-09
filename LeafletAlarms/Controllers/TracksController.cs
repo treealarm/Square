@@ -57,7 +57,7 @@ namespace LeafletAlarms.Controllers
             name = TRACKS_ROOT_NAME
           };
 
-          await _mapService.CreateOrUpdateHierarchyObject(_tracksRootFolder);
+          await _mapService.UpdateHierarchyAsync(_tracksRootFolder);
         }
         else
         {
@@ -97,7 +97,7 @@ namespace LeafletAlarms.Controllers
       foreach (var figure in movedMarkers.circles)
       {
         await EnsureTracksRoot(figure);
-        await _mapService.CreateOrUpdateHierarchyObject(figure);
+        await _mapService.UpdateHierarchyAsync(figure);
         await _mapService.UpdatePropNotDeleteAsync(figure);
 
         var newPoint =
@@ -127,7 +127,7 @@ namespace LeafletAlarms.Controllers
       foreach (var figure in movedMarkers.polygons)
       { 
         await EnsureTracksRoot(figure);
-        await _mapService.CreateOrUpdateHierarchyObject(figure);
+        await _mapService.UpdateHierarchyAsync(figure);
         await _mapService.UpdatePropNotDeleteAsync(figure);
 
         trackPoints.Add(
@@ -141,7 +141,7 @@ namespace LeafletAlarms.Controllers
       foreach (var figure in movedMarkers.polylines)
       {
         await EnsureTracksRoot(figure);
-        await _mapService.CreateOrUpdateHierarchyObject(figure);
+        await _mapService.UpdateHierarchyAsync(figure);
         await _mapService.UpdatePropNotDeleteAsync(figure);
 
         trackPoints.Add(

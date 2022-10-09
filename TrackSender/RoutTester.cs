@@ -110,7 +110,7 @@ namespace TrackSender
               coord.Longitude
             });
         }
-        polylines = await TestClient.UpdateFiguresAsync(polylines, "AddTracks");
+        polylines = await TestClient.UpdateTracksAsync(polylines, "AddTracks");
       }
     }
   }

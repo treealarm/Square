@@ -93,6 +93,24 @@ namespace DbLayer.Services
           }
       }
 
+    public async Task<LevelDTO> GetByZoomLevel(string name)
+    {
+      var cash = await GetCash();
+
+      var result = cash.Where(l => l.zoom_level == name)
+        .FirstOrDefault();
+
+      if (result == null)
+      {
+        return null;
+      }
+
+      LevelDTO dto = new LevelDTO();
+      result.CopyAllTo(dto);
+
+      return dto;
+    }
+
         public async Task<List<string>> GetLevelsByZoom(double? zoom)
         {
             var cash = await GetCash();

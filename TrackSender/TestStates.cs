@@ -28,6 +28,7 @@ namespace TrackSender
     FiguresDTO m_figures = new FiguresDTO();
     HttpClient _client = new HttpClient();
     private Random _random = new Random();
+    private string _main_id = null;
     public async Task RunAsync()
     {
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
@@ -151,6 +152,7 @@ namespace TrackSender
       var me = MoscowOsm.osmids.Where(o => o[0] == osmid).FirstOrDefault();
       var parent = me[1];
 
+
       var parentPolygon = m_figures.polygons
         .Where(p => p.extra_props
           .Any(e => e.prop_name == "osmid" && e.str_val == parent.ToString())   
@@ -233,6 +235,7 @@ namespace TrackSender
             else
             {
               figure.zoom_level = "9";
+              figure.parent_id = _main_id;
             }
 
             if (string.IsNullOrEmpty(figure.id))
@@ -284,6 +287,7 @@ namespace TrackSender
           else
           {
             figure.zoom_level = "9";
+            figure.parent_id = _main_id;
           }
 
           if (string.IsNullOrEmpty(figure.id))
@@ -302,7 +306,23 @@ namespace TrackSender
       return figures;
     }
     public async Task BuildMoscow()
-    {      
+    {
+      var parents = await _testClient.GetByName("Russia");
+
+      if (parents == null || parents.Count == 0)
+      {
+        BaseMarkerDTO marker = new BaseMarkerDTO()
+        {
+          name = "Russia"
+        };
+        marker = await _testClient.UpdateBase(marker);
+        _main_id = marker.id;
+      }
+      else
+      {
+        _main_id = parents.FirstOrDefault().id;
+      }
+
       foreach (var osmid in MoscowOsm.osmids)
       {
         var figure = await CreateOrGetDistrict(osmid[0]);
@@ -320,7 +340,7 @@ namespace TrackSender
         }
       }
 
-      var figuresCreated = await _testClient.UpdateFiguresAsync(m_figures, "AddTracks");
+      var figuresCreated = await _testClient.UpdateFiguresAsync(m_figures);
     }
   }
 }

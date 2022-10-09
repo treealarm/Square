@@ -45,6 +45,8 @@ export interface ObjExtraPropertyDTO {
 
 export interface IObjProps extends Marker {
   extra_props?: ObjExtraPropertyDTO[];
+  zoom_min?: number;
+  zoom_max?: number;
 }
 
 export function setExtraProp(
@@ -157,6 +159,7 @@ export interface BoxTrackDTO extends BoundBox
 
 export interface ViewOption {
   map_center: LatLngPair;
+  zoom?: number;
 }
 
 export interface ObjectStateDTO {

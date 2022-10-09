@@ -2,6 +2,7 @@
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.ObjectInterfaces;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -239,11 +240,6 @@ namespace DbLayer.Services
       var result = await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
 
       return result.DeletedCount;
-    }
-
-    public async Task CreateOrUpdateHierarchyObject(BaseMarkerDTO marker)
-    {
-        await UpdateHierarchyAsync(marker);      
     }
 
     private static List<DBObjExtraProperty> ConvertExtraPropsToDB(List<ObjExtraPropertyDTO> extra_props)

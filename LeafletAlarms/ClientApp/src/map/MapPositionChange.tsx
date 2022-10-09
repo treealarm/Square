@@ -18,12 +18,12 @@ export function MapPositionChange() {
 
   useEffect(() => {
     let map_center = guiStates.map_option?.map_center;
-
+    let zoom = guiStates.map_option?.zoom;
     if (map_center != null) {
-      parentMap.setView(map_center);
+      parentMap.setView(map_center, zoom);
     }
    
-  }, [guiStates.map_option?.map_center]);
+  }, [guiStates.map_option]);
 
   return (
     <React.Fragment>

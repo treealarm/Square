@@ -134,7 +134,7 @@ namespace TrackSender
 
       if (figures != null && figures.circles.Count > 0)
       {
-        figures = await _testClient.UpdateFiguresAsync(figures, "AddTracks");
+        figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
         _figures.circles.AddRange(figures.circles);
       }
 
@@ -186,7 +186,7 @@ namespace TrackSender
         }
 
         //await Task.Delay(2000);
-        await _testClient.UpdateFiguresAsync(_figures, "UpdateTracks");
+        await _testClient.UpdateTracksAsync(_figures, "UpdateTracks");
         Console.WriteLine(j.ToString());
       }
     }
