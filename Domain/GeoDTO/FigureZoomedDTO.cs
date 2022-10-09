@@ -7,7 +7,7 @@ namespace Domain.GeoDTO
   {
     public string zoom_level { get; set; }
 
-    // Optional property to update properties.
+    // Optional property to update/receive properties.
     public List<ObjExtraPropertyDTO> extra_props { get; set; }
   }
 }

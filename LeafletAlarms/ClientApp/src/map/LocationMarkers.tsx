@@ -5,7 +5,7 @@ import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import { ApplicationState } from '../store';
-import { BoundBox } from '../store/Marker';
+import { BoundBox, getExtraProp, IObjProps } from '../store/Marker';
 
 
 import { useCallback, useMemo, useEffect } from 'react'
@@ -193,7 +193,8 @@ export function LocationMarkers() {
   
 
   const getColor = useCallback(
-    (id: string) => {
+    (marker: IObjProps) => {
+      var id = marker.id;
 
       var retColor: L.PathOptions    = {    };
       retColor.fillColor = colorOptionsUnselected.fillColor;
@@ -237,7 +238,12 @@ export function LocationMarkers() {
         retColor.color = 'red';
       }
       else {
+        var color = getExtraProp(marker, "color");
 
+        if (color != null) {
+          retColor.fillColor = color;
+          retColor.color = color;
+        }
       }
 
       return retColor;
@@ -257,7 +263,7 @@ export function LocationMarkers() {
           <MyCircle
             key={marker.id}
             center={marker.geometry.coord}
-            pathOptions={getColor(marker.id)}
+            pathOptions={getColor(marker)}
             radius={marker.radius > 0 ? marker.radius : 10}
             hidden={marker.id == hidden_id}
 
@@ -268,7 +274,7 @@ export function LocationMarkers() {
       {
         markers?.polygons?.map((marker, index) =>
           <MyPolygon
-            pathOptions={getColor(marker.id)}
+            pathOptions={getColor(marker)}
             positions={marker.geometry.coord}
             key={marker.id}
             hidden={marker.id == hidden_id}
@@ -282,7 +288,7 @@ export function LocationMarkers() {
       {
         markers?.polylines?.map((marker, index) =>
           <MyPolyline
-            pathOptions={getColor(marker.id)}
+            pathOptions={getColor(marker)}
             positions={marker.geometry.coord}
             key={marker.id}
             hidden={marker.id == hidden_id}

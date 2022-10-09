@@ -21,18 +21,18 @@ export interface IArrayCoord {
   coord: LatLngPair[];
 }
 
-export interface ICircle extends Marker {
+export interface ICircle extends IObjProps {
   geometry: ICoord;
   type: typeof PointType;
   radius: number;
 }
 
-export interface IPolygon extends Marker {
+export interface IPolygon extends IObjProps {
   geometry: IArrayCoord;
   type: typeof PolygonType;
 }
 
-export interface IPolyline extends Marker {
+export interface IPolyline extends IObjProps {
   geometry: IArrayCoord;
   type: typeof LineStringType;
 }
@@ -44,7 +44,7 @@ export interface ObjExtraPropertyDTO {
 }
 
 export interface IObjProps extends Marker {
-  extra_props: ObjExtraPropertyDTO[];
+  extra_props?: ObjExtraPropertyDTO[];
 }
 
 export function setExtraProp(

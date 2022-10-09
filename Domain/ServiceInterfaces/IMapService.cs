@@ -22,6 +22,7 @@ namespace Domain.ServiceInterfaces
     Task<List<BaseMarkerDTO>> GetTopChildren(List<string> parentIds);
     Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id);
     Task<ObjPropsDTO> GetPropAsync(string id);
+    Task<List<ObjPropsDTO>> GetPropsAsync(List<string> ids);
     Task CreateOrUpdateHierarchyObject(BaseMarkerDTO marker);
     Task UpdatePropAsync(ObjPropsDTO updatedObj);
     Task UpdateHierarchyAsync(BaseMarkerDTO updatedObj);

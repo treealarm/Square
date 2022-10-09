@@ -357,6 +357,18 @@ namespace DbLayer.Services
       return Conver2Property2DTO(obj);
     }
 
+    public async Task<List<ObjPropsDTO>> GetPropsAsync(List<string> ids)
+    {
+      List<ObjPropsDTO> list = new List<ObjPropsDTO>();
+      var objs = await _propCollection.Find(x => ids.Contains(x.id)).ToListAsync();
+
+      foreach (var obj in objs)
+      {
+        list.Add(Conver2Property2DTO(obj));
+      }
+      return list;
+    }
+
     public async Task<List<ObjPropsDTO>> GetPropByValuesAsync(
       ObjPropsSearchDTO propFilter,
       string start_id,

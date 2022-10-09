@@ -3,6 +3,7 @@ using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -26,6 +27,7 @@ namespace TrackSender
     TestClient _testClient = new TestClient();
     FiguresDTO m_figures = new FiguresDTO();
     HttpClient _client = new HttpClient();
+    private Random _random = new Random();
     public async Task RunAsync()
     {
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
@@ -107,10 +109,31 @@ namespace TrackSender
     }
     private async Task<FiguresDTO> CreateOrGetDistrict(int osmid)
     {
+      Console.WriteLine(osmid);
+
+      var color = 
+        $"#{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
+
       FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString());
       
       if (figures != null && !figures.IsEmpty())
       {
+        foreach (var figure in figures.polygons)
+        {
+          figure.extra_props = new List<ObjExtraPropertyDTO>()
+            {
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = "osmid",
+                str_val = osmid.ToString()
+              },
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = "color",
+                str_val = color
+              }
+            };
+        }
         return figures;        
       }
 
@@ -154,11 +177,16 @@ namespace TrackSender
             coords = 
               JsonSerializer.Deserialize<MultiPolygon>(geoObj.geometry.coordinates.ToString());
           }
-            
 
           foreach (var coord in coords)
           {
             var nameOfpolygon = $"{geoObj.names.name} {coords.IndexOf(coord)}";
+
+            if (coords.Count == 1)
+            {
+              nameOfpolygon = $"{geoObj.names.name}";
+            }
+
             var start =
               new GeometryPolygonDTO();
 
@@ -185,6 +213,11 @@ namespace TrackSender
               {
                 prop_name = "osmid",
                 str_val = osmid.ToString()
+              },
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = "color",
+                str_val = color
               }
             };
 
