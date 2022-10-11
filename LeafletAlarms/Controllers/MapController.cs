@@ -1,15 +1,22 @@
-﻿using DbLayer.Services;
-using Domain;
+﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using Itinero;
 using Microsoft.AspNetCore.Mvc;
-using OsmSharp.API;
+using Microsoft.Net.Http.Headers;
+using SharpCompress.Compressors.Xz;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LeafletAlarms.Controllers
 {
@@ -48,6 +55,60 @@ namespace LeafletAlarms.Controllers
       }
 
       return marker;
+    }
+
+    [HttpGet("GetTiles/{z}/{x}/{y}.png")]
+    public async Task<FileResult> GetTiles(string z, string x, string y)
+    {
+      byte[] data = null;
+      var tile_server = new Uri($"https://tile.openstreetmap.org/{z}/{x}/{y}.png");
+
+      string path = AppDomain.CurrentDomain.BaseDirectory.ToString();
+
+      string localName = Path.Combine(path, "map_cash", tile_server.LocalPath.TrimStart('/'));
+
+      if (System.IO.File.Exists(localName))
+      {
+        try
+        {
+          data = await System.IO.File.ReadAllBytesAsync(localName);
+          return File(data, "image/png");
+        }
+        catch (Exception)
+        {
+        }
+      }      
+
+      try
+      {
+        using (HttpClient httpClient = new HttpClient())
+        {
+          var productValue = new ProductInfoHeaderValue("Mozilla", "1.0");
+          var commentValue = new ProductInfoHeaderValue("(+http://www.itv.ru)");
+
+          httpClient.DefaultRequestHeaders.Add(
+              HeaderNames.UserAgent, productValue.ToString());
+          httpClient.DefaultRequestHeaders.Add(
+              HeaderNames.UserAgent, commentValue.ToString());
+
+          data = await httpClient.GetByteArrayAsync(tile_server);
+        }
+
+        try
+        {
+          Directory.CreateDirectory(Path.GetDirectoryName(localName));
+          System.IO.File.WriteAllBytes(localName, data);
+        }
+        catch (Exception) // Couldn't save the file
+        {
+        }
+      }
+      catch(Exception ex)
+      {
+
+      }
+
+      return File(data, "image/png");
     }
 
     [HttpGet()]

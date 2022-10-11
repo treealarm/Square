@@ -8,9 +8,29 @@ import {
 import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
 import { TrackViewer } from "../tracks/TrackViewer";
+import { useRef } from "react";
+
+
 
 export function MapComponent() {
 
+
+  var url = 'http://';
+
+  if (window.location.protocol == "https:") {
+    url = 'https://';
+  }
+
+  url = url
+    + window.location.hostname
+    + ':'
+    + window.location.port
+    + '/api/Map/GetTiles'
+    + '/{z}/{x}/{y}.png';
+
+
+
+  var url_classic = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
   return (
     <MapContainer
       center={[55.752696480817086, 37.583007383349745]}
@@ -23,7 +43,7 @@ export function MapComponent() {
 
       <TileLayer
         attribution="&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        url={url}
       />
     </MapContainer>
   );
