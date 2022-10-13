@@ -1,0 +1,138 @@
+{
+    "place_id": 113178682,
+    "parent_place_id": 297893093,
+    "osm_type": "W",
+    "osm_id": 30131620,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 51-й километр",
+    "names": {
+        "int_ref": "E 30;E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 51-й километр",
+        "name:ru": "МКАД, 51-й километр"
+    },
+    "addresstags": {
+        "postcode": "121471"
+    },
+    "housenumber": null,
+    "calculated_postcode": "121471",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:28+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.4147156,
+            55.6882283
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.4167378,
+                55.6833538
+            ],
+            [
+                37.4165248,
+                55.6837313
+            ],
+            [
+                37.4164124,
+                55.6839568
+            ],
+            [
+                37.4163311,
+                55.6841199
+            ],
+            [
+                37.4161822,
+                55.6844463
+            ],
+            [
+                37.4158919,
+                55.6851316
+            ],
+            [
+                37.4157539,
+                55.6854935
+            ],
+            [
+                37.4156599,
+                55.6857479
+            ],
+            [
+                37.4156029,
+                55.6859023
+            ],
+            [
+                37.4154047,
+                55.6864391
+            ],
+            [
+                37.4149624,
+                55.6876581
+            ],
+            [
+                37.4147156,
+                55.6882283
+            ],
+            [
+                37.4144407,
+                55.6887727
+            ],
+            [
+                37.414251,
+                55.68911
+            ],
+            [
+                37.4138103,
+                55.6898125
+            ],
+            [
+                37.4135767,
+                55.6901527
+            ],
+            [
+                37.4127951,
+                55.6911781
+            ],
+            [
+                37.4125228,
+                55.691499
+            ],
+            [
+                37.4119378,
+                55.6921345
+            ],
+            [
+                37.4116187,
+                55.6924555
+            ],
+            [
+                37.4113204,
+                55.6927556
+            ]
+        ]
+    }
+}

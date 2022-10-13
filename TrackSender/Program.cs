@@ -18,7 +18,10 @@ namespace TrackSender
 {
   class Program
   {
-   
+    static public string GenerateBsonId()
+    {
+      return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+    }
 
     static void Main(string[] args)
     {
@@ -29,7 +32,11 @@ namespace TrackSender
 
         var testMove = new TestMovements();
         var testStates = new TestStates();
+        var moscowBuilder = new NominatimProcessor();
         List<Task> tasks = new List<Task>();
+
+        var taskMoscowBuild = moscowBuilder.RunAsync(token, tasks);
+        Task.WaitAll(taskMoscowBuild);
 
         var taskStates = testStates.RunAsync(token, tasks);
         //var taskMove = testMove.RunAsync();

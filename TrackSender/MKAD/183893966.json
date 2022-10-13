@@ -1,0 +1,66 @@
+{
+    "place_id": 148577064,
+    "parent_place_id": 298051335,
+    "osm_type": "W",
+    "osm_id": 183893966,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 27-й километр",
+    "names": {
+        "int_ref": "E 30",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 27-й километр",
+        "name:ru": "МКАД, 27-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "115598",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:14+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6888875,
+            55.5760888
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6871019,
+                55.5754285
+            ],
+            [
+                37.6877222,
+                55.5756531
+            ],
+            [
+                37.6888875,
+                55.5760888
+            ],
+            [
+                37.6932283,
+                55.5777119
+            ]
+        ]
+    }
+}

@@ -1,0 +1,78 @@
+{
+    "place_id": 113225743,
+    "parent_place_id": 297654265,
+    "osm_type": "W",
+    "osm_id": 30131634,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 58-й километр",
+    "names": {
+        "int_ref": "E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 58-й километр",
+        "name:ru": "МКАД, 58-й километр"
+    },
+    "addresstags": {
+        "postcode": "115580"
+    },
+    "housenumber": null,
+    "calculated_postcode": "115580",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:25+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.370504,
+            55.7443068
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3720833,
+                55.7410842
+            ],
+            [
+                37.3715959,
+                55.7420789
+            ],
+            [
+                37.370504,
+                55.7443068
+            ],
+            [
+                37.3697487,
+                55.7465195
+            ],
+            [
+                37.3693281,
+                55.7485581
+            ],
+            [
+                37.3691999,
+                55.74986
+            ]
+        ]
+    }
+}

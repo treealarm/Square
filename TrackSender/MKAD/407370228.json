@@ -1,0 +1,64 @@
+{
+    "place_id": 199696466,
+    "parent_place_id": 297286149,
+    "osm_type": "W",
+    "osm_id": 407370228,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 82-й километр",
+    "names": {
+        "int_ref": "E 22",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 82-й километр",
+        "name:ru": "МКАД, 82-й километр"
+    },
+    "addresstags": {
+        "postcode": "127253"
+    },
+    "housenumber": null,
+    "calculated_postcode": "127253",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:11+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5514506,
+            55.908534
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5497526,
+                55.9083426
+            ],
+            [
+                37.5514506,
+                55.908534
+            ],
+            [
+                37.5533627,
+                55.9087434
+            ]
+        ]
+    }
+}

@@ -1,0 +1,76 @@
+{
+    "place_id": 113440113,
+    "parent_place_id": 298145182,
+    "osm_type": "W",
+    "osm_id": 30130878,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 7-й километр",
+    "names": {
+        "int_ref": "E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 7-й километр",
+        "name:ru": "МКАД, 7-й километр"
+    },
+    "addresstags": {
+        "postcode": "111538"
+    },
+    "housenumber": null,
+    "calculated_postcode": "111538",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:11+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.839358,
+            55.7202335
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.8383206,
+                55.7140191
+            ],
+            [
+                37.8385582,
+                55.7147311
+            ],
+            [
+                37.8387407,
+                55.7155128
+            ],
+            [
+                37.8389095,
+                55.7165561
+            ],
+            [
+                37.839358,
+                55.7202335
+            ],
+            [
+                37.839693,
+                55.7229791
+            ]
+        ]
+    }
+}

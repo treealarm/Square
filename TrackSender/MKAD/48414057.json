@@ -1,0 +1,76 @@
+{
+    "place_id": 118350887,
+    "parent_place_id": 297987833,
+    "osm_type": "W",
+    "osm_id": 48414057,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 24-й километр",
+    "names": {
+        "int_ref": "E 30;AH6;E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 24-й километр",
+        "name:ru": "МКАД, 24-й километр"
+    },
+    "addresstags": {
+        "postcode": "115582"
+    },
+    "housenumber": null,
+    "calculated_postcode": "115582",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:18+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.725937,
+            55.5904501
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.7370626,
+                55.5951121
+            ],
+            [
+                37.7323145,
+                55.5931285
+            ],
+            [
+                37.725937,
+                55.5904501
+            ],
+            [
+                37.7217054,
+                55.5886779
+            ],
+            [
+                37.7201605,
+                55.5880383
+            ],
+            [
+                37.7185171,
+                55.5874011
+            ]
+        ]
+    }
+}

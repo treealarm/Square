@@ -1,0 +1,76 @@
+{
+    "place_id": 113609768,
+    "parent_place_id": 297288092,
+    "osm_type": "W",
+    "osm_id": 30130894,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 13-й километр",
+    "names": {
+        "int_ref": "E 30;AH6;E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 13-й километр",
+        "name:ru": "МКАД, 13-й километр"
+    },
+    "addresstags": {
+        "postcode": "109380"
+    },
+    "housenumber": null,
+    "calculated_postcode": "109380",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:04+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.8391115,
+            55.6647977
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.8399053,
+                55.6613132
+            ],
+            [
+                37.8398092,
+                55.6622023
+            ],
+            [
+                37.8396727,
+                55.6629726
+            ],
+            [
+                37.8394739,
+                55.6637435
+            ],
+            [
+                37.8391115,
+                55.6647977
+            ],
+            [
+                37.8371327,
+                55.6701768
+            ]
+        ]
+    }
+}

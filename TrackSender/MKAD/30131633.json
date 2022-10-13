@@ -1,0 +1,79 @@
+{
+    "place_id": 112363948,
+    "parent_place_id": 297654265,
+    "osm_type": "W",
+    "osm_id": 30131633,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 57-й километр",
+    "names": {
+        "int_ref": "E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 57-й километр",
+        "name:ru": "МКАД, 57-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121596",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:25+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3744442,
+            55.7356361
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3717135,
+                55.7409841
+            ],
+            [
+                37.3729331,
+                55.7386138
+            ],
+            [
+                37.3744442,
+                55.7356361
+            ],
+            [
+                37.374596,
+                55.7353552
+            ],
+            [
+                37.3757084,
+                55.7331988
+            ],
+            [
+                37.3759051,
+                55.732809
+            ],
+            [
+                37.3761252,
+                55.7323726
+            ]
+        ]
+    }
+}

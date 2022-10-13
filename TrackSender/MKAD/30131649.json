@@ -1,0 +1,67 @@
+{
+    "place_id": 112905885,
+    "parent_place_id": 297805735,
+    "osm_type": "W",
+    "osm_id": 30131649,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 66-й километр",
+    "names": {
+        "int_ref": "E 22;E 105",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 66-й километр",
+        "name:ru": "МКАД, 66-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "123592",
+    "country_code": "ru",
+    "indexed_date": "2022-08-16T06:55:53+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "6",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3893528,
+            55.8112445
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3890884,
+                55.8104125
+            ],
+            [
+                37.3893528,
+                55.8112445
+            ],
+            [
+                37.3900097,
+                55.8133118
+            ],
+            [
+                37.3901476,
+                55.8137457
+            ]
+        ]
+    }
+}

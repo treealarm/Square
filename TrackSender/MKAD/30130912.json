@@ -1,0 +1,90 @@
+{
+    "place_id": 112660983,
+    "parent_place_id": 297987833,
+    "osm_type": "W",
+    "osm_id": 30130912,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 22-й километр",
+    "names": {
+        "int_ref": "E 30;E 115;AH6",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 22-й километр",
+        "name:ru": "МКАД, 22-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "115597",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:13+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.7558046,
+            55.6033402
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.7614821,
+                55.6064624
+            ],
+            [
+                37.75767,
+                55.6043661
+            ],
+            [
+                37.7562295,
+                55.6035739
+            ],
+            [
+                37.7558046,
+                55.6033402
+            ],
+            [
+                37.7548791,
+                55.6028399
+            ],
+            [
+                37.7537622,
+                55.6022643
+            ],
+            [
+                37.7528629,
+                55.6018283
+            ],
+            [
+                37.7517836,
+                55.6013377
+            ],
+            [
+                37.7508669,
+                55.6009448
+            ],
+            [
+                37.7498427,
+                55.6005051
+            ]
+        ]
+    }
+}

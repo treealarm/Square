@@ -1,0 +1,60 @@
+{
+    "place_id": 136704350,
+    "parent_place_id": 297666705,
+    "osm_type": "W",
+    "osm_id": 135757288,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 14-й километр",
+    "names": {
+        "int_ref": "E 30;AH6;E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 14-й километр",
+        "name:ru": "МКАД, 14-й километр"
+    },
+    "addresstags": {
+        "postcode": "109429"
+    },
+    "housenumber": null,
+    "calculated_postcode": "109429",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:11+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.8376622,
+            55.6543533
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.8376622,
+                55.6543533
+            ],
+            [
+                37.8371635,
+                55.6536035
+            ]
+        ]
+    }
+}

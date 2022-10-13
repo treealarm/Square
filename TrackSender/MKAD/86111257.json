@@ -1,0 +1,64 @@
+{
+    "place_id": 124786034,
+    "parent_place_id": 297995439,
+    "osm_type": "W",
+    "osm_id": 86111257,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 75-й километр",
+    "names": {
+        "int_ref": "E 22;E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 75-й километр",
+        "name:ru": "МКАД, 75-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "125481",
+    "country_code": "ru",
+    "indexed_date": "2022-07-28T17:36:29+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "no",
+        "surface": "asphalt",
+        "turn:lanes": "through|through|through|through|through|slight_right"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.4386354,
+            55.8796954
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.4378693,
+                55.8794627
+            ],
+            [
+                37.4386354,
+                55.8796954
+            ],
+            [
+                37.4406708,
+                55.8803371
+            ]
+        ]
+    }
+}

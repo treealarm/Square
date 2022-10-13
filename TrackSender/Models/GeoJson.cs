@@ -17,7 +17,7 @@ namespace TrackSender.Models
   {
   }
 
-  public class Polygon : List<List<Geo2DCoordDTO>>
+  public class Polygon : List<CoordinateList>
   {
 
   }
@@ -25,7 +25,7 @@ namespace TrackSender.Models
   {
 
   }
-
+  
   public class Centroid
   {
     public string type { get; set; }

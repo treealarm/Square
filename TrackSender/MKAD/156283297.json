@@ -1,0 +1,59 @@
+{
+    "place_id": 141460147,
+    "parent_place_id": 297480407,
+    "osm_type": "W",
+    "osm_id": 156283297,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 79-й километр",
+    "names": {
+        "int_ref": "E 22",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 79-й километр",
+        "name:ru": "МКАД, 79-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "125599",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:29+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.4966967,
+            55.8920636
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.4963021,
+                55.8918888
+            ],
+            [
+                37.4966967,
+                55.8920636
+            ]
+        ]
+    }
+}

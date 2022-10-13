@@ -1,0 +1,80 @@
+{
+    "place_id": 112677649,
+    "parent_place_id": 20789965,
+    "osm_type": "W",
+    "osm_id": 30131895,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 80-й километр",
+    "names": {
+        "int_ref": "E 22",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 80-й километр",
+        "name:ru": "МКАД, 80-й километр"
+    },
+    "addresstags": {
+        "postcode": "127644"
+    },
+    "housenumber": null,
+    "calculated_postcode": "127644",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:23+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5187584,
+            55.9017611
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5083822,
+                55.8972051
+            ],
+            [
+                37.5091078,
+                55.8975241
+            ],
+            [
+                37.5094364,
+                55.8976686
+            ],
+            [
+                37.510156,
+                55.8979834
+            ],
+            [
+                37.5187584,
+                55.9017611
+            ],
+            [
+                37.5196142,
+                55.9021421
+            ],
+            [
+                37.5209186,
+                55.9027228
+            ]
+        ]
+    }
+}

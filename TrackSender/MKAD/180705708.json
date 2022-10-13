@@ -1,0 +1,61 @@
+{
+    "place_id": 148916979,
+    "parent_place_id": 297666705,
+    "osm_type": "W",
+    "osm_id": 180705708,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 17-й километр",
+    "names": {
+        "int_ref": "E 30;AH6;E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 17-й километр",
+        "name:ru": "МКАД, 17-й километр"
+    },
+    "addresstags": {
+        "postcode": "109429"
+    },
+    "housenumber": null,
+    "calculated_postcode": "109429",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:16+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.8070865,
+            55.6324693
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.8070865,
+                55.6324693
+            ],
+            [
+                37.8067411,
+                55.6322435
+            ]
+        ]
+    }
+}

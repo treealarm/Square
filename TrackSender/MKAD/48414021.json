@@ -1,0 +1,60 @@
+{
+    "place_id": 118811209,
+    "parent_place_id": 297993442,
+    "osm_type": "W",
+    "osm_id": 48414021,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 35-й километр",
+    "names": {
+        "int_ref": "E 30;E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 35-й километр",
+        "name:ru": "МКАД, 35-й километр"
+    },
+    "addresstags": {
+        "postcode": "117628"
+    },
+    "housenumber": null,
+    "calculated_postcode": "117628",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:12+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5691585,
+            55.58178
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5691585,
+                55.58178
+            ],
+            [
+                37.5735737,
+                55.5807224
+            ]
+        ]
+    }
+}

@@ -1,0 +1,69 @@
+{
+    "place_id": 195556033,
+    "parent_place_id": 297654904,
+    "osm_type": "W",
+    "osm_id": 384885376,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 55-й километр",
+    "names": {
+        "int_ref": "E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 55-й километр",
+        "name:ru": "МКАД, 55-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121596",
+    "country_code": "ru",
+    "indexed_date": "2022-10-10T23:17:42+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "sidewalk": "no",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3824593,
+            55.720737
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3838075,
+                55.718122
+            ],
+            [
+                37.383224,
+                55.7192775
+            ],
+            [
+                37.3824593,
+                55.720737
+            ],
+            [
+                37.3809224,
+                55.723796
+            ]
+        ]
+    }
+}

@@ -20,117 +20,20 @@ namespace TrackSender
 {
   internal class TestStates
   {
-    //https://wiki.openstreetmap.org/wiki/RU:%D0%9C%D0%BE%D1%81%D0%BA%D0%B2%D0%B0/%D0%90%D0%B4%D0%BC%D0%B8%D0%BD%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D0%BE-%D1%82%D0%B5%D1%80%D1%80%D0%B8%D1%82%D0%BE%D1%80%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B5_%D0%B4%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5
-    //childeren of moscow:
-    //https://nominatim.openstreetmap.org/details?osmtype=R&osmid=102269&addressdetails=1&hierarchy=1&group_hierarchy=1&format=json&pretty=1
-    //https://nominatim.openstreetmap.org/details.php?osmtype=R&osmid=102269&addressdetails=1&hierarchy=0&group_hierarchy=1&format=json
-    //https://nominatim.openstreetmap.org/details?place_id=337939658&format=json&pretty=1&hierarchy=1
-    //https://nominatim.openstreetmap.org/details?place_id=337939658&format=json&pretty=1
+
    
     TestClient _testClient = new TestClient();
     FiguresDTO m_figures = new FiguresDTO();
-    HttpClient _client = new HttpClient();
+    
     private Random _random = new Random();
     private string _main_id = null;
     public async Task RunAsync(CancellationToken token, List<Task> tasks)
     {
-      _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
-      _client.DefaultRequestHeaders.Accept.Clear();
-      _client.DefaultRequestHeaders.Accept.Add(
-          new MediaTypeWithQualityHeaderValue("application/json"));
-
-      _client.DefaultRequestHeaders.UserAgent.Clear();
-      _client
-        .DefaultRequestHeaders
-        .UserAgent
-        .Add(
-          new ProductInfoHeaderValue(
-            "f1ana.Nominatim.API",
-            Assembly.GetExecutingAssembly().GetName().Version.ToString()));
-      //await SaveMoscowToLocalDisk();
       await BuildMoscow();
 
       tasks.Add(EmulateState(token));      
     }
 
-    private async Task SaveMoscowToLocalDisk()
-    { 
-      foreach (var osmid in MoscowOsm.osmids)
-      {
-        string filename = $"{osmid[0]}.json";
-        filename = Path.Combine(App.Default.LocalPath, filename);
-
-        if (File.Exists(filename))
-        {
-          continue;
-        }
-
-        var s = await GetByOsmId(osmid[0]);
-
-        if (s == null)
-        {
-          continue;
-        }
-        await File.WriteAllTextAsync(
-          filename, s);
-      }
-    }
-    public async Task<string> GetByOsmId(int osmid)
-    {
-      try
-      {
-        var request = $"details?osmtype=R&osmid={osmid}&polygon_geojson=1&format=json&pretty=1";
-        HttpResponseMessage response =
-          await _client.GetAsync(request);
-
-        response.EnsureSuccessStatusCode();
-        var s = await response.Content.ReadAsStringAsync();
-
-        return s;
-      }
-      catch(Exception ex)
-      {
-        Console.WriteLine(ex.Message);
-      }
-      return null;
-      
-    }
-    public async Task<Root> GetMoscowDistrictFromDisk(int osmid)
-    {
-      //string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";
-
-      var assembly = Assembly.GetExecutingAssembly();
-      var resourceName = $"TrackSender.PolygonJson.{osmid}.json";
-
-      string s = string.Empty;
-      using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        s = await reader.ReadToEndAsync();
-      }
-
-      // Deserialize the updated product from the response body.
-      //var s = await File.ReadAllTextAsync(filename);
-
-      try
-      {        
-        var json = JsonSerializer.Deserialize<Root>(s);
-        return json;
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.Message);
-      }
-
-      return null;
-    }
-
-    private string GenerateBsonId()
-    {
-      //var bytes = new byte[16];
-      //return string.Join("", bytes.Select(b => b.ToString("x2")));
-      return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
-    }
     private void AddStateObjects(Root geoObj, FigurePolygonDTO parentPolygon)
     {
       Random random = new Random();
@@ -156,7 +59,7 @@ namespace TrackSender
 
         if (string.IsNullOrEmpty(figure.id))
         {
-          figure.id = GenerateBsonId();
+          figure.id = Program.GenerateBsonId();
         }
 
         figure.extra_props = new List<ObjExtraPropertyDTO>()
@@ -171,6 +74,7 @@ namespace TrackSender
         m_figures.circles.Add(figure);
       }
     }
+
     private async Task<FiguresDTO> CreateOrGetDistrict(int osmid)
     {
       Console.WriteLine(osmid);
@@ -205,9 +109,9 @@ namespace TrackSender
       figures.circles = new List<FigureCircleDTO>();
       figures.polygons = new List<FigurePolygonDTO>();
 
-      var root = await GetMoscowDistrictFromDisk(osmid);
+      var geoObj = await NominatimProcessor.GetOsmFigureFromDisk(osmid, "PolygonJson");
 
-      if (root == null)
+      if (geoObj == null)
       {
         return null;
       }
@@ -221,7 +125,6 @@ namespace TrackSender
           .Any(e => e.prop_name == "osmid" && e.str_val == parent.ToString())   
         ).FirstOrDefault();
 
-      var geoObj = root;
       {
         if (geoObj.geometry.type == "MultiPolygon" ||
           geoObj.geometry.type == "Polygon")
@@ -288,7 +191,7 @@ namespace TrackSender
 
             if (string.IsNullOrEmpty(figure.id))
             {
-              figure.id = GenerateBsonId();
+              figure.id = Program.GenerateBsonId();
             }
 
             if (parentPolygon != null)
@@ -301,7 +204,7 @@ namespace TrackSender
               }
               else
               {
-                AddStateObjects(root, figure);
+                AddStateObjects(geoObj, figure);
               }
             }
             else
@@ -362,6 +265,14 @@ namespace TrackSender
           figure = await CreateOrGetDistrict(osmid[0]);
           // Empty figure?
         }
+      }
+      var mkad = await _testClient.GetByParams("mkad", "true");
+
+      if (mkad == null || mkad.IsEmpty())
+      {
+        mkad = new FiguresDTO();
+        mkad.polylines = await NominatimProcessor.GetMkadPolyline();
+        mkad = await _testClient.UpdateFiguresAsync(mkad);
       }
 
       var updated_figures = await _testClient.UpdateFiguresAsync(m_figures);

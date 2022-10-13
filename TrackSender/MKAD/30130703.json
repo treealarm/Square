@@ -1,0 +1,84 @@
+{
+    "place_id": 112869175,
+    "parent_place_id": 297634700,
+    "osm_type": "W",
+    "osm_id": 30130703,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 5-й километр",
+    "names": {
+        "int_ref": "E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 5-й километр",
+        "name:ru": "МКАД, 5-й километр"
+    },
+    "addresstags": {
+        "postcode": "111538"
+    },
+    "housenumber": null,
+    "calculated_postcode": "111538",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:19+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.8410622,
+            55.7372283
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.8414561,
+                55.7409308
+            ],
+            [
+                37.8412633,
+                55.7391183
+            ],
+            [
+                37.8411478,
+                55.7380333
+            ],
+            [
+                37.8410622,
+                55.7372283
+            ],
+            [
+                37.8407147,
+                55.7342506
+            ],
+            [
+                37.8406759,
+                55.7339181
+            ],
+            [
+                37.8405692,
+                55.7330759
+            ],
+            [
+                37.8403551,
+                55.7319656
+            ]
+        ]
+    }
+}

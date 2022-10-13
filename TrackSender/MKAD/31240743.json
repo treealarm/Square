@@ -1,0 +1,75 @@
+{
+    "place_id": 113059385,
+    "parent_place_id": 297805735,
+    "osm_type": "W",
+    "osm_id": 31240743,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 63-й километр",
+    "names": {
+        "int_ref": "E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 63-й километр",
+        "name:ru": "МКАД, 63-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121500",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:25+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3749456,
+            55.7921649
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3769688,
+                55.7942841
+            ],
+            [
+                37.3753523,
+                55.7925909
+            ],
+            [
+                37.3749456,
+                55.7921649
+            ],
+            [
+                37.3736563,
+                55.7908487
+            ],
+            [
+                37.3730585,
+                55.7902141
+            ],
+            [
+                37.372998,
+                55.7901417
+            ]
+        ]
+    }
+}

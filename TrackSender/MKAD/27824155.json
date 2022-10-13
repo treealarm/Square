@@ -1,0 +1,94 @@
+{
+    "place_id": 112184696,
+    "parent_place_id": 20583050,
+    "osm_type": "W",
+    "osm_id": 27824155,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 53-й километр",
+    "names": {
+        "int_ref": "E 30;E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 53-й километр",
+        "name:ru": "МКАД, 53-й километр"
+    },
+    "addresstags": {
+        "postcode": "121353"
+    },
+    "housenumber": null,
+    "calculated_postcode": "121353",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:29+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3959498,
+            55.7043515
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3987589,
+                55.7022474
+            ],
+            [
+                37.3980761,
+                55.7027555
+            ],
+            [
+                37.397311,
+                55.7033357
+            ],
+            [
+                37.3969285,
+                55.7036211
+            ],
+            [
+                37.3968364,
+                55.7036898
+            ],
+            [
+                37.3959498,
+                55.7043515
+            ],
+            [
+                37.3943001,
+                55.7055825
+            ],
+            [
+                37.3926059,
+                55.7068575
+            ],
+            [
+                37.3924137,
+                55.7070021
+            ],
+            [
+                37.3922006,
+                55.7071574
+            ]
+        ]
+    }
+}

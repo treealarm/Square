@@ -1,0 +1,87 @@
+{
+    "place_id": 112997575,
+    "parent_place_id": 297805735,
+    "osm_type": "W",
+    "osm_id": 30131710,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 66-й километр",
+    "names": {
+        "int_ref": "E 22;E 105",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 66-й километр",
+        "name:ru": "МКАД, 66-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "123592",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:27+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "6",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3897515,
+            55.8138302
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3904897,
+                55.8161617
+            ],
+            [
+                37.3900638,
+                55.8148128
+            ],
+            [
+                37.3898853,
+                55.8142511
+            ],
+            [
+                37.3897767,
+                55.8139095
+            ],
+            [
+                37.3897515,
+                55.8138302
+            ],
+            [
+                37.3892953,
+                55.8123946
+            ],
+            [
+                37.3889483,
+                55.8113026
+            ],
+            [
+                37.3887981,
+                55.81083
+            ],
+            [
+                37.388746,
+                55.810666
+            ]
+        ]
+    }
+}

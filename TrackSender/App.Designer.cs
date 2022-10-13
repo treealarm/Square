@@ -38,12 +38,24 @@ namespace TrackSender {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\")]
-        public string LocalPath {
+        public string LocalPathPolygonMoscow {
             get {
-                return ((string)(this["LocalPath"]));
+                return ((string)(this["LocalPathPolygonMoscow"]));
             }
             set {
-                this["LocalPath"] = value;
+                this["LocalPathPolygonMoscow"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\TESTS\\Leaflet\\TrackSender\\MKAD\\")]
+        public string LocalPathMkad {
+            get {
+                return ((string)(this["LocalPathMkad"]));
+            }
+            set {
+                this["LocalPathMkad"] = value;
             }
         }
     }

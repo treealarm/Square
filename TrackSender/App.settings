@@ -5,8 +5,11 @@
     <Setting Name="ServerAddress" Type="System.String" Scope="User">
       <Value Profile="(Default)">https://localhost:44307/</Value>
     </Setting>
-    <Setting Name="LocalPath" Type="System.String" Scope="User">
+    <Setting Name="LocalPathPolygonMoscow" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\TESTS\Leaflet\TrackSender\PolygonJson\</Value>
+    </Setting>
+    <Setting Name="LocalPathMkad" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\TESTS\Leaflet\TrackSender\MKAD\</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -43,36 +43,6 @@ namespace TrackSender
 
     private static Random random = new Random();
 
-    private async Task<List<Geo2DCoordDTO>> GetTestCoords(Geo2DCoordDTO from)
-    {
-      var coords = new List<Geo2DCoordDTO>();
-      coords.Add(from);
-      coords.Add(new Geo2DCoordDTO()
-      { from.X, from.Y });
-
-      double b = Math.PI + random.NextDouble() * 4;
-
-      for (double rad = 0.05; rad < 1; rad += 0.01)
-      {
-        for (double a = b; a < (b + Math.PI * 2); a += 0.016)
-        {
-          var x = from.X + Math.Cos(a) * rad;
-          var y = from.Y + Math.Sin(a) * rad;
-          coords[1].X = x;
-          coords[1].Y = y;
-
-          //var ret = await _router.GetRoute("russia-latest", coords);
-
-          //if (ret != null && ret.Count > 2)
-          //{
-          //  return ret;
-          //}
-        }
-      }
-
-      return coords;
-    }
-
     double GetRandomDouble(double min, double max)
     {
       return min + (_random.NextDouble() * (max - min));

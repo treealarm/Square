@@ -1,0 +1,72 @@
+{
+    "place_id": 142398057,
+    "parent_place_id": 298250492,
+    "osm_type": "W",
+    "osm_id": 156283254,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 32-й километр",
+    "names": {
+        "int_ref": "E 30",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 32-й километр",
+        "name:ru": "МКАД, 32-й километр"
+    },
+    "addresstags": {
+        "postcode": "117405"
+    },
+    "housenumber": null,
+    "calculated_postcode": "117405",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:19+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6093208,
+            55.5754061
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6126416,
+                55.5752123
+            ],
+            [
+                37.6106856,
+                55.5753265
+            ],
+            [
+                37.6093208,
+                55.5754061
+            ],
+            [
+                37.6077558,
+                55.5754975
+            ],
+            [
+                37.6063409,
+                55.5755801
+            ]
+        ]
+    }
+}

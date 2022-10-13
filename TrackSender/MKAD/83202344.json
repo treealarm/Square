@@ -1,0 +1,88 @@
+{
+    "place_id": 124265329,
+    "parent_place_id": 297893093,
+    "osm_type": "W",
+    "osm_id": 83202344,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 50-й километр",
+    "names": {
+        "int_ref": "E 30;E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 50-й километр",
+        "name:ru": "МКАД, 50-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "119618",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:28+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.4193299,
+            55.6791261
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.4163438,
+                55.683281
+            ],
+            [
+                37.4166006,
+                55.6828524
+            ],
+            [
+                37.4168722,
+                55.6824356
+            ],
+            [
+                37.4173229,
+                55.6818153
+            ],
+            [
+                37.4182216,
+                55.6806076
+            ],
+            [
+                37.4193299,
+                55.6791261
+            ],
+            [
+                37.4203793,
+                55.6777234
+            ],
+            [
+                37.4204993,
+                55.677563
+            ],
+            [
+                37.421562,
+                55.6761424
+            ]
+        ]
+    }
+}

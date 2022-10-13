@@ -1,0 +1,126 @@
+{
+    "place_id": 112601335,
+    "parent_place_id": 297805735,
+    "osm_type": "W",
+    "osm_id": 30131648,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 65-й километр",
+    "names": {
+        "int_ref": "E 22;E 105",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 65-й километр",
+        "name:ru": "МКАД, 65-й километр"
+    },
+    "addresstags": {
+        "postcode": "123592"
+    },
+    "housenumber": null,
+    "calculated_postcode": "123592",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:30+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3871483,
+            55.8055146
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3845902,
+                55.8018561
+            ],
+            [
+                37.3848176,
+                55.802127
+            ],
+            [
+                37.3851311,
+                55.8025318
+            ],
+            [
+                37.3861448,
+                55.8038532
+            ],
+            [
+                37.3861786,
+                55.8039153
+            ],
+            [
+                37.386391,
+                55.8042583
+            ],
+            [
+                37.3869777,
+                55.8052057
+            ],
+            [
+                37.3871483,
+                55.8055146
+            ],
+            [
+                37.3874339,
+                55.8060316
+            ],
+            [
+                37.3874848,
+                55.8061237
+            ],
+            [
+                37.3876779,
+                55.8065167
+            ],
+            [
+                37.3880668,
+                55.80741
+            ],
+            [
+                37.3881228,
+                55.8075387
+            ],
+            [
+                37.388317,
+                55.8080324
+            ],
+            [
+                37.3886088,
+                55.8088879
+            ],
+            [
+                37.3887821,
+                55.8094485
+            ],
+            [
+                37.3888372,
+                55.8096219
+            ],
+            [
+                37.3889981,
+                55.8101282
+            ]
+        ]
+    }
+}

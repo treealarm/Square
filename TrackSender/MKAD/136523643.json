@@ -1,0 +1,96 @@
+{
+    "place_id": 137114797,
+    "parent_place_id": 298250492,
+    "osm_type": "W",
+    "osm_id": 136523643,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 33-й километр",
+    "names": {
+        "int_ref": "E 30;E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 33-й километр",
+        "name:ru": "МКАД, 33-й километр"
+    },
+    "addresstags": {
+        "postcode": "117405"
+    },
+    "housenumber": null,
+    "calculated_postcode": "117405",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:10+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5942169,
+            55.5763891
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5971437,
+                55.5761203
+            ],
+            [
+                37.596604,
+                55.5761577
+            ],
+            [
+                37.5960722,
+                55.5761989
+            ],
+            [
+                37.5954573,
+                55.576254
+            ],
+            [
+                37.5948149,
+                55.5763196
+            ],
+            [
+                37.5942169,
+                55.5763891
+            ],
+            [
+                37.5936206,
+                55.5764712
+            ],
+            [
+                37.5930254,
+                55.5765605
+            ],
+            [
+                37.5923873,
+                55.576663
+            ],
+            [
+                37.5919279,
+                55.5767407
+            ],
+            [
+                37.5912084,
+                55.5768623
+            ]
+        ]
+    }
+}

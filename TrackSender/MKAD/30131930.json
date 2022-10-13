@@ -1,0 +1,62 @@
+{
+    "place_id": 112925577,
+    "parent_place_id": 297435053,
+    "osm_type": "W",
+    "osm_id": 30131930,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 96-й километр",
+    "names": {
+        "int_ref": "E 22;E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 96-й километр",
+        "name:ru": "МКАД, 96-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141011",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:22+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.7474569,
+            55.8712252
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.7408993,
+                55.8746004
+            ],
+            [
+                37.7474569,
+                55.8712252
+            ],
+            [
+                37.7527281,
+                55.8685118
+            ]
+        ]
+    }
+}

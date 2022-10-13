@@ -1,0 +1,112 @@
+{
+    "place_id": 112850769,
+    "parent_place_id": 298119422,
+    "osm_type": "W",
+    "osm_id": 30132010,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 104-й километр",
+    "names": {
+        "int_ref": "E 22;E 115",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 104-й километр",
+        "name:ru": "МКАД, 104-й километр"
+    },
+    "addresstags": {
+        "postcode": "105523"
+    },
+    "housenumber": null,
+    "calculated_postcode": "105523",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:05+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.8370619,
+            55.8213219
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.8340646,
+                55.8254623
+            ],
+            [
+                37.8345248,
+                55.8249787
+            ],
+            [
+                37.834987,
+                55.8244656
+            ],
+            [
+                37.8354426,
+                55.8239056
+            ],
+            [
+                37.8359882,
+                55.8231519
+            ],
+            [
+                37.8364082,
+                55.8225228
+            ],
+            [
+                37.8367607,
+                55.8219368
+            ],
+            [
+                37.8370619,
+                55.8213219
+            ],
+            [
+                37.8374155,
+                55.8204819
+            ],
+            [
+                37.8375168,
+                55.8202381
+            ],
+            [
+                37.837682,
+                55.8196879
+            ],
+            [
+                37.8377918,
+                55.819303
+            ],
+            [
+                37.8378525,
+                55.8190371
+            ],
+            [
+                37.8379822,
+                55.8182917
+            ],
+            [
+                37.8382116,
+                55.8169142
+            ]
+        ]
+    }
+}

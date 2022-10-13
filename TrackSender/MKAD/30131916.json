@@ -1,0 +1,96 @@
+{
+    "place_id": 113247848,
+    "parent_place_id": 297365289,
+    "osm_type": "W",
+    "osm_id": 30131916,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 90-й километр",
+    "names": {
+        "int_ref": "E 22",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 90-й километр",
+        "name:ru": "МКАД, 90-й километр"
+    },
+    "addresstags": {
+        "postcode": "127282"
+    },
+    "housenumber": null,
+    "calculated_postcode": "127282",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:21+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6649431,
+            55.8953682
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.657515,
+                55.8958451
+            ],
+            [
+                37.6589844,
+                55.8957391
+            ],
+            [
+                37.659912,
+                55.8956722
+            ],
+            [
+                37.6628184,
+                55.8954853
+            ],
+            [
+                37.6638008,
+                55.8954312
+            ],
+            [
+                37.6649431,
+                55.8953682
+            ],
+            [
+                37.6664834,
+                55.8953017
+            ],
+            [
+                37.6673869,
+                55.8952627
+            ],
+            [
+                37.6681584,
+                55.895235
+            ],
+            [
+                37.6709495,
+                55.8951348
+            ],
+            [
+                37.6722998,
+                55.8950864
+            ]
+        ]
+    }
+}

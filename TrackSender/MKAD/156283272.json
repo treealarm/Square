@@ -1,0 +1,110 @@
+{
+    "place_id": 141688674,
+    "parent_place_id": 297805735,
+    "osm_type": "W",
+    "osm_id": 156283272,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 62-й километр",
+    "names": {
+        "int_ref": "E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 62-й километр",
+        "name:ru": "МКАД, 62-й километр"
+    },
+    "addresstags": {
+        "postcode": "121500"
+    },
+    "housenumber": null,
+    "calculated_postcode": "121500",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:25+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3699522,
+            55.7809852
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3698824,
+                55.7767941
+            ],
+            [
+                37.3698905,
+                55.7780514
+            ],
+            [
+                37.3699375,
+                55.7793084
+            ],
+            [
+                37.3699383,
+                55.7793984
+            ],
+            [
+                37.3699416,
+                55.779774
+            ],
+            [
+                37.3699522,
+                55.7809852
+            ],
+            [
+                37.3700166,
+                55.7826549
+            ],
+            [
+                37.370114,
+                55.7834696
+            ],
+            [
+                37.3702503,
+                55.7841136
+            ],
+            [
+                37.3703276,
+                55.7845436
+            ],
+            [
+                37.3703538,
+                55.7846891
+            ],
+            [
+                37.3704576,
+                55.7851049
+            ],
+            [
+                37.3706483,
+                55.7857026
+            ],
+            [
+                37.3708144,
+                55.7861094
+            ]
+        ]
+    }
+}

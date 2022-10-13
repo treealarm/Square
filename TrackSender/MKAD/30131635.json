@@ -1,0 +1,80 @@
+{
+    "place_id": 113315015,
+    "parent_place_id": 297654265,
+    "osm_type": "W",
+    "osm_id": 30131635,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "МКАД, 59-й километр",
+    "names": {
+        "int_ref": "E 105;AH8",
+        "loc_ref": "МКАД",
+        "name": "МКАД, 59-й километр",
+        "name:ru": "МКАД, 59-й километр"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121500",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:26+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "bicycle": "no",
+        "foot": "no",
+        "hgv:conditional": "private @ (maxweight>12)",
+        "lanes": "5",
+        "lit": "yes",
+        "maxheight": "default",
+        "maxspeed": "100",
+        "motorroad": "yes",
+        "oneway": "yes",
+        "shoulder": "both",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.3692047,
+            55.7521442
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3691999,
+                55.74986
+            ],
+            [
+                37.3691565,
+                55.750273
+            ],
+            [
+                37.369172,
+                55.7511923
+            ],
+            [
+                37.3691786,
+                55.7515834
+            ],
+            [
+                37.3692047,
+                55.7521442
+            ],
+            [
+                37.3692595,
+                55.7534933
+            ],
+            [
+                37.3693164,
+                55.7548401
+            ]
+        ]
+    }
+}
