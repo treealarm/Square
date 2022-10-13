@@ -187,27 +187,20 @@ export function LocationMarkers() {
       dispatch(GuiStore.actionCreators.requestTreeUpdate());
     }, [isChanging]);
 
-  const colorOptionsUnselected = { fillColor: "green" };
-  const colorOptionsSelected = { fillColor: "yellow" };
-  const colorOptionsChecked = { fillColor: "blue" };
-  
-
   const getColor = useCallback(
     (marker: IObjProps) => {
       var id = marker.id;
 
       var retColor: L.PathOptions    = {    };
-      retColor.fillColor = colorOptionsUnselected.fillColor;
+      retColor.fillColor = 'green';
       retColor.dashArray = '';
       retColor.color = 'green';
       
       if (checked_ids.indexOf(id) !== -1) {
-        //retColor.fillColor = colorOptionsChecked.fillColor;
         retColor.dashArray = '5,10';
       }
 
       if (selected_id == id) {
-        //retColor.fillColor = colorOptionsSelected.fillColor;
         retColor.dashArray = '5,10';
       }
 
@@ -235,6 +228,7 @@ export function LocationMarkers() {
         //  opacity: 1,
         //  dashArray: '5,10'
         //}
+        retColor.fillColor = 'red';
         retColor.color = 'red';
       }
       else {

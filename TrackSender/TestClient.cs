@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -168,6 +169,25 @@ namespace TrackSender
       var s = await response.Content.ReadAsStringAsync();
 
       return s;
+    }
+
+    public async Task UpdateStates(List<ObjectStateDTO> newObjs)
+    {
+      try
+      {
+        HttpResponseMessage response =
+                await client.PostAsJsonAsync(
+                  $"api/States/UpdateStates", newObjs);
+
+        response.EnsureSuccessStatusCode();
+
+        // Deserialize the updated product from the response body.
+        var s = await response.Content.ReadAsStringAsync();
+      }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }      
     }
   }
 }

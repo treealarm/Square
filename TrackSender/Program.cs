@@ -24,14 +24,20 @@ namespace TrackSender
     {
       try
       {
+        CancellationTokenSource tokenSource = new CancellationTokenSource();
+        CancellationToken token = tokenSource.Token;
+
         var testMove = new TestMovements();
         var testStates = new TestStates();
         List<Task> tasks = new List<Task>();
 
-        var taskStates = testStates.RunAsync();
+        var taskStates = testStates.RunAsync(token, tasks);
         //var taskMove = testMove.RunAsync();
         tasks.Add(taskStates);
-        //tasks.Add(taskMove);
+
+        Console.WriteLine("Press any key to stop emulation\n");
+        Console.ReadKey();
+        tokenSource.Cancel();
 
         Task.WaitAll(tasks.ToArray());
       }

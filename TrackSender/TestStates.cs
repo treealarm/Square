@@ -1,8 +1,10 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.States;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,6 +12,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using TrackSender.Models;
 
@@ -29,7 +32,7 @@ namespace TrackSender
     HttpClient _client = new HttpClient();
     private Random _random = new Random();
     private string _main_id = null;
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken token, List<Task> tasks)
     {
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
       _client.DefaultRequestHeaders.Accept.Clear();
@@ -37,9 +40,17 @@ namespace TrackSender
           new MediaTypeWithQualityHeaderValue("application/json"));
 
       _client.DefaultRequestHeaders.UserAgent.Clear();
-      _client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("f1ana.Nominatim.API", Assembly.GetExecutingAssembly().GetName().Version.ToString()));
+      _client
+        .DefaultRequestHeaders
+        .UserAgent
+        .Add(
+          new ProductInfoHeaderValue(
+            "f1ana.Nominatim.API",
+            Assembly.GetExecutingAssembly().GetName().Version.ToString()));
       //await SaveMoscowToLocalDisk();
       await BuildMoscow();
+
+      tasks.Add(EmulateState(token));      
     }
 
     private async Task SaveMoscowToLocalDisk()
@@ -122,8 +133,11 @@ namespace TrackSender
     }
     private void AddStateObjects(Root geoObj, FigurePolygonDTO parentPolygon)
     {
+      Random random = new Random();
+
       if (geoObj.centroid.type == "Point")
       {
+        Console.WriteLine($"added state obj:{geoObj.names.name}");
         var start =
             new GeometryCircleDTO(
               new Geo2DCoordDTO() {
@@ -134,7 +148,7 @@ namespace TrackSender
         var figure = new FigureCircleDTO()
         {
           name = geoObj.names.name,
-          radius = 222,
+          radius = random.Next(150, 300),
           zoom_level = "12",
           geometry = start
         };
@@ -145,6 +159,15 @@ namespace TrackSender
           figure.id = GenerateBsonId();
         }
 
+        figure.extra_props = new List<ObjExtraPropertyDTO>()
+            {
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = "moscow_state",
+                str_val = "true"
+              }
+            };
+
         m_figures.circles.Add(figure);
       }
     }
@@ -153,7 +176,7 @@ namespace TrackSender
       Console.WriteLine(osmid);
 
       var color = 
-        $"#{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
+        $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
 
       FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString());
       
@@ -341,7 +364,51 @@ namespace TrackSender
         }
       }
 
-      var figuresCreated = await _testClient.UpdateFiguresAsync(m_figures);
+      var updated_figures = await _testClient.UpdateFiguresAsync(m_figures);
+    }
+
+   
+    private async Task EmulateState(CancellationToken token)
+    {
+      var figures = await _testClient.GetByParams("moscow_state", "true");
+      
+
+      while (!token.IsCancellationRequested)
+      {
+        List<ObjectStateDTO> states = new List<ObjectStateDTO>();
+        var random = new Random();
+
+        string[] stateDescrs = new string[]
+        {
+        "ALARM",
+        "INFO",
+        "NORM"
+        };
+
+        foreach (var figure in figures.circles)
+        {
+          int stateNum = random.Next(1, 3);
+          bool isAlarm = random.Next(0, 21) == 5;
+
+          if (isAlarm)
+          {
+            stateNum = 0;
+          }
+
+          ObjectStateDTO state = new ObjectStateDTO()
+          {
+            id = figure.id,
+            states = new List<string>
+          {
+            stateDescrs[stateNum]
+          }
+          };
+          states.Add(state);
+        }
+
+        await _testClient.UpdateStates(states);
+      }
+      
     }
   }
 }
