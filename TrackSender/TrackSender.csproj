@@ -6,15 +6,309 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="PolygonJson\102269.json" />
+    <None Remove="PolygonJson\1250526.json" />
+    <None Remove="PolygonJson\1250618.json" />
+    <None Remove="PolygonJson\1250619.json" />
+    <None Remove="PolygonJson\1250724.json" />
+    <None Remove="PolygonJson\1252407.json" />
+    <None Remove="PolygonJson\1252424.json" />
+    <None Remove="PolygonJson\1252448.json" />
+    <None Remove="PolygonJson\1252465.json" />
+    <None Remove="PolygonJson\1252558.json" />
+    <None Remove="PolygonJson\1255563.json" />
+    <None Remove="PolygonJson\1255576.json" />
+    <None Remove="PolygonJson\1255577.json" />
+    <None Remove="PolygonJson\1255602.json" />
+    <None Remove="PolygonJson\1255680.json" />
+    <None Remove="PolygonJson\1255704.json" />
+    <None Remove="PolygonJson\1255775.json" />
+    <None Remove="PolygonJson\1255942.json" />
+    <None Remove="PolygonJson\1255987.json" />
+    <None Remove="PolygonJson\1257218.json" />
+    <None Remove="PolygonJson\1257403.json" />
+    <None Remove="PolygonJson\1257455.json" />
+    <None Remove="PolygonJson\1257472.json" />
+    <None Remove="PolygonJson\1257484.json" />
+    <None Remove="PolygonJson\1257786.json" />
+    <None Remove="PolygonJson\1275551.json" />
+    <None Remove="PolygonJson\1275608.json" />
+    <None Remove="PolygonJson\1275627.json" />
+    <None Remove="PolygonJson\1278046.json" />
+    <None Remove="PolygonJson\1278064.json" />
+    <None Remove="PolygonJson\1278096.json" />
+    <None Remove="PolygonJson\1278703.json" />
+    <None Remove="PolygonJson\1281209.json" />
+    <None Remove="PolygonJson\1281220.json" />
+    <None Remove="PolygonJson\1281263.json" />
+    <None Remove="PolygonJson\1281648.json" />
+    <None Remove="PolygonJson\1281702.json" />
+    <None Remove="PolygonJson\1282181.json" />
+    <None Remove="PolygonJson\1292211.json" />
+    <None Remove="PolygonJson\1292286.json" />
+    <None Remove="PolygonJson\1292499.json" />
+    <None Remove="PolygonJson\1292679.json" />
+    <None Remove="PolygonJson\1292731.json" />
+    <None Remove="PolygonJson\1292749.json" />
+    <None Remove="PolygonJson\1298976.json" />
+    <None Remove="PolygonJson\1299013.json" />
+    <None Remove="PolygonJson\1299031.json" />
+    <None Remove="PolygonJson\1299106.json" />
+    <None Remove="PolygonJson\1304596.json" />
+    <None Remove="PolygonJson\1319060.json" />
+    <None Remove="PolygonJson\1319078.json" />
+    <None Remove="PolygonJson\1319142.json" />
+    <None Remove="PolygonJson\1319245.json" />
+    <None Remove="PolygonJson\1319263.json" />
+    <None Remove="PolygonJson\1320234.json" />
+    <None Remove="PolygonJson\1320358.json" />
+    <None Remove="PolygonJson\1320371.json" />
+    <None Remove="PolygonJson\1320424.json" />
+    <None Remove="PolygonJson\1320510.json" />
+    <None Remove="PolygonJson\1320566.json" />
+    <None Remove="PolygonJson\1320570.json" />
+    <None Remove="PolygonJson\162903.json" />
+    <None Remove="PolygonJson\181288.json" />
+    <None Remove="PolygonJson\2162195.json" />
+    <None Remove="PolygonJson\2162196.json" />
+    <None Remove="PolygonJson\226149.json" />
+    <None Remove="PolygonJson\226927.json" />
+    <None Remove="PolygonJson\240229.json" />
+    <None Remove="PolygonJson\364001.json" />
+    <None Remove="PolygonJson\364551.json" />
+    <None Remove="PolygonJson\428431.json" />
+    <None Remove="PolygonJson\431464.json" />
+    <None Remove="PolygonJson\434560.json" />
+    <None Remove="PolygonJson\442733.json" />
+    <None Remove="PolygonJson\442741.json" />
+    <None Remove="PolygonJson\444812.json" />
+    <None Remove="PolygonJson\444908.json" />
+    <None Remove="PolygonJson\445273.json" />
+    <None Remove="PolygonJson\445274.json" />
+    <None Remove="PolygonJson\445275.json" />
+    <None Remove="PolygonJson\445276.json" />
+    <None Remove="PolygonJson\445277.json" />
+    <None Remove="PolygonJson\445278.json" />
+    <None Remove="PolygonJson\445279.json" />
+    <None Remove="PolygonJson\445280.json" />
+    <None Remove="PolygonJson\445281.json" />
+    <None Remove="PolygonJson\445282.json" />
+    <None Remove="PolygonJson\445283.json" />
+    <None Remove="PolygonJson\445284.json" />
+    <None Remove="PolygonJson\445285.json" />
+    <None Remove="PolygonJson\445297.json" />
+    <None Remove="PolygonJson\445298.json" />
+    <None Remove="PolygonJson\445299.json" />
+    <None Remove="PolygonJson\446078.json" />
+    <None Remove="PolygonJson\446079.json" />
+    <None Remove="PolygonJson\446080.json" />
+    <None Remove="PolygonJson\446081.json" />
+    <None Remove="PolygonJson\446082.json" />
+    <None Remove="PolygonJson\446083.json" />
+    <None Remove="PolygonJson\446084.json" />
+    <None Remove="PolygonJson\446085.json" />
+    <None Remove="PolygonJson\446086.json" />
+    <None Remove="PolygonJson\446087.json" />
+    <None Remove="PolygonJson\446092.json" />
+    <None Remove="PolygonJson\446111.json" />
+    <None Remove="PolygonJson\446112.json" />
+    <None Remove="PolygonJson\446114.json" />
+    <None Remove="PolygonJson\446115.json" />
+    <None Remove="PolygonJson\446116.json" />
+    <None Remove="PolygonJson\446117.json" />
+    <None Remove="PolygonJson\446271.json" />
+    <None Remove="PolygonJson\446272.json" />
+    <None Remove="PolygonJson\455184.json" />
+    <None Remove="PolygonJson\455203.json" />
+    <None Remove="PolygonJson\455208.json" />
+    <None Remove="PolygonJson\455222.json" />
+    <None Remove="PolygonJson\455451.json" />
+    <None Remove="PolygonJson\455460.json" />
+    <None Remove="PolygonJson\455528.json" />
+    <None Remove="PolygonJson\455539.json" />
+    <None Remove="PolygonJson\456807.json" />
+    <None Remove="PolygonJson\531264.json" />
+    <None Remove="PolygonJson\531287.json" />
+    <None Remove="PolygonJson\535655.json" />
+    <None Remove="PolygonJson\535662.json" />
+    <None Remove="PolygonJson\535680.json" />
+    <None Remove="PolygonJson\548619.json" />
+    <None Remove="PolygonJson\574667.json" />
+    <None Remove="PolygonJson\950639.json" />
+    <None Remove="PolygonJson\950641.json" />
+    <None Remove="PolygonJson\950658.json" />
+    <None Remove="PolygonJson\950664.json" />
+    <None Remove="PolygonJson\951305.json" />
+    <None Remove="PolygonJson\951334.json" />
+    <None Remove="PolygonJson\951336.json" />
+    <None Remove="PolygonJson\952191.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="PolygonJson\102269.json" />
+    <EmbeddedResource Include="PolygonJson\1250526.json" />
+    <EmbeddedResource Include="PolygonJson\1250618.json" />
+    <EmbeddedResource Include="PolygonJson\1250619.json" />
+    <EmbeddedResource Include="PolygonJson\1250724.json" />
+    <EmbeddedResource Include="PolygonJson\1252407.json" />
+    <EmbeddedResource Include="PolygonJson\1252424.json" />
+    <EmbeddedResource Include="PolygonJson\1252448.json" />
+    <EmbeddedResource Include="PolygonJson\1252465.json" />
+    <EmbeddedResource Include="PolygonJson\1252558.json" />
+    <EmbeddedResource Include="PolygonJson\1255563.json" />
+    <EmbeddedResource Include="PolygonJson\1255576.json" />
+    <EmbeddedResource Include="PolygonJson\1255577.json" />
+    <EmbeddedResource Include="PolygonJson\1255602.json" />
+    <EmbeddedResource Include="PolygonJson\1255680.json" />
+    <EmbeddedResource Include="PolygonJson\1255704.json" />
+    <EmbeddedResource Include="PolygonJson\1255775.json" />
+    <EmbeddedResource Include="PolygonJson\1255942.json" />
+    <EmbeddedResource Include="PolygonJson\1255987.json" />
+    <EmbeddedResource Include="PolygonJson\1257218.json" />
+    <EmbeddedResource Include="PolygonJson\1257403.json" />
+    <EmbeddedResource Include="PolygonJson\1257455.json" />
+    <EmbeddedResource Include="PolygonJson\1257472.json" />
+    <EmbeddedResource Include="PolygonJson\1257484.json" />
+    <EmbeddedResource Include="PolygonJson\1257786.json" />
+    <EmbeddedResource Include="PolygonJson\1275551.json" />
+    <EmbeddedResource Include="PolygonJson\1275608.json" />
+    <EmbeddedResource Include="PolygonJson\1275627.json" />
+    <EmbeddedResource Include="PolygonJson\1278046.json" />
+    <EmbeddedResource Include="PolygonJson\1278064.json" />
+    <EmbeddedResource Include="PolygonJson\1278096.json" />
+    <EmbeddedResource Include="PolygonJson\1278703.json" />
+    <EmbeddedResource Include="PolygonJson\1281209.json" />
+    <EmbeddedResource Include="PolygonJson\1281220.json" />
+    <EmbeddedResource Include="PolygonJson\1281263.json" />
+    <EmbeddedResource Include="PolygonJson\1281648.json" />
+    <EmbeddedResource Include="PolygonJson\1281702.json" />
+    <EmbeddedResource Include="PolygonJson\1282181.json" />
+    <EmbeddedResource Include="PolygonJson\1292211.json" />
+    <EmbeddedResource Include="PolygonJson\1292286.json" />
+    <EmbeddedResource Include="PolygonJson\1292499.json" />
+    <EmbeddedResource Include="PolygonJson\1292679.json" />
+    <EmbeddedResource Include="PolygonJson\1292731.json" />
+    <EmbeddedResource Include="PolygonJson\1292749.json" />
+    <EmbeddedResource Include="PolygonJson\1298976.json" />
+    <EmbeddedResource Include="PolygonJson\1299013.json" />
+    <EmbeddedResource Include="PolygonJson\1299031.json" />
+    <EmbeddedResource Include="PolygonJson\1299106.json" />
+    <EmbeddedResource Include="PolygonJson\1304596.json" />
+    <EmbeddedResource Include="PolygonJson\1319060.json" />
+    <EmbeddedResource Include="PolygonJson\1319078.json" />
+    <EmbeddedResource Include="PolygonJson\1319142.json" />
+    <EmbeddedResource Include="PolygonJson\1319245.json" />
+    <EmbeddedResource Include="PolygonJson\1319263.json" />
+    <EmbeddedResource Include="PolygonJson\1320234.json" />
+    <EmbeddedResource Include="PolygonJson\1320358.json" />
+    <EmbeddedResource Include="PolygonJson\1320371.json" />
+    <EmbeddedResource Include="PolygonJson\1320424.json" />
+    <EmbeddedResource Include="PolygonJson\1320510.json" />
+    <EmbeddedResource Include="PolygonJson\1320566.json" />
+    <EmbeddedResource Include="PolygonJson\1320570.json" />
+    <EmbeddedResource Include="PolygonJson\162903.json" />
+    <EmbeddedResource Include="PolygonJson\181288.json" />
+    <EmbeddedResource Include="PolygonJson\2162195.json" />
+    <EmbeddedResource Include="PolygonJson\2162196.json" />
+    <EmbeddedResource Include="PolygonJson\226149.json" />
+    <EmbeddedResource Include="PolygonJson\226927.json" />
+    <EmbeddedResource Include="PolygonJson\240229.json" />
+    <EmbeddedResource Include="PolygonJson\364001.json" />
+    <EmbeddedResource Include="PolygonJson\364551.json" />
+    <EmbeddedResource Include="PolygonJson\428431.json" />
+    <EmbeddedResource Include="PolygonJson\431464.json" />
+    <EmbeddedResource Include="PolygonJson\434560.json" />
+    <EmbeddedResource Include="PolygonJson\442733.json" />
+    <EmbeddedResource Include="PolygonJson\442741.json" />
+    <EmbeddedResource Include="PolygonJson\444812.json" />
+    <EmbeddedResource Include="PolygonJson\444908.json" />
+    <EmbeddedResource Include="PolygonJson\445273.json" />
+    <EmbeddedResource Include="PolygonJson\445274.json" />
+    <EmbeddedResource Include="PolygonJson\445275.json" />
+    <EmbeddedResource Include="PolygonJson\445276.json" />
+    <EmbeddedResource Include="PolygonJson\445277.json" />
+    <EmbeddedResource Include="PolygonJson\445278.json" />
+    <EmbeddedResource Include="PolygonJson\445279.json" />
+    <EmbeddedResource Include="PolygonJson\445280.json" />
+    <EmbeddedResource Include="PolygonJson\445281.json" />
+    <EmbeddedResource Include="PolygonJson\445282.json" />
+    <EmbeddedResource Include="PolygonJson\445283.json" />
+    <EmbeddedResource Include="PolygonJson\445284.json" />
+    <EmbeddedResource Include="PolygonJson\445285.json" />
+    <EmbeddedResource Include="PolygonJson\445297.json" />
+    <EmbeddedResource Include="PolygonJson\445298.json" />
+    <EmbeddedResource Include="PolygonJson\445299.json" />
+    <EmbeddedResource Include="PolygonJson\446078.json" />
+    <EmbeddedResource Include="PolygonJson\446079.json" />
+    <EmbeddedResource Include="PolygonJson\446080.json" />
+    <EmbeddedResource Include="PolygonJson\446081.json" />
+    <EmbeddedResource Include="PolygonJson\446082.json" />
+    <EmbeddedResource Include="PolygonJson\446083.json" />
+    <EmbeddedResource Include="PolygonJson\446084.json" />
+    <EmbeddedResource Include="PolygonJson\446085.json" />
+    <EmbeddedResource Include="PolygonJson\446086.json" />
+    <EmbeddedResource Include="PolygonJson\446087.json" />
+    <EmbeddedResource Include="PolygonJson\446092.json" />
+    <EmbeddedResource Include="PolygonJson\446111.json" />
+    <EmbeddedResource Include="PolygonJson\446112.json" />
+    <EmbeddedResource Include="PolygonJson\446114.json" />
+    <EmbeddedResource Include="PolygonJson\446115.json" />
+    <EmbeddedResource Include="PolygonJson\446116.json" />
+    <EmbeddedResource Include="PolygonJson\446117.json" />
+    <EmbeddedResource Include="PolygonJson\446271.json" />
+    <EmbeddedResource Include="PolygonJson\446272.json" />
+    <EmbeddedResource Include="PolygonJson\455184.json" />
+    <EmbeddedResource Include="PolygonJson\455203.json" />
+    <EmbeddedResource Include="PolygonJson\455208.json" />
+    <EmbeddedResource Include="PolygonJson\455222.json" />
+    <EmbeddedResource Include="PolygonJson\455451.json" />
+    <EmbeddedResource Include="PolygonJson\455460.json" />
+    <EmbeddedResource Include="PolygonJson\455528.json" />
+    <EmbeddedResource Include="PolygonJson\455539.json" />
+    <EmbeddedResource Include="PolygonJson\456807.json" />
+    <EmbeddedResource Include="PolygonJson\531264.json" />
+    <EmbeddedResource Include="PolygonJson\531287.json" />
+    <EmbeddedResource Include="PolygonJson\535655.json" />
+    <EmbeddedResource Include="PolygonJson\535662.json" />
+    <EmbeddedResource Include="PolygonJson\535680.json" />
+    <EmbeddedResource Include="PolygonJson\548619.json" />
+    <EmbeddedResource Include="PolygonJson\574667.json" />
+    <EmbeddedResource Include="PolygonJson\950639.json" />
+    <EmbeddedResource Include="PolygonJson\950641.json" />
+    <EmbeddedResource Include="PolygonJson\950658.json" />
+    <EmbeddedResource Include="PolygonJson\950664.json" />
+    <EmbeddedResource Include="PolygonJson\951305.json" />
+    <EmbeddedResource Include="PolygonJson\951334.json" />
+    <EmbeddedResource Include="PolygonJson\951336.json" />
+    <EmbeddedResource Include="PolygonJson\952191.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Itinero" Version="1.5.1" />
     <PackageReference Include="Itinero.IO.Osm" Version="1.5.1" />
     <PackageReference Include="MongoDB.Bson" Version="2.17.1" />
     <PackageReference Include="NSubstitute" Version="4.4.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Router\Router.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="App.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>App.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>App.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>

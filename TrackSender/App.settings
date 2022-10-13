@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TrackSender" GeneratedClassName="App">
+  <Profiles />
+  <Settings>
+    <Setting Name="ServerAddress" Type="System.String" Scope="User">
+      <Value Profile="(Default)">https://localhost:44307/</Value>
+    </Setting>
+    <Setting Name="LocalPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\TESTS\Leaflet\TrackSender\PolygonJson\</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

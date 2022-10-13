@@ -23,7 +23,7 @@ namespace TrackSender
     //https://nominatim.openstreetmap.org/details.php?osmtype=R&osmid=102269&addressdetails=1&hierarchy=0&group_hierarchy=1&format=json
     //https://nominatim.openstreetmap.org/details?place_id=337939658&format=json&pretty=1&hierarchy=1
     //https://nominatim.openstreetmap.org/details?place_id=337939658&format=json&pretty=1
-    string main_city = @"https://nominatim.openstreetmap.org/search.php?city=moscow&country=russia&polygon_geojson=1&format=json";
+   
     TestClient _testClient = new TestClient();
     FiguresDTO m_figures = new FiguresDTO();
     HttpClient _client = new HttpClient();
@@ -46,7 +46,9 @@ namespace TrackSender
     { 
       foreach (var osmid in MoscowOsm.osmids)
       {
-        string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid[0]}.json";
+        string filename = $"{osmid[0]}.json";
+        filename = Path.Combine(App.Default.LocalPath, filename);
+
         if (File.Exists(filename))
         {
           continue;
@@ -77,17 +79,27 @@ namespace TrackSender
       }
       catch(Exception ex)
       {
-
+        Console.WriteLine(ex.Message);
       }
       return null;
       
     }
     public async Task<Root> GetMoscowDistrictFromDisk(int osmid)
     {
-      string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";
+      //string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";
+
+      var assembly = Assembly.GetExecutingAssembly();
+      var resourceName = $"TrackSender.PolygonJson.{osmid}.json";
+
+      string s = string.Empty;
+      using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+      using (StreamReader reader = new StreamReader(stream))
+      {
+        s = await reader.ReadToEndAsync();
+      }
 
       // Deserialize the updated product from the response body.
-      var s = await File.ReadAllTextAsync(filename);
+      //var s = await File.ReadAllTextAsync(filename);
 
       try
       {        
@@ -96,7 +108,7 @@ namespace TrackSender
       }
       catch (Exception ex)
       {
-
+        Console.WriteLine(ex.Message);
       }
 
       return null;
@@ -288,21 +300,29 @@ namespace TrackSender
     }
     public async Task BuildMoscow()
     {
-      var parents = await _testClient.GetByName("Russia");
+      try
+      {
+        var parents = await _testClient.GetByName("Russia");
 
-      if (parents == null || parents.Count == 0)
-      {
-        BaseMarkerDTO marker = new BaseMarkerDTO()
+        if (parents == null || parents.Count == 0)
         {
-          name = "Russia"
-        };
-        marker = await _testClient.UpdateBase(marker);
-        _main_id = marker.id;
+          BaseMarkerDTO marker = new BaseMarkerDTO()
+          {
+            name = "Russia"
+          };
+          marker = await _testClient.UpdateBase(marker);
+          _main_id = marker.id;
+        }
+        else
+        {
+          _main_id = parents.FirstOrDefault().id;
+        }
       }
-      else
+      catch(Exception ex)
       {
-        _main_id = parents.FirstOrDefault().id;
+        Console.WriteLine(ex.Message);
       }
+      
 
       foreach (var osmid in MoscowOsm.osmids)
       {

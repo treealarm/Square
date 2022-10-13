@@ -19,7 +19,8 @@ namespace TrackSender
     public TestClient()
     {
       // Update port # in the following line.
-      client.BaseAddress = new Uri("https://localhost:44307/");
+      
+      client.BaseAddress = new Uri(App.Default.ServerAddress);
       client.DefaultRequestHeaders.Accept.Clear();
       client.DefaultRequestHeaders.Accept.Add(
           new MediaTypeWithQualityHeaderValue("application/json"));
@@ -42,7 +43,7 @@ namespace TrackSender
       }
       catch (Exception ex)
       {
-
+        Console.WriteLine(ex.Message);
       }
 
       return figure;
@@ -65,7 +66,7 @@ namespace TrackSender
       }
       catch (Exception ex)
       {
-
+        Console.WriteLine(ex.Message);
       }
 
       return figure;
@@ -88,7 +89,7 @@ namespace TrackSender
       }
       catch (Exception ex)
       {
-
+        Console.WriteLine(ex.Message);
       }
 
       return null;
@@ -135,7 +136,7 @@ namespace TrackSender
       }
       catch(Exception ex)
       {
-
+        Console.WriteLine(ex.Message);
       }
       return null;
     }
