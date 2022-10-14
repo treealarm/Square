@@ -136,7 +136,7 @@ namespace LeafletAlarms.Controllers
       {
         var newPoint =
           new TrackPointDTO() {
-            figure = await _geoService.CreateGeoPoint(figure)
+            figure = await _geoService.CreateGeo(figure)
           };
 
         if (figure.extra_props != null)
@@ -169,7 +169,7 @@ namespace LeafletAlarms.Controllers
         trackPoints.Add(
           new TrackPointDTO()
           {
-            figure = await _geoService.CreateGeoPoint(figure)
+            figure = await _geoService.CreateGeo(figure)
           }
         );
       }
@@ -182,7 +182,7 @@ namespace LeafletAlarms.Controllers
         trackPoints.Add(
           new TrackPointDTO()
           {
-            figure = await _geoService.CreateGeoPoint(figure)
+            figure = await _geoService.CreateGeo(figure)
           }
         );
       }

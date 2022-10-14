@@ -239,7 +239,7 @@ namespace DbLayer.Services
       return result.DeletedCount;
     }
 
-    public async Task<GeoObjectDTO> CreateGeoPoint(FigureBaseDTO figure)
+    public async Task<GeoObjectDTO> CreateGeo(FigureBaseDTO figure)
     {
       DBGeoObject geoPoint = null;
 

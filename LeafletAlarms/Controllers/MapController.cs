@@ -471,7 +471,7 @@ namespace LeafletAlarms.Controllers
       if (string.IsNullOrEmpty(updatedMarker.id))
       {
         await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
-        await _geoService.CreateGeoPoint(updatedMarker);
+        await _geoService.CreateGeo(updatedMarker);
       }
 
       var marker = await _mapService.GetAsync(updatedMarker.id);
@@ -578,7 +578,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in statMarkers.circles)
       {
-        await _geoService.CreateGeoPoint(figure);
+        await _geoService.CreateGeo(figure);
       }
 
       await _mapService.UpdateHierarchyAsync(statMarkers.polygons);
@@ -586,7 +586,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in statMarkers.polygons)
       {
-        await _geoService.CreateGeoPoint(figure);
+        await _geoService.CreateGeo(figure);
       }
 
       await _mapService.UpdateHierarchyAsync(statMarkers.polylines);
@@ -594,7 +594,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (var figure in statMarkers.polylines)
       {
-        await _geoService.CreateGeoPoint(figure);
+        await _geoService.CreateGeo(figure);
       }
       return CreatedAtAction(nameof(UpdateFigures), statMarkers);
     }
