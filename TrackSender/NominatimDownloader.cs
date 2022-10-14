@@ -29,6 +29,7 @@ namespace TrackSender
     //https://nominatim.openstreetmap.org/details?place_id=337939658&format=json&pretty=1
 
     HttpClient _client = new HttpClient();
+   
     public async Task RunAsync(CancellationToken token, List<Task> tasks)
     {
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");

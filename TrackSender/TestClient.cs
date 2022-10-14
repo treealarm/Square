@@ -39,8 +39,11 @@ namespace TrackSender
 
       try
       {
-        FiguresDTO json = JsonSerializer.Deserialize<FiguresDTO>(s);
-        return json;
+        if (action == "AddTracks")
+        {
+          FiguresDTO json = JsonSerializer.Deserialize<FiguresDTO>(s);
+          return json;
+        }        
       }
       catch (Exception ex)
       {

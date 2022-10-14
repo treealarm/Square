@@ -265,15 +265,7 @@ namespace TrackSender
           figure = await CreateOrGetDistrict(osmid[0]);
           // Empty figure?
         }
-      }
-      var mkad = await _testClient.GetByParams("mkad", "true");
-
-      if (mkad == null || mkad.IsEmpty())
-      {
-        mkad = new FiguresDTO();
-        mkad.polylines = await NominatimProcessor.GetMkadPolyline();
-        mkad = await _testClient.UpdateFiguresAsync(mkad);
-      }
+      }      
 
       var updated_figures = await _testClient.UpdateFiguresAsync(m_figures);
     }
