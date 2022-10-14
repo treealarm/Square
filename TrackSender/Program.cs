@@ -38,9 +38,11 @@ namespace TrackSender
         var taskMoscowBuild = moscowBuilder.RunAsync(token, tasks);
         Task.WaitAll(taskMoscowBuild);
 
-        var taskStates = testStates.RunAsync(token, tasks);
+        //var taskStates = testStates.RunAsync(token, tasks);        
+        //tasks.Add(taskStates);
+
         var taskMove = testMove.RunAsync(token, tasks);
-        tasks.Add(taskStates);
+        tasks.Add(taskMove);
 
         Console.WriteLine("Press any key to stop emulation\n");
         Console.ReadKey();

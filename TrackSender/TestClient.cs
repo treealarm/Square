@@ -43,7 +43,17 @@ namespace TrackSender
         {
           FiguresDTO json = JsonSerializer.Deserialize<FiguresDTO>(s);
           return json;
-        }        
+        }
+        else
+        {
+          Dictionary<string, TimeSpan> json = JsonSerializer.Deserialize<Dictionary<string, TimeSpan>>(s);
+          Console.WriteLine($"UpdateTrack:");
+          foreach (var pair in json)
+          {
+            Console.WriteLine($"{pair.Key}-> {(int)pair.Value.TotalMilliseconds} [ms]");
+          }
+          Console.WriteLine($"-------");
+        }
       }
       catch (Exception ex)
       {

@@ -8,10 +8,14 @@ using System.Threading.Tasks;
 
 namespace Domain.GeoDBDTO
 {
-  [JsonConverter(typeof(GeometryDTOConverter))]
-  public class GeometryDTO
+  public class GeometryDTOBase
   {
     public string figure_type { get; set; }
+  }
+  
+  [JsonConverter(typeof(GeometryDTOConverter))]
+  public class GeometryDTO: GeometryDTOBase
+  {
     public string GetFigureType()
     {
       if (this is GeometryCircleDTO)
@@ -45,7 +49,30 @@ namespace Domain.GeoDBDTO
         Type typeToConvert,
         JsonSerializerOptions options)
     {
-      return JsonSerializer.Deserialize(reader.GetString(), this.GetType()) as GeometryDTO;
+      string readerString = String.Empty;
+
+      using (var jsonDoc = JsonDocument.ParseValue(ref reader))
+      {
+        readerString = jsonDoc.RootElement.GetRawText();
+      }
+
+      var geoDto = JsonSerializer.Deserialize(readerString, typeof(GeometryDTOBase)) as GeometryDTOBase;
+
+      if (geoDto.figure_type == "Point")
+      {
+        return JsonSerializer.Deserialize(readerString, typeof(GeometryCircleDTO)) as GeometryDTO;
+      }
+
+      if (geoDto.figure_type == "Polygon")
+      {
+        return JsonSerializer.Deserialize(readerString, typeof(GeometryPolygonDTO)) as GeometryDTO;
+      }
+
+      if (geoDto.figure_type == "LineString")
+      {
+        return JsonSerializer.Deserialize(readerString, typeof(GeometryPolylineDTO)) as GeometryDTO;
+      }
+      return geoDto as GeometryDTO;
     }
 
     public override void Write(

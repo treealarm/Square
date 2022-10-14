@@ -86,13 +86,33 @@ namespace LeafletAlarms.Controllers
       return new List<string>() { "Hello world" };
     }
 
+    static Dictionary<string, TrackPointDTO> _cashLast = new Dictionary<string, TrackPointDTO>();
+    static private object _locker = new object();
+
     private async Task<TrackPointDTO> GetLast(TrackPointDTO newPoint)
     {
-      return await _tracksService.GetLastAsync(newPoint.figure.id, newPoint.id);
+      TrackPointDTO retVal;
+
+      lock(_locker)
+      {        
+        _cashLast.TryGetValue(newPoint.figure.id, out retVal);
+        var s = JsonSerializer.Serialize<TrackPointDTO>(newPoint);
+        var fig = JsonSerializer.Deserialize<TrackPointDTO>(s);
+        _cashLast[newPoint.figure.id] = fig;
+      }
+      
+      if (retVal == null)
+      {
+        retVal = await _tracksService.GetLastAsync(newPoint.figure.id, newPoint.id);
+      }
+      return retVal;
     }
-    private async Task DoUpdateTracks(FiguresDTO movedMarkers)
+    private async Task<Dictionary<string, TimeSpan>> DoUpdateTracks(FiguresDTO movedMarkers)
     {
-      var trackPoints = new List<TrackPointDTO>();      
+      var trackPoints = new List<TrackPointDTO>();
+      Dictionary<string, TimeSpan> timing = new Dictionary<string, TimeSpan>();
+      
+      DateTime t1 = DateTime.Now;
 
       foreach (var figure in movedMarkers.circles)
       {
@@ -124,6 +144,9 @@ namespace LeafletAlarms.Controllers
         trackPoints.Add(newPoint);
       }
 
+      DateTime t2 = DateTime.Now;
+      timing["circlesInsert"] = t2 - t1;
+
       foreach (var figure in movedMarkers.polygons)
       { 
         await EnsureTracksRoot(figure);
@@ -152,9 +175,14 @@ namespace LeafletAlarms.Controllers
         );
       }
 
+      t1 = DateTime.Now;
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
+      t2 = DateTime.Now;
+
+      timing["tracksInsert"] = t2 - t1;
 
       // Add Routs.
+      t1 = DateTime.Now;
       var routs = new List<RoutLineDTO>();
 
       foreach (var trackPoint in trackPointsInserted)
@@ -195,13 +223,22 @@ namespace LeafletAlarms.Controllers
           routs.Add(newRout);
         }
       }
+      t2 = DateTime.Now;
+      timing["routsBuild"] = t2 - t1;
 
       if (routs.Count > 0)
       {
+        t1 = DateTime.Now;
         await _routService.InsertManyAsync(routs);
-      }      
-
+        t2 = DateTime.Now;
+        timing["routsInsert"] = t2 - t1;
+      }
+      t1 = DateTime.Now;
       await _stateService.OnUpdateTrackPosition(trackPoints);
+      timing["UpdateTracksCall"] = t2 - t1;
+      t2 = DateTime.Now;
+
+      return timing;
     }
 
     [HttpPost]
@@ -214,11 +251,14 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("UpdateTracks")]
-    public async Task<ActionResult<bool>> UpdateTracks(FiguresDTO movedMarkers)
+    public async Task<ActionResult<Dictionary<string, TimeSpan>>> UpdateTracks(FiguresDTO movedMarkers)
     {
-      await DoUpdateTracks(movedMarkers);
+      DateTime t1 = DateTime.Now;      
+      var dic = await DoUpdateTracks(movedMarkers);
+      DateTime t2 = DateTime.Now;
 
-      return CreatedAtAction(nameof(UpdateTracks), true);
+      dic["All"] =  t2 - t1;
+      return CreatedAtAction(nameof(UpdateTracks), dic);
     }
 
     private async Task AddIdsByProperties(BoxTrackDTO box)

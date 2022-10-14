@@ -46,20 +46,36 @@ namespace DbLayer.Services
 
     private void CreateIndexes()
     {
-      IndexKeysDefinition<DBTrackPoint> keys =
-        new IndexKeysDefinitionBuilder<DBTrackPoint>()
-        .Ascending(d => d.figure.zoom_level)
-        .Geo2DSphere(d => d.figure.location)
-        .Ascending(d => d.timestamp)
+      {
+        IndexKeysDefinition<DBTrackPoint> keys =
+                new IndexKeysDefinitionBuilder<DBTrackPoint>()
+                .Ascending(d => d.figure.zoom_level)
+                .Geo2DSphere(d => d.figure.location)
+                .Ascending(d => d.timestamp)
+                .Ascending(d => d.figure.id)
+                ;
 
+        var indexModel = new CreateIndexModel<DBTrackPoint>(
+          keys, new CreateIndexOptions()
+          { Name = "location" }
+        );
+
+        _collFigures.Indexes.CreateOneAsync(indexModel);
+      }
+
+      {
+        IndexKeysDefinition<DBTrackPoint> keys =
+        new IndexKeysDefinitionBuilder<DBTrackPoint>()
+        .Descending(d => d.timestamp)
         ;
 
-      var indexModel = new CreateIndexModel<DBTrackPoint>(
-        keys, new CreateIndexOptions()
-        { Name = "location" }
-      );
+        var indexModel = new CreateIndexModel<DBTrackPoint>(
+          keys, new CreateIndexOptions()
+          { Name = "timestamp" }
+        );
 
-      _collFigures.Indexes.CreateOneAsync(indexModel);
+        _collFigures.Indexes.CreateOneAsync(indexModel);
+      }      
     }
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
