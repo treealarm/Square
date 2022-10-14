@@ -460,7 +460,7 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateBase")]
     public async Task<ActionResult<BaseMarkerDTO>> UpdateBase(BaseMarkerDTO updatedMarker)
     {
-      await _mapService.UpdateHierarchyAsync(updatedMarker);
+      await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
       return CreatedAtAction(nameof(UpdateBase), updatedMarker);
     }
     
@@ -470,7 +470,7 @@ namespace LeafletAlarms.Controllers
     {
       if (string.IsNullOrEmpty(updatedMarker.id))
       {
-        await _mapService.UpdateHierarchyAsync(updatedMarker);
+        await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
         await _geoService.CreateGeoPoint(updatedMarker);
       }
 
@@ -484,7 +484,7 @@ namespace LeafletAlarms.Controllers
       marker.name = updatedMarker.name;
       marker.parent_id = updatedMarker.parent_id;
 
-      await _mapService.UpdateHierarchyAsync(marker);
+      await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { marker });
 
 
 
@@ -565,23 +565,29 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateFigures")]
     public async Task<ActionResult<FiguresDTO>> UpdateFigures(FiguresDTO statMarkers)
     {
+      await _mapService.UpdateHierarchyAsync(statMarkers.circles);
+
       foreach (var figure in statMarkers.circles)
       {
-        await _mapService.UpdateHierarchyAsync(figure);
+        
         await _mapService.UpdatePropNotDeleteAsync(figure);
         await _geoService.CreateGeoPoint(figure);
       }
+
+      await _mapService.UpdateHierarchyAsync(statMarkers.polygons);
 
       foreach (var figure in statMarkers.polygons)
       {
-        await _mapService.UpdateHierarchyAsync(figure);
+        
         await _mapService.UpdatePropNotDeleteAsync(figure);
         await _geoService.CreateGeoPoint(figure);
       }
 
+      await _mapService.UpdateHierarchyAsync(statMarkers.polylines);
+
       foreach (var figure in statMarkers.polylines)
       {
-        await _mapService.UpdateHierarchyAsync(figure);
+        
         await _mapService.UpdatePropNotDeleteAsync(figure);
         await _geoService.CreateGeoPoint(figure);
       }

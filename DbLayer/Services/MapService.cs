@@ -194,23 +194,43 @@ namespace DbLayer.Services
       return ConvertMarkerListDB2DTO(result);
     }
 
-    public async Task UpdateHierarchyAsync(BaseMarkerDTO updatedObj)
+    public async Task UpdateHierarchyAsync(IEnumerable<BaseMarkerDTO> updatedList)
     {
-      var dbObj = new DBMarker();
-      updatedObj.CopyAllTo(dbObj);
-
-      if (string.IsNullOrEmpty(dbObj.id))
+      if (!updatedList.Any())
       {
-        await _markerCollection.InsertOneAsync(dbObj);
+        return;
       }
-      else
+
+      var dbUpdated = new Dictionary<BaseMarkerDTO, DBMarker>();
+      var bulkWrites = new List<WriteModel<DBMarker>>();
+
+      foreach (var item in updatedList)
       {
-        ReplaceOptions opt = new ReplaceOptions();
-        opt.IsUpsert = true;
-        await _markerCollection.ReplaceOneAsync(x => x.id == dbObj.id, dbObj, opt);
+        var dbObj = new DBMarker();
+        item.CopyAllTo(dbObj);
+        dbUpdated.Add(item, dbObj);
+        
+        var filter = Builders<DBMarker>.Filter.Eq(x => x.id, dbObj.id);
+
+        if (string.IsNullOrEmpty(dbObj.id))
+        {
+          var request = new InsertOneModel<DBMarker>(dbObj);
+          bulkWrites.Add(request);
+        }
+        else
+        {
+          var request = new ReplaceOneModel<DBMarker>(filter, dbObj);
+          request.IsUpsert = true;
+          bulkWrites.Add(request);
+        }
       }
       
-      updatedObj.id = dbObj.id;
+      var writeResult = await _markerCollection.BulkWriteAsync(bulkWrites);
+
+      foreach (var pair in dbUpdated)
+      {
+        pair.Key.id = pair.Value.id;
+      }      
     }
 
     public async Task<long> RemoveAsync(List<string> ids)
@@ -316,31 +336,31 @@ namespace DbLayer.Services
     }
 
     public async Task UpdatePropNotDeleteAsync(FigureBaseDTO updatedObj)
-    {
-      var props = updatedObj as IObjectProps;
-
-      if (props?.extra_props == null || props.extra_props.Count == 0)
       {
-        return;
-      }
+        var props = updatedObj as IObjectProps;
 
-      DBMarkerProperties propToUpdate;
-      var curObj = await GetPropAsync(updatedObj.id);
-
-      if (curObj != null)
-      {
-        curObj.extra_props.RemoveAll(x => props.extra_props.Any(y => y.prop_name == x.prop_name));
-
-        foreach (var prop in props.extra_props)
+        if (props?.extra_props == null || props.extra_props.Count == 0)
         {
-          curObj.extra_props.Add(prop);
+        return;
         }
-        propToUpdate = ConvertDTO2Property(curObj);
-      }
-      else
-      {
-        propToUpdate = ConvertDTO2Property(updatedObj);
-      }
+
+        DBMarkerProperties propToUpdate;
+        var curObj = await GetPropAsync(updatedObj.id);
+
+        if (curObj != null)
+        {
+          curObj.extra_props.RemoveAll(x => props.extra_props.Any(y => y.prop_name == x.prop_name));
+
+          foreach (var prop in props.extra_props)
+          {
+            curObj.extra_props.Add(prop);
+          }
+          propToUpdate = ConvertDTO2Property(curObj);
+        }
+        else
+        {
+          propToUpdate = ConvertDTO2Property(updatedObj);
+        }
 
       ReplaceOptions opt = new ReplaceOptions();
       opt.IsUpsert = true;
