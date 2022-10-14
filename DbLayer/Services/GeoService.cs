@@ -64,6 +64,11 @@ namespace DbLayer.Services
       string zoom_level
     )
     {
+      if (string.IsNullOrEmpty(geometry))
+      {
+        return;
+      }
+      
       BsonDocument doc = new BsonDocument();
       BsonArray arr = new BsonArray();
 
@@ -79,7 +84,7 @@ namespace DbLayer.Services
         arr[1] = temp;
       }
       else
-      {
+      {        
         GeometryPolygonDTO fig = JsonSerializer.Deserialize<GeometryPolygonDTO>(geometry);
         var val = new BsonArray(fig.coord);
         //var val = BsonSerializer.Deserialize<BsonValue>(geometry).AsBsonArray;
@@ -134,7 +139,7 @@ namespace DbLayer.Services
       return point;
     }
 
-    public async Task<DBGeoObject> CreateOrUpdateGeoPointAsync(FigureCircleDTO newObject)
+    private async Task<DBGeoObject> CreateOrUpdateGeoPointAsync(FigureCircleDTO newObject)
     {
       DBGeoObject point = new DBGeoObject();
 
@@ -148,7 +153,7 @@ namespace DbLayer.Services
       return await CreateOrUpdateGeoObject(point);
     }
 
-    public async Task<DBGeoObject> CreateOrUpdateGeoPolygonAsync(FigurePolygonDTO newObject)
+    private async Task<DBGeoObject> CreateOrUpdateGeoPolygonAsync(FigurePolygonDTO newObject)
     {
       DBGeoObject point = new DBGeoObject();
       point.zoom_level = newObject.zoom_level;
@@ -158,7 +163,7 @@ namespace DbLayer.Services
       return await CreateOrUpdateGeoObject(point);
     }
 
-    public async Task<DBGeoObject> CreateOrUpdateGeoPolylineAsync(FigurePolylineDTO newObject)
+    private async Task<DBGeoObject> CreateOrUpdateGeoPolylineAsync(FigurePolylineDTO newObject)
     {
       DBGeoObject point = new DBGeoObject();
 

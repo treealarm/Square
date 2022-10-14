@@ -562,33 +562,38 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
+    [Route("UpdatePropNotDeleteAsync")]
+    public async Task<ActionResult<ObjPropsDTO>> UpdatePropNotDeleteAsync(ObjPropsDTO updatedObj)
+    {
+      await _mapService.UpdatePropNotDeleteAsync(new List<ObjPropsDTO>() { updatedObj });
+      return CreatedAtAction(nameof(UpdateFigures), updatedObj);
+    }
+
+    [HttpPost]
     [Route("UpdateFigures")]
     public async Task<ActionResult<FiguresDTO>> UpdateFigures(FiguresDTO statMarkers)
     {
       await _mapService.UpdateHierarchyAsync(statMarkers.circles);
+      await _mapService.UpdatePropNotDeleteAsync(statMarkers.circles);
 
       foreach (var figure in statMarkers.circles)
       {
-        
-        await _mapService.UpdatePropNotDeleteAsync(figure);
         await _geoService.CreateGeoPoint(figure);
       }
 
       await _mapService.UpdateHierarchyAsync(statMarkers.polygons);
+      await _mapService.UpdatePropNotDeleteAsync(statMarkers.polygons);
 
       foreach (var figure in statMarkers.polygons)
       {
-        
-        await _mapService.UpdatePropNotDeleteAsync(figure);
         await _geoService.CreateGeoPoint(figure);
       }
 
       await _mapService.UpdateHierarchyAsync(statMarkers.polylines);
+      await _mapService.UpdatePropNotDeleteAsync(statMarkers.polylines);
 
       foreach (var figure in statMarkers.polylines)
       {
-        
-        await _mapService.UpdatePropNotDeleteAsync(figure);
         await _geoService.CreateGeoPoint(figure);
       }
       return CreatedAtAction(nameof(UpdateFigures), statMarkers);

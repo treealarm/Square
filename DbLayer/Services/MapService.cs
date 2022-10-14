@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using static MongoDB.Bson.Serialization.Serializers.SerializerHelper;
 
 namespace DbLayer.Services
 {
@@ -335,36 +336,50 @@ namespace DbLayer.Services
       await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
     }
 
-    public async Task UpdatePropNotDeleteAsync(FigureBaseDTO updatedObj)
+    public async Task UpdatePropNotDeleteAsync(IEnumerable<FigureBaseDTO> listUpdate)
+    {
+      if (!listUpdate.Any())
+      {
+        return;
+      }
+
+      var bulkWrites = new List<WriteModel<DBMarkerProperties>>();
+
+      foreach (var updatedObj in listUpdate)
       {
         var props = updatedObj as IObjectProps;
 
         if (props?.extra_props == null || props.extra_props.Count == 0)
         {
-        return;
-        }
+          continue;
+        }        
 
-        DBMarkerProperties propToUpdate;
-        var curObj = await GetPropAsync(updatedObj.id);
+        DBMarkerProperties propToUpdate = ConvertDTO2Property(updatedObj);
 
-        if (curObj != null)
-        {
-          curObj.extra_props.RemoveAll(x => props.extra_props.Any(y => y.prop_name == x.prop_name));
+        var propNames = propToUpdate.extra_props.Select(p => p.prop_name).ToList();
 
-          foreach (var prop in props.extra_props)
-          {
-            curObj.extra_props.Add(prop);
-          }
-          propToUpdate = ConvertDTO2Property(curObj);
-        }
-        else
-        {
-          propToUpdate = ConvertDTO2Property(updatedObj);
-        }
+        var updatePull = Builders<DBMarkerProperties>.Update
+                .PullFilter(u => u.extra_props, c => propNames.Contains(c.prop_name));
 
-      ReplaceOptions opt = new ReplaceOptions();
-      opt.IsUpsert = true;
-      await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, propToUpdate, opt);
+        var updatePush = Builders<DBMarkerProperties>.Update
+                .PushEach(u => u.extra_props, propToUpdate.extra_props);
+
+
+        var filter = Builders<DBMarkerProperties>.Filter
+          .Where(x => x.id == updatedObj.id);
+
+        var request = new UpdateOneModel<DBMarkerProperties>(filter, updatePull);
+        request.IsUpsert = true;
+        bulkWrites.Add(request);
+        request = new UpdateOneModel<DBMarkerProperties>(filter, updatePush);
+        request.IsUpsert = true;
+        bulkWrites.Add(request);
+      }
+
+      var writeResult = await _propCollection.BulkWriteAsync(bulkWrites);
+
+      //await _propCollection.UpdateOneAsync(filter, updatePull);
+      //await _propCollection.UpdateOneAsync(filter, updatePush);
     }
 
     public async Task<ObjPropsDTO> GetPropAsync(string id)

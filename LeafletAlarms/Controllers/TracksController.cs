@@ -130,11 +130,10 @@ namespace LeafletAlarms.Controllers
       }
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.circles);
+      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.circles);
 
       foreach (var figure in movedMarkers.circles)
-      {       
-        await _mapService.UpdatePropNotDeleteAsync(figure);
-
+      {
         var newPoint =
           new TrackPointDTO() {
             figure = await _geoService.CreateGeoPoint(figure)
@@ -163,11 +162,10 @@ namespace LeafletAlarms.Controllers
       timing["circlesInsert"] = t2 - t1;
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.polygons);
+      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polygons);
 
       foreach (var figure in movedMarkers.polygons)
-      {         
-        await _mapService.UpdatePropNotDeleteAsync(figure);
-
+      {
         trackPoints.Add(
           new TrackPointDTO()
           {
@@ -177,13 +175,10 @@ namespace LeafletAlarms.Controllers
       }
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.polylines);
+      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polylines);
 
       foreach (var figure in movedMarkers.polylines)
       {
-        await EnsureTracksRoot(figure);
-        
-        await _mapService.UpdatePropNotDeleteAsync(figure);
-
         trackPoints.Add(
           new TrackPointDTO()
           {
