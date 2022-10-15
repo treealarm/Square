@@ -141,7 +141,9 @@ namespace TrackSender
       }
 
       Random random = new Random();
-      int maxPoint = mkadPolyline.geometry.coord.Count;
+      var geometry_mkad = mkadPolyline.geometry as GeometryPolylineDTO;
+
+      int maxPoint = geometry_mkad.coord.Count;
 
       var figures = await _testClient.GetByParams("track_name", "mkad");
 
@@ -179,8 +181,8 @@ namespace TrackSender
               }
           };
           
-          var y = mkadPolyline.geometry.coord[rnd].Y;
-          var x = mkadPolyline.geometry.coord[rnd].X;
+          var y = geometry_mkad.coord[rnd].Y;
+          var x = geometry_mkad.coord[rnd].X;
           var start =
                 new GeometryCircleDTO(
                   new Geo2DCoordDTO() { y, x }
@@ -208,8 +210,10 @@ namespace TrackSender
 
       foreach (var figure in figures.circles)
       {
-        var pointOnMkad = mkadPolyline.geometry.coord
-          .Where(c => (c.X - figure.geometry.coord.X) < 0.0001 && (c.Y - figure.geometry.coord.Y) < 0.0001)
+        var geometry = figure.geometry as GeometryCircleDTO;
+
+        var pointOnMkad = geometry_mkad.coord
+          .Where(c => (c.X - geometry.coord.X) < 0.0001 && (c.Y - geometry.coord.Y) < 0.0001)
           .FirstOrDefault();
 
         if (pointOnMkad == null)
@@ -223,7 +227,7 @@ namespace TrackSender
         {
           dicShifter[figure.id] = new CircleShifter()
           {
-            CurIndex = mkadPolyline.geometry.coord.IndexOf(pointOnMkad)            
+            CurIndex = geometry_mkad.coord.IndexOf(pointOnMkad)            
           };
         }
 
@@ -241,6 +245,7 @@ namespace TrackSender
       {
         foreach (var figure in figures.circles)
         {
+          var geometry = figure.geometry as GeometryCircleDTO;
           counter++;
 
           var shifter = dicShifter[figure.id];
@@ -256,14 +261,14 @@ namespace TrackSender
             shifter.CurIndex = 0;
           }
 
-          var y = mkadPolyline.geometry.coord[shifter.CurIndex].Y;
-          var x = mkadPolyline.geometry.coord[shifter.CurIndex].X;
+          var y = geometry_mkad.coord[shifter.CurIndex].Y;
+          var x = geometry_mkad.coord[shifter.CurIndex].X;
           
           var start =
                 new GeometryCircleDTO(
                   new Geo2DCoordDTO() { y, x }
                   );
-          if (Math.Abs(figure.geometry.coord.X - x) < 0.0000001)
+          if (Math.Abs(geometry.coord.X - x) < 0.0000001)
           {
             start.coord.X = x + 0.0000001;
           }
@@ -305,8 +310,9 @@ namespace TrackSender
       {
         foreach (var figure in _figures.circles)
         {
+          var geometry = figure.geometry as GeometryCircleDTO;
           counter++;
-          var coord = figure.geometry.coord;
+          var coord = geometry.coord;
 
           coord.X = GetRandomDouble(coord.X - 0.01, coord.X + 0.01);
           coord.Y = GetRandomDouble(coord.Y - 0.01, coord.Y + 0.01);

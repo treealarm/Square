@@ -9,8 +9,7 @@ namespace Domain.GeoDBDTO
 {
   public class GeometryPolygonDTO : GeometryDTO
   {
-    private List<Geo2DCoordDTO> _coord;
-    public List<Geo2DCoordDTO> coord
+    public new List<Geo2DCoordDTO> coord
     {
       get
       {
@@ -18,7 +17,7 @@ namespace Domain.GeoDBDTO
         {
           _coord = new List<Geo2DCoordDTO>();
         }
-        return _coord;
+        return _coord as List<Geo2DCoordDTO>;
       }
       set
       {

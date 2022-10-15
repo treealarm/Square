@@ -9,6 +9,6 @@ namespace Domain.GeoDTO
 {
   public class FigurePolylineDTO : FigureZoomedDTO
   {
-    public GeometryPolylineDTO geometry { get; set; }
+    public GeometryDTO geometry { get; set; }
   }
 }

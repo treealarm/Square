@@ -16,6 +16,19 @@ namespace Domain.GeoDBDTO
   [JsonConverter(typeof(GeometryDTOConverter))]
   public class GeometryDTO: GeometryDTOBase
   {
+    protected object _coord;
+
+    public object coord
+    {
+      get
+      {
+        return _coord;
+      }
+      set
+      {
+        _coord = value;
+      }
+    }
     public string GetFigureType()
     {
       if (this is GeometryCircleDTO)

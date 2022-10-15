@@ -100,11 +100,14 @@ namespace TrackSender
         }
 
         polyline = polylines.polylines.FirstOrDefault();
-        polyline.geometry.coord.Clear();
+
+        var geometry = polyline.geometry as GeometryPolylineDTO;
+
+        geometry.coord.Clear();
 
         foreach (var coord in root_coords)
         {
-          polyline.geometry.coord.Add(new Geo2DCoordDTO()
+          geometry.coord.Add(new Geo2DCoordDTO()
             {
               coord.Latitude,
               coord.Longitude

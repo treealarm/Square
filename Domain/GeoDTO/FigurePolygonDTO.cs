@@ -10,6 +10,6 @@ namespace Domain.GeoDTO
   public class FigurePolygonDTO : FigureZoomedDTO
   {
     //public double[][] geometry { get; set; }
-    public GeometryPolygonDTO geometry { get; set; }
+    public GeometryDTO geometry { get; set; }
   }
 }

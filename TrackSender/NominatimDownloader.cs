@@ -219,7 +219,8 @@ namespace TrackSender
               coord.Y = temp;
             }
 
-            figure.geometry.coord.AddRange(coords);
+            var geometry = figure.geometry as GeometryPolylineDTO;
+            geometry.coord.AddRange(coords);
           }
           else
           {

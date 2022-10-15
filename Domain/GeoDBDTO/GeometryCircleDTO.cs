@@ -16,7 +16,17 @@ namespace Domain.GeoDBDTO
     {
       this.coord = crd;
     }
-    public Geo2DCoordDTO coord { get; set; }
+    public new Geo2DCoordDTO coord 
+    { 
+      get
+      {
+        return _coord as Geo2DCoordDTO;
+      }
+      set
+      {
+        _coord = value;
+      }
+    }
 
     public override string GetJson()
     {
