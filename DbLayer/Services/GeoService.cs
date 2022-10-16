@@ -141,49 +141,6 @@ namespace DbLayer.Services
       var updateResult = await _geoRawCollection.UpdateOneAsync(filter, update, options);
     }
 
-    private async Task<DBGeoObject> CreateOrUpdateGeoObject(DBGeoObject point)
-    {
-      ReplaceOptions opt = new ReplaceOptions();
-      opt.IsUpsert = true;
-      var result = await _geoCollection.ReplaceOneAsync(x => x.id == point.id, point, opt);
-
-      return point;
-    }
-
-    private async Task<DBGeoObject> CreateOrUpdateGeoPointAsync(FigureGeoDTO newObject)
-    {
-      DBGeoObject point = new DBGeoObject();
-
-      point.zoom_level = newObject.zoom_level;
-      point.radius = newObject.radius;
-
-      point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
-
-      point.id = newObject.id;
-      
-      return await CreateOrUpdateGeoObject(point);
-    }
-
-    private async Task<DBGeoObject> CreateOrUpdateGeoPolygonAsync(FigureGeoDTO newObject)
-    {
-      DBGeoObject point = new DBGeoObject();
-      point.zoom_level = newObject.zoom_level;
-      point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
-
-      point.id = newObject.id;
-      return await CreateOrUpdateGeoObject(point);
-    }
-
-    private async Task<DBGeoObject> CreateOrUpdateGeoPolylineAsync(FigureGeoDTO newObject)
-    {
-      DBGeoObject point = new DBGeoObject();
-
-      point.location = ModelGate.ConvertGeoDTO2DB(newObject.geometry);
-      point.zoom_level = newObject.zoom_level;
-      point.id = newObject.id;
-      return await CreateOrUpdateGeoObject(point);
-    }
-
     public async Task<List<GeoObjectDTO>> GetGeoAsync(BoxDTO box)
     {
       var builder = Builders<DBGeoObject>.Filter;
@@ -252,30 +209,26 @@ namespace DbLayer.Services
 
     public async Task<GeoObjectDTO> CreateGeo(FigureGeoDTO figure)
     {
-      DBGeoObject geoPoint = null;
+      DBGeoObject point = new DBGeoObject();
 
-      if (figure.geometry.type == "Point")
-      {
-        geoPoint = await CreateOrUpdateGeoPointAsync(figure);
-      }
+      point.zoom_level = figure.zoom_level;
+      point.radius = figure.radius;
 
-      if (figure.geometry.type == "Polygon")
-      {
-        geoPoint = await CreateOrUpdateGeoPolygonAsync(figure);
-      }
+      point.location = ModelGate.ConvertGeoDTO2DB(figure.geometry);
 
-      if (figure.geometry.type == "LineString")
-      {
-        geoPoint = await CreateOrUpdateGeoPolylineAsync(figure);
-      }
+      point.id = figure.id;
+
+      ReplaceOptions opt = new ReplaceOptions();
+      opt.IsUpsert = true;
+      var result = await _geoCollection.ReplaceOneAsync(x => x.id == point.id, point, opt);
 
       if (string.IsNullOrEmpty(figure.id))
       {
         // We could create figure first and then base object.
-        figure.id = geoPoint.id;
+        figure.id = point.id;
       }
 
-      return ModelGate.ConvertDB2DTO(geoPoint);
+      return ModelGate.ConvertDB2DTO(point);
     }
 
     private static void Log(FilterDefinition<DBGeoObject> filter)
