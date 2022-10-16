@@ -145,17 +145,25 @@ namespace TrackSender
 
       int maxPoint = geometry_mkad.coord.Count;
 
-      var figures = await _testClient.GetByParams("track_name", "mkad");
+      
+      var max_circles = 10000;
+      var start_circles = 0;
+      var figures = await _testClient.GetByParams("track_name", "mkad", max_circles);
 
-      if (figures == null || figures.circles == null || figures.circles.Count == 0)
+      if (figures == null || figures.circles == null || figures.circles.Count < max_circles)
       {
+        if (figures != null && figures.circles != null)
+        {
+          start_circles = figures.circles.Count;
+        }
+
         figures = new FiguresDTO();
         figures.circles = new List<FigureGeoDTO>();
 
-        for (int i = 0; i < 100; i++)
+        for (int i = start_circles; i < max_circles; i++)
         {
           var color =
-        $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
+            $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
 
           var obj_name = $"test_track{i}";
           var rnd = random.Next(0, maxPoint);
@@ -199,7 +207,9 @@ namespace TrackSender
             figures.circles.Add(figure);
           }
         figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
-      }     
+      }
+
+      figures = await _testClient.GetByParams("track_name", "mkad", max_circles);
 
       if (figures == null || figures.circles.Count == 0)
       {
@@ -340,7 +350,7 @@ namespace TrackSender
 
     public async Task CreateMkad()
     {
-      var mkad = await _testClient.GetByParams("mkad", "true");
+      var mkad = await _testClient.GetByParams("mkad", "true", 1);
 
       if (mkad == null || mkad.IsEmpty())
       {

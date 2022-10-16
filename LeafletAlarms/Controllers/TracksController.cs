@@ -110,9 +110,7 @@ namespace LeafletAlarms.Controllers
     private async Task<Dictionary<string, TimeSpan>> DoUpdateTracks(FiguresDTO movedMarkers)
     {
       var trackPoints = new List<TrackPointDTO>();
-      Dictionary<string, TimeSpan> timing = new Dictionary<string, TimeSpan>();
-      
-      DateTime t1 = DateTime.Now;
+      Dictionary<string, TimeSpan> timing = new Dictionary<string, TimeSpan>(); 
 
       foreach (var figure in movedMarkers.circles)
       {
@@ -129,9 +127,20 @@ namespace LeafletAlarms.Controllers
         await EnsureTracksRoot(figure);
       }
 
+      DateTime t1 = DateTime.Now;
       await _mapService.UpdateHierarchyAsync(movedMarkers.circles);
+      DateTime t2 = DateTime.Now;
+      timing["UpdateHierarchyAsync"] = t2 - t1;
+
+      t1 = DateTime.Now;
       await _mapService.UpdatePropNotDeleteAsync(movedMarkers.circles);
+      t2 = DateTime.Now;
+      timing["UpdatePropNotDeleteAsync"] = t2 - t1;
+
+      t1 = DateTime.Now;
       var circles = await _geoService.CreateGeo(movedMarkers.circles);
+      t2 = DateTime.Now;
+      timing["CreateGeo"] = t2 - t1;
 
       foreach (var figure in movedMarkers.circles)
       {
@@ -162,9 +171,6 @@ namespace LeafletAlarms.Controllers
 
         trackPoints.Add(newPoint);
       }
-
-      DateTime t2 = DateTime.Now;
-      timing["circlesInsert"] = t2 - t1;
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.polygons);
       await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polygons);
@@ -215,12 +221,9 @@ namespace LeafletAlarms.Controllers
         {
           continue;
         }
-
-        var newPoint = trackPoint;        
-        var lastPoint = await GetLast(newPoint);
-
-        if (lastPoint != null)
+              
         {
+          var newPoint = trackPoint;
           var newRout = new RoutLineDTO();
           
 
@@ -228,22 +231,8 @@ namespace LeafletAlarms.Controllers
           newRout.figure.id = newPoint.figure.id;
           newRout.figure.zoom_level = newPoint.figure.zoom_level;
 
-          var lineCoord = new List<Geo2DCoordDTO>();
-          var p1 = (newPoint.figure.location as GeometryCircleDTO).coord;
-          lineCoord.Add(p1);
-
-          var p2 = (lastPoint.figure.location as GeometryCircleDTO).coord;
-          lineCoord.Add(p2);
-
-          newRout.id_start = lastPoint.id;
           newRout.id_end = newPoint.id;
-          newRout.ts_start = lastPoint.timestamp;
           newRout.ts_end = newPoint.timestamp;
-
-          var polyLine = new GeometryPolylineDTO();
-          newRout.figure.location = polyLine;
-          polyLine.coord = lineCoord;
-
           routs.Add(newRout);
         }
       }

@@ -177,7 +177,6 @@ namespace TrackSender
             };
       result.Add(figure);
 
-      string s;
       var osmIds = await GetMkadOsmIds();
 
       foreach (var osmid in osmIds)

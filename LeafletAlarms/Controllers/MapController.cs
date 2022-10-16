@@ -359,13 +359,13 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetByParams")]
-    public async Task<ActionResult<FiguresDTO>> GetByParams(ObjPropsSearchDTO propFilter)
+    public async Task<ActionResult<FiguresDTO>> GetByParams(SearchFilterDTO propFilter)
     {
       var props = await _mapService.GetPropByValuesAsync(
-        propFilter,
-        null,
-        true,
-        1000
+        propFilter.property_filter,
+        propFilter.start_id,
+        propFilter.forward,
+        propFilter.count
       );
       var geo = await _geoService.GetGeoObjectsAsync(props.Select(i => i.id).ToList());
       var figures = await GetFigures(geo);

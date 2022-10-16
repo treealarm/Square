@@ -126,13 +126,15 @@ namespace TrackSender
       return json;
     }
 
-    public async Task<FiguresDTO> GetByParams(string paramName, string paramValue)
+    public async Task<FiguresDTO> GetByParams(string paramName, string paramValue, int count)
     {
       try
       {
-        ObjPropsSearchDTO propFilter = new ObjPropsSearchDTO();
-        propFilter.props = new List<KeyValueDTO>();
-        propFilter.props.Add(new KeyValueDTO()
+        SearchFilterDTO filter = new SearchFilterDTO();
+        filter.count = count;
+        filter.property_filter = new ObjPropsSearchDTO();
+        filter.property_filter.props = new List<KeyValueDTO>();
+        filter.property_filter.props.Add(new KeyValueDTO()
         {
           prop_name = paramName,
           str_val = paramValue
@@ -140,7 +142,7 @@ namespace TrackSender
 
         HttpResponseMessage response =
           await client.PostAsJsonAsync(
-            $"api/Map/GetByParams", propFilter);
+            $"api/Map/GetByParams", filter);
 
         response.EnsureSuccessStatusCode();
 

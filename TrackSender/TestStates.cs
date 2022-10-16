@@ -82,7 +82,7 @@ namespace TrackSender
       var color = 
         $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
 
-      FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString());
+      FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString(), 1000);
       
       if (figures != null && !figures.IsEmpty())
       {
@@ -273,7 +273,7 @@ namespace TrackSender
    
     private async Task EmulateState(CancellationToken token)
     {
-      var figures = await _testClient.GetByParams("moscow_state", "true");
+      var figures = await _testClient.GetByParams("moscow_state", "true", 10000);
       
 
       while (!token.IsCancellationRequested)
