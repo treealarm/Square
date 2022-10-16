@@ -11,6 +11,7 @@ using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -207,28 +208,59 @@ namespace DbLayer.Services
       return result.DeletedCount;
     }
 
-    public async Task<GeoObjectDTO> CreateGeo(FigureGeoDTO figure)
+    public async Task<Dictionary<string, GeoObjectDTO>> CreateGeo(IEnumerable<FigureGeoDTO> figures)
     {
-      DBGeoObject point = new DBGeoObject();
+      var retVal = new Dictionary<string, GeoObjectDTO>();
 
-      point.zoom_level = figure.zoom_level;
-      point.radius = figure.radius;
-
-      point.location = ModelGate.ConvertGeoDTO2DB(figure.geometry);
-
-      point.id = figure.id;
-
-      ReplaceOptions opt = new ReplaceOptions();
-      opt.IsUpsert = true;
-      var result = await _geoCollection.ReplaceOneAsync(x => x.id == point.id, point, opt);
-
-      if (string.IsNullOrEmpty(figure.id))
+      if (!figures.Any())
       {
-        // We could create figure first and then base object.
-        figure.id = point.id;
+        return retVal;
       }
 
-      return ModelGate.ConvertDB2DTO(point);
+      var bulkWrites = new List<WriteModel<DBGeoObject>>();
+      var dbUpdated = new Dictionary<FigureGeoDTO, DBGeoObject>();
+
+      foreach (var figure in figures)
+      {
+        DBGeoObject dbObj = new DBGeoObject();
+
+        dbObj.zoom_level = figure.zoom_level;
+        dbObj.radius = figure.radius;
+
+        dbObj.location = ModelGate.ConvertGeoDTO2DB(figure.geometry);
+
+        dbObj.id = figure.id;
+        dbUpdated.Add(figure, dbObj);
+
+        var filter = Builders<DBGeoObject>.Filter.Eq(x => x.id, dbObj.id);
+
+        if (string.IsNullOrEmpty(dbObj.id))
+        {
+          var request = new InsertOneModel<DBGeoObject>(dbObj);
+          bulkWrites.Add(request);
+        }
+        else
+        {
+          var request = new ReplaceOneModel<DBGeoObject>(filter, dbObj);
+          request.IsUpsert = true;
+          bulkWrites.Add(request);
+        } 
+      }
+
+      if (!bulkWrites.Any())
+      {
+        return retVal;
+      }
+
+      var writeResult = await _geoCollection.BulkWriteAsync(bulkWrites);
+
+      foreach (var pair in dbUpdated)
+      {
+        pair.Key.id = pair.Value.id;
+        retVal[pair.Value.id] = ModelGate.ConvertDB2DTO(pair.Value);
+      }
+
+      return retVal ;
     }
 
     private static void Log(FilterDefinition<DBGeoObject> filter)

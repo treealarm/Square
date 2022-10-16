@@ -575,27 +575,17 @@ namespace LeafletAlarms.Controllers
     {
       await _mapService.UpdateHierarchyAsync(statMarkers.circles);
       await _mapService.UpdatePropNotDeleteAsync(statMarkers.circles);
+      await _geoService.CreateGeo(statMarkers.circles);
 
-      foreach (var figure in statMarkers.circles)
-      {
-        await _geoService.CreateGeo(figure);
-      }
 
       await _mapService.UpdateHierarchyAsync(statMarkers.polygons);
       await _mapService.UpdatePropNotDeleteAsync(statMarkers.polygons);
-
-      foreach (var figure in statMarkers.polygons)
-      {
-        await _geoService.CreateGeo(figure);
-      }
+      await _geoService.CreateGeo(statMarkers.polygons);
 
       await _mapService.UpdateHierarchyAsync(statMarkers.polylines);
       await _mapService.UpdatePropNotDeleteAsync(statMarkers.polylines);
+      await _geoService.CreateGeo(statMarkers.polylines);
 
-      foreach (var figure in statMarkers.polylines)
-      {
-        await _geoService.CreateGeo(figure);
-      }
       return CreatedAtAction(nameof(UpdateFigures), statMarkers);
     }
   }

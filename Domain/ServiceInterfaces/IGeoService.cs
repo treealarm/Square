@@ -12,7 +12,7 @@ namespace Domain.ServiceInterfaces
     Task<List<GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids);
     Task<List<GeoObjectDTO>> GetGeoAsync(BoxDTO box);
     Task<GeoObjectDTO> GetGeoObjectAsync(string id);
-    Task<GeoObjectDTO> CreateGeo(FigureGeoDTO figure);
+    Task<Dictionary<string, GeoObjectDTO>> CreateGeo(IEnumerable<FigureGeoDTO> figures);
     Task CreateOrUpdateGeoFromStringAsync(
       string id,
       string geometry,

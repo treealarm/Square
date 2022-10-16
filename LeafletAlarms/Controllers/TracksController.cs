@@ -131,12 +131,17 @@ namespace LeafletAlarms.Controllers
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.circles);
       await _mapService.UpdatePropNotDeleteAsync(movedMarkers.circles);
+      var circles = await _geoService.CreateGeo(movedMarkers.circles);
 
       foreach (var figure in movedMarkers.circles)
       {
+        GeoObjectDTO circle;
+
+        circles.TryGetValue(figure.id, out circle);
+
         var newPoint =
           new TrackPointDTO() {
-            figure = await _geoService.CreateGeo(figure)
+            figure = circle
           };
 
         if (figure.extra_props != null)
@@ -163,26 +168,33 @@ namespace LeafletAlarms.Controllers
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.polygons);
       await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polygons);
+      var polygons = await _geoService.CreateGeo(movedMarkers.polygons);
 
       foreach (var figure in movedMarkers.polygons)
       {
+        GeoObjectDTO polygon;
+        polygons.TryGetValue(figure.id, out polygon);
         trackPoints.Add(
           new TrackPointDTO()
           {
-            figure = await _geoService.CreateGeo(figure)
+            figure = polygon
           }
         );
       }
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.polylines);
       await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polylines);
+      var polylines = await _geoService.CreateGeo(movedMarkers.polylines);
 
       foreach (var figure in movedMarkers.polylines)
       {
+        GeoObjectDTO polyline;
+        polylines.TryGetValue(figure.id, out polyline);
+
         trackPoints.Add(
           new TrackPointDTO()
           {
-            figure = await _geoService.CreateGeo(figure)
+            figure = polyline
           }
         );
       }
