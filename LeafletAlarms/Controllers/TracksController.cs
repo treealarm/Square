@@ -131,11 +131,7 @@ namespace LeafletAlarms.Controllers
       await _mapService.UpdateHierarchyAsync(movedMarkers.circles);
       DateTime t2 = DateTime.Now;
       timing["UpdateHierarchyAsync"] = t2 - t1;
-
-      t1 = DateTime.Now;
-      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.circles);
-      t2 = DateTime.Now;
-      timing["UpdatePropNotDeleteAsync"] = t2 - t1;
+      
 
       t1 = DateTime.Now;
       var circles = await _geoService.CreateGeo(movedMarkers.circles);
@@ -171,6 +167,12 @@ namespace LeafletAlarms.Controllers
 
         trackPoints.Add(newPoint);
       }
+      //---------Updating properties here not to insert timestamp
+      t1 = DateTime.Now;
+      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.circles);
+      t2 = DateTime.Now;
+      timing["UpdatePropNotDeleteAsync"] = t2 - t1;
+      //----------------------------------------------------------------------------
 
       await _mapService.UpdateHierarchyAsync(movedMarkers.polygons);
       await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polygons);

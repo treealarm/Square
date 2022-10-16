@@ -107,6 +107,9 @@ namespace DbLayer
 
     static private GeometryDTO ConvertGeoDB2DTO(GeoJsonGeometry<GeoJson2DCoordinates> location)
     {
+      if (location == null)
+      { return null; }
+
       GeometryDTO ret = null;
 
       if (location is GeoJsonPoint<GeoJson2DCoordinates> point)

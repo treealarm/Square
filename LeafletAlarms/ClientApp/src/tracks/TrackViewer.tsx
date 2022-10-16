@@ -62,6 +62,11 @@ function CommonTrack(props: any) {
 
   let figure = props.marker as IGeoObjectDTO; 
 
+  if (figure.location == null) {
+    // Can be not built rout.
+    return null;
+  }
+
   if (figure.location.figure_type == LineStringType) {
     return (
       <React.Fragment>
