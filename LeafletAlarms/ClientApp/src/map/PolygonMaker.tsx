@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, IPolygon, PolygonType, IObjProps, IArrayCoord, setExtraProp, getExtraProp } from '../store/Marker';
+import { BoundBox, IPolygon, PolygonType, IObjProps, IPolygonCoord, setExtraProp, getExtraProp, PointType } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
 import { useCallback, useEffect } from 'react'
@@ -81,8 +81,7 @@ export function PolygonMaker(props: any) {
     id: null,
     name: 'New Polygon',
     parent_id: selected_id,
-    geometry: {coord:[]},
-    type: PolygonType
+    geometry: { coord: [], type: PolygonType }
   };
 
   useEffect(() => {
@@ -124,20 +123,17 @@ export function PolygonMaker(props: any) {
       if (isMoveAll) {
         setIsMoveAll(false);
         return;
-      }
-      
+      }      
 
-      let updatedValue = {};
-      updatedValue = {
-        geometry:
-        {
-          coord: [...curPolygon.geometry.coord, [ll.lat, ll.lng]]
-        }          
-      };
+      var geometry_upd: IPolygonCoord =
+      {
+        type: PolygonType,
+        coord: [...curPolygon.geometry.coord, [ll.lat, ll.lng]]
+      }          
 
       setPolygon(polygon => ({
         ...polygon,
-        ...updatedValue
+        geometry: geometry_upd
       }));
     },
 
@@ -150,16 +146,14 @@ export function PolygonMaker(props: any) {
         var shift_y = e.latlng.lat - oldPolygon.geometry.coord[0][0];
         var shift_x = e.latlng.lng - oldPolygon.geometry.coord[0][1];
 
-        const updatedValue =
+        var updated_geometry: IPolygonCoord =
         {
-          geometry:
-          {
-            coord: new Array<[number, number]>()
-          }            
+          type: PolygonType,
+          coord: new Array<[number, number]>()            
         }
 
         for (var _i = 0; _i < oldPolygon.geometry.coord.length; _i++) {
-          updatedValue.geometry.coord.push(
+          updated_geometry.coord.push(
             [
               shift_y + oldPolygon.geometry.coord[_i][0],
               shift_x + oldPolygon.geometry.coord[_i][1]
@@ -168,23 +162,23 @@ export function PolygonMaker(props: any) {
 
         setPolygon(polygon => ({
           ...polygon,
-          ...updatedValue
+          geometry: updated_geometry
         }));
       }
 
       if (movedIndex >= 0) {
-        var updatedValue = {
-          geometry:
-          {
-            coord: [...curPolygon.geometry.coord]
-          }            
-        };
+        var updated_geometry: IPolygonCoord =
+        {
+          coord: [...curPolygon.geometry.coord],
+          type: PolygonType
+        }            
 
-        updatedValue.geometry.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
+
+        updated_geometry.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
 
         setPolygon(polygon => ({
           ...polygon,
-          ...updatedValue
+          geometry: updated_geometry
         }));
       }
     },
@@ -214,17 +208,17 @@ export function PolygonMaker(props: any) {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
 
-      var updatedValue = {
-        geometry:
-        {
-          coord: [...curPolygon.geometry.coord]
-        }          
-      };
-      updatedValue.geometry.coord.splice(index, 0, updatedValue.geometry.coord[index]);
+      var geometry_upd: IPolygonCoord = 
+      {
+        type: PolygonType,
+        coord: [...curPolygon.geometry.coord]
+      }          
+
+      geometry_upd.coord.splice(index, 0, geometry_upd.coord[index]);
 
       setPolygon(polygon1 => ({
         ...curPolygon,
-        ...updatedValue
+        geometry: geometry_upd
       }));
 
       setMovedIndex(index);
@@ -234,17 +228,17 @@ export function PolygonMaker(props: any) {
     (index, e) => {      
       parentMap.closePopup();
 
-      var updatedValue = {
-        geometry:
-        {
-          coord: [...curPolygon.geometry.coord]
-        }          
-      };
-      updatedValue.geometry.coord.splice(index, 1);
+      var geometry_upd: IPolygonCoord =
+      {
+        type: PolygonType,
+        coord: [...curPolygon.geometry.coord]
+      };     
+
+      geometry_upd.coord.splice(index, 1);
 
       setPolygon(polygon1 => ({
         ...curPolygon,
-        ...updatedValue
+        geometry: geometry_upd
       }));
 
     }, [curPolygon])

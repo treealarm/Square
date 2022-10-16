@@ -4,7 +4,7 @@ using Domain.ObjectInterfaces;
 
 namespace Domain.GeoDTO
 {
-  public class FigureZoomedDTO: FigureBaseDTO, IObjectProps
+  public class FigureZoomedDTO: BaseMarkerDTO, IObjectProps
   {
     public string zoom_level { get; set; }
 

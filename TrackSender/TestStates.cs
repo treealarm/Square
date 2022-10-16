@@ -34,7 +34,7 @@ namespace TrackSender
       tasks.Add(EmulateState(token));      
     }
 
-    private void AddStateObjects(Root geoObj, FigurePolygonDTO parentPolygon)
+    private void AddStateObjects(Root geoObj, FigureGeoDTO parentPolygon)
     {
       Random random = new Random();
 
@@ -48,7 +48,7 @@ namespace TrackSender
                   geoObj.centroid.coordinates[0] }
               );
 
-        var figure = new FigureCircleDTO()
+        var figure = new FigureGeoDTO()
         {
           name = geoObj.names.name,
           radius = random.Next(150, 300),
@@ -106,8 +106,8 @@ namespace TrackSender
       }
 
       figures = new FiguresDTO();
-      figures.circles = new List<FigureCircleDTO>();
-      figures.polygons = new List<FigurePolygonDTO>();
+      figures.circles = new List<FigureGeoDTO>();
+      figures.polygons = new List<FigureGeoDTO>();
 
       var geoObj = await NominatimProcessor.GetOsmFigureFromDisk(osmid, "PolygonJson");
 
@@ -168,7 +168,7 @@ namespace TrackSender
 
             start.coord = coord[0];
 
-            var figure = new FigurePolygonDTO()
+            var figure = new FigureGeoDTO()
             {
               name = nameOfpolygon,
               zoom_level = "11",

@@ -1,5 +1,5 @@
 import { Action, Reducer } from "redux";
-import { ApiRootString, AppThunkAction } from "./";
+import { ApiRootString, ApiTracksRootString, AppThunkAction } from "./";
 import { BoundBox, IFigures, Marker } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -119,7 +119,7 @@ export const actionCreators = {
     // Send data to the backend via POST
     let body = JSON.stringify(markers);
 
-    var request = ApiRootString + "/AddTracks";
+    var request = ApiTracksRootString + "/AddTracks";
 
     var fetched = fetch(request, {
       method: "POST",

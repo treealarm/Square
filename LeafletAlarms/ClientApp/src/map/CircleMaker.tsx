@@ -59,8 +59,7 @@ export function CircleMaker(props: any) {
   const initFigure: ICircle = {
     name: 'New Circle',
     parent_id: selected_id,
-    geometry: null,
-    type: PointType,
+    geometry: { coord: null, type: PointType },
     radius: 10,
     id: null
   };
@@ -85,7 +84,7 @@ export function CircleMaker(props: any) {
 
       initFigure.radius = radius2set;
 
-      if (initFigure.geometry == null) {
+      if (initFigure?.geometry?.coord == null) {
         setMovedIndex(0)
       }
     }
@@ -103,7 +102,7 @@ export function CircleMaker(props: any) {
     }
 
     setExtraProp(copy, "radius", figure.radius.toString(), null);
-    setExtraProp(copy, "geometry", JSON.stringify(figure.geometry), null);
+    setExtraProp(copy, "geometry", JSON.stringify(figure?.geometry), null);
 
     dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   }, [figure]);
@@ -119,7 +118,7 @@ export function CircleMaker(props: any) {
         return;
       }
       var updatedValue = { geometry: figure.geometry};
-      updatedValue.geometry = { coord: [ll.lat, ll.lng] };
+      updatedValue.geometry = { coord: [ll.lat, ll.lng], type: PointType };
       setFigure(fig => ({
         ...figure,
         ...updatedValue
@@ -130,7 +129,7 @@ export function CircleMaker(props: any) {
       if (movedIndex >= 0) {
         var updatedValue = { geometry: figure.geometry };
 
-        updatedValue.geometry = { coord: [e.latlng.lat, e.latlng.lng] };
+        updatedValue.geometry = { coord: [e.latlng.lat, e.latlng.lng], type: PointType };
 
         setFigure(figure => ({
           ...figure,
@@ -179,7 +178,7 @@ export function CircleMaker(props: any) {
       setFigure(initFigure);
     }, [figure]);
 
-  if (figure.geometry == null) {
+  if (figure?.geometry?.coord == null) {
     return null;
   }
 

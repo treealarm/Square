@@ -42,7 +42,7 @@ namespace LeafletAlarms
     {
       if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Point)
       {
-        var figure = new FigureCircleDTO();
+        var figure = new FigureGeoDTO();
         var pt = geoPart.location as GeoJsonPoint<GeoJson2DCoordinates>;
         figure.geometry = 
           new GeometryCircleDTO(new Geo2DCoordDTO() { pt.Coordinates.Y, pt.Coordinates.X });
@@ -51,7 +51,7 @@ namespace LeafletAlarms
 
       if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.Polygon)
       {
-        var figure = new FigurePolygonDTO();
+        var figure = new FigureGeoDTO();
 
         var pt = geoPart.location as GeoJsonPolygon<GeoJson2DCoordinates>;
 
@@ -73,7 +73,7 @@ namespace LeafletAlarms
 
       if (geoPart.location.Type == MongoDB.Driver.GeoJsonObjectModel.GeoJsonObjectType.LineString)
       {
-        var figure = new FigurePolylineDTO();
+        var figure = new FigureGeoDTO();
 
         var pt = geoPart.location as GeoJsonLineString<GeoJson2DCoordinates>;
 

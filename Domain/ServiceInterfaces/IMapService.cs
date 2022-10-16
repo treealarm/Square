@@ -32,6 +32,6 @@ namespace Domain.ServiceInterfaces
       bool forward,
       int count
     );
-    Task UpdatePropNotDeleteAsync(IEnumerable<FigureBaseDTO> updatedObj);
+    Task UpdatePropNotDeleteAsync(IEnumerable<BaseMarkerDTO> updatedObj);
   }
 }

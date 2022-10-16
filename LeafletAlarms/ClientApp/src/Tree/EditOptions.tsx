@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import { Box, Menu, MenuItem} from '@mui/material';
 import * as EditStore from '../store/EditStates';
 import { useDispatch, useSelector } from 'react-redux';
-import { IObjProps, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
+import { IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
 export default function EditOptions() {
@@ -31,11 +31,15 @@ export default function EditOptions() {
         id: null,
         name: 'New Polygon 1',
         parent_id: selected_id,
-        type: PolygonType,
         extra_props: null
       };
 
-      setExtraProp(copy, "geometry", "{\"coord\":[]}", null);
+      var geometry1: IPolygonCoord =
+      {
+        coord: [],
+        type: PolygonType
+      }
+      setExtraProp(copy, "geometry", JSON.stringify(geometry1), null);
       dispatch(EditStore.actionCreators.setFigureEditMode(true));
       dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
@@ -46,10 +50,14 @@ export default function EditOptions() {
         id: null,
         name: 'New Polyline 1',
         parent_id: selected_id,
-        type: LineStringType,
         extra_props: null
       };
-      setExtraProp(copy, "geometry", "{\"coord\":[]}", null);
+      var geometry2: IPolylineCoord =
+      {
+        coord: [],
+        type: LineStringType
+      }
+      setExtraProp(copy, "geometry", JSON.stringify(geometry2), null);
       dispatch(EditStore.actionCreators.setFigureEditMode(true));
       dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
@@ -60,9 +68,14 @@ export default function EditOptions() {
         id: null,
         name: 'New Circle 1',
         parent_id: selected_id,
-        type: PointType,
-        extra_props: null
+        extra_props: null,
       };
+      var geometry3: IPointCoord =
+      {
+        coord: null,
+        type: PointType
+      }
+      setExtraProp(copy, "geometry", JSON.stringify(geometry3), null);
       dispatch(EditStore.actionCreators.setFigureEditMode(true));
       dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;

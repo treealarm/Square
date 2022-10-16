@@ -15,6 +15,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -288,32 +290,32 @@ namespace LeafletAlarms.Controllers
 
           if (geoPart.location is GeometryCircleDTO circle)
           {
-            var figure = new FigureCircleDTO();
+            var figure = new FigureGeoDTO();
             figure.radius = geoPart.radius;
             figure.geometry = circle;
             result.circles.Add(figure);
             retItem = figure;
-            retItem.type = figure.geometry.GetFigureType();
+            circle.type = figure.geometry.GetFigureType();
           }
 
           if (geoPart.location is GeometryPolygonDTO polygon)
           {
-            var figure = new FigurePolygonDTO();
+            var figure = new FigureGeoDTO();
 
             figure.geometry = polygon;
             result.polygons.Add(figure);
             retItem = figure;
-            retItem.type = figure.geometry.GetFigureType();
+            polygon.type = figure.geometry.GetFigureType();
           }
 
           if (geoPart.location is GeometryPolylineDTO line)
           {
-            var figure = new FigurePolylineDTO();
+            var figure = new FigureGeoDTO();
 
             figure.geometry = line;
             result.polylines.Add(figure);
             retItem = figure;
-            retItem.type = figure.geometry.GetFigureType();
+            line.type = figure.geometry.GetFigureType();
           }
 
           if (retItem != null)
@@ -412,15 +414,15 @@ namespace LeafletAlarms.Controllers
 
       if (geoPart != null)
       {
-        markerDto.type = geoPart.location.GetFigureType();
+        var type = geoPart.location.GetFigureType();
 
-        var geometry = geoPart.location.GetJson();
+        var geometry = JsonSerializer.Serialize(geoPart.location);
 
         propDTO.extra_props.Add(
           new ObjExtraPropertyDTO() { str_val = $"{geometry}", prop_name = "geometry" }
         );
 
-        if (markerDto.type == "Point")
+        if (type == "Point")
         {          
           propDTO.extra_props.Add(
             new ObjExtraPropertyDTO() { str_val = $"{geoPart.radius}", prop_name = "radius" }
@@ -471,7 +473,6 @@ namespace LeafletAlarms.Controllers
       if (string.IsNullOrEmpty(updatedMarker.id))
       {
         await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
-        await _geoService.CreateGeo(updatedMarker);
       }
 
       var marker = await _mapService.GetAsync(updatedMarker.id);
@@ -504,7 +505,6 @@ namespace LeafletAlarms.Controllers
       await _geoService.CreateOrUpdateGeoFromStringAsync(
         updatedMarker.id,
         geometry?.str_val,
-        updatedMarker.type,
         radius?.str_val,
         zoom_level?.str_val
       );

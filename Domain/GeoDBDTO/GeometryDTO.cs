@@ -10,14 +10,30 @@ namespace Domain.GeoDBDTO
 {
   public class GeometryDTOBase
   {
-    public string figure_type { get; set; }
+    public virtual string type { get; set; }
   }
   
   [JsonConverter(typeof(GeometryDTOConverter))]
   public class GeometryDTO: GeometryDTOBase
   {
     protected object _coord;
+    protected string _type;
+    public override string type 
+    { 
+      get
+      {
+        if (!string.IsNullOrEmpty(_type))
+        {
+          return _type;
+        }
 
+        return GetFigureType();
+      }
+      set
+      {
+        _type = value;
+      }
+    }
     public object coord
     {
       get
@@ -71,17 +87,17 @@ namespace Domain.GeoDBDTO
 
       var geoDto = JsonSerializer.Deserialize(readerString, typeof(GeometryDTOBase)) as GeometryDTOBase;
 
-      if (geoDto.figure_type == "Point")
+      if (geoDto.type == "Point")
       {
         return JsonSerializer.Deserialize(readerString, typeof(GeometryCircleDTO)) as GeometryDTO;
       }
 
-      if (geoDto.figure_type == "Polygon")
+      if (geoDto.type == "Polygon")
       {
         return JsonSerializer.Deserialize(readerString, typeof(GeometryPolygonDTO)) as GeometryDTO;
       }
 
-      if (geoDto.figure_type == "LineString")
+      if (geoDto.type == "LineString")
       {
         return JsonSerializer.Deserialize(readerString, typeof(GeometryPolylineDTO)) as GeometryDTO;
       }

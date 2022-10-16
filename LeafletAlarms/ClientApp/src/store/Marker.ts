@@ -6,7 +6,6 @@ export interface Marker {
   id: string;
   parent_id?: string | null;
   name: string;
-  type: string;
 }
 
 export const PointType = 'Point';
@@ -14,27 +13,35 @@ export const PolygonType = 'Polygon';
 export const LineStringType = 'LineString';
 
 export interface ICoord {
+  type: string;
+}
+
+export interface IPointCoord extends ICoord {
+  type: 'Point';
   coord: LatLngPair;
 }
 
-export interface IArrayCoord {
+export interface IPolygonCoord extends ICoord {
+  type: 'Polygon';
+  coord: LatLngPair[];
+}
+
+export interface IPolylineCoord extends ICoord {
+  type: 'LineString';
   coord: LatLngPair[];
 }
 
 export interface ICircle extends IObjProps {
-  geometry: ICoord;
-  type: typeof PointType;
+  geometry: IPointCoord;  
   radius: number;
 }
 
 export interface IPolygon extends IObjProps {
-  geometry: IArrayCoord;
-  type: typeof PolygonType;
+  geometry: IPolygonCoord;  
 }
 
 export interface IPolyline extends IObjProps {
-  geometry: IArrayCoord;
-  type: typeof LineStringType;
+  geometry: IPolylineCoord;  
 }
 
 export interface ObjExtraPropertyDTO {

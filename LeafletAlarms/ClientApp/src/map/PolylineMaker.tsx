@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, getExtraProp, IObjProps, IPolyline, LineStringType, setExtraProp } from '../store/Marker';
+import { getExtraProp, IObjProps, IPolyline, IPolylineCoord, LineStringType, setExtraProp } from '../store/Marker';
 
 import { useCallback, useMemo, useEffect } from 'react'
 import {
@@ -15,6 +15,7 @@ import {
 
 import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
 import * as ObjPropsStore from '../store/ObjPropsStates';
+import { isExtraneousPopstateEvent } from 'history/DOMUtils';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -82,10 +83,10 @@ export function PolylineMaker(props: any) {
     id: null,
     name: 'New Polyline',
     parent_id: selected_id,
-    geometry:{
+    geometry: {
+      type: LineStringType,
       coord: []
-    },
-    type: LineStringType
+    }
   };
 
   useEffect(() => {
@@ -124,16 +125,14 @@ export function PolylineMaker(props: any) {
         return;
       }
       
-
-      let updatedValue = {};
-      updatedValue = {
-        geometry: {
-          coord: [...figure.geometry.coord, [ll.lat, ll.lng]]
+      var geometry_upd: IPolylineCoord = {
+        coord: [...figure.geometry.coord, [ll.lat, ll.lng]],
+        type: LineStringType
         }
-        };
+
       setFigure(polygon => ({
         ...figure,
-        ...updatedValue
+        geometry: geometry_upd
       }));
     },
 
@@ -143,17 +142,17 @@ export function PolylineMaker(props: any) {
 
     mousemove(e: L.LeafletMouseEvent) {
       if (movedIndex >= 0) {
-        var updatedValue = {
-          geometry: {
-            coord: [...figure.geometry.coord]
-          }
-          };
 
-        updatedValue.geometry.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
+        var geometry_upd: IPolylineCoord = {
+          type: LineStringType,
+            coord: [...figure.geometry.coord]
+        };
+
+        geometry_upd.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
 
         setFigure(polygon => ({
           ...polygon,
-          ...updatedValue
+          geometry: geometry_upd
         }));
       }
     },
@@ -196,16 +195,16 @@ export function PolylineMaker(props: any) {
       parentMap.closePopup();
       setOldFigure(figure);
 
-      var updatedValue = {
-        geometry: {
-          coord: [...figure.geometry.coord]
-        }
+      var geometry_upd: IPolylineCoord = {
+        type: LineStringType,
+        coord: [...figure.geometry.coord]
       };
-      updatedValue.geometry.coord.splice(index, 0, updatedValue.geometry.coord[index]);
+
+      geometry_upd.coord.splice(index, 0, geometry_upd.coord[index]);
 
       setFigure(f1 => ({
         ...figure,
-        ...updatedValue
+        geometry: geometry_upd
       }));
 
       if (toEnd) {
@@ -219,16 +218,16 @@ export function PolylineMaker(props: any) {
     (index, e) => {      
       parentMap.closePopup();
 
-      var updatedValue = {
-        geometry: {
-          coord: [...figure.geometry.coord]
-        }
-        };
-      updatedValue.geometry.coord.splice(index, 1);
+      var geometry_upd: IPolylineCoord = {
+        type: LineStringType,
+        coord: [...figure.geometry.coord]
+      };
+    
+      geometry_upd.coord.splice(index, 1);
 
       setFigure(polygon => ({
         ...polygon,
-        ...updatedValue
+        geometry: geometry_upd
       }));
 
     }, [figure])

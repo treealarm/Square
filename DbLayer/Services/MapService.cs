@@ -269,7 +269,7 @@ namespace DbLayer.Services
       var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
 
       propertieNames.AddRange(
-        typeof(FigureCircleDTO).GetProperties().Select(x => x.Name)
+        typeof(FigureGeoDTO).GetProperties().Select(x => x.Name)
         );
 
 
@@ -307,7 +307,7 @@ namespace DbLayer.Services
       }
       return ep_db;
     }
-    private static DBMarkerProperties ConvertDTO2Property(FigureBaseDTO propsIn)
+    private static DBMarkerProperties ConvertDTO2Property(BaseMarkerDTO propsIn)
     {
       var props = propsIn as IObjectProps;
 
@@ -336,7 +336,7 @@ namespace DbLayer.Services
       await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
     }
 
-    public async Task UpdatePropNotDeleteAsync(IEnumerable<FigureBaseDTO> listUpdate)
+    public async Task UpdatePropNotDeleteAsync(IEnumerable<BaseMarkerDTO> listUpdate)
     {
       if (!listUpdate.Any())
       {
@@ -374,6 +374,11 @@ namespace DbLayer.Services
         request = new UpdateOneModel<DBMarkerProperties>(filter, updatePush);
         request.IsUpsert = true;
         bulkWrites.Add(request);
+      }
+
+      if (bulkWrites.Count == 0)
+      {
+        return;
       }
 
       var writeResult = await _propCollection.BulkWriteAsync(bulkWrites);

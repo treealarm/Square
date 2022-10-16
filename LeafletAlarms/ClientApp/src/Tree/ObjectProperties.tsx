@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, ICoord, IArrayCoord, LatLngPair, getExtraProp, setExtraProp } from '../store/Marker';
+import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, IPointCoord, IPolygonCoord, LatLngPair, getExtraProp, setExtraProp } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
@@ -110,7 +110,6 @@ export function ObjectProperties() {
 
       var marker: Marker = {
         name: props.name,
-        type: props.type,
         id: props.id,
         parent_id: props.parent_id
       }
@@ -126,7 +125,7 @@ export function ObjectProperties() {
       var myFigure = null;
       var center: L.LatLng = null;
 
-      switch (props.type) {
+      switch (geo.type) {
         case PointType:
           var coord: LatLngPair = geo.coord;
           center = new L.LatLng(coord[0], coord[1]);
@@ -196,16 +195,6 @@ export function ObjectProperties() {
             </IconButton>
           </ButtonGroup>
 
-        </ListItem>
-
-        <ListItem>
-          <TextField
-            fullWidth
-            label='Type'
-            size="small"
-            value={objProps.type}
-            inputProps={{ readOnly: true}}>
-          </TextField>
         </ListItem>
         <ListItem>
           <TextField

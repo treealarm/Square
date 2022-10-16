@@ -5,9 +5,9 @@ namespace Domain
 {
   public class FiguresDTO
   {
-    public List<FigureCircleDTO> circles { get; set; } = new List<FigureCircleDTO>();
-    public List<FigurePolygonDTO> polygons { get; set; } = new List<FigurePolygonDTO>();
-    public List<FigurePolylineDTO> polylines { get; set; } = new List<FigurePolylineDTO>();
+    public List<FigureGeoDTO> circles { get; set; } = new List<FigureGeoDTO>();
+    public List<FigureGeoDTO> polygons { get; set; } = new List<FigureGeoDTO>();
+    public List<FigureGeoDTO> polylines { get; set; } = new List<FigureGeoDTO>();
 
     public bool IsEmpty()
     {

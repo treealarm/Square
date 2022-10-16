@@ -28,6 +28,8 @@ namespace TrackSender
     }
     public async Task<FiguresDTO> UpdateTracksAsync(FiguresDTO figure, string action)
     {
+      var str = JsonSerializer.Serialize(figure);
+
       HttpResponseMessage response =
         await client.PostAsJsonAsync(
           $"api/Tracks/{action}", figure);

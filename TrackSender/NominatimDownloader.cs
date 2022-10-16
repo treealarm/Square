@@ -153,11 +153,11 @@ namespace TrackSender
 
     }
 
-    public static async Task<List<FigurePolylineDTO>> GetMkadPolyline()
+    public static async Task<List<FigureGeoDTO>> GetMkadPolyline()
     {
-      var result = new List<FigurePolylineDTO>();
+      var result = new List<FigureGeoDTO>();
 
-      var figure = new FigurePolylineDTO()
+      var figure = new FigureGeoDTO()
       {
         name = "MKAD",
         zoom_level = "13",

@@ -74,15 +74,15 @@ namespace TrackSender
       {
         // Create Route.
         var test_route = await TestClient.GetByName("test_route");
-        FigurePolylineDTO polyline;
+        FigureGeoDTO polyline;
         var polylines = new FiguresDTO();
 
         if (test_route == null || test_route.Count == 0)
         {
 
-          polylines.polylines = new List<FigurePolylineDTO>();
+          polylines.polylines = new List<FigureGeoDTO>();
 
-          polyline = new FigurePolylineDTO()
+          polyline = new FigureGeoDTO()
           {
             name = "test_route",
             zoom_level = "13"

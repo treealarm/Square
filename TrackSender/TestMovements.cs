@@ -26,7 +26,7 @@ namespace TrackSender
 
     public TestMovements()
     {
-      _figures.circles = new List<FigureCircleDTO>();
+      _figures.circles = new List<FigureGeoDTO>();
 
       //var settings = new RoutingSettings()
       //{
@@ -59,7 +59,7 @@ namespace TrackSender
     private async Task GetOrBuildFiguresAsync()
     {
       var figures = new FiguresDTO();
-      figures.circles = new List<FigureCircleDTO>();
+      figures.circles = new List<FigureGeoDTO>();
 
       List<string> existedIds = new List<string>();
       for (int i = 0; i < 100; i++)
@@ -98,7 +98,7 @@ namespace TrackSender
                 new Geo2DCoordDTO() { y, x }
                 );
 
-          var figure = new FigureCircleDTO()
+          var figure = new FigureGeoDTO()
           {
             name = obj_name,
             radius = 222,
@@ -131,7 +131,7 @@ namespace TrackSender
       {
         return;
       }
-      FigurePolylineDTO mkadPolyline = null;
+      FigureGeoDTO mkadPolyline = null;
 
       mkadPolyline = tempFigure.FirstOrDefault();
 
@@ -150,7 +150,7 @@ namespace TrackSender
       if (figures == null || figures.circles == null || figures.circles.Count == 0)
       {
         figures = new FiguresDTO();
-        figures.circles = new List<FigureCircleDTO>();
+        figures.circles = new List<FigureGeoDTO>();
 
         for (int i = 0; i < 100; i++)
         {
@@ -188,7 +188,7 @@ namespace TrackSender
                   new Geo2DCoordDTO() { y, x }
                   );
 
-            var figure = new FigureCircleDTO()
+            var figure = new FigureGeoDTO()
             {
               name = obj_name,
               radius = 150,

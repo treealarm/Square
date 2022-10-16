@@ -145,7 +145,7 @@ namespace DbLayer
         ret = retLine;
       }
 
-      ret.figure_type = location.Type.ToString();
+      ret.type = location.Type.ToString();
       return ret;
     }
   }
