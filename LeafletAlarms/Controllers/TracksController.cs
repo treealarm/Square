@@ -206,8 +206,8 @@ namespace LeafletAlarms.Controllers
         {
           var newPoint = trackPoint;
           var newRout = new RoutLineDTO();
-          
 
+          newRout.id = newPoint.id;
           newRout.figure = new GeoObjectDTO();
           newRout.figure.id = newPoint.figure.id;
           newRout.figure.zoom_level = newPoint.figure.zoom_level;

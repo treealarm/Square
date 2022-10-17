@@ -236,7 +236,7 @@ namespace DbLayer.Services
 
     public async Task<long> RemoveAsync(List<string> ids)
     {
-      List<ObjectId> objIds = ids.Select(s => new ObjectId(s)).ToList(); ;
+      List<ObjectId> objIds = ids.Select(s => new ObjectId(s)).ToList();
 
       var filter = Builders<BsonDocument>.Filter.In("figure._id", objIds);
 
@@ -253,7 +253,7 @@ namespace DbLayer.Services
       var filter1 = Builders<BsonDocument>.Filter.In("_id", objIds);
 
       var states = _mongoDB.GetCollection<BsonDocument>(
-    _geoStoreDBSettings.Value.StateCollectionName);
+      _geoStoreDBSettings.Value.StateCollectionName);
 
       await states.DeleteManyAsync(filter1);
 

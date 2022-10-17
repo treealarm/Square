@@ -11,6 +11,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -35,10 +36,30 @@ namespace DbLayer.Services
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
 
+      
+
+      var filter = new BsonDocument("name", geoStoreDatabaseSettings.Value.TracksCollectionName);
+      var options = new ListCollectionNamesOptions { Filter = filter };
+
+      if (!mongoDatabase.ListCollectionNames(options).Any())
+      {
+        var createOptions = new CreateCollectionOptions();
+
+        var timeField = nameof(DBTrackPoint.timestamp);
+        var metaField = nameof(DBTrackPoint.figure);
+        createOptions.TimeSeriesOptions =
+          new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Minutes);
+
+        mongoDatabase.CreateCollection(
+        geoStoreDatabaseSettings.Value.TracksCollectionName,
+        createOptions);        
+      }
+
       _collFigures =
         mongoDatabase.GetCollection<DBTrackPoint>(
           geoStoreDatabaseSettings.Value.TracksCollectionName
         );
+
       _levelService = levelService;
 
       CreateIndexes();

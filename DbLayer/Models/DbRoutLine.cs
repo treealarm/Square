@@ -11,10 +11,7 @@ namespace DbLayer.Models
   [BsonIgnoreExtraElements]
   public class DBRoutLine
   {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string id { get; set; }
-    public DBGeoObject figure { get; set; }
+    public DBRoutLineMeta meta { get; set; } = new DBRoutLineMeta();
 
     [BsonRepresentation(BsonType.ObjectId)]
     public string id_start { get; set; }
@@ -23,6 +20,6 @@ namespace DbLayer.Models
 
     public DateTime? ts_start { get; set; }
     public DateTime? ts_end { get; set; }
-    public bool processed { get; set; } = false;
+    public int processed { get; set; } = 0;
   }
 }

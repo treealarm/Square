@@ -14,6 +14,6 @@ namespace Domain.ServiceInterfaces
     Task<List<RoutLineDTO>> GetAsync(int nLimit);
     Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box);
     Task<List<RoutLineDTO>> GetNotProcessedAsync(int limit);
-    Task UpdateAsync(RoutLineDTO updatedObj);
+    Task DeleteManyAsync(List<string> ids);
   }
 }

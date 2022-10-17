@@ -1,11 +1,13 @@
 ﻿using Dapr.Client;
 using DbLayer;
+using DbLayer.Models;
 using DbLayer.Services;
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
+using static DbLayer.Models.DBRoutLine;
 
 namespace RouterMicroService
 {
@@ -68,7 +70,7 @@ namespace RouterMicroService
           continue;
         }        
 
-        var notProcessed = await _routService.GetNotProcessedAsync(1);
+        var notProcessed = await _routService.GetNotProcessedAsync(100);
 
         if (notProcessed.Count == 0)
         {
@@ -76,11 +78,22 @@ namespace RouterMicroService
           continue;
         }
 
+        List<RoutLineDTO> routes = new List<RoutLineDTO>();
+
         foreach (var routLine in notProcessed)
         {
           var res = await ProcessSingleRout(routLine);
-          routLine.processed = true;
-          await _routService.UpdateAsync(routLine);
+          if (res)
+          {
+            routes.Add(routLine);
+          }          
+        }
+
+        await _routService.DeleteManyAsync(notProcessed.Select(t => t.id).ToList());
+
+        if (routes.Count > 0)
+        {
+          await _routService.InsertManyAsync(routes);
         }
       }      
     }
@@ -89,16 +102,16 @@ namespace RouterMicroService
     {
       try
       {
-        var track1 = await _tracksService.GetByIdAsync(routLine.id_end);
+        var track2 = await _tracksService.GetByIdAsync(routLine.id_end);
 
-        if (track1 == null)
+        if (track2 == null)
         {
           return false;
         }
 
-        var track2 = await _tracksService.GetLastAsync(track1.figure.id, track1.timestamp);
+        var track1 = await _tracksService.GetLastAsync(track2.figure.id, track2.timestamp);
 
-        if (track2 == null)
+        if (track1 == null)
         {
           return false;
         }
@@ -117,7 +130,7 @@ namespace RouterMicroService
 
         var routRet = await _router.GetRoute(_routeInstanse, coords);
 
-        if (routRet != null && routRet.Count > 0)
+        if (routRet != null)
         {
           routRet.Insert(0, p1);
           routRet.Add(p2);
@@ -125,7 +138,15 @@ namespace RouterMicroService
           routLine.figure.location = new GeometryPolylineDTO()
           {
             coord = routRet
-          };          
+          };
+
+          routLine.ts_start = track1.timestamp;
+          routLine.id_start = track1.id;
+          routLine.processed = RoutLineDTO.EntityType.processsed;
+        }
+        else
+        {
+          return false;
         }
       }
       catch(Exception ex)
