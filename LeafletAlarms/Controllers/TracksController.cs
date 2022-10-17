@@ -86,27 +86,6 @@ namespace LeafletAlarms.Controllers
       return new List<string>() { "Hello world" };
     }
 
-    static Dictionary<string, TrackPointDTO> _cashLast = new Dictionary<string, TrackPointDTO>();
-    static private object _locker = new object();
-
-    private async Task<TrackPointDTO> GetLast(TrackPointDTO newPoint)
-    {
-      TrackPointDTO retVal;
-
-      lock(_locker)
-      {        
-        _cashLast.TryGetValue(newPoint.figure.id, out retVal);
-        var s = JsonSerializer.Serialize<TrackPointDTO>(newPoint);
-        var fig = JsonSerializer.Deserialize<TrackPointDTO>(s);
-        _cashLast[newPoint.figure.id] = fig;
-      }
-      
-      if (retVal == null)
-      {
-        retVal = await _tracksService.GetLastAsync(newPoint.figure.id, newPoint.id);
-      }
-      return retVal;
-    }
     private async Task<Dictionary<string, TimeSpan>> DoUpdateTracks(FiguresDTO movedMarkers)
     {
       var trackPoints = new List<TrackPointDTO>();

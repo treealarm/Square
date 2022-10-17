@@ -9,5 +9,6 @@ namespace Domain
     public double[] es { get; set; }
     public double? zoom { get; set; }
     public List<string> ids { get; set; }
+    public int? count { get; set; }
   }
 }

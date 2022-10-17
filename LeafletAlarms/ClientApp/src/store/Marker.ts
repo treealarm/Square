@@ -125,7 +125,8 @@ export interface BoundBox {
   wn: number[];
   es: number[];
   zoom: number;
-  ids?: string[]
+  ids?: string[];
+  count?: number;
 }
 
 export interface KeyValueDTO {

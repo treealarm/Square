@@ -17,6 +17,7 @@ builder.Services.AddDaprClient();
 builder.Services.AddSingleton<ILevelService, LevelService>();
 builder.Services.AddSingleton<IRoutService, RoutService>();
 builder.Services.AddSingleton<ITrackRouter, TrackRouter>();
+builder.Services.AddSingleton<ITrackService, TrackService>();
 builder.Services.AddHostedService<TimedHostedService>();
 
 builder.Services.AddControllers();

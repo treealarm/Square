@@ -12,7 +12,8 @@ namespace Domain.ServiceInterfaces
   {
     Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs);
     Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box);
-    Task<TrackPointDTO> GetLastAsync(string figure_id, string ignoreTrackId);
+    Task<TrackPointDTO> GetLastAsync(string figure_id, DateTime beforeTime);
+    Task<TrackPointDTO> GetByIdAsync(string id);
     Task<List<TrackPointDTO>> GetTracksByTime(
       DateTime? time_start,
       DateTime? time_end,

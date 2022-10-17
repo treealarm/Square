@@ -1,5 +1,6 @@
 ﻿using Dapr.Client;
 using DbLayer;
+using DbLayer.Services;
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
@@ -18,15 +19,19 @@ namespace RouterMicroService
     private ITrackRouter _router;
     private readonly DaprClient _daprClient;
     private string _routeInstanse;
+    private readonly ITrackService _tracksService;
+
     public TimedHostedService(
       ILogger<TimedHostedService> logger,
       ITrackRouter router,
       IRoutService routService,
       DaprClient daprClient,
-      IOptions<RoutingSettings> routingSettings
+      IOptions<RoutingSettings> routingSettings,
+      ITrackService tracksService
      )
     {
       _routService = routService;
+      _tracksService = tracksService;
       _router = router;
       _logger = logger;
       _daprClient = daprClient;
@@ -82,32 +87,50 @@ namespace RouterMicroService
 
     private async Task<bool> ProcessSingleRout(RoutLineDTO routLine)
     {
-      var coords = new List<Geo2DCoordDTO>();
-      var p1 = (routLine.figure.location as GeometryPolylineDTO)?.coord.FirstOrDefault();
-      var p2 = (routLine.figure.location as GeometryPolylineDTO)?.coord.LastOrDefault();
-
-      if (p1 ==  null || p2 == null)
+      try
       {
-        return false;
-      }
+        var track1 = await _tracksService.GetByIdAsync(routLine.id_end);
 
-      coords.Add(p1);      
-      coords.Add(p2);
-
-      var routRet = await _router.GetRoute(_routeInstanse, coords);
-
-      if (routRet != null && routRet.Count > 0)
-      {
-        routRet.Insert(0, p1);
-        routRet.Add(p2);
-        var line = routLine.figure.location as GeometryPolylineDTO;
-
-        if (line == null)
+        if (track1 == null)
         {
           return false;
         }
 
-        line.coord = routRet;
+        var track2 = await _tracksService.GetLastAsync(track1.figure.id, track1.timestamp);
+
+        if (track2 == null)
+        {
+          return false;
+        }
+
+        var coords = new List<Geo2DCoordDTO>();
+        var p1 = (track1.figure.location as GeometryCircleDTO)?.coord;
+        var p2 = (track2.figure.location as GeometryCircleDTO)?.coord;
+
+        if (p1 == null || p2 == null)
+        {
+          return false;
+        }
+
+        coords.Add(p1);
+        coords.Add(p2);
+
+        var routRet = await _router.GetRoute(_routeInstanse, coords);
+
+        if (routRet != null && routRet.Count > 0)
+        {
+          routRet.Insert(0, p1);
+          routRet.Add(p2);
+
+          routLine.figure.location = new GeometryPolylineDTO()
+          {
+            coord = routRet
+          };          
+        }
+      }
+      catch(Exception ex)
+      {        
+        return false;
       }
 
       return true;

@@ -144,6 +144,13 @@ namespace DbLayer.Services
 
     public async Task<List<GeoObjectDTO>> GetGeoAsync(BoxDTO box)
     {
+      int limit = 10000;
+
+      if (box.count != null && box.count > 0)
+      {
+        limit = box.count.Value;
+      }
+
       var builder = Builders<DBGeoObject>.Filter;
       var geometry = GeoJson.Polygon(
         new GeoJson2DCoordinates[]
@@ -161,11 +168,14 @@ namespace DbLayer.Services
       var filter =
           builder.Where(p => levels.Contains(p.zoom_level)
           || string.IsNullOrEmpty(p.zoom_level))
+
         & builder.GeoIntersects(t => t.location, geometry);
 
       Log(filter);
 
-      var list = await _geoCollection.Find(filter).ToListAsync();
+      var list = await _geoCollection.Find(filter)
+        .Limit(limit)
+        .ToListAsync();
 
       return ModelGate.ConvertListDB2DTO(list);
     }

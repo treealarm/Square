@@ -1,5 +1,5 @@
 import { Action, Reducer } from "redux";
-import { ApiRouterRootString, ApiTracksRootString, AppThunkAction } from "./";
+import { ApiDefaultMaxCountResult, ApiRouterRootString, ApiTracksRootString, AppThunkAction } from "./";
 import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -63,6 +63,7 @@ export const actionCreators = {
       appState.markersStates &&
       box !== appState.markersStates.box
     ) {
+      box.count = ApiDefaultMaxCountResult;
 
       let body = JSON.stringify(box);
       var request = ApiRouterRootString + "/GetRoutsByBox";

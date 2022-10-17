@@ -133,6 +133,13 @@ namespace DbLayer.Services
     }
     public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
     {
+      int limit = 10000;
+
+      if ( box.count != null && box.count > 0)
+      {
+        limit = box.count.Value;
+      }
+
       var builder = Builders<DBRoutLine>.Filter;
       var geometry = GeoJson.Polygon(
         new GeoJson2DCoordinates[]
@@ -152,7 +159,7 @@ namespace DbLayer.Services
       {
         var levels = await _levelService.GetLevelsByZoom(box.zoom);
 
-        filter =
+        filter = filter &
           builder.Where(p => levels.Contains(p.figure.zoom_level)
           || p.figure.zoom_level == null);
       }
@@ -212,7 +219,7 @@ namespace DbLayer.Services
           filter = filter & builder.Where(t => box.ids.Contains(t.figure.id));
         }
 
-        list.AddRange(await _collRouts.Find(filter).ToListAsync());
+        list.AddRange(await _collRouts.Find(filter).Limit(limit).ToListAsync());
       }
 
       return ConvertListDB2DTO(list);

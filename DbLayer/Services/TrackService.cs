@@ -116,12 +116,21 @@ namespace DbLayer.Services
       return dto;
     }
 
-    public async Task<TrackPointDTO> GetLastAsync(string figure_id, string ignoreTrackId)
+    public async Task<TrackPointDTO> GetLastAsync(string figure_id, DateTime beforeTime)
     {
       var dbTrack =
         await _collFigures
-          .Find(t => t.figure.id == figure_id && t.id != ignoreTrackId)
-          .SortByDescending(t => t.id)
+          .Find(t => t.figure.id == figure_id && t.timestamp < beforeTime)
+          .SortByDescending(t => t.timestamp)
+          .FirstOrDefaultAsync();
+
+      return ConvertDB2DTO(dbTrack);
+    }
+
+    public async Task<TrackPointDTO> GetByIdAsync(string id)
+    {
+      var dbTrack =
+        await _collFigures.Find(t => t.id == id)
           .FirstOrDefaultAsync();
 
       return ConvertDB2DTO(dbTrack);
@@ -212,6 +221,13 @@ namespace DbLayer.Services
     }
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
+      int limit = 10000;
+
+      if (box.count != null && box.count > 0)
+      {
+        limit = box.count.Value;
+      }
+
       var builder = Builders<DBTrackPoint>.Filter;
       var geometry = GeoJson.Polygon(
         new GeoJson2DCoordinates[]
@@ -231,7 +247,7 @@ namespace DbLayer.Services
       {
         var levels = await _levelService.GetLevelsByZoom(box.zoom);
 
-        filter =
+        filter = filter &
           builder.Where(p => levels.Contains(p.figure.zoom_level)
           || p.figure.zoom_level == null);
       }
@@ -294,6 +310,7 @@ namespace DbLayer.Services
         dbTracks.AddRange(
           await _collFigures
           .Find(filter)
+          .Limit(limit)
           .ToListAsync()
           );
       }
