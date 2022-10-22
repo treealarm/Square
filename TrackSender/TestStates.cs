@@ -111,7 +111,7 @@ namespace TrackSender
                 str_val = "true"
               }
             };
-        for (int k = 0; k < 50; k++)
+        for (int k = 0; k < 80; k++)
         {
           AddStateObjectLowLevel(figure);
         }
@@ -333,12 +333,20 @@ namespace TrackSender
         "NORM"
         };
 
+        List<int> iAlarm = new List<int>();
+
+        for (int j = 0; j < 2; j++)
+        {
+          iAlarm.Add(random.Next(0, figures.circles.Count()));
+        }
+          
+
         foreach (var figure in figures.circles)
         {
           int stateNum = random.Next(1, 3);
-          bool isAlarm = random.Next(0, 21) == 5;
+          
 
-          if (isAlarm)
+          if (iAlarm.Contains(figures.circles.IndexOf(figure)))
           {
             stateNum = 0;
           }
@@ -347,10 +355,10 @@ namespace TrackSender
           {
             id = figure.id,
             states = new List<string>
-          {
-            stateDescrs[stateNum]
-          }
-          };
+              {
+                stateDescrs[stateNum]
+              }
+            };
           states.Add(state);
         }
 

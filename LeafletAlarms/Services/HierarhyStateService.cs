@@ -193,28 +193,6 @@ namespace LeafletAlarms.Services
         {
           await Task.Delay(1000);
           continue;
-
-          // Code to update states from db.
-          //var newStates = await _stateService.GetStatesByTimeAsync(_lastUpdate, 100);
-
-          //if (newStates.Count == 0)
-          //{
-          //  await Task.Delay(1000);
-          //  continue;
-          //}
-
-          //objIds = newStates.Select(el => el.id).ToList();
-
-          //var lastState = newStates.MaxBy(el => el.timestamp);
-
-          //if (lastState != null)
-          //{
-          //  _lastUpdate = lastState.timestamp;
-          //}
-          //else
-          //{
-          //  _lastUpdate = DateTime.UtcNow;
-          //}
         }
         
         await ProcessIds(objIds);
