@@ -80,11 +80,11 @@ namespace DbLayer.Services
                       zoom_max = i
                   };
 
-                  if (i == 13)
-                  {
-                      level.zoom_min = 10;
-                      level.zoom_max = 16;
-                  }
+                  //if (i == 13)
+                  //{
+                  //    level.zoom_min = 10;
+                  //    level.zoom_max = 16;
+                  //}
                   levels.Add(level);
               }
 

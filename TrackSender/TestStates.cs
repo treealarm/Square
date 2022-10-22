@@ -34,6 +34,46 @@ namespace TrackSender
       tasks.Add(EmulateState(token));      
     }
 
+    private void AddStateObjectLowLevel(FigureGeoDTO parentCircle)
+    {
+      var start = parentCircle.geometry as GeometryCircleDTO;
+
+      start = new GeometryCircleDTO()
+      {
+        coord = new Geo2DCoordDTO()
+        {
+          X = start.coord.X + _random.Next(-300, 300) * 0.000035,
+          Y = start.coord.Y + _random.Next(-300, 300) * 0.000035
+        }
+      };
+
+      var figure = new FigureGeoDTO()
+      {
+        name = parentCircle.name + _random.Next(0, 300),
+        radius = _random.Next(50, 100),
+        zoom_level = "13",
+        geometry = start
+      };
+
+      figure.parent_id = parentCircle.id;
+
+      if (string.IsNullOrEmpty(figure.id))
+      {
+        figure.id = Program.GenerateBsonId();
+      }
+
+      figure.extra_props = new List<ObjExtraPropertyDTO>()
+          {
+            new ObjExtraPropertyDTO()
+            {
+              prop_name = "moscow_state",
+              str_val = "true"
+            }
+          };
+
+      m_figures.circles.Add(figure);
+    }
+
     private void AddStateObjects(Root geoObj, FigureGeoDTO parentPolygon)
     {
       Random random = new Random();
@@ -51,10 +91,11 @@ namespace TrackSender
         var figure = new FigureGeoDTO()
         {
           name = geoObj.names.name,
-          radius = random.Next(150, 300),
+          radius = random.Next(100, 200),
           zoom_level = "12",
           geometry = start
         };
+        
         figure.parent_id = parentPolygon.id;
 
         if (string.IsNullOrEmpty(figure.id))
@@ -70,7 +111,10 @@ namespace TrackSender
                 str_val = "true"
               }
             };
-
+        for (int k = 0; k < 50; k++)
+        {
+          AddStateObjectLowLevel(figure);
+        }
         m_figures.circles.Add(figure);
       }
     }
@@ -275,6 +319,7 @@ namespace TrackSender
     {
       var figures = await _testClient.GetByParams("moscow_state", "true", 10000);
       
+      var count = figures.circles.Count;
 
       while (!token.IsCancellationRequested)
       {
@@ -309,7 +354,11 @@ namespace TrackSender
           states.Add(state);
         }
 
+        var t1 = DateTime.Now;
         await _testClient.UpdateStates(states);
+        var t2 = DateTime.Now;
+
+        Console.WriteLine($"UpdateStates {count}: ->{(t2-t1).TotalSeconds}<-");
       }
       
     }

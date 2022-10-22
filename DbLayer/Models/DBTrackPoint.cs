@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using DbLayer.Models;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,7 @@ namespace DbLayer
   [BsonIgnoreExtraElements]
   public class DBTrackPoint
   {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string id { get; set; }
-    public DBGeoObject figure { get; set; }
+    public DBFigTsMeta meta { get; set; } = new DBFigTsMeta();
     public DateTime timestamp { get; set; }
   }
 }

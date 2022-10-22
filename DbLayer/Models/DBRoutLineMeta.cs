@@ -9,7 +9,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace DbLayer.Models
 {
-  public class DBRoutLineMeta
+  public class DBFigTsMeta
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

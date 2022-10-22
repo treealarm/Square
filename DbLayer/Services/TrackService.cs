@@ -46,9 +46,10 @@ namespace DbLayer.Services
         var createOptions = new CreateCollectionOptions();
 
         var timeField = nameof(DBTrackPoint.timestamp);
-        var metaField = nameof(DBTrackPoint.figure);
+        var metaField = nameof(DBTrackPoint.meta);
+
         createOptions.TimeSeriesOptions =
-          new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Minutes);
+          new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
 
         mongoDatabase.CreateCollection(
         geoStoreDatabaseSettings.Value.TracksCollectionName,
@@ -70,10 +71,10 @@ namespace DbLayer.Services
       {
         IndexKeysDefinition<DBTrackPoint> keys =
                 new IndexKeysDefinitionBuilder<DBTrackPoint>()
-                .Ascending(d => d.figure.zoom_level)
-                .Geo2DSphere(d => d.figure.location)
+                .Ascending(d => d.meta.figure.zoom_level)
+                .Geo2DSphere(d => d.meta.figure.location)
                 .Ascending(d => d.timestamp)
-                .Ascending(d => d.figure.id)
+                .Ascending(d => d.meta.figure.id)
                 ;
 
         var indexModel = new CreateIndexModel<DBTrackPoint>(
@@ -106,9 +107,10 @@ namespace DbLayer.Services
       {
         var dbTrack = new DBTrackPoint()
         {
-          timestamp = track.timestamp,
-          figure = ModelGate.ConvertDTO2DB(track.figure)
+          timestamp = track.timestamp          
         };
+        dbTrack.meta.id = ObjectId.GenerateNewId().ToString();
+        dbTrack.meta.figure = ModelGate.ConvertDTO2DB(track.figure);
         list.Add(dbTrack);
       }
 
@@ -129,9 +131,9 @@ namespace DbLayer.Services
 
       var dto = new TrackPointDTO()
       {
-        id = t.id,
+        id = t.meta.id,
         timestamp = t.timestamp,
-        figure = ModelGate.ConvertDB2DTO(t.figure)
+        figure = ModelGate.ConvertDB2DTO(t.meta.figure)
       };
 
       return dto;
@@ -141,7 +143,7 @@ namespace DbLayer.Services
     {
       var dbTrack =
         await _collFigures
-          .Find(t => t.figure.id == figure_id && t.timestamp < beforeTime)
+          .Find(t => t.meta.figure.id == figure_id && t.timestamp < beforeTime)
           .SortByDescending(t => t.timestamp)
           .FirstOrDefaultAsync();
 
@@ -151,7 +153,7 @@ namespace DbLayer.Services
     public async Task<TrackPointDTO> GetByIdAsync(string id)
     {
       var dbTrack =
-        await _collFigures.Find(t => t.id == id)
+        await _collFigures.Find(t => t.meta.id == id)
           .FirstOrDefaultAsync();
 
       return ConvertDB2DTO(dbTrack);
@@ -194,7 +196,7 @@ namespace DbLayer.Services
         foreach (var id in ids)
         {
           var dbTracksTemp = await _collFigures
-            .Find(t => t.figure.id == id && t.timestamp >= time_start)
+            .Find(t => t.meta.figure.id == id && t.timestamp >= time_start)
             .FirstOrDefaultAsync();
 
           if ( dbTracksTemp!= null)
@@ -208,7 +210,7 @@ namespace DbLayer.Services
         foreach (var id in ids)
         {
           var dbTracksTemp = await _collFigures
-            .Find(t => t.figure.id == id && t.timestamp <= time_end)
+            .Find(t => t.meta.figure.id == id && t.timestamp <= time_end)
             .SortByDescending(t => t.timestamp)
             .FirstOrDefaultAsync();
 
@@ -232,7 +234,7 @@ namespace DbLayer.Services
 
         if (ids != null && ids.Count > 0)
         {
-          filter = filter & builder.Where(t => ids.Contains(t.figure.id));
+          filter = filter & builder.Where(t => ids.Contains(t.meta.figure.id));
         }
 
         dbTracks.AddRange(await _collFigures.Find(filter).ToListAsync());
@@ -262,15 +264,15 @@ namespace DbLayer.Services
       );
 
       FilterDefinition<DBTrackPoint> filter =
-        builder.GeoIntersects(t => t.figure.location, geometry);
+        builder.GeoIntersects(t => t.meta.figure.location, geometry);
 
       if (box.zoom != null)
       {
         var levels = await _levelService.GetLevelsByZoom(box.zoom);
 
         filter = filter &
-          builder.Where(p => levels.Contains(p.figure.zoom_level)
-          || p.figure.zoom_level == null);
+          builder.Where(p => levels.Contains(p.meta.figure.zoom_level)
+          || p.meta.figure.zoom_level == null);
       }
 
       bool distinct = (box.time_start == null && box.time_end != null) 
@@ -293,18 +295,18 @@ namespace DbLayer.Services
       if (distinct)
       {
         var ids = await _collFigures
-          .Distinct(el => el.figure.id, filter).ToListAsync();
+          .Distinct(el => el.meta.figure.id, filter).ToListAsync();
 
         foreach (var id in ids)
         {
-          var f1 = builder.Where(o => o.figure.id == id) & filter;
+          var f1 = builder.Where(o => o.meta.figure.id == id) & filter;
           DBTrackPoint el = null;
 
           if (box.time_end != null)
           {
             el = await _collFigures
             .Find(f1)
-            .SortByDescending(o => o.id)
+            .SortByDescending(o => o.meta.id)
             .FirstOrDefaultAsync();
           }
           else
@@ -325,7 +327,7 @@ namespace DbLayer.Services
       {
         if (box.ids != null)
         {
-          filter = filter & builder.Where(t => box.ids.Contains(t.figure.id));
+          filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
         }
 
         dbTracks.AddRange(

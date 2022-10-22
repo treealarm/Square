@@ -43,7 +43,7 @@ namespace DbLayer.Services
         var timeField = nameof(DBRoutLine.ts_end);
         var metaField = nameof(DBRoutLine.meta);
         createOptions.TimeSeriesOptions =
-          new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Minutes);
+          new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
 
 
         mongoDatabase.CreateCollection(

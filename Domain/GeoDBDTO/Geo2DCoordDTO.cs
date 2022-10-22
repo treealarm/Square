@@ -19,7 +19,14 @@ namespace Domain.GeoDBDTO
       }
       set
       {
-        this[0] = value;
+        if (this.Count < 1)
+        {
+          this.Add(value);
+        }
+        else
+        {
+          this[0] = value;
+        }        
       }
     }
 
@@ -27,12 +34,24 @@ namespace Domain.GeoDBDTO
     public double X
     {
       get
-      {
+      {        
         return this[1];
       }
       set
       {
-        this[1] = value;
+        if (this.Count < 1)
+        {
+          this.Add(0);
+        }
+
+        if (this.Count < 2)
+        {
+          this.Add(value);
+        }
+        else
+        {
+          this[1] = value;
+        }        
       }
     }
   }

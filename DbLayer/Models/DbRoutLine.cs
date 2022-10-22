@@ -11,7 +11,7 @@ namespace DbLayer.Models
   [BsonIgnoreExtraElements]
   public class DBRoutLine
   {
-    public DBRoutLineMeta meta { get; set; } = new DBRoutLineMeta();
+    public DBFigTsMeta meta { get; set; } = new DBFigTsMeta();
 
     [BsonRepresentation(BsonType.ObjectId)]
     public string id_start { get; set; }

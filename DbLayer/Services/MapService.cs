@@ -238,7 +238,7 @@ namespace DbLayer.Services
     {
       List<ObjectId> objIds = ids.Select(s => new ObjectId(s)).ToList();
 
-      var filter = Builders<BsonDocument>.Filter.In("figure._id", objIds);
+      var filter = Builders<BsonDocument>.Filter.In("meta.figure._id", objIds);
 
       var tracks = _mongoDB.GetCollection<BsonDocument>(
           _geoStoreDBSettings.Value.TracksCollectionName);
