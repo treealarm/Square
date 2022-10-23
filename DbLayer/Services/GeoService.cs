@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DbLayer.Models;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
@@ -48,13 +49,32 @@ namespace DbLayer.Services
 
     private void CreateIndexes()
     {
-      IndexKeysDefinition<DBGeoObject> keys = "{ location: \"2dsphere\" }";
-      var indexModel = new CreateIndexModel<DBGeoObject>(
-        keys, new CreateIndexOptions()
-        { Name = "location" }
-      );
+      {
+        IndexKeysDefinition<DBGeoObject> keys =
+          new IndexKeysDefinitionBuilder<DBGeoObject>()
+          .Geo2DSphere(d => d.location)
+          ;
 
-      _geoCollection.Indexes.CreateOneAsync(indexModel);
+            var indexModel = new CreateIndexModel<DBGeoObject>(
+              keys, new CreateIndexOptions()
+              { Name = "location" }
+            );
+
+        _geoCollection.Indexes.CreateOneAsync(indexModel);
+      }
+      {
+        IndexKeysDefinition<DBGeoObject> keys =
+          new IndexKeysDefinitionBuilder<DBGeoObject>()
+          .Ascending(d => d.zoom_level)
+          ;
+
+        var indexModel = new CreateIndexModel<DBGeoObject>(
+          keys, new CreateIndexOptions()
+          { Name = "zoom" }
+        );
+
+        _geoCollection.Indexes.CreateOneAsync(indexModel);
+      }
     }
 
     public async Task CreateOrUpdateGeoFromStringAsync(
@@ -142,7 +162,7 @@ namespace DbLayer.Services
       var updateResult = await _geoRawCollection.UpdateOneAsync(filter, update, options);
     }
 
-    public async Task<List<GeoObjectDTO>> GetGeoAsync(BoxDTO box)
+    public async Task<Dictionary<string, GeoObjectDTO>> GetGeoAsync(BoxDTO box)
     {
       int limit = 10000;
 
@@ -180,7 +200,7 @@ namespace DbLayer.Services
       return ModelGate.ConvertListDB2DTO(list);
     }
 
-    public async Task<List<GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids)
+    public async Task<Dictionary<string, GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids)
     {
       List<DBGeoObject> obj = null;
 

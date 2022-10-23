@@ -148,7 +148,7 @@ namespace TrackSender
       
       var max_circles = 10000;
       var start_circles = 0;
-      var figures = await _testClient.GetByParams("track_name", "mkad", max_circles);
+      var figures = await _testClient.GetByParams("track_name", "mkad", string.Empty, max_circles);
 
       if (figures == null || figures.figs == null || figures.figs.Count < max_circles)
       {
@@ -209,7 +209,7 @@ namespace TrackSender
         figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
       }
 
-      figures = await _testClient.GetByParams("track_name", "mkad", max_circles);
+      figures = await _testClient.GetByParams("track_name", "mkad", string.Empty, max_circles);
 
       if (figures == null || figures.figs.Count == 0)
       {
@@ -350,7 +350,7 @@ namespace TrackSender
 
     public async Task CreateMkad()
     {
-      var mkad = await _testClient.GetByParams("mkad", "true", 1);
+      var mkad = await _testClient.GetByParams("mkad", "true", string.Empty,  1);
 
       if (mkad == null || mkad.IsEmpty())
       {

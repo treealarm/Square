@@ -42,8 +42,8 @@ namespace TrackSender
       {
         coord = new Geo2DCoordDTO()
         {
-          X = start.coord.X + _random.Next(-300, 300) * 0.000035,
-          Y = start.coord.Y + _random.Next(-300, 300) * 0.000035
+          X = start.coord.X + _random.Next(-300, 300) * 0.00005,
+          Y = start.coord.Y + _random.Next(-300, 300) * 0.00005
         }
       };
 
@@ -111,7 +111,7 @@ namespace TrackSender
                 str_val = "true"
               }
             };
-        for (int k = 0; k < 80; k++)
+        for (int k = 0; k < 10000; k++)
         {
           AddStateObjectLowLevel(figure);
         }
@@ -126,7 +126,7 @@ namespace TrackSender
       var color = 
         $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
 
-      FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString(), 1000);
+      FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString(), string.Empty, 1000);
       
       if (figures != null && !figures.IsEmpty())
       {
@@ -308,20 +308,38 @@ namespace TrackSender
         }
       }      
 
-      var updated_figures = await _testClient.UpdateFiguresAsync(m_figures);
+      for (int f = 0; f < m_figures.figs.Count; f+= 10000)
+      {
+        FiguresDTO ff = new FiguresDTO()
+        {
+          figs = m_figures.figs.Skip(f).Take(10000).ToList()
+        };
+        var updated_figures = await _testClient.UpdateFiguresAsync(ff);
+      }      
     }
 
    
     private async Task EmulateState(CancellationToken token)
     {
-      var figures = await _testClient.GetByParams("moscow_state", "true", 10000);
-      
-      var count = figures.figs.Count;
+      string start_id = string.Empty;
+
+ 
 
       while (!token.IsCancellationRequested)
       {
+        var figures = await _testClient.GetByParams("moscow_state", "true", start_id, 10000);
+
+        var count = figures.figs.Count;
+
+        if (count == 0)
+        {
+          start_id = string.Empty;
+          continue;
+        }
+
+        start_id = figures.figs.Last().id;
+
         List<ObjectStateDTO> states = new List<ObjectStateDTO>();
-        var random = new Random();
 
         string[] stateDescrs = new string[]
         {
@@ -332,15 +350,19 @@ namespace TrackSender
 
         List<int> iAlarm = new List<int>();
 
-        for (int j = 0; j < 2; j++)
+        bool bAlarm = _random.Next(1, 20) == 5;
+
+        if (bAlarm)
         {
-          iAlarm.Add(random.Next(0, figures.figs.Count()));
+          for (int j = 0; j < 2; j++)
+          {
+            iAlarm.Add(_random.Next(0, figures.figs.Count()));
+          }
         }
-          
 
         foreach (var figure in figures.figs)
         {
-          int stateNum = random.Next(1, 3);
+          int stateNum = _random.Next(1, 3);
           
 
           if (iAlarm.Contains(figures.figs.IndexOf(figure)))

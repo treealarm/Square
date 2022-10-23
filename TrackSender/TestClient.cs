@@ -126,12 +126,18 @@ namespace TrackSender
       return json;
     }
 
-    public async Task<FiguresDTO> GetByParams(string paramName, string paramValue, int count)
+    public async Task<FiguresDTO> GetByParams(
+      string paramName,
+      string paramValue,
+      string start_id,
+      int count)
     {
       try
       {
         SearchFilterDTO filter = new SearchFilterDTO();
         filter.count = count;
+        filter.start_id = start_id;
+        filter.forward = true;
         filter.property_filter = new ObjPropsSearchDTO();
         filter.property_filter.props = new List<KeyValueDTO>();
         filter.property_filter.props.Add(new KeyValueDTO()

@@ -262,7 +262,8 @@ namespace LeafletAlarms.Services
 
         foreach (var objState in toUpdate)
         {
-          var objToUpdate = objsToUpdate.Where(o => o.id == objState.id).FirstOrDefault();
+          BaseMarkerDTO objToUpdate = null;
+          objsToUpdate.TryGetValue(objState.id, out objToUpdate);
 
           if (objToUpdate == null)
           {
@@ -337,17 +338,17 @@ namespace LeafletAlarms.Services
       {
         _currentBox = box;
 
-        var newIds = geo.Where(g => !_dicIds.Contains(g.id)).ToList();
+        var newIds = geo.Where(g => !_dicIds.Contains(g.Key));
 
         _dicIds.Clear();
 
 
         foreach (var item in geo)
         {
-          _dicIds.Add(item.id);
+          _dicIds.Add(item.Key);
         }
 
-        _stateIdsQueueService.AddIds(newIds.Select(i => i.id).ToList());
+        _stateIdsQueueService.AddIds(newIds.Select(i => i.Key).ToList());
       }
     }
   }

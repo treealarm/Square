@@ -83,7 +83,8 @@ namespace LeafletAlarms.Controllers
 
       foreach (var objState in objStates)
       {
-        var objToUpdate = objsToUpdate.Where(o => o.id == objState.id).FirstOrDefault();
+        BaseMarkerDTO objToUpdate = null;
+        objsToUpdate.TryGetValue(objState.id, out objToUpdate);
 
         if (objToUpdate == null)
         {

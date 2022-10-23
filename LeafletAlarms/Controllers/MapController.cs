@@ -142,7 +142,7 @@ namespace LeafletAlarms.Controllers
 
       List<string> parentIds = new List<string>();
 
-      foreach (var marker in markers)
+      foreach (var marker in markers.Values)
       {
         var markerDto = DTOConverter.GetMarkerDTO(marker);
         retVal.children.Add(markerDto);
@@ -163,7 +163,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (var item in withChildren)
       {
-        var markerDto = retVal.children.Where(x => x.id == item.id).FirstOrDefault();
+        var markerDto = retVal.children.Where(x => x.id == item.Key).FirstOrDefault();
 
         if (markerDto != null)
         {
@@ -227,7 +227,7 @@ namespace LeafletAlarms.Controllers
 
         var tree = await _mapService.GetAsync(ids);
 
-        retVal.list.AddRange(tree);
+        retVal.list.AddRange(tree.Values);
 
         if (!string.IsNullOrEmpty(filter.start_id))
         {
@@ -265,7 +265,7 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    private async Task<FiguresDTO> GetFigures(List<GeoObjectDTO> geo)
+    private async Task<FiguresDTO> GetFigures(Dictionary<string, GeoObjectDTO> geo)
     {
       var result = new FiguresDTO();
 
@@ -274,15 +274,17 @@ namespace LeafletAlarms.Controllers
         return result;
       }
 
-      var ids = geo.Select(g => g.id).ToList();
+      var ids = geo.Keys.ToList();
+
       var tree = await _mapService.GetAsync(ids);
 
       // For now we use props only for default color.
       var props = await _mapService.GetPropsAsync(ids);
 
-      foreach (var item in tree)
+      foreach (var item in tree.Values)
       {
-        var geoPart = geo.Where(i => i.id == item.id).FirstOrDefault();
+        GeoObjectDTO geoPart = null;
+        geo.TryGetValue(item.id, out geoPart);
 
         if (geoPart != null)
         {
@@ -294,15 +296,16 @@ namespace LeafletAlarms.Controllers
           result.figs.Add(figure);
           retItem = figure;
 
-
-
           if (retItem != null)
           {
             retItem.id = item.id;
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;            
             retItem.zoom_level = geoPart.zoom_level?.ToString();
-            var objProp = props.Where(p => p.id == retItem.id).FirstOrDefault();            
+
+            ObjPropsDTO objProp = null;
+            
+            props.TryGetValue(retItem.id, out objProp);            
             
             if (objProp != null)
             {
@@ -356,7 +359,7 @@ namespace LeafletAlarms.Controllers
     public async Task<ActionResult<List<BaseMarkerDTO>>> GetByName([FromBody] string name)
     {
       var figures = await _mapService.GetByNameAsync(name);
-      return CreatedAtAction(nameof(GetByName), figures);
+      return CreatedAtAction(nameof(GetByName), figures.Values);
     }    
 
     [HttpPost]

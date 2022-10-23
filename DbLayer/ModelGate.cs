@@ -36,13 +36,13 @@ namespace DbLayer
       return res;
     }
 
-    static public List<GeoObjectDTO> ConvertListDB2DTO(List<DBGeoObject> dto)
+    static public Dictionary<string, GeoObjectDTO> ConvertListDB2DTO(List<DBGeoObject> dto)
     {
-      var res = new List<GeoObjectDTO>();
+      var res = new Dictionary<string, GeoObjectDTO>();
 
       foreach (var item in dto)
       {
-        res.Add(ConvertDB2DTO(item));
+        res.Add(item.id, ConvertDB2DTO(item));
       }
 
       return res;

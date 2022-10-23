@@ -61,7 +61,7 @@ namespace LeafletAlarms.Controllers
         }
         else
         {
-          _tracksRootFolder = list_of_roots.First();
+          _tracksRootFolder = list_of_roots.First().Value;
         }
 
         return _tracksRootFolder;

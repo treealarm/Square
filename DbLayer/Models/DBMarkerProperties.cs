@@ -12,7 +12,7 @@ namespace DbLayer
   {
     public string visual_type { get; set; }
     [BsonExtraElements]
-    public BsonDocument MetaValue { get; set; }
+    public BsonDocument str_val { get; set; }
     public string prop_name { get; set; }
   }
 

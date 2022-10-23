@@ -46,9 +46,41 @@ namespace DbLayer.Services
       _propCollection = _mongoDB.GetCollection<DBMarkerProperties>(
           geoStoreDatabaseSettings.Value.PropCollectionName);
 
+      CreateIndexes();
     }
 
-    public async Task<List<BaseMarkerDTO>> GetAsync(List<string> ids)
+    private void CreateIndexes()
+    {
+      {
+        IndexKeysDefinition<DBMarker> keys =
+          new IndexKeysDefinitionBuilder<DBMarker>()
+          .Ascending(d => d.parent_id)
+          ;
+
+        var indexModel = new CreateIndexModel<DBMarker>(
+          keys, new CreateIndexOptions()
+          { Name = "parent" }
+        );
+
+        _markerCollection.Indexes.CreateOneAsync(indexModel);
+      }
+      {
+        var keys = Builders<DBMarkerProperties>.IndexKeys.Combine(
+          Builders<DBMarkerProperties>.IndexKeys
+          .Ascending($"{nameof(DBMarkerProperties.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}"),
+          Builders<DBMarkerProperties>.IndexKeys
+          .Ascending($"{nameof(DBMarkerProperties.extra_props)}.{nameof(DBObjExtraProperty.str_val)}"));
+
+           var indexModel = new CreateIndexModel<DBMarkerProperties>(
+          keys, new CreateIndexOptions()
+          { Name = "ep" }
+        );
+
+        _propCollection.Indexes.CreateOneAsync(indexModel);
+      }
+    }
+
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetAsync(List<string> ids)
     {
       var list = await _markerCollection.Find(i => ids.Contains(i.id)).ToListAsync();
       return ConvertMarkerListDB2DTO(list);
@@ -61,7 +93,7 @@ namespace DbLayer.Services
     }
 
 
-    public async Task<List<BaseMarkerDTO>> GetByParentIdAsync(
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdAsync(
       string parent_id,
       string start_id,
       string end_id,
@@ -105,7 +137,7 @@ namespace DbLayer.Services
       return ConvertMarkerListDB2DTO(retVal);
     }
 
-    public async Task<List<BaseMarkerDTO>> GetByNameAsync(string name)
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetByNameAsync(string name)
     {
       var retVal = await _markerCollection.Find(x => x.name == name).ToListAsync();
       return ConvertMarkerListDB2DTO(retVal);
@@ -142,11 +174,11 @@ namespace DbLayer.Services
 
       var children = await GetByParentIdAsync(parent_id, null, null, int.MaxValue);
 
-      cb.Add(children);
+      cb.Add(children.Values.ToList());
 
       foreach (var item in children)
       {
-        var sub_children = await GetAllChildren(item.id);
+        var sub_children = await GetAllChildren(item.Value.id);
         cb.Add(sub_children);
       }
 
@@ -169,19 +201,19 @@ namespace DbLayer.Services
       dbMarker.CopyAllTo(result);
       return result;
     }
-    List<BaseMarkerDTO> ConvertMarkerListDB2DTO(List<DBMarker> dbMarkers)
+    Dictionary<string, BaseMarkerDTO> ConvertMarkerListDB2DTO(List<DBMarker> dbMarkers)
     {
-      List<BaseMarkerDTO> result = new List<BaseMarkerDTO>();
+      var result = new Dictionary<string, BaseMarkerDTO>();
 
       foreach (var dbItem in dbMarkers)
       {
-        result.Add(ConvertMarkerDB2DTO(dbItem));
+        result.Add(dbItem.id, ConvertMarkerDB2DTO(dbItem));
       }
 
       return result;
     }
 
-    public async Task<List<BaseMarkerDTO>> GetTopChildren(List<string> parentIds)
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetTopChildren(List<string> parentIds)
     {
       var result = await _markerCollection
         .Aggregate()
@@ -289,7 +321,7 @@ namespace DbLayer.Services
 
         if (prop.visual_type == BsonType.DateTime.ToString())
         {
-          newProp.MetaValue = new BsonDocument(
+          newProp.str_val = new BsonDocument(
             "str_val",
             DateTime
               .Parse(prop.str_val)
@@ -298,7 +330,7 @@ namespace DbLayer.Services
         }
         else
         {
-          newProp.MetaValue = new BsonDocument(
+          newProp.str_val = new BsonDocument(
             "str_val",
             prop.str_val
             );
@@ -393,14 +425,14 @@ namespace DbLayer.Services
       return Conver2Property2DTO(obj);
     }
 
-    public async Task<List<ObjPropsDTO>> GetPropsAsync(List<string> ids)
+    public async Task<Dictionary<string, ObjPropsDTO>> GetPropsAsync(List<string> ids)
     {
-      List<ObjPropsDTO> list = new List<ObjPropsDTO>();
+      var list = new Dictionary<string, ObjPropsDTO>();
       var objs = await _propCollection.Find(x => ids.Contains(x.id)).ToListAsync();
 
       foreach (var obj in objs)
       {
-        list.Add(Conver2Property2DTO(obj));
+        list.Add(obj.id, Conver2Property2DTO(obj));
       }
       return list;
     }
@@ -507,7 +539,7 @@ namespace DbLayer.Services
         ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
         {
           prop_name = prop.prop_name,
-          str_val = prop.MetaValue.GetValue("str_val", string.Empty).ToString(),
+          str_val = prop.str_val.GetValue("str_val", string.Empty).ToString(),
           visual_type = prop.visual_type
         };
         mProps.extra_props.Add(newProp);

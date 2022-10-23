@@ -1,4 +1,5 @@
-﻿using DbLayer.Services;
+﻿using DbLayer;
+using DbLayer.Services;
 using Domain;
 using Domain.ServiceInterfaces;
 using Domain.States;
@@ -45,20 +46,25 @@ namespace LeafletAlarms.Services
       await Task.Delay(0);
     }
 
-    private async Task<AlarmObject> GetAlarmObject(string id)
+    private AlarmObject GetAlarmObjectFromCash(string id)
     {
       AlarmObject alarmObject = null;
+      m_Hierarhy.TryGetValue(id, out alarmObject);
+      return alarmObject;
+    }
 
-      if (m_Hierarhy.TryGetValue(id, out alarmObject))
-      {
-        return alarmObject;
-      }
-
-      var marker = await _mapService.GetAsync(id);
-
+    private AlarmObject GetAlarmObject(BaseMarkerDTO marker)
+    {
       if (marker == null)
       {
         return null;
+      }
+
+      AlarmObject alarmObject = GetAlarmObjectFromCash(marker.id);
+
+      if (alarmObject != null)
+      {
+        return alarmObject;
       }
 
       alarmObject = new AlarmObject();
@@ -72,9 +78,9 @@ namespace LeafletAlarms.Services
       return alarmObject;
     }
 
-    private async Task<List<AlarmObject>> SetAlarm(string id, bool alarm)
+    private async Task<List<AlarmObject>> SetAlarm(BaseMarkerDTO objToUpdate, bool alarm)
     {
-      AlarmObject alarmObject = await GetAlarmObject(id);
+      AlarmObject alarmObject = GetAlarmObject(objToUpdate);
       List<AlarmObject> blinkChanges = new List<AlarmObject>();
 
       if (alarmObject == null)
@@ -98,7 +104,16 @@ namespace LeafletAlarms.Services
           break;
         }
 
-        alarmObject = await GetAlarmObject(alarmObject.parent_id);
+        var parent_id = alarmObject.parent_id;
+
+        alarmObject = GetAlarmObjectFromCash(parent_id);
+
+        if (alarmObject == null)
+        {
+          BaseMarkerDTO parent = await _mapService.GetAsync(parent_id);
+
+          alarmObject = GetAlarmObject(parent);
+        }        
 
         // Here is parent.
         if (alarm)
@@ -136,7 +151,8 @@ namespace LeafletAlarms.Services
 
       foreach (var objState in objStates)
       {
-        var objToUpdate = objsToUpdate.Where(o => o.id == objState.id).FirstOrDefault();
+        BaseMarkerDTO objToUpdate = null;
+        objsToUpdate.TryGetValue(objState.id, out objToUpdate);
 
         if (objToUpdate == null)
         {
@@ -153,7 +169,7 @@ namespace LeafletAlarms.Services
 
         var alarmedStateDescr = stateDescrs.Where(st => st.alarm).FirstOrDefault();
 
-        var alarmedList = await SetAlarm(objToUpdate.id, alarmedStateDescr != null);
+        var alarmedList = await SetAlarm(objToUpdate, alarmedStateDescr != null);
         blinkChanges.AddRange(alarmedList);
       }
 
@@ -195,8 +211,19 @@ namespace LeafletAlarms.Services
           continue;
         }
         
-        await ProcessIds(objIds);
-        continue;
+        try
+        {
+          int maxProcess = 10000;
+
+          for (int i = 0; i < objIds.Count; i += maxProcess)
+          {
+            await ProcessIds(objIds.Skip(i).Take(maxProcess).ToList());
+          }          
+        }
+        catch(Exception ex)
+        {
+
+        }
       }
     }
   }

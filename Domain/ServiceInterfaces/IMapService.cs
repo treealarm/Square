@@ -8,21 +8,21 @@ namespace Domain.ServiceInterfaces
 {
   public interface IMapService
   {
-    Task<List<BaseMarkerDTO>> GetAsync(List<string> ids);
+    Task<Dictionary<string, BaseMarkerDTO>> GetAsync(List<string> ids);
 
     Task<BaseMarkerDTO> GetAsync(string id);
     Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id);
-    Task<List<BaseMarkerDTO>> GetByParentIdAsync(
+    Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdAsync(
       string parent_id,
       string start_id,
       string end_id,
       int count
     );
-    Task<List<BaseMarkerDTO>> GetByNameAsync(string name);
-    Task<List<BaseMarkerDTO>> GetTopChildren(List<string> parentIds);
+    Task<Dictionary<string, BaseMarkerDTO>> GetByNameAsync(string name);
+    Task<Dictionary<string, BaseMarkerDTO>> GetTopChildren(List<string> parentIds);
     Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id);
     Task<ObjPropsDTO> GetPropAsync(string id);
-    Task<List<ObjPropsDTO>> GetPropsAsync(List<string> ids);
+    Task<Dictionary<string, ObjPropsDTO>> GetPropsAsync(List<string> ids);
     Task UpdatePropAsync(ObjPropsDTO updatedObj);
     Task UpdateHierarchyAsync(IEnumerable<BaseMarkerDTO> updatedObj);
     Task<long> RemoveAsync(List<string> ids);

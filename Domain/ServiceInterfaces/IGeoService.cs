@@ -9,8 +9,8 @@ namespace Domain.ServiceInterfaces
 {
   public interface IGeoService
   {
-    Task<List<GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids);
-    Task<List<GeoObjectDTO>> GetGeoAsync(BoxDTO box);
+    Task<Dictionary<string, GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids);
+    Task<Dictionary<string, GeoObjectDTO>> GetGeoAsync(BoxDTO box);
     Task<GeoObjectDTO> GetGeoObjectAsync(string id);
     Task<Dictionary<string, GeoObjectDTO>> CreateGeo(IEnumerable<FigureGeoDTO> figures);
     Task CreateOrUpdateGeoFromStringAsync(

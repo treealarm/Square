@@ -71,10 +71,7 @@ namespace DbLayer.Services
       {
         IndexKeysDefinition<DBTrackPoint> keys =
                 new IndexKeysDefinitionBuilder<DBTrackPoint>()
-                .Ascending(d => d.meta.figure.zoom_level)
                 .Geo2DSphere(d => d.meta.figure.location)
-                .Ascending(d => d.timestamp)
-                .Ascending(d => d.meta.figure.id)
                 ;
 
         var indexModel = new CreateIndexModel<DBTrackPoint>(
@@ -84,7 +81,21 @@ namespace DbLayer.Services
 
         _collFigures.Indexes.CreateOneAsync(indexModel);
       }
+      {
+        IndexKeysDefinition<DBTrackPoint> keys =
+                new IndexKeysDefinitionBuilder<DBTrackPoint>()
+                .Ascending(d => d.meta.figure.zoom_level)
+                .Ascending(d => d.timestamp)
+                .Ascending(d => d.meta.figure.id)
+                ;
 
+        var indexModel = new CreateIndexModel<DBTrackPoint>(
+          keys, new CreateIndexOptions()
+          { Name = "compound" }
+        );
+
+        _collFigures.Indexes.CreateOneAsync(indexModel);
+      }
       {
         IndexKeysDefinition<DBTrackPoint> keys =
         new IndexKeysDefinitionBuilder<DBTrackPoint>()
