@@ -26,7 +26,7 @@ namespace TrackSender
 
     public TestMovements()
     {
-      _figures.circles = new List<FigureGeoDTO>();
+      _figures.figs = new List<FigureGeoDTO>();
 
       //var settings = new RoutingSettings()
       //{
@@ -59,7 +59,7 @@ namespace TrackSender
     private async Task GetOrBuildFiguresAsync()
     {
       var figures = new FiguresDTO();
-      figures.circles = new List<FigureGeoDTO>();
+      figures.figs = new List<FigureGeoDTO>();
 
       List<string> existedIds = new List<string>();
       for (int i = 0; i < 100; i++)
@@ -106,20 +106,20 @@ namespace TrackSender
             geometry = start,
             extra_props = extra_props
           };
-          figures.circles.Add(figure);
+          figures.figs.Add(figure);
         }
       }
 
-      if (figures != null && figures.circles.Count > 0)
+      if (figures != null && figures.figs.Count > 0)
       {
         figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
-        _figures.circles.AddRange(figures.circles);
+        _figures.figs.AddRange(figures.figs);
       }
 
       if (existedIds.Count > 0)
       {
         figures = await _testClient.GetByIds(existedIds);
-        _figures.circles.AddRange(figures.circles);
+        _figures.figs.AddRange(figures.figs);
       }
     }
 
@@ -150,15 +150,15 @@ namespace TrackSender
       var start_circles = 0;
       var figures = await _testClient.GetByParams("track_name", "mkad", max_circles);
 
-      if (figures == null || figures.circles == null || figures.circles.Count < max_circles)
+      if (figures == null || figures.figs == null || figures.figs.Count < max_circles)
       {
-        if (figures != null && figures.circles != null)
+        if (figures != null && figures.figs != null)
         {
-          start_circles = figures.circles.Count;
+          start_circles = figures.figs.Count;
         }
 
         figures = new FiguresDTO();
-        figures.circles = new List<FigureGeoDTO>();
+        figures.figs = new List<FigureGeoDTO>();
 
         for (int i = start_circles; i < max_circles; i++)
         {
@@ -204,21 +204,21 @@ namespace TrackSender
               geometry = start,
               extra_props = extra_props
             };
-            figures.circles.Add(figure);
+            figures.figs.Add(figure);
           }
         figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
       }
 
       figures = await _testClient.GetByParams("track_name", "mkad", max_circles);
 
-      if (figures == null || figures.circles.Count == 0)
+      if (figures == null || figures.figs.Count == 0)
       {
         return;
       }
 
       Dictionary<string, CircleShifter> dicShifter = new Dictionary<string, CircleShifter>();
 
-      foreach (var figure in figures.circles)
+      foreach (var figure in figures.figs)
       {
         var geometry = figure.geometry as GeometryCircleDTO;
 
@@ -253,7 +253,7 @@ namespace TrackSender
 
       while (!token.IsCancellationRequested)
       {
-        foreach (var figure in figures.circles)
+        foreach (var figure in figures.figs)
         {
           var geometry = figure.geometry as GeometryCircleDTO;
           counter++;
@@ -318,7 +318,7 @@ namespace TrackSender
 
       for (int j = 0; j < steps; j++)
       {
-        foreach (var figure in _figures.circles)
+        foreach (var figure in _figures.figs)
         {
           var geometry = figure.geometry as GeometryCircleDTO;
           counter++;
@@ -355,7 +355,7 @@ namespace TrackSender
       if (mkad == null || mkad.IsEmpty())
       {
         mkad = new FiguresDTO();
-        mkad.polylines = await NominatimProcessor.GetMkadPolyline();
+        mkad.figs = await NominatimProcessor.GetMkadPolyline();
         mkad = await _testClient.UpdateFiguresAsync(mkad);
       }
     }

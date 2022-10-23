@@ -71,7 +71,7 @@ namespace TrackSender
             }
           };
 
-      m_figures.circles.Add(figure);
+      m_figures.figs.Add(figure);
     }
 
     private void AddStateObjects(Root geoObj, FigureGeoDTO parentPolygon)
@@ -115,7 +115,7 @@ namespace TrackSender
         {
           AddStateObjectLowLevel(figure);
         }
-        m_figures.circles.Add(figure);
+        m_figures.figs.Add(figure);
       }
     }
 
@@ -130,7 +130,7 @@ namespace TrackSender
       
       if (figures != null && !figures.IsEmpty())
       {
-        foreach (var figure in figures.polygons)
+        foreach (var figure in figures.figs)
         {
           figure.extra_props = new List<ObjExtraPropertyDTO>()
             {
@@ -150,8 +150,7 @@ namespace TrackSender
       }
 
       figures = new FiguresDTO();
-      figures.circles = new List<FigureGeoDTO>();
-      figures.polygons = new List<FigureGeoDTO>();
+      figures.figs = new List<FigureGeoDTO>();
 
       var geoObj = await NominatimProcessor.GetOsmFigureFromDisk(osmid, "PolygonJson");
 
@@ -164,7 +163,7 @@ namespace TrackSender
       var parent = me[1];
 
 
-      var parentPolygon = m_figures.polygons
+      var parentPolygon = m_figures.figs
         .Where(p => p.extra_props
           .Any(e => e.prop_name == "osmid" && e.str_val == parent.ToString())   
         ).FirstOrDefault();
@@ -257,7 +256,7 @@ namespace TrackSender
               figure.parent_id = _main_id;
             }        
 
-            figures.polygons.Add(figure);
+            figures.figs.Add(figure);
           }
         }       
         else
@@ -300,9 +299,7 @@ namespace TrackSender
 
         if (figure != null && !figure.IsEmpty())
         {
-          m_figures?.polylines.AddRange(figure?.polylines);
-          m_figures?.circles.AddRange(figure?.circles);
-          m_figures?.polygons.AddRange(figure?.polygons);
+          m_figures?.figs.AddRange(figure?.figs);
         }
         else
         {
@@ -319,7 +316,7 @@ namespace TrackSender
     {
       var figures = await _testClient.GetByParams("moscow_state", "true", 10000);
       
-      var count = figures.circles.Count;
+      var count = figures.figs.Count;
 
       while (!token.IsCancellationRequested)
       {
@@ -337,16 +334,16 @@ namespace TrackSender
 
         for (int j = 0; j < 2; j++)
         {
-          iAlarm.Add(random.Next(0, figures.circles.Count()));
+          iAlarm.Add(random.Next(0, figures.figs.Count()));
         }
           
 
-        foreach (var figure in figures.circles)
+        foreach (var figure in figures.figs)
         {
           int stateNum = random.Next(1, 3);
           
 
-          if (iAlarm.Contains(figures.circles.IndexOf(figure)))
+          if (iAlarm.Contains(figures.figs.IndexOf(figure)))
           {
             stateNum = 0;
           }

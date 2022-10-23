@@ -91,34 +91,29 @@ namespace LeafletAlarms.Controllers
       var trackPoints = new List<TrackPointDTO>();
       Dictionary<string, TimeSpan> timing = new Dictionary<string, TimeSpan>(); 
 
-      foreach (var figure in movedMarkers.circles)
+      foreach (var figure in movedMarkers.figs)
       {
         await EnsureTracksRoot(figure);
       }
 
-      foreach (var figure in movedMarkers.polygons)
-      {
-        await EnsureTracksRoot(figure);
-      }
-
-      foreach (var figure in movedMarkers.polylines)
-      {
-        await EnsureTracksRoot(figure);
-      }
 
       DateTime t1 = DateTime.Now;
-      await _mapService.UpdateHierarchyAsync(movedMarkers.circles);
+      await _mapService.UpdateHierarchyAsync(movedMarkers.figs);
       DateTime t2 = DateTime.Now;
       timing["UpdateHierarchyAsync"] = t2 - t1;
       
 
       t1 = DateTime.Now;
-      var circles = await _geoService.CreateGeo(movedMarkers.circles);
+      var circles = await _geoService.CreateGeo(movedMarkers.figs);
       t2 = DateTime.Now;
       timing["CreateGeo"] = t2 - t1;
 
-      foreach (var figure in movedMarkers.circles)
+      foreach (var figure in movedMarkers.figs)
       {
+        if (figure.geometry.type != "Point")
+        {
+          continue;
+        }
         GeoObjectDTO circle;
 
         circles.TryGetValue(figure.id, out circle);
@@ -148,43 +143,10 @@ namespace LeafletAlarms.Controllers
       }
       //---------Updating properties here not to insert timestamp
       t1 = DateTime.Now;
-      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.circles);
+      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.figs);
       t2 = DateTime.Now;
       timing["UpdatePropNotDeleteAsync"] = t2 - t1;
       //----------------------------------------------------------------------------
-
-      await _mapService.UpdateHierarchyAsync(movedMarkers.polygons);
-      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polygons);
-      var polygons = await _geoService.CreateGeo(movedMarkers.polygons);
-
-      foreach (var figure in movedMarkers.polygons)
-      {
-        GeoObjectDTO polygon;
-        polygons.TryGetValue(figure.id, out polygon);
-        trackPoints.Add(
-          new TrackPointDTO()
-          {
-            figure = polygon
-          }
-        );
-      }
-
-      await _mapService.UpdateHierarchyAsync(movedMarkers.polylines);
-      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.polylines);
-      var polylines = await _geoService.CreateGeo(movedMarkers.polylines);
-
-      foreach (var figure in movedMarkers.polylines)
-      {
-        GeoObjectDTO polyline;
-        polylines.TryGetValue(figure.id, out polyline);
-
-        trackPoints.Add(
-          new TrackPointDTO()
-          {
-            figure = polyline
-          }
-        );
-      }
 
       t1 = DateTime.Now;
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);

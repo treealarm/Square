@@ -250,22 +250,16 @@ export const reducer: Reducer<MarkersState> = (
       };
     case "POSTED_MARKERS":
       {
-        let deleted_ids = action.markers.circles.map(item => item.id);
-        deleted_ids = deleted_ids.concat(action.markers.polygons.map(item => item.id));
-        deleted_ids = deleted_ids.concat(action.markers.polylines.map(item => item.id));  
+        let deleted_ids = action.markers.figs.map(item => item.id);
 
         var cur_markersLeft: IFigures =
         {
-          circles: state.markers.circles.filter(item => !(deleted_ids.includes(item.id))),
-          polygons: state.markers.polygons.filter(item => !(deleted_ids.includes(item.id))),
-          polylines: state.markers.polylines.filter(item => !(deleted_ids.includes(item.id)))
+          figs: state.markers.figs.filter(item => !(deleted_ids.includes(item.id)))
         };
 
         var cur_markers: IFigures =
         {
-          circles: cur_markersLeft.circles.concat(action.markers.circles),
-          polygons: cur_markersLeft.polygons.concat(action.markers.polygons),
-          polylines: cur_markersLeft.polylines.concat(action.markers.polylines)
+          figs: cur_markersLeft.figs.concat(action.markers.figs)
         };
 
         return {
@@ -285,9 +279,7 @@ export const reducer: Reducer<MarkersState> = (
       {
         var cur_markers: IFigures =
         {
-          circles: state.markers.circles.filter(item => !(action.deleted_ids.includes(item.id))),
-          polygons: state.markers.polygons.filter(item => !(action.deleted_ids.includes(item.id))),
-          polylines: state.markers.polylines.filter(item => !(action.deleted_ids.includes(item.id)))
+          figs: state.markers.figs.filter(item => !(action.deleted_ids.includes(item.id)))
         };
         
         return {
@@ -301,24 +293,10 @@ export const reducer: Reducer<MarkersState> = (
     case "GOT_MARKERS_BY_IDS":
       var cur_markers: IFigures = action.markers;
 
-      state.markers.circles.forEach(element => {
-        const itemIndex = cur_markers.circles.findIndex(o => o.id === element.id);
+      state.markers.figs.forEach(element => {
+        const itemIndex = cur_markers.figs.findIndex(o => o.id === element.id);
         if (itemIndex < 0) {
-          cur_markers.circles.push(element);
-        }
-      });
-
-      state.markers.polygons.forEach(element => {
-        const itemIndex = cur_markers.polygons.findIndex(o => o.id === element.id);
-        if (itemIndex < 0) {
-          cur_markers.polygons.push(element);
-        }
-      });
-
-      state.markers.polylines.forEach(element => {
-        const itemIndex = cur_markers.polylines.findIndex(o => o.id === element.id);
-        if (itemIndex < 0) {
-          cur_markers.polylines.push(element);
+          cur_markers.figs.push(element);
         }
       });
 

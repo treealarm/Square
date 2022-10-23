@@ -288,35 +288,13 @@ namespace LeafletAlarms.Controllers
         {
           FigureZoomedDTO retItem = null;
 
-          if (geoPart.location is GeometryCircleDTO circle)
-          {
-            var figure = new FigureGeoDTO();
-            figure.radius = geoPart.radius;
-            figure.geometry = circle;
-            result.circles.Add(figure);
-            retItem = figure;
-            circle.type = figure.geometry.GetFigureType();
-          }
+          var figure = new FigureGeoDTO();
+          figure.radius = geoPart.radius;
+          figure.geometry = geoPart.location;
+          result.figs.Add(figure);
+          retItem = figure;
 
-          if (geoPart.location is GeometryPolygonDTO polygon)
-          {
-            var figure = new FigureGeoDTO();
 
-            figure.geometry = polygon;
-            result.polygons.Add(figure);
-            retItem = figure;
-            polygon.type = figure.geometry.GetFigureType();
-          }
-
-          if (geoPart.location is GeometryPolylineDTO line)
-          {
-            var figure = new FigureGeoDTO();
-
-            figure.geometry = line;
-            result.polylines.Add(figure);
-            retItem = figure;
-            line.type = figure.geometry.GetFigureType();
-          }
 
           if (retItem != null)
           {
@@ -573,18 +551,9 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateFigures")]
     public async Task<ActionResult<FiguresDTO>> UpdateFigures(FiguresDTO statMarkers)
     {
-      await _mapService.UpdateHierarchyAsync(statMarkers.circles);
-      await _mapService.UpdatePropNotDeleteAsync(statMarkers.circles);
-      await _geoService.CreateGeo(statMarkers.circles);
-
-
-      await _mapService.UpdateHierarchyAsync(statMarkers.polygons);
-      await _mapService.UpdatePropNotDeleteAsync(statMarkers.polygons);
-      await _geoService.CreateGeo(statMarkers.polygons);
-
-      await _mapService.UpdateHierarchyAsync(statMarkers.polylines);
-      await _mapService.UpdatePropNotDeleteAsync(statMarkers.polylines);
-      await _geoService.CreateGeo(statMarkers.polylines);
+      await _mapService.UpdateHierarchyAsync(statMarkers.figs);
+      await _mapService.UpdatePropNotDeleteAsync(statMarkers.figs);
+      await _geoService.CreateGeo(statMarkers.figs);
 
       return CreatedAtAction(nameof(UpdateFigures), statMarkers);
     }

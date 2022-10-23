@@ -5,7 +5,7 @@ import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import { ApplicationState } from '../store';
-import { BoundBox, getExtraProp, IObjProps } from '../store/Marker';
+import { BoundBox, getExtraProp, ICircle, ICommonFig, ICoord, IObjProps, IPointCoord, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 
 
 import { useCallback, useMemo, useEffect } from 'react'
@@ -25,9 +25,8 @@ declare module 'react-redux' {
 }
 
 function MyPolygon(props: any) {
-  if (props.hidden == true) {
-    return null;
-  }
+
+  var fig: IPolygon = props.marker;
 
   const dispatch = useDispatch();
 
@@ -45,7 +44,7 @@ function MyPolygon(props: any) {
     <React.Fragment>
       <Polygon
         pathOptions={props.pathOptions}
-        positions={props.positions}
+        positions={fig.geometry.coord}
         eventHandlers={eventHandlers}
       >
       </Polygon>
@@ -54,9 +53,8 @@ function MyPolygon(props: any) {
 }
 
 function MyPolyline(props: any) {
-  if (props.hidden == true) {
-    return null;
-  }
+
+  var fig: IPolyline = props.marker;
 
   const dispatch = useDispatch();
   const eventHandlers = useMemo(
@@ -73,7 +71,7 @@ function MyPolyline(props: any) {
     <React.Fragment>
       <Polyline
         pathOptions={props.pathOptions}
-        positions={props.positions}
+        positions={fig.geometry.coord}
         eventHandlers={eventHandlers}
       >
       </Polyline>
@@ -82,9 +80,10 @@ function MyPolyline(props: any) {
 }
 
 function MyCircle(props: any) {
-  if (props.hidden == true) {
-    return null;
-  }
+
+  var fig: ICircle = props.marker;
+  var center = fig.geometry.coord;  
+  var radius = fig.radius > 0 ? fig.radius : 10;
 
   const dispatch = useDispatch();
   const eventHandlers = useMemo(
@@ -100,13 +99,45 @@ function MyCircle(props: any) {
     <React.Fragment>
       <Circle
         pathOptions={props.pathOptions}
-        center={props.center}
-        radius={props.radius}
+        center={center}
+        radius={radius}
         eventHandlers={eventHandlers}
       >
       </Circle>
     </React.Fragment>
   );
+}
+
+function MyCommonFig(props: any) {
+  
+  if (props.hidden == true) {
+    return null;
+  }
+
+  var fig: ICommonFig = props.marker;
+  var geo: ICoord = fig.geometry;
+
+  if (geo.type == PointType) {
+    return (
+      <MyCircle {...props}>
+      </MyCircle>
+    );
+  }
+
+  if (geo.type == PolygonType) {
+    return (
+      <MyPolygon {...props}>
+      </MyPolygon>
+    );
+  }
+
+  if (geo.type == LineStringType) {
+    return (
+      <MyPolyline {...props}>
+      </MyPolyline>
+    );
+  }
+  return null;
 }
 
 export function LocationMarkers() {
@@ -143,9 +174,7 @@ export function LocationMarkers() {
         return;
       }
       var objArray2: string[] = [];
-      markers.circles?.forEach(arr => objArray2.push(arr.id));
-      markers.polygons?.forEach(arr => objArray2.push(arr.id));
-      markers.polylines?.forEach(arr => objArray2.push(arr.id));
+      markers.figs?.forEach(arr => objArray2.push(arr.id));
       dispatch(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
     }, [markers]);
 
@@ -253,44 +282,16 @@ export function LocationMarkers() {
   return (
     <React.Fragment>
       {
-        markers?.circles?.map((marker, index) =>
-          <MyCircle
-            key={marker.id}
-            center={marker.geometry.coord}
-            pathOptions={getColor(marker)}
-            radius={marker.radius > 0 ? marker.radius : 10}
-            hidden={marker.id == hidden_id}
-
+        markers?.figs?.map((marker, index) =>
+          <MyCommonFig
+            key={marker.id} 
             marker={marker}
+            hidden={marker.id == hidden_id}
+            pathOptions={getColor(marker)}
           >
-          </MyCircle>
+          </MyCommonFig>
         )}
-      {
-        markers?.polygons?.map((marker, index) =>
-          <MyPolygon
-            pathOptions={getColor(marker)}
-            positions={marker.geometry.coord}
-            key={marker.id}
-            hidden={marker.id == hidden_id}
-
-            marker={marker}
-            selectMe={selectMe}
-          >
-          </MyPolygon>
-        )}
-
-      {
-        markers?.polylines?.map((marker, index) =>
-          <MyPolyline
-            pathOptions={getColor(marker)}
-            positions={marker.geometry.coord}
-            key={marker.id}
-            hidden={marker.id == hidden_id}
-
-            marker={marker}
-          >
-          </MyPolyline>
-        )}      
+    
     </React.Fragment>
   );
 }

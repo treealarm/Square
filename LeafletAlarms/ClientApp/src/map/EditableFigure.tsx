@@ -20,7 +20,7 @@ export function EditableFigure() {
       var figures: IFigures = {
 
       };
-      figures.polygons = [polygon];
+      figures.figs = [polygon];
       dispatch(MarkersStore.actionCreators.addTracks(figures));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
@@ -30,7 +30,7 @@ export function EditableFigure() {
       var figures: IFigures = {
 
       };
-      figures.polylines = [figure];
+      figures.figs = [figure];
       dispatch(MarkersStore.actionCreators.addTracks(figures));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
@@ -40,7 +40,7 @@ export function EditableFigure() {
       var figures: IFigures = {
 
       };
-      figures.circles = [figure];
+      figures.figs = [figure];
       dispatch(MarkersStore.actionCreators.addTracks(figures));
       dispatch(GuiStore.actionCreators.selectTreeItem(null));
     }, [])

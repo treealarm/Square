@@ -31,16 +31,21 @@ export interface IPolylineCoord extends ICoord {
   coord: LatLngPair[];
 }
 
-export interface ICircle extends IObjProps {
+export interface ICommonFig extends IObjProps {
+  geometry: any;
+  radius?: number;
+}
+
+export interface ICircle extends ICommonFig {
   geometry: IPointCoord;  
   radius: number;
 }
 
-export interface IPolygon extends IObjProps {
+export interface IPolygon extends ICommonFig {
   geometry: IPolygonCoord;  
 }
 
-export interface IPolyline extends IObjProps {
+export interface IPolyline extends ICommonFig {
   geometry: IPolylineCoord;  
 }
 
@@ -96,9 +101,7 @@ export function getExtraProp(
 }
 
 export interface IFigures {
-  circles?: ICircle[];
-  polygons?: IPolygon[];
-  polylines?: IPolyline[];
+  figs?: ICommonFig[];
 }
 
 export interface TreeMarker {

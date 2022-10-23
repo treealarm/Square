@@ -80,7 +80,7 @@ namespace TrackSender
         if (test_route == null || test_route.Count == 0)
         {
 
-          polylines.polylines = new List<FigureGeoDTO>();
+          polylines.figs = new List<FigureGeoDTO>();
 
           polyline = new FigureGeoDTO()
           {
@@ -91,7 +91,7 @@ namespace TrackSender
 
           polyline.geometry = new GeometryPolylineDTO();
 
-          polylines.polylines.Add(polyline);
+          polylines.figs.Add(polyline);
 
         }
         else
@@ -99,7 +99,7 @@ namespace TrackSender
           polylines = await TestClient.GetByIds(new List<string>() { test_route.FirstOrDefault().id });
         }
 
-        polyline = polylines.polylines.FirstOrDefault();
+        polyline = polylines.figs.FirstOrDefault();
 
         var geometry = polyline.geometry as GeometryPolylineDTO;
 
