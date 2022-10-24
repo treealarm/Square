@@ -1,0 +1,80 @@
+{
+    "place_id": 232495582,
+    "parent_place_id": 297311194,
+    "osm_type": "W",
+    "osm_id": 623059130,
+    "category": "highway",
+    "type": "motorway",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141894",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:22+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "embankment": "yes",
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:motorway",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "yes"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.2949387,
+            56.1212062
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.3047691,
+                56.1231102
+            ],
+            [
+                37.3040074,
+                56.1229144
+            ],
+            [
+                37.3006077,
+                56.1221357
+            ],
+            [
+                37.2978427,
+                56.1216206
+            ],
+            [
+                37.2949387,
+                56.1212062
+            ],
+            [
+                37.2901481,
+                56.1205558
+            ],
+            [
+                37.2870827,
+                56.1200616
+            ],
+            [
+                37.2841154,
+                56.1195328
+            ]
+        ]
+    }
+}

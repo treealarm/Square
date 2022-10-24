@@ -1,0 +1,89 @@
+{
+    "place_id": 228876191,
+    "parent_place_id": 297105672,
+    "osm_type": "W",
+    "osm_id": 605578983,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143041",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:19+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "destination": "Смоленск",
+        "destination:int_ref": "E 30",
+        "destination:ref": "M1",
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.0063586,
+            55.6013499
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.0069639,
+                55.6000673
+            ],
+            [
+                37.0067566,
+                55.600502
+            ],
+            [
+                37.0066449,
+                55.6007464
+            ],
+            [
+                37.0064981,
+                55.6010485
+            ],
+            [
+                37.0063586,
+                55.6013499
+            ],
+            [
+                37.0060979,
+                55.6019167
+            ],
+            [
+                37.0058673,
+                55.6023823
+            ],
+            [
+                37.0056624,
+                55.6027528
+            ],
+            [
+                37.0055943,
+                55.6028768
+            ],
+            [
+                37.0054957,
+                55.6030287
+            ]
+        ]
+    }
+}

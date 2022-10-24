@@ -1,0 +1,103 @@
+{
+    "place_id": 245542498,
+    "parent_place_id": 297105672,
+    "osm_type": "W",
+    "osm_id": 705223258,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143050",
+    "country_code": "ru",
+    "indexed_date": "2022-07-22T07:22:11+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.9921094,
+            55.6437019
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.9888465,
+                55.646404
+            ],
+            [
+                36.9893092,
+                55.64593
+            ],
+            [
+                36.9902587,
+                55.6451512
+            ],
+            [
+                36.9906342,
+                55.6448432
+            ],
+            [
+                36.991235,
+                55.64438
+            ],
+            [
+                36.9921094,
+                55.6437019
+            ],
+            [
+                36.9927424,
+                55.6431207
+            ],
+            [
+                36.9930428,
+                55.6427604
+            ],
+            [
+                36.9933218,
+                55.6422942
+            ],
+            [
+                36.9934666,
+                55.6418552
+            ],
+            [
+                36.9935471,
+                55.6414132
+            ],
+            [
+                36.9935605,
+                55.6407956
+            ],
+            [
+                36.9935337,
+                55.6404231
+            ],
+            [
+                36.9934465,
+                55.6395996
+            ]
+        ]
+    }
+}

@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using TrackSender.Models;
 using Itinero.LocalGeo;
+using System.Runtime.CompilerServices;
 
 namespace TrackSender
 {
@@ -30,7 +31,7 @@ namespace TrackSender
 
     HttpClient _client = new HttpClient();
    
-    public async Task RunAsync(CancellationToken token, List<Task> tasks)
+    public async Task RunAsync(CancellationToken token, List<Task> tasks, [CallerFilePath] string? callerFilePath = null)
     {
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
       _client.DefaultRequestHeaders.Accept.Clear();
@@ -45,16 +46,23 @@ namespace TrackSender
           new ProductInfoHeaderValue(
             "f1ana.Nominatim.API",
             Assembly.GetExecutingAssembly().GetName().Version.ToString()));
-      //await SaveMoscowToLocalDisk();
-      //await SaveMKadLocalDisk();
 
-      var mkad = await GetMkadPolyline();
+      var callerDir = Path.GetDirectoryName(callerFilePath);
+
+      //await SaveMoscowToLocalDisk();
+
+      //await SaveJsonToLocalDisk("MKAD");
+
+      //await SaveJsonToLocalDisk("CKAD", ckadFolder);
+
+      //var mkad = await GetMkadPolyline();
     }
 
-    static async Task<List<int>> GetMkadOsmIds()
+    static async Task<List<int>> GetOsmIdsFromXml(string resourceFolder)
     {
       var assembly = Assembly.GetExecutingAssembly();
-      var resourceName = $"TrackSender.MKAD.MKAD.xml";
+
+      var resourceName = $"TrackSender.{resourceFolder}.{resourceFolder}.xml";
 
       string s = string.Empty;
       using (Stream stream = assembly.GetManifestResourceStream(resourceName))
@@ -84,15 +92,15 @@ namespace TrackSender
 
       return osmIds;
     }
-    private async Task SaveMKadLocalDisk()
+    private async Task SaveJsonToLocalDisk(string xmlResource, string folder)
     {
       string s;
-      var osmIds = await GetMkadOsmIds();
+      var osmIds = await GetOsmIdsFromXml(xmlResource);
 
       foreach (var osmid in osmIds)
       {
         string filename = $"{osmid}.json";
-        filename = Path.Combine(App.Default.LocalPathMkad, filename);
+        filename = Path.Combine(folder, filename);
 
         if (File.Exists(filename))
         {
@@ -153,35 +161,15 @@ namespace TrackSender
 
     }
 
-    public static async Task<List<FigureGeoDTO>> GetMkadPolyline()
+    public static async Task<List<FigureGeoDTO>> GetRoadPolyline(string resourceFolder)
     {
-      var result = new List<FigureGeoDTO>();
+      var list1 = new List<Geo2DCoordDTO>();
 
-      var figure = new FigureGeoDTO()
-      {
-        name = "MKAD",
-        zoom_level = "13",
-        geometry = new GeometryPolylineDTO()
-        {
-          coord = new List<Geo2DCoordDTO>()
-        }
-      };
-
-      figure.extra_props = new List<ObjExtraPropertyDTO>()
-            {
-              new ObjExtraPropertyDTO()
-              {
-                prop_name = "mkad",
-                str_val = "true"
-              }
-            };
-      result.Add(figure);
-
-      var osmIds = await GetMkadOsmIds();
+      var osmIds = await GetOsmIdsFromXml(resourceFolder);
 
       foreach (var osmid in osmIds)
       {
-        var geoObj = await NominatimProcessor.GetOsmFigureFromDisk(osmid, "MKAD");
+        var geoObj = await NominatimProcessor.GetOsmFigureFromDisk(osmid, resourceFolder);
 
         if (geoObj == null)
         {
@@ -217,21 +205,172 @@ namespace TrackSender
               coord.X = coord.Y;
               coord.Y = temp;
             }
-
-            var geometry = figure.geometry as GeometryPolylineDTO;
-            geometry.coord.AddRange(coords);
+            list1.AddRange(coords);
           }
           else
           {
-            throw new Exception($"Bad MKAD json {osmid}");
+            throw new Exception($"Bad {resourceFolder} json {osmid}");
             // Undefined.
           }
         }
       }
+     
+      var startPoint = list1.FirstOrDefault();
+      list1.RemoveAt(0);
 
+      var commonList = new List<List<Geo2DCoordDTO>>();
+      var list2 = new List<Geo2DCoordDTO>();
+      commonList.Add(list2);
+
+      list2.Add(startPoint);
+
+      while (list1.Count > 0)
+      {
+        var fig = list2.FirstOrDefault();
+        double curMaxLeft = double.MaxValue;
+        var figNearestLeft = FindNearest(fig, list1, out curMaxLeft);
+
+        fig = list2.LastOrDefault();
+        double curMaxRight = double.MaxValue;
+        var figNearestRight = FindNearest(fig, list1, out curMaxRight);
+
+        if (curMaxLeft > 0.1 && curMaxRight > 0.1)
+        {
+          list2 = new List<Geo2DCoordDTO>();
+          commonList.Add(list2);
+        }
+
+        if (curMaxRight < curMaxLeft)
+        {
+          //if (curMaxRight < 0.1)
+          {
+            list2.Add(figNearestRight);
+          }
+          
+          list1.Remove(figNearestRight);
+        }
+        else
+        {
+          //if (curMaxLeft < 0.1)
+          {
+            list2.Insert(0, figNearestLeft);
+          }
+          
+          list1.Remove(figNearestLeft);
+        }        
+      }
+
+      ////
+
+
+      var longList = commonList.MaxBy(l => l.Count);
+      commonList.Remove(longList);
+
+      
+
+      while (commonList.Count > 0)
+      {
+        double curDist = double.MaxValue;
+        double curMax = double.MaxValue;
+        bool bFirst = true;
+
+        List<Geo2DCoordDTO> lListToInsert = null;
+        Geo2DCoordDTO lPosToInsert = null;
+
+        foreach (var listToAnalize in commonList)
+        {
+          var first = listToAnalize.First();
+          var figNearest = FindNearest(first, longList, out curDist);
+
+          if (curMax > curDist)
+          {
+            bFirst = true;
+            curMax = curDist;
+            lListToInsert = listToAnalize;
+            lPosToInsert = figNearest;
+          }
+
+          var last = listToAnalize.Last();
+          figNearest = FindNearest(last, longList, out curDist);
+
+          if (curMax > curDist)
+          {
+            bFirst = false;
+            curMax = curDist;
+            lListToInsert = listToAnalize;
+            lPosToInsert = figNearest;
+          }
+        }
+
+        if (bFirst)
+        {
+          longList.InsertRange(longList.IndexOf(lPosToInsert) + 1, lListToInsert);
+        }
+        else
+        {
+          longList.InsertRange(longList.IndexOf(lPosToInsert) - 1, lListToInsert);
+        }
+
+        commonList.Remove(lListToInsert);
+      }
+
+
+      var result = new List<FigureGeoDTO>();
+
+      var figure = new FigureGeoDTO()
+      {
+        name = resourceFolder,
+        //zoom_level = "13",
+        geometry = new GeometryPolylineDTO()
+        {
+          coord = longList
+          //new List<Geo2DCoordDTO>()
+        }
+      };
+
+      figure.extra_props = new List<ObjExtraPropertyDTO>()
+            {
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = resourceFolder,
+                str_val = "true"
+              }
+            };
+      result.Add(figure);
       return result;
     }
 
+    static Geo2DCoordDTO FindNearest(
+      Geo2DCoordDTO fig,
+      List<Geo2DCoordDTO> list,
+      out double curMax)
+    {
+      Geo2DCoordDTO retVal = null;
+      Geo2DCoordDTO geo1 = null;
+
+
+      geo1 = fig;
+
+      curMax = double.MaxValue;
+
+      foreach (var f in list)
+      {
+        Geo2DCoordDTO geo2 = f;
+          
+        var dx = Math.Abs(geo1.X - geo2.X);
+        var dy = Math.Abs(geo1.Y - geo2.Y);
+
+        var curD = Math.Sqrt(dx * dx + dy * dy);
+
+        if (curD < curMax)
+        {
+          curMax = curD;
+          retVal = f;
+        }
+      }
+
+      return retVal;
+    }
     public static async Task<Root> GetOsmFigureFromDisk(int osmid, string folder)
     {
       //string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";

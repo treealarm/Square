@@ -1,0 +1,90 @@
+{
+    "place_id": 168518324,
+    "parent_place_id": 237059922,
+    "osm_type": "W",
+    "osm_id": 256415710,
+    "category": "highway",
+    "type": "proposed",
+    "admin_level": 15,
+    "localname": "проектируемая ЦКАД",
+    "names": {
+        "name": "проектируемая ЦКАД",
+        "name:ru": "проектируемая ЦКАД",
+        "ref": "А-113"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": null,
+    "country_code": "ru",
+    "indexed_date": "2022-10-07T15:17:30+00:00",
+    "importance": 0,
+    "calculated_importance": 0,
+    "extratags": {
+        "oneway": "yes",
+        "proposed": "motorway"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 30,
+    "rank_search": 30,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.4395076,
+            55.9816589
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.4453876,
+                55.9809428
+            ],
+            [
+                36.4426134,
+                55.9811748
+            ],
+            [
+                36.4414403,
+                55.9812931
+            ],
+            [
+                36.4406807,
+                55.9814276
+            ],
+            [
+                36.4395076,
+                55.9816589
+            ],
+            [
+                36.4336614,
+                55.9828585
+            ],
+            [
+                36.4331326,
+                55.9830898
+            ],
+            [
+                36.4327864,
+                55.9833373
+            ],
+            [
+                36.4325268,
+                55.9836331
+            ],
+            [
+                36.4324595,
+                55.9837891
+            ],
+            [
+                36.432373,
+                55.9842679
+            ],
+            [
+                36.4319464,
+                55.9858272
+            ]
+        ]
+    }
+}

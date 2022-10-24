@@ -1,0 +1,84 @@
+{
+    "place_id": 264017085,
+    "parent_place_id": 297381597,
+    "osm_type": "W",
+    "osm_id": 814643005,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143035",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:23+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.8820164,
+            55.700701
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.8814818,
+                55.7019957
+            ],
+            [
+                36.8817177,
+                55.7016568
+            ],
+            [
+                36.88186,
+                55.7013775
+            ],
+            [
+                36.8819685,
+                55.7010681
+            ],
+            [
+                36.8820164,
+                55.700701
+            ],
+            [
+                36.8820005,
+                55.7003904
+            ],
+            [
+                36.8819342,
+                55.7000648
+            ],
+            [
+                36.8818335,
+                55.6997811
+            ],
+            [
+                36.8816823,
+                55.6994791
+            ]
+        ]
+    }
+}

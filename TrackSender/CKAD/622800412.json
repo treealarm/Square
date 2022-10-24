@@ -1,0 +1,88 @@
+{
+    "place_id": 233048214,
+    "parent_place_id": 297908065,
+    "osm_type": "W",
+    "osm_id": 622800412,
+    "category": "highway",
+    "type": "motorway",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "142402",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:13:57+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "embankment": "yes",
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:motorway",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "yes"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            38.4692395,
+            55.9206423
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                38.4629043,
+                55.9217905
+            ],
+            [
+                38.4641969,
+                55.9214539
+            ],
+            [
+                38.4642076,
+                55.9214629
+            ],
+            [
+                38.4657335,
+                55.9211436
+            ],
+            [
+                38.4675014,
+                55.9208557
+            ],
+            [
+                38.4692395,
+                55.9206423
+            ],
+            [
+                38.4707737,
+                55.920528
+            ],
+            [
+                38.4723669,
+                55.9204649
+            ],
+            [
+                38.4739762,
+                55.9204709
+            ],
+            [
+                38.4749201,
+                55.9205119
+            ]
+        ]
+    }
+}

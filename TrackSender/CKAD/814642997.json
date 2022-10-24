@@ -1,0 +1,99 @@
+{
+    "place_id": 262796615,
+    "parent_place_id": 297105672,
+    "osm_type": "W",
+    "osm_id": 814642997,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143054",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:23+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.934886,
+            55.6662722
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.8950027,
+                55.6804215
+            ],
+            [
+                36.8957447,
+                55.679791
+            ],
+            [
+                36.8974108,
+                55.6785423
+            ],
+            [
+                36.8990799,
+                55.6773655
+            ],
+            [
+                36.9014817,
+                55.676038
+            ],
+            [
+                36.9041997,
+                55.6747747
+            ],
+            [
+                36.9060543,
+                55.6740793
+            ],
+            [
+                36.9079437,
+                55.6734761
+            ],
+            [
+                36.934886,
+                55.6662722
+            ],
+            [
+                36.9462754,
+                55.6632163
+            ],
+            [
+                36.9522025,
+                55.6617809
+            ],
+            [
+                36.957141,
+                55.6606666
+            ],
+            [
+                36.9593577,
+                55.6601146
+            ]
+        ]
+    }
+}

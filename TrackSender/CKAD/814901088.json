@@ -1,0 +1,91 @@
+{
+    "place_id": 264019259,
+    "parent_place_id": 297105672,
+    "osm_type": "W",
+    "osm_id": 814901088,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143185",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:23+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.8968418,
+            55.7603774
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.9218943,
+                55.791912
+            ],
+            [
+                36.9218355,
+                55.7914202
+            ],
+            [
+                36.92168,
+                55.7905184
+            ],
+            [
+                36.9215351,
+                55.7900147
+            ],
+            [
+                36.9212615,
+                55.7892818
+            ],
+            [
+                36.9209665,
+                55.7887329
+            ],
+            [
+                36.9205201,
+                55.7880679
+            ],
+            [
+                36.8968418,
+                55.7603774
+            ],
+            [
+                36.8934006,
+                55.7562768
+            ],
+            [
+                36.8883918,
+                55.7504491
+            ],
+            [
+                36.8876476,
+                55.7496635
+            ]
+        ]
+    }
+}

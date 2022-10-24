@@ -43,16 +43,15 @@ namespace TrackSender
       //}
     }
 
-    private static Random random = new Random();
-
     double GetRandomDouble(double min, double max)
     {
       return min + (_random.NextDouble() * (max - min));
     }
 
     public async Task RunAsync(CancellationToken token, List<Task> tasks)
-    {      
-      var task = GetOrBuildFiguresOnMkadAsync(token, tasks);
+    {
+      await CreateRoad($"CKAD");
+      var task = GetOrBuildFiguresOnMkadAsync("MKAD", token, tasks);
       tasks.Add(task);
     }
 
@@ -123,9 +122,12 @@ namespace TrackSender
       }
     }
 
-    private async Task GetOrBuildFiguresOnMkadAsync(CancellationToken token, List<Task> tasks)
+    private async Task GetOrBuildFiguresOnMkadAsync(
+      string resFolder,
+      CancellationToken token,
+      List<Task> tasks)
     {
-      var tempFigure = await NominatimProcessor.GetMkadPolyline();
+      var tempFigure = await NominatimProcessor.GetRoadPolyline(resFolder);
 
       if (tempFigure == null)
       {
@@ -140,7 +142,6 @@ namespace TrackSender
         return;
       }
 
-      Random random = new Random();
       var geometry_mkad = mkadPolyline.geometry as GeometryPolylineDTO;
 
       int maxPoint = geometry_mkad.coord.Count;
@@ -149,6 +150,8 @@ namespace TrackSender
       var max_circles = 10000;
       var start_circles = 0;
       var figures = await _testClient.GetByParams("track_name", "mkad", string.Empty, max_circles);
+
+      int rnd = 0;
 
       if (figures == null || figures.figs == null || figures.figs.Count < max_circles)
       {
@@ -163,10 +166,16 @@ namespace TrackSender
         for (int i = start_circles; i < max_circles; i++)
         {
           var color =
-            $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
+            $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
 
           var obj_name = $"test_track{i}";
-          var rnd = random.Next(0, maxPoint);
+          //rnd = _random.Next(0, maxPoint);
+          rnd++;
+
+          if (rnd >= maxPoint)
+          {
+            rnd = 0;
+          }
 
           var extra_props = new List<ObjExtraPropertyDTO>()
           {
@@ -191,6 +200,7 @@ namespace TrackSender
           
           var y = geometry_mkad.coord[rnd].Y;
           var x = geometry_mkad.coord[rnd].X;
+
           var start =
                 new GeometryCircleDTO(
                   new Geo2DCoordDTO() { y, x }
@@ -199,7 +209,7 @@ namespace TrackSender
             var figure = new FigureGeoDTO()
             {
               name = obj_name,
-              radius = 150,
+              radius = 50,
               zoom_level = "13",
               geometry = start,
               extra_props = extra_props
@@ -223,14 +233,15 @@ namespace TrackSender
         var geometry = figure.geometry as GeometryCircleDTO;
 
         var pointOnMkad = geometry_mkad.coord
-          .Where(c => (c.X - geometry.coord.X) < 0.0001 && (c.Y - geometry.coord.Y) < 0.0001)
+          .Where(c => Math.Abs(c.X - geometry.coord.X) < 0.00001 
+          && Math.Abs(c.Y - geometry.coord.Y) < 0.00001)
           .FirstOrDefault();
 
         if (pointOnMkad == null)
         {
           dicShifter[figure.id] = new CircleShifter()
           {
-            CurIndex = random.Next(0, maxPoint)            
+            CurIndex = _random.Next(0, maxPoint)            
           };
         }
         else 
@@ -241,7 +252,7 @@ namespace TrackSender
           };
         }
 
-        dicShifter[figure.id].ShiftSteps = random.Next(-2, 3);
+        dicShifter[figure.id].ShiftSteps = _random.Next(-2, 3);
 
         if (dicShifter[figure.id].ShiftSteps == 0)
         {
@@ -348,14 +359,14 @@ namespace TrackSender
     }
 
 
-    public async Task CreateMkad()
+    public async Task CreateRoad(string xmlFolderName)
     {
-      var mkad = await _testClient.GetByParams("mkad", "true", string.Empty,  1);
+      var mkad = await _testClient.GetByParams(xmlFolderName, "true", string.Empty,  1);
 
       if (mkad == null || mkad.IsEmpty())
       {
         mkad = new FiguresDTO();
-        mkad.figs = await NominatimProcessor.GetMkadPolyline();
+        mkad.figs = await NominatimProcessor.GetRoadPolyline(xmlFolderName);
         mkad = await _testClient.UpdateFiguresAsync(mkad);
       }
     }

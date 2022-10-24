@@ -1,0 +1,99 @@
+{
+    "place_id": 259105346,
+    "parent_place_id": 500693,
+    "osm_type": "W",
+    "osm_id": 789054657,
+    "category": "highway",
+    "type": "motorway",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141273",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:13:52+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:motorway",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "yes"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            38.0279961,
+            56.0838808
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                38.0384786,
+                56.0803276
+            ],
+            [
+                38.0368487,
+                56.0811132
+            ],
+            [
+                38.0352056,
+                56.0818874
+            ],
+            [
+                38.0336903,
+                56.0824792
+            ],
+            [
+                38.0321149,
+                56.0829746
+            ],
+            [
+                38.0306771,
+                56.0833423
+            ],
+            [
+                38.0293884,
+                56.0836286
+            ],
+            [
+                38.0279961,
+                56.0838808
+            ],
+            [
+                38.0264207,
+                56.0840687
+            ],
+            [
+                38.0251691,
+                56.0841834
+            ],
+            [
+                38.0234466,
+                56.0842571
+            ],
+            [
+                38.021724,
+                56.0842323
+            ],
+            [
+                38.0160293,
+                56.0839657
+            ]
+        ]
+    }
+}

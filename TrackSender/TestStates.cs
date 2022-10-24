@@ -51,7 +51,7 @@ namespace TrackSender
       {
         name = parentCircle.name + _random.Next(0, 300),
         radius = _random.Next(50, 100),
-        zoom_level = "13",
+        zoom_level = "14",
         geometry = start
       };
 
@@ -323,19 +323,30 @@ namespace TrackSender
     {
       string start_id = string.Empty;
 
- 
+      var total_count = 0;
+      var start_time = DateTime.Now;
 
       while (!token.IsCancellationRequested)
       {
         var figures = await _testClient.GetByParams("moscow_state", "true", start_id, 10000);
 
         var count = figures.figs.Count;
+        total_count += count;
 
         if (count == 0)
-        {
+        {          
           start_id = string.Empty;
+
+          var end_time = DateTime.Now;
+          var delay1 = (end_time - start_time).TotalSeconds;
+          Console.WriteLine($"");
+          Console.WriteLine($"UpdateStates Speed: {total_count / delay1}");
+          Console.WriteLine($"");
+
           continue;
         }
+
+        
 
         start_id = figures.figs.Last().id;
 
@@ -384,8 +395,8 @@ namespace TrackSender
         var t1 = DateTime.Now;
         await _testClient.UpdateStates(states);
         var t2 = DateTime.Now;
-
-        Console.WriteLine($"UpdateStates {count}: ->{(t2-t1).TotalSeconds}<-");
+        var delay = (t2 - t1).TotalSeconds;
+        Console.WriteLine($"UpdateStates {count}: ->{delay}<-");
       }
       
     }

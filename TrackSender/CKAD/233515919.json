@@ -1,0 +1,87 @@
+{
+    "place_id": 162533181,
+    "parent_place_id": 297882051,
+    "osm_type": "W",
+    "osm_id": 233515919,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141533",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:23+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "yes"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.1762958,
+            56.0678805
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.1914783,
+                56.0775251
+            ],
+            [
+                37.1908492,
+                56.0771062
+            ],
+            [
+                37.1902707,
+                56.076721
+            ],
+            [
+                37.1876509,
+                56.0750791
+            ],
+            [
+                37.1819863,
+                56.0714882
+            ],
+            [
+                37.1762958,
+                56.0678805
+            ],
+            [
+                37.1741599,
+                56.0667656
+            ],
+            [
+                37.1725201,
+                56.0661785
+            ],
+            [
+                37.170666,
+                56.0656325
+            ],
+            [
+                37.1631355,
+                56.0639746
+            ]
+        ]
+    }
+}

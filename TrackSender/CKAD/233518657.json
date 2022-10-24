@@ -1,0 +1,72 @@
+{
+    "place_id": 162734054,
+    "parent_place_id": 272372115,
+    "osm_type": "W",
+    "osm_id": 233518657,
+    "category": "highway",
+    "type": "proposed",
+    "admin_level": 15,
+    "localname": "А-113",
+    "names": {
+        "ref": "А-113"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141662",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T17:10:12+00:00",
+    "importance": 0,
+    "calculated_importance": 0,
+    "extratags": {
+        "oneway": "yes",
+        "proposed": "motorway_link"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 30,
+    "rank_search": 30,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.8060612,
+            56.2912051
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.8005486,
+                56.2894716
+            ],
+            [
+                36.8017212,
+                56.2905886
+            ],
+            [
+                36.8028393,
+                56.2910586
+            ],
+            [
+                36.8038979,
+                56.2911945
+            ],
+            [
+                36.8060612,
+                56.2912051
+            ],
+            [
+                36.8083704,
+                56.2912165
+            ],
+            [
+                36.8096671,
+                56.2910256
+            ],
+            [
+                36.8107311,
+                56.2906818
+            ]
+        ]
+    }
+}

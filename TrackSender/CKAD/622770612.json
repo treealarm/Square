@@ -1,0 +1,87 @@
+{
+    "place_id": 232206631,
+    "parent_place_id": 297639913,
+    "osm_type": "W",
+    "osm_id": 622770612,
+    "category": "highway",
+    "type": "motorway",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141214",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:13:57+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:motorway",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "yes"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.9900199,
+            56.0905319
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.9748437,
+                56.0991233
+            ],
+            [
+                37.9775423,
+                56.0974385
+            ],
+            [
+                37.9819894,
+                56.0949279
+            ],
+            [
+                37.9900199,
+                56.0905319
+            ],
+            [
+                37.993319,
+                56.0887093
+            ],
+            [
+                37.99591,
+                56.0873056
+            ],
+            [
+                37.9977071,
+                56.0864975
+            ],
+            [
+                37.9991179,
+                56.0859767
+            ],
+            [
+                38.0012208,
+                56.0853302
+            ],
+            [
+                38.0030198,
+                56.0848769
+            ]
+        ]
+    }
+}

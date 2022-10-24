@@ -1,0 +1,95 @@
+{
+    "place_id": 231956808,
+    "parent_place_id": 297882051,
+    "osm_type": "W",
+    "osm_id": 620573496,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141533",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:19+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "yes"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.1821465,
+            56.0713871
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.163229,
+                56.0638845
+            ],
+            [
+                37.1655939,
+                56.0643576
+            ],
+            [
+                37.1708437,
+                56.065548
+            ],
+            [
+                37.1726489,
+                56.0660826
+            ],
+            [
+                37.1742421,
+                56.0666846
+            ],
+            [
+                37.1763798,
+                56.0677641
+            ],
+            [
+                37.1821465,
+                56.0713871
+            ],
+            [
+                37.1878623,
+                56.0749779
+            ],
+            [
+                37.1904404,
+                56.0766055
+            ],
+            [
+                37.192068,
+                56.0776556
+            ],
+            [
+                37.1952021,
+                56.0796925
+            ],
+            [
+                37.1965341,
+                56.080558
+            ]
+        ]
+    }
+}

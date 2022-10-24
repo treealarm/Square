@@ -1,0 +1,66 @@
+{
+    "place_id": 163512868,
+    "parent_place_id": 272372115,
+    "osm_type": "W",
+    "osm_id": 233518665,
+    "category": "highway",
+    "type": "proposed",
+    "admin_level": 15,
+    "localname": "проектируемая ЦКАД",
+    "names": {
+        "name": "проектируемая ЦКАД",
+        "name:ru": "проектируемая ЦКАД",
+        "ref": "А-113"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "141662",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T17:10:17+00:00",
+    "importance": 0,
+    "calculated_importance": 0,
+    "extratags": {
+        "oneway": "yes",
+        "proposed": "motorway_link"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 30,
+    "rank_search": 30,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.808316,
+            56.2939613
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.8105185,
+                56.29091
+            ],
+            [
+                36.8096352,
+                56.2917909
+            ],
+            [
+                36.808316,
+                56.2939613
+            ],
+            [
+                36.8084048,
+                56.2945273
+            ],
+            [
+                36.8089803,
+                56.2951659
+            ],
+            [
+                36.8113933,
+                56.2959341
+            ]
+        ]
+    }
+}

@@ -1,0 +1,95 @@
+{
+    "place_id": 118706731,
+    "parent_place_id": 345174428,
+    "osm_type": "W",
+    "osm_id": 46984135,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143541",
+    "country_code": "ru",
+    "indexed_date": "2022-10-07T15:17:16+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.9185519,
+            55.8122464
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.9179467,
+                55.8227889
+            ],
+            [
+                36.9176727,
+                55.8219172
+            ],
+            [
+                36.9174636,
+                55.8211729
+            ],
+            [
+                36.917375,
+                55.8206199
+            ],
+            [
+                36.9173402,
+                55.8202597
+            ],
+            [
+                36.9173348,
+                55.8196013
+            ],
+            [
+                36.9173643,
+                55.8192758
+            ],
+            [
+                36.9176403,
+                55.8176532
+            ],
+            [
+                36.9177112,
+                55.8172472
+            ],
+            [
+                36.9185519,
+                55.8122464
+            ],
+            [
+                36.920327,
+                55.8013135
+            ],
+            [
+                36.9203752,
+                55.8010191
+            ]
+        ]
+    }
+}

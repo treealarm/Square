@@ -1,0 +1,73 @@
+{
+    "place_id": 262203632,
+    "parent_place_id": 297779867,
+    "osm_type": "W",
+    "osm_id": 808562630,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143397",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:27+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "destination:ref": "A-113",
+        "destination:ref:to": "M-2;M-4",
+        "destination:street": "\"Крым\";\"Дон\"",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.1101481,
+            55.4550151
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.1096363,
+                55.4558995
+            ],
+            [
+                37.1098637,
+                55.4556007
+            ],
+            [
+                37.1100177,
+                55.4553264
+            ],
+            [
+                37.1101481,
+                55.4550151
+            ],
+            [
+                37.1102392,
+                55.4546593
+            ],
+            [
+                37.1103895,
+                55.4543429
+            ]
+        ]
+    }
+}

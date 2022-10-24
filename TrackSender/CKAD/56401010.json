@@ -1,0 +1,98 @@
+{
+    "place_id": 119760859,
+    "parent_place_id": 297105672,
+    "osm_type": "W",
+    "osm_id": 56401010,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143041",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:18+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.0048177,
+            55.6065025
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.0069791,
+                55.6080425
+            ],
+            [
+                37.0059421,
+                55.6073469
+            ],
+            [
+                37.0051557,
+                55.6068055
+            ],
+            [
+                37.0048177,
+                55.6065025
+            ],
+            [
+                37.0046246,
+                55.6062388
+            ],
+            [
+                37.0044529,
+                55.6059449
+            ],
+            [
+                37.0043671,
+                55.6057328
+            ],
+            [
+                37.0042813,
+                55.6052055
+            ],
+            [
+                37.0043089,
+                55.6048557
+            ],
+            [
+                37.0043339,
+                55.6046915
+            ],
+            [
+                37.0044138,
+                55.6044562
+            ],
+            [
+                37.0045386,
+                55.6042308
+            ],
+            [
+                37.0048097,
+                55.6038305
+            ]
+        ]
+    }
+}

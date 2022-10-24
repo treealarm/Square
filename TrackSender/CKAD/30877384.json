@@ -1,0 +1,73 @@
+{
+    "place_id": 113060163,
+    "parent_place_id": 297592007,
+    "osm_type": "W",
+    "osm_id": 30877384,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Ямская улица",
+    "names": {
+        "name": "Ямская улица",
+        "name:ru": "Ямская улица",
+        "ref": "46Н-07188"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143050",
+    "country_code": "ru",
+    "indexed_date": "2022-08-15T14:40:22+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.0007548,
+            55.6381609
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.0037314,
+                55.6367537
+            ],
+            [
+                37.0035426,
+                55.6369141
+            ],
+            [
+                37.0032719,
+                55.6370864
+            ],
+            [
+                37.0031561,
+                55.6371479
+            ],
+            [
+                37.0030289,
+                55.6372155
+            ],
+            [
+                37.0007548,
+                55.6381609
+            ],
+            [
+                36.9992468,
+                55.6388685
+            ]
+        ]
+    }
+}

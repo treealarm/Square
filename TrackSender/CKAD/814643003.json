@@ -1,0 +1,95 @@
+{
+    "place_id": 262846959,
+    "parent_place_id": 297381597,
+    "osm_type": "W",
+    "osm_id": 814643003,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143035",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:23+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.8808482,
+            55.6938778
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.8816823,
+                55.6994791
+            ],
+            [
+                36.8813288,
+                55.698915
+            ],
+            [
+                36.8807941,
+                55.6982258
+            ],
+            [
+                36.8803617,
+                55.6974291
+            ],
+            [
+                36.8801507,
+                55.696778
+            ],
+            [
+                36.8800655,
+                55.6961568
+            ],
+            [
+                36.880154,
+                55.6954337
+            ],
+            [
+                36.8804139,
+                55.6946462
+            ],
+            [
+                36.8808482,
+                55.6938778
+            ],
+            [
+                36.8814661,
+                55.6931626
+            ],
+            [
+                36.8821862,
+                55.6924401
+            ],
+            [
+                36.8848929,
+                55.6899325
+            ]
+        ]
+    }
+}

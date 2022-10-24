@@ -1,0 +1,104 @@
+{
+    "place_id": 261961150,
+    "parent_place_id": 297779867,
+    "osm_type": "W",
+    "osm_id": 808562629,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143397",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:27+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "destination:ref": "A-113",
+        "destination:ref:to": "M-2;M-4",
+        "destination:street": "\"Крым\";\"Дон\"",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.1136671,
+            55.4535063
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.1103895,
+                55.4543429
+            ],
+            [
+                37.1106791,
+                55.4540569
+            ],
+            [
+                37.1110815,
+                55.4537923
+            ],
+            [
+                37.1114087,
+                55.4536402
+            ],
+            [
+                37.1118057,
+                55.4535155
+            ],
+            [
+                37.1122402,
+                55.4534303
+            ],
+            [
+                37.1126908,
+                55.4534029
+            ],
+            [
+                37.1131575,
+                55.4534303
+            ],
+            [
+                37.1136671,
+                55.4535063
+            ],
+            [
+                37.1145952,
+                55.4536736
+            ],
+            [
+                37.115019,
+                55.4537193
+            ],
+            [
+                37.1155393,
+                55.4537132
+            ],
+            [
+                37.1159846,
+                55.4536615
+            ],
+            [
+                37.1169339,
+                55.4535122
+            ]
+        ]
+    }
+}

@@ -1,0 +1,99 @@
+{
+    "place_id": 265387002,
+    "parent_place_id": 297105672,
+    "osm_type": "W",
+    "osm_id": 819448770,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Центральная кольцевая автомобильная дорога",
+    "names": {
+        "name": "Центральная кольцевая автомобильная дорога",
+        "name:ru": "Центральная кольцевая автомобильная дорога",
+        "ref": "А-113",
+        "short_name": "ЦКАД"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143185",
+    "country_code": "ru",
+    "indexed_date": "2022-07-16T07:14:17+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "2",
+        "lit": "yes",
+        "maxspeed": "RU:rural",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "toll": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            36.9053078,
+            55.7700526
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                36.8879378,
+                55.7496847
+            ],
+            [
+                36.8885761,
+                55.7504063
+            ],
+            [
+                36.8935543,
+                55.7562448
+            ],
+            [
+                36.8970305,
+                55.7603741
+            ],
+            [
+                36.9053078,
+                55.7700526
+            ],
+            [
+                36.9204086,
+                55.7876637
+            ],
+            [
+                36.9208217,
+                55.7882202
+            ],
+            [
+                36.9211382,
+                55.7887148
+            ],
+            [
+                36.9214245,
+                55.78926
+            ],
+            [
+                36.9217122,
+                55.7899876
+            ],
+            [
+                36.9218619,
+                55.7905077
+            ],
+            [
+                36.9220384,
+                55.7914143
+            ],
+            [
+                36.9220823,
+                55.7919148
+            ]
+        ]
+    }
+}

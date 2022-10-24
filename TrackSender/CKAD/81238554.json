@@ -1,0 +1,67 @@
+{
+    "place_id": 123528626,
+    "parent_place_id": 298300582,
+    "osm_type": "W",
+    "osm_id": 81238554,
+    "category": "highway",
+    "type": "trunk",
+    "admin_level": 15,
+    "localname": "Петровское шоссе",
+    "names": {
+        "name": "Петровское шоссе",
+        "name:ru": "Петровское шоссе",
+        "ref": "А-113"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "143051",
+    "country_code": "ru",
+    "indexed_date": "2022-08-15T14:40:22+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "3",
+        "lanes:backward": "2",
+        "lanes:forward": "1",
+        "lit": "yes",
+        "maxspeed": "60",
+        "surface": "asphalt",
+        "turn:lanes:backward": "left|left;through;right"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.0212992,
+            55.629356
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.0213538,
+                55.6296911
+            ],
+            [
+                37.0213298,
+                55.6295232
+            ],
+            [
+                37.0213213,
+                55.6294767
+            ],
+            [
+                37.0212992,
+                55.629356
+            ],
+            [
+                37.0212525,
+                55.6291383
+            ]
+        ]
+    }
+}
