@@ -28,9 +28,9 @@ namespace TrackSender
     }
     public async Task<FiguresDTO> UpdateTracksAsync(FiguresDTO figure, string action)
     {
-      var str = JsonSerializer.Serialize(figure);
-
-      HttpResponseMessage response =
+      try
+      {
+        HttpResponseMessage response =
         await client.PostAsJsonAsync(
           $"api/Tracks/{action}", figure);
 
@@ -39,8 +39,7 @@ namespace TrackSender
       // Deserialize the updated product from the response body.
       var s = await response.Content.ReadAsStringAsync();
 
-      try
-      {
+      
         if (action == "AddTracks")
         {
           FiguresDTO json = JsonSerializer.Deserialize<FiguresDTO>(s);
@@ -49,12 +48,12 @@ namespace TrackSender
         else
         {
           Dictionary<string, TimeSpan> json = JsonSerializer.Deserialize<Dictionary<string, TimeSpan>>(s);
-          Console.WriteLine($"UpdateTrack:");
+          Console.WriteLine($"---------------------------------->");
           foreach (var pair in json)
           {
             Console.WriteLine($"{pair.Key}-> {(int)pair.Value.TotalMilliseconds} [ms]");
           }
-          Console.WriteLine($"-------");
+          Console.WriteLine($"<----------------------------------");
         }
       }
       catch (Exception ex)

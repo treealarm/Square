@@ -4,7 +4,7 @@ import { useDispatch, useSelector} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
-import { ApplicationState } from '../store';
+import { ApiDefaultMaxCountResult, ApplicationState } from '../store';
 import { BoundBox, getExtraProp, ICircle, ICommonFig, ICoord, IObjProps, IPointCoord, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 
 
@@ -144,17 +144,22 @@ export function LocationMarkers() {
 
   const dispatch = useDispatch();
   const parentMap = useMap();
-  
-  useEffect(() => {
-    console.log('ComponentDidMount LocationMarkers');
-    var bounds: L.LatLngBounds;
-    bounds = parentMap.getBounds();
+
+  function RequestMarkersByBox(bounds: L.LatLngBounds) {
+    if (bounds == null) {
+      bounds = parentMap.getBounds();
+    }
+    
     var boundBox: BoundBox = {
       wn: [bounds.getWest(), bounds.getNorth()],
       es: [bounds.getEast(), bounds.getSouth()],
       zoom: parentMap.getZoom()
     };
     dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
+  }
+  useEffect(() => {
+    console.log('ComponentDidMount LocationMarkers');
+    RequestMarkersByBox(null);
   }, []);
 
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
@@ -187,15 +192,9 @@ export function LocationMarkers() {
        moveend(e: LeafletEvent) {
          var bounds: L.LatLngBounds;
          bounds = e.target.getBounds();
-         var boundBox: BoundBox = {
-           wn: [bounds.getWest(), bounds.getNorth()],
-           es: [bounds.getEast(), bounds.getSouth()],
-           zoom: e.target.getZoom()
-         };
 
-         dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
-
-         console.log('Locat  ionMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
+         RequestMarkersByBox(bounds);
+         console.log('LocationMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
        },
         mousemove(e: L.LeafletMouseEvent) {
 
@@ -210,11 +209,18 @@ export function LocationMarkers() {
       dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
     }, [])
 
-  
   useEffect(
     () => {
       dispatch(GuiStore.actionCreators.requestTreeUpdate());
     }, [isChanging]);
+  
+  useEffect(
+    () => {
+      if (markers?.figs?.length > 10000) {
+        // Clear TODO time limit
+        RequestMarkersByBox(null);
+      }      
+    }, [markers]);
 
   const getColor = useCallback(
     (marker: IObjProps) => {

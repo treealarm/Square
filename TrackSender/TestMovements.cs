@@ -22,7 +22,7 @@ namespace TrackSender
     TestClient _testClient = new TestClient();
     //TrackRouter _router;
     FiguresDTO _figures = new FiguresDTO();
-    Random _random = new Random();   
+    Random _random = new Random();
 
     public TestMovements()
     {
@@ -50,9 +50,12 @@ namespace TrackSender
 
     public async Task RunAsync(CancellationToken token, List<Task> tasks)
     {
-      await CreateRoad($"CKAD");
-      var task = GetOrBuildFiguresOnMkadAsync("MKAD", token, tasks);
+      //await CreateRoad($"CKAD");
+      var task = GetOrBuildFiguresOnRoadAsync("MKAD", token, 10000);
       tasks.Add(task);
+
+      var task1 = GetOrBuildFiguresOnRoadAsync("CKAD", token, 1000000);
+      tasks.Add(task1);
     }
 
     private async Task GetOrBuildFiguresAsync()
@@ -122,67 +125,47 @@ namespace TrackSender
       }
     }
 
-    private async Task GetOrBuildFiguresOnMkadAsync(
-      string resFolder,
-      CancellationToken token,
-      List<Task> tasks)
+    private async Task BuildMachines(string resFolder,
+      GeometryPolylineDTO geometry_mkad,
+      int maxMachines
+      )
     {
-      var tempFigure = await NominatimProcessor.GetRoadPolyline(resFolder);
-
-      if (tempFigure == null)
-      {
-        return;
-      }
-      FigureGeoDTO mkadPolyline = null;
-
-      mkadPolyline = tempFigure.FirstOrDefault();
-
-      if (mkadPolyline ==  null)
-      {
-        return;
-      }
-
-      var geometry_mkad = mkadPolyline.geometry as GeometryPolylineDTO;
-
       int maxPoint = geometry_mkad.coord.Count;
 
-      
       var max_circles = 10000;
-      var start_circles = 0;
-      var figures = await _testClient.GetByParams("track_name", "mkad", string.Empty, max_circles);
+
+      string start_id = string.Empty;
+
+      var figures = await _testClient.GetByParams("track_name", resFolder, start_id, max_circles);
 
       int rnd = 0;
 
-      if (figures == null || figures.figs == null || figures.figs.Count < max_circles)
+      if (figures == null || figures.figs == null || figures.IsEmpty())
       {
-        if (figures != null && figures.figs != null)
+        for (int m = 0; m < maxMachines; m+= max_circles)
         {
-          start_circles = figures.figs.Count;
-        }
+          figures = new FiguresDTO();
+          figures.figs = new List<FigureGeoDTO>();
 
-        figures = new FiguresDTO();
-        figures.figs = new List<FigureGeoDTO>();
-
-        for (int i = start_circles; i < max_circles; i++)
-        {
-          var color =
-            $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
-
-          var obj_name = $"test_track{i}";
-          //rnd = _random.Next(0, maxPoint);
-          rnd++;
-
-          if (rnd >= maxPoint)
+          for (int i = 0; i < max_circles; i++)
           {
-            rnd = 0;
-          }
+            var color =
+              $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
 
-          var extra_props = new List<ObjExtraPropertyDTO>()
+            var obj_name = $"{resFolder}{i}";
+            rnd++;
+
+            if (rnd >= maxPoint)
+            {
+              rnd = 0;
+            }
+
+            var extra_props = new List<ObjExtraPropertyDTO>()
           {
             new ObjExtraPropertyDTO()
             {
               prop_name = "track_name",
-              str_val = $"mkad"
+              str_val = $"{resFolder}"
             },
             new ObjExtraPropertyDTO()
             {
@@ -197,73 +180,107 @@ namespace TrackSender
                 str_val = color
               }
           };
-          
-          var y = geometry_mkad.coord[rnd].Y;
-          var x = geometry_mkad.coord[rnd].X;
 
-          var start =
-                new GeometryCircleDTO(
-                  new Geo2DCoordDTO() { y, x }
-                  );
+            var y = geometry_mkad.coord[rnd].Y;
+            var x = geometry_mkad.coord[rnd].X;
+
+            var start =
+                  new GeometryCircleDTO(
+                    new Geo2DCoordDTO() { y, x }
+                    );
 
             var figure = new FigureGeoDTO()
             {
               name = obj_name,
               radius = 50,
-              zoom_level = "13",
+              zoom_level = i == 0? "12":"13",
               geometry = start,
               extra_props = extra_props
             };
             figures.figs.Add(figure);
           }
-        figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
+          figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
+        }        
       }
+    }
+    private async Task GetOrBuildFiguresOnRoadAsync(
+      string resFolder,
+      CancellationToken token,
+      int maxMachines)
+    {
+      var tempFigure = await NominatimProcessor.GetRoadPolyline(resFolder);
 
-      figures = await _testClient.GetByParams("track_name", "mkad", string.Empty, max_circles);
+      if (tempFigure == null)
+      {
+        return;
+      }
+      FigureGeoDTO mkadPolyline = null;
 
-      if (figures == null || figures.figs.Count == 0)
+      mkadPolyline = tempFigure.FirstOrDefault();
+
+      if (mkadPolyline == null)
       {
         return;
       }
 
-      Dictionary<string, CircleShifter> dicShifter = new Dictionary<string, CircleShifter>();
+      var geometry_mkad = mkadPolyline.geometry as GeometryPolylineDTO;
+      int maxPoint = geometry_mkad.coord.Count;
 
-      foreach (var figure in figures.figs)
-      {
-        var geometry = figure.geometry as GeometryCircleDTO;
 
-        var pointOnMkad = geometry_mkad.coord
-          .Where(c => Math.Abs(c.X - geometry.coord.X) < 0.00001 
-          && Math.Abs(c.Y - geometry.coord.Y) < 0.00001)
-          .FirstOrDefault();
+      var max_circles = 10000;
+      string start_id = string.Empty;
 
-        if (pointOnMkad == null)
-        {
-          dicShifter[figure.id] = new CircleShifter()
-          {
-            CurIndex = _random.Next(0, maxPoint)            
-          };
-        }
-        else 
-        {
-          dicShifter[figure.id] = new CircleShifter()
-          {
-            CurIndex = geometry_mkad.coord.IndexOf(pointOnMkad)            
-          };
-        }
-
-        dicShifter[figure.id].ShiftSteps = _random.Next(-2, 3);
-
-        if (dicShifter[figure.id].ShiftSteps == 0)
-        {
-          dicShifter[figure.id].ShiftSteps = 1;
-        }
-      }
+      await BuildMachines(resFolder, geometry_mkad, maxMachines);
 
       int counter = 0;
 
       while (!token.IsCancellationRequested)
       {
+        var figures = await _testClient.GetByParams("track_name", $"{resFolder}", start_id, max_circles);
+
+        if (figures == null || figures.figs.Count == 0)
+        {
+          start_id = string.Empty;
+          continue;
+        }
+
+        start_id = figures.figs.LastOrDefault().id;
+
+        Dictionary<string, CircleShifter> dicShifter = new Dictionary<string, CircleShifter>();
+
+        foreach (var figure in figures.figs)
+        {
+          var geometry = figure.geometry as GeometryCircleDTO;
+
+          var pointOnMkad = geometry_mkad.coord
+            .Where(c => Math.Abs(c.X - geometry.coord.X) < 0.00001
+            && Math.Abs(c.Y - geometry.coord.Y) < 0.00001)
+            .FirstOrDefault();
+
+          if (pointOnMkad == null)
+          {
+            dicShifter[figure.id] = new CircleShifter()
+            {
+              CurIndex = _random.Next(0, maxPoint)
+            };
+          }
+          else
+          {
+            dicShifter[figure.id] = new CircleShifter()
+            {
+              CurIndex = geometry_mkad.coord.IndexOf(pointOnMkad)
+            };
+          }
+
+          dicShifter[figure.id].ShiftSteps = _random.Next(-2, 3);
+
+          if (dicShifter[figure.id].ShiftSteps == 0)
+          {
+            dicShifter[figure.id].ShiftSteps = 1;
+          }
+        }
+
+
         foreach (var figure in figures.figs)
         {
           var geometry = figure.geometry as GeometryCircleDTO;
@@ -275,16 +292,18 @@ namespace TrackSender
 
           if (shifter.CurIndex < 0)
           {
-            shifter.CurIndex = maxPoint - 1;
-          }
-          else if(shifter.CurIndex >= maxPoint)
-          {
             shifter.CurIndex = 0;
+            shifter.ShiftSteps *= -1;
+          }
+          else if (shifter.CurIndex >= maxPoint)
+          {
+            shifter.CurIndex = maxPoint - 1;
+            shifter.ShiftSteps *= -1;
           }
 
           var y = geometry_mkad.coord[shifter.CurIndex].Y;
           var x = geometry_mkad.coord[shifter.CurIndex].X;
-          
+
           var start =
                 new GeometryCircleDTO(
                   new Geo2DCoordDTO() { y, x }
@@ -301,7 +320,7 @@ namespace TrackSender
             {
               prop_name = "timestamp",
               str_val = (DateTime.UtcNow
-              + new TimeSpan(0, 0, 0, counter)
+              //+ new TimeSpan(0, 0, 0, counter)
               )
             .ToString("o", System.Globalization.CultureInfo.InvariantCulture)
             }
@@ -310,58 +329,14 @@ namespace TrackSender
           figure.extra_props = extra_props;
         }
 
+        Console.WriteLine($"UpdateTracks:{resFolder}");
         await _testClient.UpdateTracksAsync(figures, "UpdateTracks");
       }
     }
 
-    async Task BuildRandomFigures()
-    {
-      await GetOrBuildFiguresAsync();
-
-      var start =
-        new GeometryCircleDTO(new Geo2DCoordDTO() { 55.977606, 37.186745 });
-
-      //55.872425, 37.456428 -> 55.621026, 37.786127
-
-
-      int counter = 0;
-      int steps = 100;
-
-      for (int j = 0; j < steps; j++)
-      {
-        foreach (var figure in _figures.figs)
-        {
-          var geometry = figure.geometry as GeometryCircleDTO;
-          counter++;
-          var coord = geometry.coord;
-
-          coord.X = GetRandomDouble(coord.X - 0.01, coord.X + 0.01);
-          coord.Y = GetRandomDouble(coord.Y - 0.01, coord.Y + 0.01);
-          //var rout = await GetTestCoords(figure.geometry.coord);
-          var extra_props = new List<ObjExtraPropertyDTO>() {
-            new ObjExtraPropertyDTO()
-            {
-              prop_name = "timestamp",
-              str_val = (DateTime.UtcNow
-              + new TimeSpan(0,0,counter, 0)
-              )
-            .ToString("o", System.Globalization.CultureInfo.InvariantCulture)
-            }
-          };
-
-          figure.extra_props = extra_props;
-        }
-
-        //await Task.Delay(2000);
-        await _testClient.UpdateTracksAsync(_figures, "UpdateTracks");
-        Console.WriteLine(j.ToString());
-      }
-    }
-
-
     public async Task CreateRoad(string xmlFolderName)
     {
-      var mkad = await _testClient.GetByParams(xmlFolderName, "true", string.Empty,  1);
+      var mkad = await _testClient.GetByParams(xmlFolderName, "true", string.Empty, 1);
 
       if (mkad == null || mkad.IsEmpty())
       {

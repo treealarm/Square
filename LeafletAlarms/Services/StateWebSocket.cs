@@ -222,7 +222,10 @@ namespace LeafletAlarms.Services
         if (IsWithinBox(curBox, track.figure, levels))
         {
           toUpdate.Add(track.figure.id);
-          _dicIds.Add(track.figure.id);
+          lock (_locker)
+          {
+            _dicIds.Add(track.figure.id);
+          }
           _stateIdsQueueService.AddId(track.figure.id);
         }
       }
