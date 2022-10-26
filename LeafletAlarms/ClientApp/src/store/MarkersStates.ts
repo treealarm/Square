@@ -161,7 +161,13 @@ export const actionCreators = {
 
     dispatch({ type: "DELETING_MARKERS", ids_to_delete: ids });
   },
-
+  deleteMarkersLocally: (ids: string[]): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "DELETED_MARKERS", success: true, deleted_ids: ids });
+  }
+  ,
   requestMarkersByIds: (ids: string[]): AppThunkAction<KnownAction> => (
     dispatch,
     getState

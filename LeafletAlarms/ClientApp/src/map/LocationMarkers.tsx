@@ -4,7 +4,7 @@ import { useDispatch, useSelector} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
-import { ApiDefaultMaxCountResult, ApplicationState } from '../store';
+import { ApplicationState } from '../store';
 import { BoundBox, getExtraProp, ICircle, ICommonFig, ICoord, IObjProps, IPointCoord, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 
 
@@ -216,7 +216,7 @@ export function LocationMarkers() {
   
   useEffect(
     () => {
-      if (markers?.figs?.length > 10000) {
+      if (markers?.figs?.length > 20000) {
         // Clear TODO time limit
         RequestMarkersByBox(null);
       }      

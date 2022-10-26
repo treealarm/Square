@@ -190,6 +190,7 @@ namespace LeafletAlarms.Services
     public async Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       HashSet<string> toUpdate = new HashSet<string>();
+      HashSet<string> toDelete = new HashSet<string>();
       BoxDTO curBox = CurrentBox;
 
       if (curBox == null)
@@ -209,8 +210,13 @@ namespace LeafletAlarms.Services
             if (!IsWithinBox(curBox, track.figure, levels))
             {
               _dicIds.Remove(track.figure.id);
+              toDelete.Add(track.figure.id);
             }
-            toUpdate.Add(track.figure.id);
+            else
+            {
+              toUpdate.Add(track.figure.id);
+            }
+            
             continue;
           }
           toCheckIfInBox.Add(track);
@@ -228,6 +234,17 @@ namespace LeafletAlarms.Services
           }
           _stateIdsQueueService.AddId(track.figure.id);
         }
+      }
+
+      if (toDelete.Count > 0)
+      {
+        StateBaseDTO packet = new StateBaseDTO()
+        {
+          action = "set_ids2delete",
+          data = toDelete
+        };
+
+        await SendPacket(packet);
       }
 
       if (toUpdate.Count > 0)

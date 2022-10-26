@@ -1,10 +1,13 @@
 ﻿using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
+using Itinero;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services
@@ -43,8 +46,29 @@ namespace LeafletAlarms.Services
         _mapService,
         _stateIdsQueueService
       );
+
       StateSockets.TryAdd(context.Connection.Id, stateWs);
-      await stateWs.ProcessAcceptedSocket();
+
+      try
+      {
+        await stateWs.ProcessAcceptedSocket();
+      }
+      catch(Exception ex)
+      {
+
+      }
+      
+      try
+      {
+        if (!webSocket.CloseStatus.HasValue)
+        {
+          await webSocket
+            .CloseAsync(WebSocketCloseStatus.InternalServerError, "", CancellationToken.None);
+        }        
+      }
+      catch(Exception)
+      { }
+
       StateSockets.TryRemove(context.Connection.Id, out var sock);
     }
 

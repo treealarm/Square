@@ -193,7 +193,7 @@ namespace TrackSender
             {
               name = obj_name,
               radius = 50,
-              zoom_level = i == 0? "12":"13",
+              zoom_level = i == 0 ? "":"13",
               geometry = start,
               extra_props = extra_props
             };

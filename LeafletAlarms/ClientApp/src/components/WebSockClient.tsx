@@ -1,10 +1,19 @@
 ﻿import * as React from "react";
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import * as MarkersStore from '../store/MarkersStates';
-import { Box, Button, IconButton, Tooltip } from "@mui/material";
+import { Box, Button, IconButton, Paper, styled, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
 import { useDispatch, useSelector } from "react-redux";
+
+const Item = styled(Paper)(({ theme }) => ({
+  ...theme.typography.body2,
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  height: 10,
+  lineHeight: '10px',
+}));
+
 //"wss://localhost:44307/push"
 var url = 'ws://';
 
@@ -12,7 +21,7 @@ if (window.location.protocol == "https:") {
   url = 'wss://';
 }
 url = url + window.location.hostname + ':' + window.location.port + '/state';
-var socket = new WebSocket(url);
+var socket: WebSocket;
 
 export function WebSockClient() {
 
@@ -20,17 +29,22 @@ export function WebSockClient() {
 
   const box = useSelector((state) => state?.markersStates?.box);
 
-  const [isConnected, setIsConnected] = useState(socket.readyState == WebSocket.OPEN);
+  const [isConnected, setIsConnected] = useState(false);
 
-  socket.onopen = (event) => {
+  function socket_onopen(event: any){
     setIsConnected(true);
   };
 
-  socket.onclose = (event) => {
+  function socket_onclose(event: any){
     setIsConnected(false);
+    setTimeout(function () {
+      connect();
+    }, 1000);
   };
 
-  socket.onmessage = function (event) {
+  const markers = useSelector((state) => state?.markersStates?.markers);
+
+  function socket_onmessage(event: any) {
     try {
       console.log(event.data);
       var received = JSON.parse(event.data);
@@ -42,7 +56,9 @@ export function WebSockClient() {
       if (received.action == "set_ids2update") {
         dispatch(MarkersStore.actionCreators.requestMarkersByIds(received.data));
       }
-
+      if (received.action == "set_ids2delete") {
+        dispatch(MarkersStore.actionCreators.deleteMarkersLocally(received.data));
+      }
       if (received.action == "set_alarm_states") {
         dispatch(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
       }
@@ -51,6 +67,17 @@ export function WebSockClient() {
       console.log(err);
     }
   };
+
+  function connect() {
+    socket = new WebSocket(url);
+    socket.onopen = socket_onopen;
+    socket.onclose = socket_onclose;
+    socket.onmessage = socket_onmessage;
+  }
+  useEffect(
+    () => {
+      connect();
+    }, []);
 
   useEffect(() => {
     if (box != null && isConnected) {
@@ -80,16 +107,20 @@ export function WebSockClient() {
   return (
       <React.Fragment key={"WebSock1"}>
       <Box sx={{ border: 1 }}>
-        <Tooltip title={url+JSON.stringify(box)}>
+        <Tooltip title={url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
         <IconButton
           onClick={sendPing}
           style={{ textTransform: 'none' }}
           >
           <CircleIcon color={isConnected ? "success" : "error"} />
-          
-        </IconButton>
+            <Item key={'item1'} elevation={1}>
+              objs:{markers?.figs?.length}, zoom:{box?.zoom}
+            </Item>
+          </IconButton>          
         </Tooltip>
-       </Box>
+        
+      </Box>
+      
       </React.Fragment>
   );
 }
