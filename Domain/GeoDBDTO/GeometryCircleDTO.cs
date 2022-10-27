@@ -28,6 +28,11 @@ namespace Domain.GeoDBDTO
       }
     }
 
+    public override Geo2DCoordDTO GetCentroid()
+    {
+      return coord;
+    }
+
     public override string GetJson()
     {
       return JsonSerializer.Serialize(this);

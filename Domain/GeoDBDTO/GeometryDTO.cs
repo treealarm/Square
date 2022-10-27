@@ -45,6 +45,11 @@ namespace Domain.GeoDBDTO
         _coord = value;
       }
     }
+
+    public virtual Geo2DCoordDTO GetCentroid()
+    {
+      return null;
+    }
     public string GetFigureType()
     {
       if (this is GeometryCircleDTO)

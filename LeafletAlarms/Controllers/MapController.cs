@@ -367,8 +367,15 @@ namespace LeafletAlarms.Controllers
     public async Task<FiguresDTO> GetByBox(BoxDTO box)
     {
       var geo = await _geoService.GetGeoAsync(box);
-      return await GetFigures(geo);
-    }
+      var figures =  await GetFigures(geo);
+
+      if (figures.figs.Count < 1000)
+      {
+        return figures;
+      }
+
+      return KMeans.GetCentroids(figures, 1 + figures.figs.Count/1000);
+    }    
 
     [HttpGet()]
     [Route("GetObjProps")]
