@@ -49,7 +49,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (KMCentroid centroid in centroids)
       {
-        centroid.UpdateCenter();
+        centroid.UpdateCenterAndRadius();
       }
 
       foreach (KMCentroid centroid in centroids)
@@ -66,7 +66,7 @@ namespace LeafletAlarms.Controllers
         {
           id = centroid.GetId(),
           geometry = g,
-          radius = 200
+          radius = centroid.radius * 2
         });
        }
 
@@ -78,10 +78,11 @@ namespace LeafletAlarms.Controllers
       var figs = figures.figs;
 
       List<KMCentroid> centroids = new List<KMCentroid>();
+      var step = figs.Count / number;
 
-      for (int i = 0; i < number; i++)
+      for (int index = 0; index < figs.Count; index+=step)
       {
-        int index = _rnd.Next(0, figs.Count);
+        //int index = _rnd.Next(0, figs.Count);
         var centroid = figs[index].geometry.GetCentroid();
 
         if (centroid == null)

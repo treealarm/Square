@@ -62,6 +62,9 @@ export function WebSockClient() {
       if (received.action == "set_alarm_states") {
         dispatch(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
       }
+      if (received.action == "update_viewbox") {
+        dispatch(MarkersStore.actionCreators.initiateUpdateAll());
+      }      
       
     } catch (err) {
       console.log(err);

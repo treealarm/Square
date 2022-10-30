@@ -10,6 +10,7 @@ namespace LeafletAlarms.KMeans
   {
     private List<FigureGeoDTO> figs { get; set; } = new List<FigureGeoDTO>();
     public Geo2DCoordDTO center { get; set; } = new Geo2DCoordDTO();
+    public double radius { get; set; } = 0;
     public void AddFigure(FigureGeoDTO fig)
     {
       figs.Add(fig);
@@ -22,20 +23,27 @@ namespace LeafletAlarms.KMeans
       return Math.Sqrt(dx * dx + dy * dy);
     }
 
-    public void UpdateCenter()
+    public void UpdateCenterAndRadius()
     {
       double x = 0;
       double y = 0;
+      radius = 0;
 
       foreach (var fig in figs)
       {
         var c = fig.geometry.GetCentroid();
         x += c.X;
         y += c.Y;
+
+        if (fig.radius != 0)
+        {
+          radius += (double)fig.radius;
+        }        
       }
 
       center.X = x/ figs.Count;
       center.Y = y/ figs.Count;
+      radius = radius / figs.Count;
     }
 
     public int GetCount()

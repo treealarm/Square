@@ -55,7 +55,7 @@ namespace TrackSender
       tasks.Add(task);
 
       var task1 = GetOrBuildFiguresOnRoadAsync("CKAD", token, 1000000);
-      tasks.Add(task1);
+      //tasks.Add(task1);
     }
 
     private async Task GetOrBuildFiguresAsync()
@@ -147,7 +147,7 @@ namespace TrackSender
           figures = new FiguresDTO();
           figures.figs = new List<FigureGeoDTO>();
 
-          for (int i = 0; i < max_circles; i++)
+          for (int i = 0; i < Math.Min(max_circles, maxMachines); i++)
           {
             var color =
               $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
@@ -233,6 +233,7 @@ namespace TrackSender
       await BuildMachines(resFolder, geometry_mkad, maxMachines);
 
       int counter = 0;
+      Dictionary<string, CircleShifter> dicShifter = new Dictionary<string, CircleShifter>();
 
       while (!token.IsCancellationRequested)
       {
@@ -246,37 +247,40 @@ namespace TrackSender
 
         start_id = figures.figs.LastOrDefault().id;
 
-        Dictionary<string, CircleShifter> dicShifter = new Dictionary<string, CircleShifter>();
+        
 
         foreach (var figure in figures.figs)
         {
           var geometry = figure.geometry as GeometryCircleDTO;
 
-          var pointOnMkad = geometry_mkad.coord
-            .Where(c => Math.Abs(c.X - geometry.coord.X) < 0.00001
-            && Math.Abs(c.Y - geometry.coord.Y) < 0.00001)
-            .FirstOrDefault();
-
-          if (pointOnMkad == null)
+          if (!dicShifter.ContainsKey(figure.id))
           {
-            dicShifter[figure.id] = new CircleShifter()
+            var pointOnMkad = geometry_mkad.coord
+              .Where(c => Math.Abs(c.X - geometry.coord.X) < 0.00001
+              && Math.Abs(c.Y - geometry.coord.Y) < 0.00001)
+              .FirstOrDefault();
+
+            if (pointOnMkad == null)
             {
-              CurIndex = _random.Next(0, maxPoint)
-            };
-          }
-          else
-          {
-            dicShifter[figure.id] = new CircleShifter()
+              dicShifter[figure.id] = new CircleShifter()
+              {
+                CurIndex = _random.Next(0, maxPoint)
+              };
+            }
+            else
             {
-              CurIndex = geometry_mkad.coord.IndexOf(pointOnMkad)
-            };
-          }
+              dicShifter[figure.id] = new CircleShifter()
+              {
+                CurIndex = geometry_mkad.coord.IndexOf(pointOnMkad)
+              };
+            }
 
-          dicShifter[figure.id].ShiftSteps = _random.Next(-2, 3);
+            dicShifter[figure.id].ShiftSteps = _random.Next(-2, 3);
 
-          if (dicShifter[figure.id].ShiftSteps == 0)
-          {
-            dicShifter[figure.id].ShiftSteps = 1;
+            if (dicShifter[figure.id].ShiftSteps == 0)
+            {
+              dicShifter[figure.id].ShiftSteps = 1;
+            }
           }
         }
 

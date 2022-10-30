@@ -9,6 +9,7 @@ export interface MarkersState {
   markers: IFigures;
   box: BoundBox;
   isChanging?: number;
+  initiateUpdateAll: number;
 }
 
 // -----------------
@@ -53,6 +54,11 @@ interface GotMarkersByIdsAction {
   markers: IFigures;
 }
 
+interface InitiateUpdateAllAction {
+  type: "INITIATE_UPDATE_ALL";
+}
+
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction =
@@ -63,6 +69,7 @@ type KnownAction =
   | DeletingMarkerAction
   | DeletedMarkerAction
   | GotMarkersByIdsAction
+  | InitiateUpdateAllAction
   ;
 
 // ----------------
@@ -204,6 +211,12 @@ export const actionCreators = {
         });
     }
   },
+  //////
+  initiateUpdateAll: (): AppThunkAction<KnownAction> => (
+    dispatch
+  ) => {
+    dispatch({ type: "INITIATE_UPDATE_ALL"});
+  }
 };
 
 // ----------------
@@ -213,7 +226,8 @@ const unloadedState: MarkersState = {
   markers: null,
   isLoading: false,
   box: null,
-  isChanging: 0
+  isChanging: 0,
+  initiateUpdateAll: 0
 };
 
 export const reducer: Reducer<MarkersState> = (
@@ -311,6 +325,12 @@ export const reducer: Reducer<MarkersState> = (
         markers: cur_markers,
         isLoading: false,
         isChanging: state.isChanging + 1
+      };
+    case "INITIATE_UPDATE_ALL":
+
+      return {
+        ...state,
+        initiateUpdateAll: state.initiateUpdateAll + 1
       };
   }
 

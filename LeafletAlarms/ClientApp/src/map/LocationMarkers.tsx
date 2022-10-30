@@ -4,7 +4,7 @@ import { useDispatch, useSelector} from "react-redux";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
-import { ApplicationState } from '../store';
+import { ApiDefaultMaxCountResult, ApplicationState } from '../store';
 import { BoundBox, getExtraProp, ICircle, ICommonFig, ICoord, IObjProps, IPointCoord, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 
 
@@ -168,6 +168,7 @@ export function LocationMarkers() {
   const selectedEditMode = useSelector((state) => state.editState);
 
   const markers = useSelector((state) => state?.markersStates?.markers);
+  const markersStates = useSelector((state) => state?.markersStates);
   const isChanging = useSelector((state) => state?.markersStates?.isChanging);
   const visualStates = useSelector((state) => state?.markersVisualStates?.visualStates);
   const alarmedObjects = useSelector((state) => state?.markersVisualStates?.alarmed_objects);
@@ -216,11 +217,16 @@ export function LocationMarkers() {
   
   useEffect(
     () => {
-      if (markers?.figs?.length > 20000) {
+      if (markers?.figs?.length > ApiDefaultMaxCountResult*2) {
         // Clear TODO time limit
         RequestMarkersByBox(null);
       }      
     }, [markers]);
+
+  useEffect(
+    () => {
+        RequestMarkersByBox(null);
+    }, [markersStates?.initiateUpdateAll]);
 
   const getColor = useCallback(
     (marker: IObjProps) => {

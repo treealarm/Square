@@ -187,6 +187,14 @@ namespace LeafletAlarms.Services
       return false;
     }
 
+    public int GetCurObjectCount()
+    {
+      lock (_locker)
+      {
+        return _dicIds.Count;
+      }
+    }
+
     public async Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       HashSet<string> toUpdate = new HashSet<string>();
@@ -254,6 +262,12 @@ namespace LeafletAlarms.Services
           action = "set_ids2update",
           data = toUpdate
         };
+
+        if (GetCurObjectCount() > 1000)
+        {
+          packet.action = "update_viewbox";
+          packet.data = null;
+        }
 
         await SendPacket(packet);
       }
