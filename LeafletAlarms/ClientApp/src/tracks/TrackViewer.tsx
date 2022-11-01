@@ -12,6 +12,7 @@ import {
   useMapEvents,
   Circle
 } from 'react-leaflet'
+import { Console } from 'console';
 
 
 declare module 'react-redux' {
@@ -22,8 +23,6 @@ var pathOptionsTracks = { color: "yellow" };
 var pathOptionsRouts = { color: "blue" };
 
 function TrackPolyline(props: any) {
-
-
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord;
   return (
@@ -37,9 +36,7 @@ function TrackPolyline(props: any) {
   );
 }
 
-function TrackCircle(props: any) {
-
-  
+function TrackCircle(props: any) {  
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord as any;
 
@@ -56,6 +53,8 @@ function TrackCircle(props: any) {
 }
 
 function CommonTrack(props: any) {
+  console.log('CommonTrack draw');
+
   if (props.hidden == true || props.marker == null) {
     return null;
   }
@@ -101,6 +100,8 @@ export function TrackViewer() {
   const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
+  const routs = useSelector((state) => state?.tracksStates?.routs);
+  const tracks = useSelector((state) => state?.tracksStates?.tracks);
 
   function UpdateTracks() {
     var bounds: L.LatLngBounds;
@@ -157,17 +158,14 @@ export function TrackViewer() {
     }
   });
 
-  const routs = useSelector((state) => state?.tracksStates?.routs);
-  const tracks = useSelector((state) => state?.tracksStates?.tracks);
-
   return (
     <React.Fragment>
       {
         tracks?.map((track, index) =>
           <CommonTrack
-            key={track.id}
+            key={track?.id}
             hidden={false}
-            marker={track.figure}
+            marker={track?.figure}
             pathOptions={pathOptionsTracks}
           >
           </CommonTrack>
@@ -175,9 +173,9 @@ export function TrackViewer() {
       {
         routs?.map((rout, index) =>
           <CommonTrack
-            key={rout.id}
+            key={rout?.id}
             hidden={false}
-            marker={rout.figure}
+            marker={rout?.figure}
             pathOptions={pathOptionsRouts}
           >
           </CommonTrack>

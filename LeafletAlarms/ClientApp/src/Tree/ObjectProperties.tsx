@@ -212,7 +212,7 @@ export function ObjectProperties() {
             fullWidth
           label='Id'
           size="small"
-          value={objProps.id}
+            value={objProps.id ? objProps.id: ''}
           inputProps={{ readOnly: true}}>
           </TextField>
         </ListItem>
@@ -221,7 +221,7 @@ export function ObjectProperties() {
             fullWidth
             label='ParentId'
             size="small"
-            value={objProps.parent_id}
+            value={objProps.parent_id ? objProps.parent_id:''}
             inputProps={{ readOnly: true}}>
           </TextField>
           </ListItem>

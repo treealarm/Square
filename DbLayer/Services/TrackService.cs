@@ -181,10 +181,10 @@ namespace DbLayer.Services
       return list;
     }
 
-    private static void Log(FilterDefinition<BsonDocument> filter)
+    private static void Log<T>(FilterDefinition<T> filter)
     {
       var serializerRegistry = BsonSerializer.SerializerRegistry;
-      var documentSerializer = serializerRegistry.GetSerializer<BsonDocument>();
+      var documentSerializer = serializerRegistry.GetSerializer<T>();
       var rendered = filter.Render(documentSerializer, serializerRegistry);
       Debug.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
       Debug.WriteLine("");
@@ -336,10 +336,12 @@ namespace DbLayer.Services
       }
       else
       {
-        if (box.ids != null)
+        if (box.ids != null && box.ids.Count > 0)
         {
           filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
         }
+
+        Log(filter);
 
         dbTracks.AddRange(
           await _collFigures

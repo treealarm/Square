@@ -8,11 +8,9 @@ import {
 import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
 import { TrackViewer } from "../tracks/TrackViewer";
-import { useRef } from "react";
 
 
-
-export function MapComponent() {
+export function MapComponent(props: any) {
 
 
   var url = 'http://';
@@ -28,16 +26,18 @@ export function MapComponent() {
     + '/api/Map/GetTiles'
     + '/{z}/{x}/{y}.png';
 
-
-
   var url_classic = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
   return (
     <MapContainer
       center={[55.752696480817086, 37.583007383349745]}
       zoom={13}
-      scrollWheelZoom={true}    >
-      <TrackViewer />
-      <LocationMarkers />
+      scrollWheelZoom={true}>
+      {
+        props.propTab == "2" ?
+        <TrackViewer /> : <LocationMarkers />
+      }
+      
       <EditableFigure />
       <MapPositionChange />
 

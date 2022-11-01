@@ -12,9 +12,9 @@ import { SearchResult } from "../Tree/SearchResult";
 
 export function Home() {
 
-  const [value, setValue] = React.useState('1');
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
+  const [valuePropTab, setValuePropTab] = React.useState('1');
+  const handleChangePropTab = (event: React.SyntheticEvent, newValue: string) => {
+    setValuePropTab(newValue);
   };
 
   const [LeftTabValue, setLeftTabValue] = React.useState('1');
@@ -25,7 +25,10 @@ export function Home() {
   return (
     <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>
       <Grid item xs={12} sx={{ height: "auto" }}>
-        <Stack direction="row" spacing={1}><TabControl /><WebSockClient /></Stack>
+        <Stack direction="row" spacing={1}>
+          <TabControl />
+          <WebSockClient />
+        </Stack>
       </Grid>
 
       <Grid item xs={2} sx={{ height: "90%" }} container spacing={0}>
@@ -50,18 +53,18 @@ export function Home() {
       </Grid>
 
       <Grid item xs={7} sx={{ height: "90%" }} container spacing={0}>
-        <MapComponent />
+        <MapComponent propTab = {valuePropTab}/>
       </Grid>
 
       <Grid item xs={3} sx={{ height: "90%" }} container spacing={0}>
         <Paper sx={{ maxHeight: "100%", overflow: 'auto' }}>
-          <TabContext value={value}>
+          <TabContext value={valuePropTab}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <TabList
                 variant="scrollable"
                 scrollButtons
                 allowScrollButtonsMobile
-                onChange={handleChange} aria-label="Property tabs">
+                onChange={handleChangePropTab} aria-label="Property tabs">
                 <Tab label="Properties" value="1" />
                 <Tab label="Retrospective" value="2" />
               </TabList>
