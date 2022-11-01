@@ -104,6 +104,19 @@ namespace DbLayer.Services
 
         _collRouts.Indexes.CreateOneAsync(indexModel);
       }
+      {
+        // Index for faste del.
+        IndexKeysDefinition<DBRoutLine> keys =
+              new IndexKeysDefinitionBuilder<DBRoutLine>()
+              .Ascending(d => d.meta.id);
+
+        var indexModel = new CreateIndexModel<DBRoutLine>(
+          keys, new CreateIndexOptions()
+          { Name = "mid" }
+        );
+
+        _collRouts.Indexes.CreateOneAsync(indexModel);
+      }
     }
 
     public async Task InsertManyAsync(List<RoutLineDTO> newObjs)

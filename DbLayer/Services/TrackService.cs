@@ -84,6 +84,19 @@ namespace DbLayer.Services
 
         _collFigures.Indexes.CreateOneAsync(indexModel);
       }
+      {
+        IndexKeysDefinition<DBTrackPoint> keys =
+                new IndexKeysDefinitionBuilder<DBTrackPoint>()
+                  .Ascending(d => d.meta.id)
+                ;
+
+        var indexModel = new CreateIndexModel<DBTrackPoint>(
+          keys, new CreateIndexOptions()
+          { Name = "mid" }
+        );
+
+        _collFigures.Indexes.CreateOneAsync(indexModel);
+      }
     }
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
@@ -127,9 +140,16 @@ namespace DbLayer.Services
 
     public async Task<TrackPointDTO> GetLastAsync(string figure_id, DateTime beforeTime)
     {
+      var builder = Builders<DBTrackPoint>.Filter;
+
+      FilterDefinition<DBTrackPoint> filter =
+        builder.Where(t => t.meta.figure.id == figure_id && t.timestamp < beforeTime);
+
+      Log(filter);
+
       var dbTrack =
         await _collFigures
-          .Find(t => t.meta.figure.id == figure_id && t.timestamp < beforeTime)
+          .Find(filter)
           .SortByDescending(t => t.timestamp)
           .FirstOrDefaultAsync();
 
