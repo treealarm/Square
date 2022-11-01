@@ -139,16 +139,13 @@ export function RetroSearch() {
   const OnNavigate = useCallback(
     (next: boolean, e) => {
 
-      if ((tracks == null
-        || tracks.length == 0)
-        && (routs == null
-        || routs.length == 0)) {
+      if (tracks == null  && routs == null) {
         return;
       }
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();      
 
       if (next) {
-        var minDate = new Date('2045-10-05T11:03:21');
+        var minDate = new Date(filter.time_start.toISOString());//new Date('2045-10-05T11:03:21');
 
         if (tracks != null && tracks.length > 0) {         
 
@@ -177,7 +174,7 @@ export function RetroSearch() {
         
       }
       else {
-        var maxDate = new Date("1945-01-01T00:00:00");
+        var maxDate = new Date(filter.time_end.toISOString());//new Date("1945-01-01T00:00:00");
 
         if (tracks != null && tracks.length > 0) {
           tracks.forEach(function (e) {

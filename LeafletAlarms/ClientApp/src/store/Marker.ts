@@ -12,21 +12,17 @@ export const PointType = 'Point';
 export const PolygonType = 'Polygon';
 export const LineStringType = 'LineString';
 
-export interface ICoord {
-  type: string;
-}
-
-export interface IPointCoord extends ICoord {
+export interface IPointCoord extends IGeometryDTO {
   type: 'Point';
   coord: LatLngPair;
 }
 
-export interface IPolygonCoord extends ICoord {
+export interface IPolygonCoord extends IGeometryDTO {
   type: 'Polygon';
   coord: LatLngPair[];
 }
 
-export interface IPolylineCoord extends ICoord {
+export interface IPolylineCoord extends IGeometryDTO {
   type: 'LineString';
   coord: LatLngPair[];
 }
@@ -200,7 +196,7 @@ export interface MarkerVisualStateDTO {
 
 export interface IGeometryDTO {
   coord: any[];
-  figure_type: string;
+  type: string;
 }
 
 export interface IGeoObjectDTO {

@@ -5,7 +5,7 @@ import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import { ApiDefaultMaxCountResult, ApplicationState } from '../store';
-import { BoundBox, getExtraProp, ICircle, ICommonFig, ICoord, IObjProps, IPointCoord, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
+import { BoundBox, getExtraProp, ICircle, ICommonFig, IGeometryDTO, IObjProps, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 
 
 import { useCallback, useMemo, useEffect } from 'react'
@@ -115,7 +115,7 @@ function MyCommonFig(props: any) {
   }
 
   var fig: ICommonFig = props.marker;
-  var geo: ICoord = fig.geometry;
+  var geo: IGeometryDTO = fig.geometry;
 
   if (geo.type == PointType) {
     return (

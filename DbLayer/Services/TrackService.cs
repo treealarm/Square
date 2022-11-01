@@ -305,6 +305,7 @@ namespace DbLayer.Services
 
       if (distinct)
       {
+        Log(filter);
         var ids = await _collFigures
           .Distinct(el => el.meta.figure.id, filter).ToListAsync();
 

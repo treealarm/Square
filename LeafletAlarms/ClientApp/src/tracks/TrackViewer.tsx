@@ -66,7 +66,7 @@ function CommonTrack(props: any) {
     return null;
   }
 
-  if (figure.location.figure_type == LineStringType) {
+  if (figure.location.type == LineStringType) {
     return (
       <React.Fragment>
         <TrackPolyline
@@ -77,7 +77,7 @@ function CommonTrack(props: any) {
       </React.Fragment>
     );
   }
-  if (figure.location.figure_type == PointType) {
+  if (figure.location.type == PointType) {
     return (
       <React.Fragment>
         <TrackCircle
