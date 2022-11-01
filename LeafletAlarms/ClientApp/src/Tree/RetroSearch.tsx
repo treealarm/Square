@@ -28,19 +28,6 @@ export function RetroSearch() {
   const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state) => state?.tracksStates?.tracks);
   const routs = useSelector((state) => state?.tracksStates?.routs);
-
-  const handleCheckTimeBegin = (event: React.ChangeEvent<HTMLInputElement>) => {
-    var filter = GetCopyOfSearchFilter();
-    filter.time_start_enabled = event.target.checked;
-    UpdateFilterInRedux(filter);
-  };
-
-  const handleCheckTimeEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
-    var filter = GetCopyOfSearchFilter();
-    filter.time_end_enabled = event.target.checked;
-    UpdateFilterInRedux(filter);
-  };
-
   
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
@@ -57,9 +44,7 @@ export function RetroSearch() {
         property_filter: {
           props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
         },
-        search_id: "0",
-        time_start_enabled: true,
-        time_end_enabled: true
+        search_id: ""
       };
       dispatch(GuiStore.actionCreators.applyFilter(filter));
     }
@@ -105,12 +90,6 @@ export function RetroSearch() {
       count: ApiDefaultPagingNum
     }
 
-    if (!searchFilter?.time_start_enabled) {
-      filterDto.time_start = null;
-    }
-    if (!searchFilter?.time_end_enabled) {
-      filterDto.time_end = null;
-    }
     dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
   }
 
@@ -143,9 +122,11 @@ export function RetroSearch() {
         return;
       }
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();      
+      filter.sort = 0;
 
       if (next) {
-        var minDate = new Date(filter.time_start.toISOString());//new Date('2045-10-05T11:03:21');
+        const MIN_DATE = new Date('2045-10-05T11:03:21');
+        var minDate = MIN_DATE;
 
         if (tracks != null && tracks.length > 0) {         
 
@@ -168,13 +149,19 @@ export function RetroSearch() {
           });
         }
 
+        if (minDate == MIN_DATE) {
+          minDate = new Date(filter.time_start.toISOString());//
+        }
+
         var t1 = dayjs(minDate).add(1, 's');
           
         filter.time_start = new Date(t1.toISOString());          
         
       }
       else {
-        var maxDate = new Date(filter.time_end.toISOString());//new Date("1945-01-01T00:00:00");
+        const MAX_DATE = new Date("1945-01-01T00:00:00");
+
+        var maxDate = MAX_DATE;
 
         if (tracks != null && tracks.length > 0) {
           tracks.forEach(function (e) {
@@ -196,8 +183,13 @@ export function RetroSearch() {
           });
         }
 
+        if (maxDate == MAX_DATE) {
+          maxDate = new Date(filter.time_end.toISOString());//
+        }
+
         var t1 = dayjs(maxDate).subtract(1, 's');
-        filter.time_end = new Date(t1.toISOString())
+        filter.time_end = new Date(t1.toISOString());
+        filter.sort = -1;
       }
 
       DoSearchTracks(filter);
@@ -226,7 +218,6 @@ export function RetroSearch() {
             value={searchFilter?.time_start}
             onChange={handleChange1}
             inputFormat={INPUT_FORMAT}
-            disabled={!searchFilter?.time_start_enabled}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -236,10 +227,6 @@ export function RetroSearch() {
                   } 
                 }/>}
           />
-            <Switch size="small"
-            checked={searchFilter == null ? true : searchFilter.time_start_enabled}
-              onChange={handleCheckTimeBegin} />
-
 
           </ListItem>
           <ListItem>
@@ -248,7 +235,6 @@ export function RetroSearch() {
             value={searchFilter?.time_end}
             onChange={handleChange2}
             inputFormat={INPUT_FORMAT}
-            disabled={!searchFilter?.time_end_enabled}
             renderInput={(params) =>
               <TextField {...params}
                 inputProps={
@@ -258,10 +244,6 @@ export function RetroSearch() {
                   }
                 } />}
           />
-
-            <Switch size="small"
-            checked={ searchFilter == null ? true : searchFilter.time_end_enabled}
-              onChange={handleCheckTimeEnd} />
       
           </ListItem>
         <ListItem>

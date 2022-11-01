@@ -138,12 +138,11 @@ export interface ObjPropsSearchDTO {
 }
 
 export interface SearchFilterGUI {
-  time_start?: Date;
-  time_end?: Date;
-  time_start_enabled: boolean;
-  time_end_enabled: boolean;
+  time_start: Date;
+  time_end: Date;  
   property_filter?: ObjPropsSearchDTO;
   search_id: string;
+  sort?: number;
 }
 
 export interface SearchFilterDTO{
@@ -162,6 +161,7 @@ export interface BoxTrackDTO extends BoundBox
   time_start?: Date;
   time_end?: Date;
   property_filter?: ObjPropsSearchDTO;
+  sort?: number;
 }
 
 export interface ViewOption {

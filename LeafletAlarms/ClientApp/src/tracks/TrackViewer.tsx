@@ -53,8 +53,7 @@ function TrackCircle(props: any) {
 }
 
 function CommonTrack(props: any) {
-  console.log('CommonTrack draw');
-
+ 
   if (props.hidden == true || props.marker == null) {
     return null;
   }
@@ -112,16 +111,9 @@ export function TrackViewer() {
       zoom: parentMap.getZoom(),
       time_start: searchFilter?.time_start,
       time_end: searchFilter?.time_end,
-      property_filter: searchFilter?.property_filter
+      property_filter: searchFilter?.property_filter,
+      sort: searchFilter?.sort
     };
-
-    if (!searchFilter?.time_start_enabled) {
-      boundBox.time_start = null;
-    }
-
-    if (!searchFilter?.time_end_enabled) {
-      boundBox.time_end = null;
-    }
 
     if (selected_id != null || checked_ids != null) {
       boundBox.ids = [];
@@ -138,12 +130,16 @@ export function TrackViewer() {
 
   useEffect(() => {
     console.log('ComponentDidMount TrackViewer');
-    UpdateTracks();
+    //UpdateTracks();
   }, []);
 
   useEffect(() => {
     console.log('Search Filter Updated TrackViewer');
-    UpdateTracks();
+    if (searchFilter?.search_id != null &&
+      searchFilter?.search_id != "") {
+      UpdateTracks();
+    }
+    
   }, [searchFilter?.search_id, selected_id, checked_ids]);
 
   const mapEvents = useMapEvents({

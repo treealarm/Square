@@ -47,12 +47,12 @@ export function PropertyFilter(props:any) {
     props.setPropsFilter(copy);
   };
 
-  const deleteProperty = useCallback(
-    (e, item: KeyValueDTO) => {
+  function deleteProperty
+    (e: any, item: KeyValueDTO){
       let copy = Object.assign({}, props.propsFilter);
       copy.props = copy.props.filter((obj: KeyValueDTO) => { return obj !== item; });
       props.setPropsFilter(copy);
-    }, [props.propsFilter]);
+    };
 
   return (
     <Box

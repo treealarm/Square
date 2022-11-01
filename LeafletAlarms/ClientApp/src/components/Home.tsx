@@ -66,7 +66,7 @@ export function Home() {
                 allowScrollButtonsMobile
                 onChange={handleChangePropTab} aria-label="Property tabs">
                 <Tab label="Properties" value="1" />
-                <Tab label="Retrospective" value="2" />
+                <Tab label="Retro" value="2" />
               </TabList>
             </Box>
             <TabPanel value="1" sx={{ padding: 1 }}>

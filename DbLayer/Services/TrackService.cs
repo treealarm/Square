@@ -72,43 +72,18 @@ namespace DbLayer.Services
         IndexKeysDefinition<DBTrackPoint> keys =
                 new IndexKeysDefinitionBuilder<DBTrackPoint>()
                 .Geo2DSphere(d => d.meta.figure.location)
-                ;
-
-        var indexModel = new CreateIndexModel<DBTrackPoint>(
-          keys, new CreateIndexOptions()
-          { Name = "location" }
-        );
-
-        _collFigures.Indexes.CreateOneAsync(indexModel);
-      }
-      {
-        IndexKeysDefinition<DBTrackPoint> keys =
-                new IndexKeysDefinitionBuilder<DBTrackPoint>()
                 .Ascending(d => d.meta.figure.zoom_level)
-                .Ascending(d => d.timestamp)
                 .Ascending(d => d.meta.figure.id)
+                .Ascending(d => d.timestamp)
                 ;
 
         var indexModel = new CreateIndexModel<DBTrackPoint>(
           keys, new CreateIndexOptions()
-          { Name = "compound" }
+          { Name = "combo" }
         );
 
         _collFigures.Indexes.CreateOneAsync(indexModel);
       }
-      {
-        IndexKeysDefinition<DBTrackPoint> keys =
-        new IndexKeysDefinitionBuilder<DBTrackPoint>()
-        .Descending(d => d.timestamp)
-        ;
-
-        var indexModel = new CreateIndexModel<DBTrackPoint>(
-          keys, new CreateIndexOptions()
-          { Name = "timestamp" }
-        );
-
-        _collFigures.Indexes.CreateOneAsync(indexModel);
-      }      
     }
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
@@ -284,74 +259,38 @@ namespace DbLayer.Services
         filter = filter &
           builder.Where(p => levels.Contains(p.meta.figure.zoom_level)
           || p.meta.figure.zoom_level == null);
-      }
-
-      bool distinct = (box.time_start == null && box.time_end != null) 
-        || (box.time_start != null && box.time_end == null);
+      } 
 
 
-      if (box.time_start != null)
+        filter = filter & builder.Where(t => t.timestamp >= box.time_start
+          && t.timestamp <= box.time_end);
+
+
+      List<DBTrackPoint> dbObjects = new List<DBTrackPoint>();
+
+      if (box.ids != null &&
+        (box.ids.Count > 0 || (box.property_filter != null && box.property_filter.props.Count > 0))
+      )
       {
-        filter = filter & builder.Where(t => t.timestamp >= box.time_start);
+        filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
       }
 
-      if (box.time_end != null)
+      var finder = _collFigures.Find(filter).Limit(limit);
+
+      if (box.sort < 0)
       {
-        filter = filter & builder.Where(t => t.timestamp <= box.time_end);
+        // Desc is bad on time series.
+        //finder = finder.SortByDescending(el => el.timestamp);
       }
 
+      Log(filter);
 
-      List<DBTrackPoint> dbTracks = new List<DBTrackPoint>();
+      var list = await finder
+        .ToListAsync();
 
-      if (distinct)
-      {
-        Log(filter);
-        var ids = await _collFigures
-          .Distinct(el => el.meta.figure.id, filter).ToListAsync();
+      dbObjects.AddRange(list);
 
-        foreach (var id in ids)
-        {
-          var f1 = builder.Where(o => o.meta.figure.id == id) & filter;
-          DBTrackPoint el = null;
-
-          if (box.time_end != null)
-          {
-            el = await _collFigures
-            .Find(f1)
-            .SortByDescending(o => o.meta.id)
-            .FirstOrDefaultAsync();
-          }
-          else
-          {
-            el = await _collFigures
-            .Find(f1)
-            .FirstOrDefaultAsync();
-          }
-            
-
-          if (el != null)
-          {
-            dbTracks.Add(el);
-          }
-        }        
-      }
-      else
-      {
-        if (box.ids != null && box.ids.Count > 0)
-        {
-          filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
-        }
-
-        Log(filter);
-
-        dbTracks.AddRange(
-          await _collFigures
-          .Find(filter)
-          .Limit(limit)
-          .ToListAsync()
-          );
-      }
-      return DBListToDTO(dbTracks);
+      return DBListToDTO(dbObjects);
     }
   }
 }

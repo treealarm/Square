@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static DbLayer.Models.DBRoutLine;
+using static Domain.StateWebSock.RoutLineDTO;
 
 namespace DbLayer.Services
 {
@@ -81,12 +82,24 @@ namespace DbLayer.Services
         IndexKeysDefinition<DBRoutLine> keys =
               new IndexKeysDefinitionBuilder<DBRoutLine>()
               .Ascending(d => d.meta.figure.zoom_level)
-              .Ascending(d => d.ts_start)
               .Ascending(d => d.ts_end);
 
         var indexModel = new CreateIndexModel<DBRoutLine>(
           keys, new CreateIndexOptions()
           { Name = "compound" }
+        );
+
+        _collRouts.Indexes.CreateOneAsync(indexModel);
+      }
+
+      {
+        IndexKeysDefinition<DBRoutLine> keys =
+              new IndexKeysDefinitionBuilder<DBRoutLine>()
+              .Ascending(d => d.processed);
+
+        var indexModel = new CreateIndexModel<DBRoutLine>(
+          keys, new CreateIndexOptions()
+          { Name = "processed" }
         );
 
         _collRouts.Indexes.CreateOneAsync(indexModel);
@@ -173,7 +186,7 @@ namespace DbLayer.Services
     {
       int limit = 10000;
 
-      if ( box.count != null && box.count > 0)
+      if (box.count != null && box.count > 0)
       {
         limit = box.count.Value;
       }
@@ -190,9 +203,8 @@ namespace DbLayer.Services
         }
       );
 
-      FilterDefinition<DBRoutLine> filter = 
-        builder.GeoIntersects(t => t.meta.figure.location, geometry)
-        & builder.Where(t => t.processed == (int)RoutLineDTO.EntityType.processsed);
+      FilterDefinition<DBRoutLine> filter =
+        builder.GeoIntersects(t => t.meta.figure.location, geometry);
 
       if (box.zoom != null)
       {
@@ -203,65 +215,35 @@ namespace DbLayer.Services
           || p.meta.figure.zoom_level == null);
       }
 
-      if (box.time_start != null)
+
+      filter = filter & builder.Where(t => t.ts_end >= box.time_start
+        && t.ts_end <= box.time_end && t.processed == (int)EntityType.processsed);
+
+
+      var dbObjects = new List<DBRoutLine>();
+
+      if (box.ids != null &&
+        (box.ids.Count > 0 || (box.property_filter != null && box.property_filter.props.Count > 0))
+      )
       {
-        filter = filter & builder
-          .Where(t => t.ts_start >= box.time_start || t.ts_start == null);
+        filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
       }
 
-      if (box.time_end != null)
+      var finder = _collRouts.Find(filter).Limit(limit);
+
+      if (box.sort < 0)
       {
-        filter = filter & builder
-          .Where(t => t.ts_end <= box.time_end || t.ts_end == null);
+        // Desc is bad on time series.
+        //finder = finder.SortByDescending(el => el.timestamp);
       }
 
-      bool distinct = (box.time_start == null && box.time_end != null)
-        || (box.time_start != null && box.time_end == null);
 
-      List<DBRoutLine> list = new List<DBRoutLine>();
+      var list = await finder.ToListAsync();
 
-      if (distinct)
-      {
-        var ids = await _collRouts
-          .Distinct(el => el.meta.figure.id, filter).ToListAsync();
-
-        foreach (var id in ids)
-        {
-          var f1 = builder.Where(o => o.meta.figure.id == id) & filter;
-          DBRoutLine el = null;
-
-          if (box.time_end != null)
-          {
-            el = await _collRouts
-            .Find(f1)
-            .SortByDescending(o => o.meta.id)
-            .FirstOrDefaultAsync();
-          }
-          else
-          {
-            el = await _collRouts
-            .Find(f1)
-            .FirstOrDefaultAsync();
-          }
+      dbObjects.AddRange(list);
 
 
-          if (el != null)
-          {
-            list.Add(el);
-          }
-        }
-      }
-      else
-      {
-        if (box.ids != null)
-        {
-          filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
-        }
-
-        list.AddRange(await _collRouts.Find(filter).Limit(limit).ToListAsync());
-      }
-
-      return ConvertListDB2DTO(list);
+      return ConvertListDB2DTO(dbObjects);
     }
   }
 }
