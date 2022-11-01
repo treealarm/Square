@@ -32,11 +32,22 @@ export function ObjectProperties() {
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
   const propsUpdated = useSelector((state) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state) => state.editState);
+  const markers = useSelector((state) => state?.markersStates?.markers);
   
   useEffect(() => {
     if (selected_id == null) {
       dispatch(EditStore.actionCreators.setFigureEditMode(false));
     }
+    else if (selected_id?.startsWith('00000000', 0))
+    {
+      var selectedMarker = markers.figs.find(m => m.id == selected_id);
+
+      if (selectedMarker != null) {
+        dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
+        return;
+      }
+    }
+
     dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
   }, [selected_id]);
 

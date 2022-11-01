@@ -15,6 +15,10 @@ namespace LeafletAlarms.KMeans
     {
       figs.Add(fig);
     }
+    public void ClearFigs()
+    {
+      figs.Clear();
+    }
     public double GetDistanse(FigureGeoDTO fig)
     {
       var c = fig.geometry.GetCentroid();

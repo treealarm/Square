@@ -1,5 +1,5 @@
 ﻿import { Action, Reducer } from 'redux';
-import { ApiRootString, AppThunkAction } from './';
+import { AppThunkAction } from './';
 import { SearchFilterGUI, ViewOption } from './Marker';
 
 // -----------------

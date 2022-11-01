@@ -161,25 +161,25 @@ namespace TrackSender
             }
 
             var extra_props = new List<ObjExtraPropertyDTO>()
-          {
-            new ObjExtraPropertyDTO()
             {
-              prop_name = "track_name",
-              str_val = $"{resFolder}"
-            },
-            new ObjExtraPropertyDTO()
-            {
-              prop_name = "timestamp",
-              str_val = DateTime.UtcNow
-                .ToString("o", System.Globalization.CultureInfo.InvariantCulture)
-            }
-            ,
               new ObjExtraPropertyDTO()
               {
-                prop_name = "color",
-                str_val = color
+                prop_name = "track_name",
+                str_val = $"{resFolder}"
+              },
+              new ObjExtraPropertyDTO()
+              {
+                prop_name = "timestamp",
+                str_val = DateTime.UtcNow
+                  .ToString("o", System.Globalization.CultureInfo.InvariantCulture)
               }
-          };
+              ,
+                new ObjExtraPropertyDTO()
+                {
+                  prop_name = "color",
+                  str_val = color
+                }
+            };
 
             var y = geometry_mkad.coord[rnd].Y;
             var x = geometry_mkad.coord[rnd].X;

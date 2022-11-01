@@ -11,6 +11,6 @@ namespace Domain
   public class FigureGeoDTO : FigureZoomedDTO
   {
     public GeometryDTO geometry { get; set; }
-    public double? radius { get; set; }    
+    public double? radius { get; set; }
   }
 }

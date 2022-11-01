@@ -53,28 +53,45 @@ namespace DbLayer.Services
         IndexKeysDefinition<DBGeoObject> keys =
           new IndexKeysDefinitionBuilder<DBGeoObject>()
           .Geo2DSphere(d => d.location)
-          ;
-
-            var indexModel = new CreateIndexModel<DBGeoObject>(
-              keys, new CreateIndexOptions()
-              { Name = "location" }
-            );
-
-        _geoCollection.Indexes.CreateOneAsync(indexModel);
-      }
-      {
-        IndexKeysDefinition<DBGeoObject> keys =
-          new IndexKeysDefinitionBuilder<DBGeoObject>()
           .Ascending(d => d.zoom_level)
           ;
 
         var indexModel = new CreateIndexModel<DBGeoObject>(
           keys, new CreateIndexOptions()
-          { Name = "zoom" }
+          { Name = "combi" }
         );
 
         _geoCollection.Indexes.CreateOneAsync(indexModel);
       }
+
+      // Compound works faster in this case
+      //{
+      //  IndexKeysDefinition<DBGeoObject> keys =
+      //    new IndexKeysDefinitionBuilder<DBGeoObject>()
+      //    .Geo2DSphere(d => d.location)
+      //    ;
+
+      //      var indexModel = new CreateIndexModel<DBGeoObject>(
+      //        keys, new CreateIndexOptions()
+      //        { Name = "location" }
+      //      );
+
+      //  _geoCollection.Indexes.CreateOneAsync(indexModel);
+      //}
+      //{
+      //  IndexKeysDefinition<DBGeoObject> keys =
+      //    new IndexKeysDefinitionBuilder<DBGeoObject>()
+      //    .Ascending(d => d.zoom_level)
+      //    ;
+
+      //  var indexModel = new CreateIndexModel<DBGeoObject>(
+      //    keys, new CreateIndexOptions()
+      //    { Name = "zoom" }
+      //  );
+
+      //  _geoCollection.Indexes.CreateOneAsync(indexModel);
+      //}
+
     }
 
     public async Task CreateOrUpdateGeoFromStringAsync(
@@ -186,10 +203,10 @@ namespace DbLayer.Services
       var levels = await _levelService.GetLevelsByZoom(box.zoom);
 
       var filter =
-          builder.Where(p => levels.Contains(p.zoom_level)
-          || string.IsNullOrEmpty(p.zoom_level))
-
-        & builder.GeoIntersects(t => t.location, geometry);
+        builder.GeoIntersects(t => t.location, geometry)
+        &
+        builder.Where(p => levels.Contains(p.zoom_level) || string.IsNullOrEmpty(p.zoom_level))
+        ;
 
       Log(filter);
 

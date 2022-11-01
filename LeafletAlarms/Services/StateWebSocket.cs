@@ -93,7 +93,7 @@ namespace LeafletAlarms.Services
 
         if (json.action.ToString() == "set_box")
         {
-          BoxDTO setBox = JsonSerializer.Deserialize<BoxDTO>(json.data.ToString()); ;
+          BoxDTO setBox = JsonSerializer.Deserialize<BoxDTO>(json.data.ToString());
 
           if (setBox != null)
           {

@@ -1,8 +1,8 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using LeafletAlarms.KMeans;
-using Reminiscence.Collections;
 using System;
+using System.Collections.Generic;
 
 namespace LeafletAlarms.Controllers
 {
@@ -18,39 +18,51 @@ namespace LeafletAlarms.Controllers
 
       List<KMCentroid> centroids = GetInitialCentroids(figures, number);
 
-      foreach(var f in figs)
+      int iterations = 3;
+
+      for (var iteration = iterations; iteration >= 0; iteration--)
       {
-        var circle = f.geometry.GetCentroid();
-
-        if (circle ==  null)
+        foreach (var f in figs)
         {
-          trashCentroid.AddFigure(f);
-        }
+          var circle = f.geometry.GetCentroid();
 
-        var minDist = double.MaxValue;
-        KMCentroid centroidFound = null;
-
-        foreach (KMCentroid centroid in centroids)
-        {
-          var dist = centroid.GetDistanse(f);
-
-          if (dist < minDist)
+          if (circle == null)
           {
-            minDist = dist;
-            centroidFound = centroid;
+            //trashCentroid.AddFigure(f);
+            continue;
+          }
+
+          var minDist = double.MaxValue;
+          KMCentroid centroidFound = null;
+
+          foreach (KMCentroid centroid in centroids)
+          {
+            var dist = centroid.GetDistanse(f);
+
+            if (dist < minDist)
+            {
+              minDist = dist;
+              centroidFound = centroid;
+            }
+          }
+
+          if (centroidFound != null)
+          {
+            centroidFound.AddFigure(f);
           }
         }
 
-        if (centroidFound != null)
+        foreach (KMCentroid centroid in centroids)
         {
-          centroidFound.AddFigure(f);
-        }        
+          centroid.UpdateCenterAndRadius();
+
+          if (iteration > 0)
+          {
+            centroid.ClearFigs();
+          }          
+        }
       }
 
-      foreach (KMCentroid centroid in centroids)
-      {
-        centroid.UpdateCenterAndRadius();
-      }
 
       foreach (KMCentroid centroid in centroids)
       {
@@ -59,14 +71,26 @@ namespace LeafletAlarms.Controllers
           continue;
         }
 
+        var extra_props = new List<ObjExtraPropertyDTO>()
+        {
+          new ObjExtraPropertyDTO()
+          {
+            prop_name = "obj_num",
+            str_val = $"{centroid.GetCount()}"
+          }
+        };
+
+        //TODO Make temp centroids in webSock
         var g = new GeometryCircleDTO();
         g.coord = centroid.center;
 
         retVal.figs.Add(new FigureGeoDTO()
         {
-          id = centroid.GetId(),
+          name = $"Centroid #{centroid.GetCount()}",
+          id = centroids.IndexOf(centroid).ToString().PadLeft(24, '0'),
           geometry = g,
-          radius = centroid.radius * 2
+          radius = centroid.radius * 2,
+          extra_props = extra_props
         });
        }
 
