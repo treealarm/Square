@@ -5,11 +5,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
-import { Box, Button, ButtonGroup, FormControlLabel, IconButton, List, ListItem, Switch } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton, List, ListItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import * as TracksStore from '../store/TracksStates';
 import * as SearchResultStore from '../store/SearchResultStates';
 import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO } from '../store/Marker';
 import { PropertyFilter } from './PropertyFilter';
@@ -198,20 +197,16 @@ export function RetroSearch() {
 
 
   return (
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <List>
-          <ListItem>
-            <ButtonGroup variant="contained" aria-label="search button group">
-              <IconButton aria-label="search" size="large" onClick={(e) => searchTracks(e)}>
-                <SearchIcon fontSize="inherit" />
-              </IconButton>
-              <IconButton aria-label="addProp" size="large" onClick={(e) => addProperty(e)}>
-                <LibraryAddIcon fontSize="inherit" />
-            </IconButton>
-            <Button onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
-            <Button onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
-            </ButtonGroup>
-          </ListItem>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Box display="flex"
+        justifyContent="flex-start"
+      >
+        <IconButton aria-label="search" size="medium" onClick={(e) => searchTracks(e)}>
+          <SearchIcon fontSize="inherit" />
+        </IconButton>
+      </Box>
+
+      <List>
           <ListItem>
           <DateTimePicker
             label="begin (ISO 8601)"
@@ -227,7 +222,7 @@ export function RetroSearch() {
                   } 
                 }/>}
           />
-
+          <Button onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
           </ListItem>
           <ListItem>
           <DateTimePicker
@@ -244,8 +239,17 @@ export function RetroSearch() {
                   }
                 } />}
           />
-      
-          </ListItem>
+          <Button onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
+        </ListItem>
+
+          <Box display="flex"
+            justifyContent="flex-start"
+          >
+              <IconButton aria-label="addProp" size="medium" onClick={(e) => addProperty(e)}>
+                <LibraryAddIcon fontSize="inherit" />
+              </IconButton>            
+          </Box>
+
         <ListItem>
           <PropertyFilter
             propsFilter={searchFilter?.property_filter}

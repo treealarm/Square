@@ -1,11 +1,12 @@
 ﻿import * as React from 'react';
 
 import Button from '@mui/material/Button';
-import { Box, Menu, MenuItem} from '@mui/material';
+import { Box, IconButton, Menu, MenuItem} from '@mui/material';
 import * as EditStore from '../store/EditStates';
 import { useDispatch, useSelector } from 'react-redux';
 import { IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
+import AddIcon from '@mui/icons-material/Add';
 
 export default function EditOptions() {
 
@@ -98,9 +99,12 @@ export default function EditOptions() {
       border: 1,
       
     }}>
-        <Button onClick={handleClickListItem} style={{ textTransform: 'none' }}>
-          New object
-        </Button>
+      <IconButton onClick={handleClickListItem} size="small"  style={{ textTransform: 'none' }}>
+        
+        <AddIcon fontSize="inherit" />
+        <Box>New object</Box>
+        
+      </IconButton>
           <Menu
             id="lock-menu"
             anchorEl={anchorEl}

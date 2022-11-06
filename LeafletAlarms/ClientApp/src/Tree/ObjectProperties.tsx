@@ -174,7 +174,7 @@ export function ObjectProperties() {
   return (
     <Box sx={{
       width: '100%',
-      maxWidth: 460,
+      
       bgcolor: 'background.paper',
       overflow: 'auto',
       height: '100%',
@@ -183,11 +183,11 @@ export function ObjectProperties() {
 
       <List>
         <ListItem>
-          <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <IconButton aria-label="save" size="large" onClick={handleSave}>
+          <ButtonGroup variant="contained" aria-label="properties pannel">
+            <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
             </IconButton>
-            <IconButton aria-label="edit" size="large" onClick={(e) => editMe(objProps, !selectedEditMode.edit_mode)} >
+            <IconButton aria-label="edit" size="medium" onClick={(e) => editMe(objProps, !selectedEditMode.edit_mode)} >
               {
                 selectedEditMode.edit_mode ?
                   <NotInterestedSharpIcon fontSize="inherit" /> :
@@ -195,13 +195,13 @@ export function ObjectProperties() {
               }
 
             </IconButton>
-            <IconButton aria-label="delete" size="large" onClick={(e) => deleteMe(objProps, e)}>
+            <IconButton aria-label="delete" size="medium" onClick={(e) => deleteMe(objProps, e)}>
               <DeleteIcon fontSize="inherit" />
             </IconButton>
           </ButtonGroup>
 
           <ButtonGroup variant="contained" aria-label="search button group">
-            <IconButton aria-label="search" size="large" onClick={(e) => searchMeOnMap(objProps, e)}>
+            <IconButton aria-label="search" size="medium" onClick={(e) => searchMeOnMap(objProps, e)}>
               <SearchIcon fontSize="inherit" />
             </IconButton>
           </ButtonGroup>

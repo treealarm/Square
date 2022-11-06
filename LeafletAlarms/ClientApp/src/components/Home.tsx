@@ -28,6 +28,7 @@ export function Home() {
         <Stack direction="row" spacing={1}>
           <TabControl />
           <WebSockClient />
+          <EditOptions />
         </Stack>
       </Grid>
 
@@ -57,7 +58,7 @@ export function Home() {
       </Grid>
 
       <Grid item xs={3} sx={{ height: "90%" }} container spacing={0}>
-        <Paper sx={{ maxHeight: "100%", overflow: 'auto' }}>
+        <Paper sx={{ maxHeight: "100%", overflow: 'auto', width:"100%"}}>
           <TabContext value={valuePropTab}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <TabList
@@ -66,12 +67,11 @@ export function Home() {
                 allowScrollButtonsMobile
                 onChange={handleChangePropTab} aria-label="Property tabs">
                 <Tab label="Properties" value="1" />
-                <Tab label="Retro" value="2" />
+                <Tab label="Search" value="2" />
               </TabList>
             </Box>
             <TabPanel value="1" sx={{ padding: 1 }}>
-              <Stack sx={{ height: "100%" }}>
-                <EditOptions />
+              <Stack sx={{ height: "100%" }}>                
                 <ObjectProperties />
               </Stack>
             </TabPanel>

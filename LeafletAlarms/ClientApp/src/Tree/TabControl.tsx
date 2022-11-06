@@ -6,10 +6,7 @@ import Box from '@mui/material/Box';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as TreeStore from '../store/TreeStates';
-import * as GuiStore from '../store/GUIStates';
-import { ApplicationState } from '../store';
 import { TreeMarker } from '../store/Marker';
-import { useCallback } from 'react';
 
 export default function TabControl() {
 

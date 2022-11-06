@@ -33,10 +33,9 @@ export function MapComponent(props: any) {
       center={[55.752696480817086, 37.583007383349745]}
       zoom={13}
       scrollWheelZoom={true}>
-      {
-        props.propTab == "2" ?
-        <TrackViewer /> : <LocationMarkers />
-      }
+
+      <TrackViewer />
+      <LocationMarkers />
       
       <EditableFigure />
       <MapPositionChange />

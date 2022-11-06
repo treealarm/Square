@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import * as MarkersStore from '../store/MarkersStates';
-import { Box, Button, IconButton, Paper, styled, Tooltip } from "@mui/material";
+import { Box, IconButton, Paper, styled, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
 import { useDispatch, useSelector } from "react-redux";
@@ -112,8 +112,9 @@ export function WebSockClient() {
       <Box sx={{ border: 1 }}>
         <Tooltip title={url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
         <IconButton
-          onClick={sendPing}
-          style={{ textTransform: 'none' }}
+          onClick = {sendPing}
+            style = {{ textTransform: 'none' }}
+            size = "small"
           >
           <CircleIcon color={isConnected ? "success" : "error"} />
             <Item key={'item1'} elevation={1}>

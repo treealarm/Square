@@ -83,7 +83,6 @@ export function SearchResult() {
   return (
     <Box sx={{
       width: '100%',
-      maxWidth: 460,
       bgcolor: 'background.paper',
       overflow: 'auto',
       height: '100%',

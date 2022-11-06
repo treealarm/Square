@@ -3,9 +3,9 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { ApplicationState } from '../store';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { KeyValueDTO, ObjPropsSearchDTO } from '../store/Marker';
+import CloseIcon from "@mui/icons-material/Close";
+import { KeyValueDTO } from '../store/Marker';
 import { Box, IconButton, List, ListItem } from '@mui/material';
-import { useCallback } from 'react';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -58,7 +58,6 @@ export function PropertyFilter(props:any) {
     <Box
       sx={{
         width: '100%',
-        maxWidth: 460,
         bgcolor: 'background.paper',
         overflow: 'auto',
         height: '100%',
@@ -69,6 +68,18 @@ export function PropertyFilter(props:any) {
         props.propsFilter?.props?.map((item: KeyValueDTO, index: { toString: () => string; }) =>
 
           <ListItem key={index.toString()}>
+            <IconButton
+              aria-label="close"
+              size="small"
+              onClick={(e) => deleteProperty(e, item)}
+              sx={{
+                position: 'absolute',
+                right: 0,
+                top: 0
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
             <Stack spacing={2}
               
               sx={{
@@ -85,9 +96,6 @@ export function PropertyFilter(props:any) {
                 value={item.str_val}
                 onChange={handleChangePropVal} />
               </Stack>
-              <IconButton aria-label="addProp" size="large" onClick={(e) => deleteProperty(e, item)}>
-                <DeleteIcon fontSize="inherit" />
-              </IconButton>
             </ListItem>
         )
       }
