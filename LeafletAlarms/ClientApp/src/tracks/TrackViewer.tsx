@@ -19,7 +19,7 @@ declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
-var pathOptionsTracks = { color: "yellow" };
+var pathOptionsTracks = { color: "white" };
 var pathOptionsRouts = { color: "blue" };
 
 function TrackPolyline(props: any) {

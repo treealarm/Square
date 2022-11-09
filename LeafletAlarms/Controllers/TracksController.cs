@@ -86,6 +86,13 @@ namespace LeafletAlarms.Controllers
       return new List<string>() { "Hello world" };
     }
 
+    [HttpPost()]
+    [Route("Empty")]
+    public string Empty(string ids)
+    {
+      return  "Hello world" ;
+    }
+
     private async Task<Dictionary<string, TimeSpan>> DoUpdateTracks(FiguresDTO movedMarkers)
     {
       var trackPoints = new List<TrackPointDTO>();

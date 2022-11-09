@@ -102,7 +102,7 @@ export default function EditOptions() {
       <IconButton onClick={handleClickListItem} size="small"  style={{ textTransform: 'none' }}>
         
         <AddIcon fontSize="inherit" />
-        <Box>New object</Box>
+        <Box>New Object</Box>
         
       </IconButton>
           <Menu

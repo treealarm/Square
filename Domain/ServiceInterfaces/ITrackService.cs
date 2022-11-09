@@ -14,7 +14,7 @@ namespace Domain.ServiceInterfaces
     Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box);
     Task<TrackPointDTO> GetLastAsync(string figure_id, DateTime beforeTime);
     Task<TrackPointDTO> GetByIdAsync(string id);
-    Task<List<TrackPointDTO>> GetTracksByTime(
+    Task<List<TrackPointDTO>> GetFirstTracksByTime(
       DateTime? time_start,
       DateTime? time_end,
       List<string> ids

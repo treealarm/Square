@@ -1,6 +1,4 @@
-﻿using DbLayer.Models;
-using Domain;
-using Domain.GeoDBDTO;
+﻿using Domain;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
@@ -11,11 +9,9 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
@@ -93,6 +89,34 @@ namespace DbLayer.Services
         var indexModel = new CreateIndexModel<DBTrackPoint>(
           keys, new CreateIndexOptions()
           { Name = "mid" }
+        );
+
+        _collFigures.Indexes.CreateOneAsync(indexModel);
+      }
+
+      {
+        IndexKeysDefinition<DBTrackPoint> keys =
+                new IndexKeysDefinitionBuilder<DBTrackPoint>()
+                  .Ascending(d => d.meta.figure.id)
+                ;
+
+        var indexModel = new CreateIndexModel<DBTrackPoint>(
+          keys, new CreateIndexOptions()
+          { Name = "fid" }
+        );
+
+        _collFigures.Indexes.CreateOneAsync(indexModel);
+      }
+      {
+        IndexKeysDefinition<DBTrackPoint> keys =
+                new IndexKeysDefinitionBuilder<DBTrackPoint>()
+                  .Ascending(d => d.meta.figure.id)
+                  .Ascending(d => d.timestamp)
+                ;
+
+        var indexModel = new CreateIndexModel<DBTrackPoint>(
+          keys, new CreateIndexOptions()
+          { Name = "fid_ts" }
         );
 
         _collFigures.Indexes.CreateOneAsync(indexModel);
@@ -185,65 +209,59 @@ namespace DbLayer.Services
       Debug.WriteLine("");
     }
 
-    public async Task<List<TrackPointDTO>> GetTracksByTime(
+    public async Task<List<TrackPointDTO>> GetFirstTracksByTime(
       DateTime? time_start,
       DateTime? time_end,
-      List<string> ids
+      List<string> figIds
     )
     {
+      var idsFilled = (figIds != null && figIds.Count > 0);
+      var ids = figIds;
+
       List<DBTrackPoint> dbTracks = new List<DBTrackPoint>();
 
       var builder = Builders<DBTrackPoint>.Filter;
 
-      FilterDefinition<DBTrackPoint> filter = FilterDefinition<DBTrackPoint>.Empty;
+      FilterDefinition<DBTrackPoint>  filter = FilterDefinition<DBTrackPoint>.Empty;
 
-      if (ids != null && ids.Count > 0 && time_start != null && time_end == null)
+      if (time_start != null && time_end != null)
       {
-        foreach (var id in ids)
-        {
-          var dbTracksTemp = await _collFigures
-            .Find(t => t.meta.figure.id == id && t.timestamp >= time_start)
-            .FirstOrDefaultAsync();
-
-          if ( dbTracksTemp!= null)
-          {
-            dbTracks.Add(dbTracksTemp);
-          }
-        }
+        filter =
+          builder.Where(t => t.timestamp >= time_start && t.timestamp <= time_end);      
       }
-      else if (ids != null && ids.Count > 0 && time_start == null && time_end != null)
+
+      if (ids != null && ids.Count > 0)
       {
+        FilterDefinition<DBTrackPoint> f;
+
         foreach (var id in ids)
         {
-          var dbTracksTemp = await _collFigures
-            .Find(t => t.meta.figure.id == id && t.timestamp <= time_end)
-            .SortByDescending(t => t.timestamp)
-            .FirstOrDefaultAsync();
-
-          if (dbTracksTemp != null)
+          if (FilterDefinition<DBTrackPoint>.Empty == filter)
           {
-            dbTracks.Add(dbTracksTemp);
+            f = builder.Where(t => ids.Contains(t.meta.figure.id));
           }
-        }
+          else
+          {
+            f = filter & builder.Where(t => t.meta.figure.id == id);
+          }
+
+          var track = await _collFigures.Find(f).FirstOrDefaultAsync();
+
+          if (track != null)
+          {
+            dbTracks.Add(track);
+          }
+        }        
       }
       else
       {
-        if (time_start != null)
-        {
-          filter = filter & builder.Where(t => t.timestamp >= time_start);
-        }
+        dbTracks = await _collFigures
+          .Find(filter)
+          .Limit(10000)
+          .ToListAsync()
+          ;
 
-        if (time_end != null)
-        {
-          filter = filter & builder.Where(t => t.timestamp <= time_end);
-        }
-
-        if (ids != null && ids.Count > 0)
-        {
-          filter = filter & builder.Where(t => ids.Contains(t.meta.figure.id));
-        }
-
-        dbTracks.AddRange(await _collFigures.Find(filter).ToListAsync());
+        dbTracks = dbTracks.DistinctBy(d => d.meta.id).ToList();
       }
 
       return DBListToDTO(dbTracks);

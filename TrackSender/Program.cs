@@ -35,6 +35,18 @@ namespace TrackSender
         var moscowBuilder = new NominatimProcessor();
         List<Task> tasks = new List<Task>();
 
+        //TestClient testClient = new TestClient();
+
+        //var t1 = DateTime.Now;
+
+        //for (int i = 0; i < 10000; i++)
+        //{
+        //  testClient.Empty("test").Wait();
+        //}
+
+        //Console.WriteLine($"10K calls:{(DateTime.Now - t1).TotalSeconds}");
+        //return;
+
         //var taskMoscowBuild = moscowBuilder.RunAsync(token, tasks);
         //Task.WaitAll(taskMoscowBuild);
 

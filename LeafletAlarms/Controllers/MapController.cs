@@ -178,16 +178,13 @@ namespace LeafletAlarms.Controllers
     {
       List<ObjPropsDTO> retVal = new List<ObjPropsDTO>();
 
-      if (filter.property_filter != null && filter.property_filter.props.Count > 0)
-      {
-        var props = await _mapService.GetPropByValuesAsync(
-          filter.property_filter,
-          filter.start_id,
-          filter.forward,
-          filter.count
-        );
-        retVal.AddRange(props);
-      }
+      var props = await _mapService.GetPropByValuesAsync(
+        filter.property_filter,
+        filter.start_id,
+        filter.forward,
+        filter.count
+      );
+      retVal.AddRange(props);
 
       return retVal;
     }
@@ -213,17 +210,15 @@ namespace LeafletAlarms.Controllers
 
         var ids = propsObjs.Select(i => i.id).ToList();
 
-        if (filter.time_start != null || filter.time_end != null)
-        {
-          // History, so limit by time.
-          var tracks = await _tracksService.GetTracksByTime(
-            filter.time_start,
-            filter.time_end,
-            ids
-          );
+        // History, so limit by time.
+        var tracks = await _tracksService.GetFirstTracksByTime(
+          filter.time_start,
+          filter.time_end,
+          ids
+        );
 
-          ids = tracks.Select(t => t.figure.id).ToList();
-        }
+        ids = tracks.Select(t => t.figure.id).ToList();
+
 
         var tree = await _mapService.GetAsync(ids);
 
