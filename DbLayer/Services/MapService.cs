@@ -6,17 +6,12 @@ using Domain.ObjectInterfaces;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
-using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using static MongoDB.Bson.Serialization.Serializers.SerializerHelper;
 
 namespace DbLayer.Services
 {
@@ -460,30 +455,33 @@ namespace DbLayer.Services
           filterPaging = Builders<DBMarkerProperties>.Filter.Lt("_id", new ObjectId(start_id));
       }
 
-      foreach (var prop in propFilter.props)
+      if (propFilter != null)
       {
-        var request =
-          string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
-          prop.prop_name,
-          prop.str_val);
-
-        var f1 = Builders<DBMarkerProperties>
-          .Filter
-          .ElemMatch(t => t.extra_props, request)
-          ;
-
-        var metaValue = new BsonDocument(
-            "str_val",
-            prop.str_val
-            );
-
-        if (filter == builder.Empty)
+        foreach (var prop in propFilter.props)
         {
-          filter = f1;
-        }
-        else
-        {
-          filter |= f1;
+          var request =
+            string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
+            prop.prop_name,
+            prop.str_val);
+
+          var f1 = Builders<DBMarkerProperties>
+            .Filter
+            .ElemMatch(t => t.extra_props, request)
+            ;
+
+          var metaValue = new BsonDocument(
+              "str_val",
+              prop.str_val
+              );
+
+          if (filter == builder.Empty)
+          {
+            filter = f1;
+          }
+          else
+          {
+            filter |= f1;
+          }
         }
       }
 

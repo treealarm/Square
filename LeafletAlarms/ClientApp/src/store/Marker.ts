@@ -126,6 +126,7 @@ export interface BoundBox {
   zoom: number;
   ids?: string[];
   count?: number;
+  property_filter?: ObjPropsSearchDTO;
 }
 
 export interface KeyValueDTO {
@@ -143,6 +144,10 @@ export interface SearchFilterGUI {
   property_filter?: ObjPropsSearchDTO;
   search_id: string;
   sort?: number;
+
+  show_objects?: boolean;
+  show_tracks?: boolean;
+  show_routs?: boolean;
 }
 
 export interface SearchFilterDTO{
@@ -159,8 +164,7 @@ export interface SearchFilterDTO{
 export interface BoxTrackDTO extends BoundBox
 {
   time_start?: Date;
-  time_end?: Date;
-  property_filter?: ObjPropsSearchDTO;
+  time_end?: Date;  
   sort?: number;
 }
 

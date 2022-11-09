@@ -208,6 +208,13 @@ namespace DbLayer.Services
         builder.Where(p => levels.Contains(p.zoom_level) || string.IsNullOrEmpty(p.zoom_level))
         ;
 
+      if (box.ids != null &&
+        (box.ids.Count > 0 || (box.property_filter != null && box.property_filter.props.Count > 0))
+      )
+      {
+        filter = filter & builder.Where(t => box.ids.Contains(t.id));
+      }
+
       Log(filter);
 
       var list = await _geoCollection.Find(filter)

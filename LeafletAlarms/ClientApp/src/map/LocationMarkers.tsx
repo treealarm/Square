@@ -145,25 +145,9 @@ export function LocationMarkers() {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  function RequestMarkersByBox(bounds: L.LatLngBounds) {
-    if (bounds == null) {
-      bounds = parentMap.getBounds();
-    }
-    
-    var boundBox: BoundBox = {
-      wn: [bounds.getWest(), bounds.getNorth()],
-      es: [bounds.getEast(), bounds.getSouth()],
-      zoom: parentMap.getZoom()
-    };
-    dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
-  }
-  useEffect(() => {
-    console.log('ComponentDidMount LocationMarkers');
-    RequestMarkersByBox(null);
-  }, []);
-
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
+  const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
 
   const selectedEditMode = useSelector((state) => state.editState);
 
@@ -173,6 +157,27 @@ export function LocationMarkers() {
   const visualStates = useSelector((state) => state?.markersVisualStates?.visualStates);
   const alarmedObjects = useSelector((state) => state?.markersVisualStates?.alarmed_objects);
   const objProps = useSelector((state) => state?.objPropsStates?.objProps);
+
+  function RequestMarkersByBox(bounds: L.LatLngBounds) {
+    if (bounds == null) {
+      bounds = parentMap.getBounds();
+    }
+    
+    var boundBox: BoundBox = {
+      wn: [bounds.getWest(), bounds.getNorth()],
+      es: [bounds.getEast(), bounds.getSouth()],
+      zoom: parentMap.getZoom(),
+      property_filter: searchFilter?.property_filter
+    };
+    dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
+  }
+
+  useEffect(() => {
+    console.log('ComponentDidMount LocationMarkers');
+    RequestMarkersByBox(null);
+  }, []);
+
+
 
   useEffect(
     () => {
@@ -225,8 +230,8 @@ export function LocationMarkers() {
 
   useEffect(
     () => {
-        RequestMarkersByBox(null);
-    }, [markersStates?.initiateUpdateAll]);
+      RequestMarkersByBox(null);
+    }, [markersStates?.initiateUpdateAll, searchFilter?.search_id]);
 
   const getColor = useCallback(
     (marker: IObjProps) => {
@@ -294,6 +299,7 @@ export function LocationMarkers() {
   return (
     <React.Fragment>
       {
+        searchFilter?.show_objects != false &&
         markers?.figs?.map((marker, index) =>
           <MyCommonFig
             key={marker.id} 

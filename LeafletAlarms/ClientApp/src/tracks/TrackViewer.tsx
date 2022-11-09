@@ -5,14 +5,14 @@ import * as TracksStore from '../store/TracksStates';
 import { ApplicationState } from '../store';
 import { BoxTrackDTO, IGeoObjectDTO, LineStringType, PointType } from '../store/Marker';
 
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import {
   useMap,
   Polyline,
   useMapEvents,
   Circle
 } from 'react-leaflet'
-import { Console } from 'console';
+
 
 
 declare module 'react-redux' {
@@ -97,6 +97,7 @@ export function TrackViewer() {
   const parentMap = useMap();
 
   const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
+
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state) => state?.guiStates?.checked);
   const routs = useSelector((state) => state?.tracksStates?.routs);
@@ -157,7 +158,8 @@ export function TrackViewer() {
   return (
     <React.Fragment>
       {
-        tracks?.map((track, index) =>
+        searchFilter?.show_tracks != false &&
+        tracks?.map((track, index) =>          
           <CommonTrack
             key={track?.id}
             hidden={false}
@@ -167,6 +169,7 @@ export function TrackViewer() {
           </CommonTrack>
         )}
       {
+        searchFilter?.show_routs != false &&
         routs?.map((rout, index) =>
           <CommonTrack
             key={rout?.id}

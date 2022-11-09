@@ -9,6 +9,7 @@ import { WebSockClient } from "./WebSockClient";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { RetroSearch } from "../Tree/RetroSearch";
 import { SearchResult } from "../Tree/SearchResult";
+import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
 
 export function Home() {
 
@@ -28,7 +29,7 @@ export function Home() {
         <Stack direction="row" spacing={1}>
           <TabControl />
           <WebSockClient />
-          
+          <GlobalLayersOptions/>
         </Stack>
       </Grid>
 

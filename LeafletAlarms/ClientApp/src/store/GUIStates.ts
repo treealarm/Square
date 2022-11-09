@@ -92,7 +92,7 @@ const unloadedState: GUIState = {
   requestedTreeUpdate: 0,
   map_option: { map_center: null }
   ,
-  searchFilter: null,
+  searchFilter: null
 };
 
 export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incomingAction: Action): GUIState => {

@@ -355,12 +355,37 @@ namespace LeafletAlarms.Controllers
     {
       var figures = await _mapService.GetByNameAsync(name);
       return CreatedAtAction(nameof(GetByName), figures.Values);
-    }    
+    }
+
+    private async Task AddIdsByProperties(BoxDTO box)
+    {
+      // This methods means filter by properties if exists.
+      List<string> ids = null;
+
+      if (box.property_filter != null && box.property_filter.props.Count > 0)
+      {
+        var props = await _mapService.GetPropByValuesAsync(
+          box.property_filter,
+          null,
+          true,
+          1000
+        );
+        ids = props.Select(i => i.id).ToList();
+
+        if (box.ids == null)
+        {
+          box.ids = new List<string>();
+        }
+        box.ids.AddRange(ids);
+      }
+    }
 
     [HttpPost]
     [Route("GetByBox")]
     public async Task<FiguresDTO> GetByBox(BoxDTO box)
     {
+      await AddIdsByProperties(box);
+
       var geo = await _geoService.GetGeoAsync(box);
       var figures =  await GetFigures(geo);
 

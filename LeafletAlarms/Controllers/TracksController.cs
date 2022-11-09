@@ -224,7 +224,7 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(UpdateTracks), dic);
     }
 
-    private async Task AddIdsByProperties(BoxTrackDTO box)
+    private async Task AddIdsByProperties(BoxDTO box)
     {
       List<string> ids = null;
 

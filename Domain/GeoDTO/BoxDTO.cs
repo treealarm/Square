@@ -10,5 +10,6 @@ namespace Domain
     public double? zoom { get; set; }
     public List<string> ids { get; set; }
     public int? count { get; set; }
+    public ObjPropsSearchDTO? property_filter { get; set; }
   }
 }
