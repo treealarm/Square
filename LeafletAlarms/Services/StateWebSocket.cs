@@ -28,7 +28,14 @@ namespace LeafletAlarms.Services
     private IMapService _mapService;
     private IIdsQueue _stateIdsQueueService;
 
-    private System.Timers.Timer _timer;
+    private Task? _timer;
+    private CancellationTokenSource _cancellationTokenSource
+      = new CancellationTokenSource();
+
+    Dictionary<string, TrackPointDTO> _dicUpdatedTracks =
+      new Dictionary<string, TrackPointDTO>();
+    private object _lockerTracks = new object();
+
     private HashSet<string> _dicIds = new HashSet<string>();
     private object _locker = new object();
     private BoxDTO _currentBox;
@@ -65,18 +72,32 @@ namespace LeafletAlarms.Services
 
     void InitTimer()
     {
-      _timer = new System.Timers.Timer();
-      _timer.Interval = 1000;
-      _timer.AutoReset = false;
-      _timer.Elapsed += new ElapsedEventHandler(OnElapsed);
-      //_timer.Enabled = true;
+      _timer = new Task(() => OnElapsed(), _cancellationTokenSource.Token);
+      _timer.Start();
     }
 
-    private async void OnElapsed(object sender, ElapsedEventArgs e)
+    private async void OnElapsed()
     {
-      // let timer start ticking
-      _timer.Enabled = true;
-      await Task.Delay(0);
+      while (!_cancellationTokenSource.IsCancellationRequested)
+      {
+        List<TrackPointDTO> movedMarkers;
+
+        lock (_lockerTracks)
+        {
+          movedMarkers = _dicUpdatedTracks.Values.ToList();
+          _dicUpdatedTracks.Clear();
+        }
+
+        if (movedMarkers.Any())
+        {
+          await DoUpdateTrackPosition(movedMarkers);
+          await Task.Delay(500);
+        }
+        else
+        {
+          await Task.Delay(1000);
+        }
+      }
     }
 
     public async Task ProcessAcceptedSocket()
@@ -115,7 +136,8 @@ namespace LeafletAlarms.Services
         );
       }
 
-      _timer.Enabled = false;
+      _cancellationTokenSource.Cancel();
+      _timer.Wait();
 
       await _webSocket.CloseAsync(
         result.CloseStatus.Value,
@@ -195,7 +217,17 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public async Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
+    public void OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
+    {
+      lock(_lockerTracks)
+      {
+        foreach(var track in movedMarkers)
+        {
+          _dicUpdatedTracks[track.figure.id] = track;
+        }
+      }      
+    }
+    private async Task DoUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       HashSet<string> toUpdate = new HashSet<string>();
       HashSet<string> toDelete = new HashSet<string>();
@@ -254,9 +286,11 @@ namespace LeafletAlarms.Services
 
         await SendPacket(packet);
       }
-
+      
       if (toUpdate.Count > 0)
       {
+        await RemoveFilteredIds(curBox, toUpdate);
+
         StateBaseDTO packet = new StateBaseDTO()
         {
           action = "set_ids2update",
@@ -270,6 +304,32 @@ namespace LeafletAlarms.Services
         }
 
         await SendPacket(packet);
+      }
+    }
+
+    public async Task RemoveFilteredIds(BoxDTO curBox, HashSet<string> toUpdate)
+    {
+      if (curBox.property_filter != null && curBox.property_filter.props.Count > 0)
+      {
+        var toCompare = curBox.property_filter.props;
+
+        var props = await _mapService.GetPropsAsync(toUpdate.ToList());
+
+        foreach (var prop in props)
+        {
+          foreach (var c in toCompare)
+          {
+            var objProp = prop.Value.extra_props
+              .Where(i => i.prop_name == c.prop_name)
+              .FirstOrDefault();
+
+            if (objProp == null || objProp.str_val != c.str_val)
+            {
+              toUpdate.Remove(prop.Key);
+              break;
+            }
+          }
+        }
       }
     }
 

@@ -72,11 +72,11 @@ namespace LeafletAlarms.Services
       StateSockets.TryRemove(context.Connection.Id, out var sock);
     }
 
-    public async Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
+    public void OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       foreach (var sock in StateSockets)
       {
-        await sock.Value.OnUpdateTrackPosition(movedMarkers);
+        sock.Value.OnUpdateTrackPosition(movedMarkers);
       }
     }
 

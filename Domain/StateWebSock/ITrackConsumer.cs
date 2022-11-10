@@ -11,7 +11,7 @@ namespace Domain.StateWebSock
 {
   public interface ITrackConsumer
   {
-    Task OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers);
+    void OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers);
     Task PushAsync(HttpContext context, WebSocket webSocket);
   }
 }

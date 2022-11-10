@@ -50,8 +50,8 @@ namespace TrackSender
         //var taskMoscowBuild = moscowBuilder.RunAsync(token, tasks);
         //Task.WaitAll(taskMoscowBuild);
 
-        var taskStates = testStates.RunAsync(token, tasks);        
-        tasks.Add(taskStates);
+        //var taskStates = testStates.RunAsync(token, tasks);        
+        //tasks.Add(taskStates);
 
         var taskMove = testMove.RunAsync(token, tasks);
         tasks.Add(taskMove);

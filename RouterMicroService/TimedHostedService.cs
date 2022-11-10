@@ -7,6 +7,7 @@ using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
+using System.Threading;
 using static DbLayer.Models.DBRoutLine;
 
 namespace RouterMicroService
@@ -16,7 +17,8 @@ namespace RouterMicroService
     private int executionCount = 0;
     private readonly ILogger<TimedHostedService> _logger;
     private Task? _timer;
-    CancellationToken _cancellationToken = new CancellationToken();
+    private CancellationTokenSource _cancellationTokenSource
+      = new CancellationTokenSource();
     private IRoutService _routService;
     private ITrackRouter _router;
     private readonly DaprClient _daprClient;
@@ -45,7 +47,7 @@ namespace RouterMicroService
     {
       _logger.LogInformation("Timed Hosted Service running.");
 
-      _timer = new Task(() => DoWork(), _cancellationToken);
+      _timer = new Task(() => DoWork(), _cancellationTokenSource.Token);
       _timer.Start();
 
       return Task.CompletedTask;
@@ -62,7 +64,7 @@ namespace RouterMicroService
       _logger.LogInformation(
               "Timed Hosted Service is working. Count: {Count}", count);
 
-      while (!_cancellationToken.IsCancellationRequested)
+      while (!_cancellationTokenSource.IsCancellationRequested)
       {
         if (!_router.IsMapExist(_routeInstanse))
         {
@@ -160,7 +162,7 @@ namespace RouterMicroService
     public Task StopAsync(CancellationToken stoppingToken)
     {
       _logger.LogInformation("Timed Hosted Service is stopping.");
-
+      _cancellationTokenSource.Cancel();
       _timer?.Wait();
 
       return Task.CompletedTask;

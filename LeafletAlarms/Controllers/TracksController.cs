@@ -197,7 +197,7 @@ namespace LeafletAlarms.Controllers
         timing["routsInsert"] = t2 - t1;
       }
       t1 = DateTime.Now;
-      await _stateService.OnUpdateTrackPosition(trackPoints);
+      _stateService.OnUpdateTrackPosition(trackPoints);
       timing["UpdateTracksCall"] = t2 - t1;
       t2 = DateTime.Now;
 
