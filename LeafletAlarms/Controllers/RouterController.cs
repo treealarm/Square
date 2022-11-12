@@ -66,6 +66,15 @@ namespace LeafletAlarms.Controllers
     [Route("GetRoutsByBox")]
     public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
     {
+      if (
+        box.time_start == null &&
+        box.time_end == null
+      )
+      {
+        // We do not search without time diapason.
+        return new List<RoutLineDTO>();
+      }
+
       await AddIdsByProperties(box);
       var geo = await _routService.GetRoutsByBox(box);
       return geo;

@@ -248,13 +248,22 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetTracksByBox")]
-    public async Task<ActionResult<List<TrackPointDTO>>> GetTracksByBox(BoxTrackDTO box)
+    public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
+      if (
+        box.time_start == null &&
+        box.time_end == null
+      )
+      {
+        // We do not search without time diapason.
+        return  new List<TrackPointDTO>();
+      }
+
       await AddIdsByProperties(box);
 
       var trackPoints = await _tracksService.GetTracksByBox(box);
 
-      return CreatedAtAction(nameof(GetTracksByBox), trackPoints);
+      return trackPoints;
     }
   }
 }

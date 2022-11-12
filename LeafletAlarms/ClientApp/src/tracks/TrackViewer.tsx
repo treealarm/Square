@@ -106,6 +106,7 @@ export function TrackViewer() {
   function UpdateTracks() {
     var bounds: L.LatLngBounds;
     bounds = parentMap.getBounds();
+
     var boundBox: BoxTrackDTO = {
       wn: [bounds.getWest(), bounds.getNorth()],
       es: [bounds.getEast(), bounds.getSouth()],
@@ -115,6 +116,12 @@ export function TrackViewer() {
       property_filter: searchFilter?.property_filter,
       sort: searchFilter?.sort
     };
+
+    if (searchFilter?.applied != true) {
+      boundBox.time_start = null;
+      boundBox.time_end = null;
+      boundBox.property_filter = null;
+    }
 
     if (selected_id != null || checked_ids != null) {
       boundBox.ids = [];

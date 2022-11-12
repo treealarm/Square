@@ -38,6 +38,21 @@ type KnownAction =
 
 export const actionCreators = {
 
+  setEmptyResult: (
+  ): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    var emptyResult: GetBySearchDTO = {
+      search_id: "",
+      list: []
+    }
+    dispatch({
+      type: "RECEIVE_SEARCH_STATE",
+      data: emptyResult
+    });
+    },
+
   getByFilter: (
     filter: SearchFilterDTO
   ): AppThunkAction<KnownAction> => (
@@ -94,7 +109,8 @@ export const reducer: Reducer<SearchResultState> = (
       };
 
     case "RECEIVE_SEARCH_STATE":
-      if (action.data.search_id == state.filter.search_id) {
+      if (action.data.search_id == state.filter.search_id ||
+        action.data.search_id == "") {
         return {
           ...state,
           list: action.data.list

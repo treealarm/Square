@@ -14,6 +14,7 @@ import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO } from '../store/Ma
 import { PropertyFilter } from './PropertyFilter';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import * as GuiStore from '../store/GUIStates';
+import ToggleButton from '@mui/material/ToggleButton';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -27,7 +28,6 @@ export function RetroSearch() {
   const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state) => state?.tracksStates?.tracks);
   const routs = useSelector((state) => state?.tracksStates?.routs);
-  
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = Object.assign({}, searchFilter);
@@ -49,15 +49,20 @@ export function RetroSearch() {
     }
   }, []);
 
-  function UpdateFilterInRedux(filter: SearchFilterGUI) {
-    dispatch(GuiStore.actionCreators.applyFilter(filter));    
+  function UpdateFilterInRedux(filter: SearchFilterGUI, applyFilter: boolean) {
+    filter.applied = applyFilter;
+    dispatch(GuiStore.actionCreators.applyFilter(filter));
+
+    if (filter.applied != true) {
+      dispatch(SearchResultStore.actionCreators.setEmptyResult());
+    }
   }
 
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
       var filter = GetCopyOfSearchFilter();
       filter.time_start = new Date(newValue.toISOString());
-      UpdateFilterInRedux(filter);
+      UpdateFilterInRedux(filter, false);
     }
     catch (err)
     {
@@ -69,16 +74,18 @@ export function RetroSearch() {
     try {
       var filter = GetCopyOfSearchFilter();
       filter.time_end = new Date(newValue.toISOString());
-      UpdateFilterInRedux(filter);
+      UpdateFilterInRedux(filter, false);
     }
     catch (err) {
 
     }
   };
 
-  function DoSearchTracks(filter: SearchFilterGUI) {
-    filter.search_id = (new Date()).toISOString();
-    UpdateFilterInRedux(filter);
+  function DoSearchTracks(filterIn: SearchFilterGUI) {
+    filterIn.search_id = (new Date()).toISOString();
+    UpdateFilterInRedux(filterIn, filterIn.applied == true);
+
+    let filter = Object.assign({}, searchFilter);
 
     var filterDto: SearchFilterDTO = {
       search_id: (new Date()).toISOString(),
@@ -89,13 +96,20 @@ export function RetroSearch() {
       count: ApiDefaultPagingNum
     }
 
-    dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
+    if (filterIn.applied != true) {
+      
+      dispatch(SearchResultStore.actionCreators.setEmptyResult());
+    }
+    else {
+      dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
+    }
+    
   }
 
   const searchTracks = useCallback(
-    (e) => {
+    () => {
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();
-
+      filter.applied = !filter.applied;
       DoSearchTracks(filter);
 
     }, [searchFilter]);
@@ -104,14 +118,14 @@ export function RetroSearch() {
     (e) => {
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
-      UpdateFilterInRedux(filter);
+      UpdateFilterInRedux(filter, false);
     }, [searchFilter]);
 
   const setPropsFilter = useCallback(
     (propsFilter: ObjPropsSearchDTO) => {
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.property_filter = propsFilter;
-      UpdateFilterInRedux(filter);
+      UpdateFilterInRedux(filter, false);
     }, [searchFilter]);
 
   const OnNavigate = useCallback(
@@ -201,9 +215,15 @@ export function RetroSearch() {
       <Box display="flex"
         justifyContent="flex-start"
       >
-        <IconButton aria-label="search" size="medium" onClick={(e) => searchTracks(e)}>
-          <SearchIcon fontSize="inherit" />
-        </IconButton>
+        <ToggleButton
+          color="success"
+          value="check"
+          aria-label="search"
+          selected={searchFilter?.applied == true}
+          size="small"
+          onChange={() => searchTracks()}>
+          <SearchIcon/>
+        </ToggleButton>
       </Box>
 
       <List>
@@ -222,7 +242,7 @@ export function RetroSearch() {
                   } 
                 }/>}
           />
-          <Button onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
+          <Button color="secondary" onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
           </ListItem>
           <ListItem>
           <DateTimePicker
@@ -239,13 +259,13 @@ export function RetroSearch() {
                   }
                 } />}
           />
-          <Button onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
+          <Button color="secondary" onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
         </ListItem>
 
           <Box display="flex"
             justifyContent="flex-start"
-          >
-              <IconButton aria-label="addProp" size="medium" onClick={(e) => addProperty(e)}>
+        >
+          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e) => addProperty(e)}>
                 <LibraryAddIcon fontSize="inherit" />
               </IconButton>            
           </Box>

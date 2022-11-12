@@ -148,6 +148,8 @@ export interface SearchFilterGUI {
   show_objects?: boolean;
   show_tracks?: boolean;
   show_routs?: boolean;
+
+  applied?: boolean;
 }
 
 export interface SearchFilterDTO{

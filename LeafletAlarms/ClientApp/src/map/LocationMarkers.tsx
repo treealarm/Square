@@ -169,6 +169,11 @@ export function LocationMarkers() {
       zoom: parentMap.getZoom(),
       property_filter: searchFilter?.property_filter
     };
+
+    if (searchFilter?.applied != true) {
+      boundBox.property_filter = null;
+    }
+
     dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
   }
 
@@ -230,7 +235,11 @@ export function LocationMarkers() {
 
   useEffect(
     () => {
-      RequestMarkersByBox(null);
+
+      if (searchFilter?.search_id != null &&
+        searchFilter?.search_id != "") {
+        RequestMarkersByBox(null);
+      }      
     }, [markersStates?.initiateUpdateAll, searchFilter?.search_id]);
 
   const getColor = useCallback(

@@ -10,7 +10,7 @@ export interface GUIState {
   checked: string[],
   requestedTreeUpdate?: number,
   map_option: ViewOption | null;
-  searchFilter: SearchFilterGUI;
+  searchFilter: SearchFilterGUI;  
 }
 
 
