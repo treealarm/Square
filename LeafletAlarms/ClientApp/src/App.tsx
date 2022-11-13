@@ -5,11 +5,13 @@ import { Home } from "./components/Home";
 import "./custom.css";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 
+
 const theme = createTheme({
+  spacing: 4,
   typography: {    
     button: {
       textTransform: 'none'
-    }    
+    }
   }
 });
 
@@ -22,7 +24,7 @@ export default () => (
       borderColor: 'primary.main'
     }}
   >
-    <Layout>
+      <Layout>
       <Route exact path="/" component={Home} />
     </Layout>
     </Box>

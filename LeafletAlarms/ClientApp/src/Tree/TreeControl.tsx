@@ -111,11 +111,10 @@ export function TreeControl() {
 
     return (
       <Box sx={{
-              width: '100%',
-              bgcolor: 'background.paper',
+            width: '100%',
             overflow: 'auto',
             height: '100%',
-            border: 1
+        border: 1
             }}>
 
         <List>

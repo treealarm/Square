@@ -4,12 +4,14 @@ import { TreeControl } from "../Tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
 import EditOptions from "../Tree/EditOptions";
 import { ObjectProperties } from "../Tree/ObjectProperties";
-import { Box, Grid, Paper, Stack, Tab } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Stack, Tab, Typography } from "@mui/material";
 import { WebSockClient } from "./WebSockClient";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { RetroSearch } from "../Tree/RetroSearch";
 import { SearchResult } from "../Tree/SearchResult";
 import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 
 export function Home() {
 
@@ -27,15 +29,38 @@ export function Home() {
     <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>
       <Grid item xs={12} sx={{ height: "auto" }}>
         <Stack direction="row" spacing={1}>
-          <TabControl />
+          
           <WebSockClient />
           <GlobalLayersOptions/>
         </Stack>
       </Grid>
 
       <Grid item xs={2} sx={{ height: "90%" }} container spacing={0}>
-        <Paper sx={{ maxHeight: "100%", overflow: 'auto' }} >
-          <TabContext value={LeftTabValue} >
+        <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }} >
+          <Accordion>
+            <AccordionSummary              
+              expandIcon={<ExpandMoreIcon color="primary"/>}
+              aria-controls="panel-tree"
+              id="panel-tree">
+              <Typography>Tree</Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
+              <TabControl />
+              <TreeControl />
+            </AccordionDetails>
+          </Accordion>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon color="secondary" />}
+              aria-controls="panel-search-result"
+              id="panel-search-result">
+              <Typography>Search result</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <SearchResult></SearchResult>
+            </AccordionDetails>
+          </Accordion>
+         {/* <TabContext value={LeftTabValue} >
             <TabList
               variant="scrollable"
               scrollButtons
@@ -50,8 +75,9 @@ export function Home() {
             <TabPanel value="2" sx={{ padding: 1 }}>
               <SearchResult></SearchResult>
             </TabPanel>
-          </TabContext>
+          </TabContext>*/}
         </Paper>
+
       </Grid>
 
       <Grid item xs={7} sx={{ height: "90%" }} container spacing={0}>
@@ -59,8 +85,35 @@ export function Home() {
       </Grid>
 
       <Grid item xs={3} sx={{ height: "90%" }} container spacing={0}>
-        <Paper sx={{ maxHeight: "100%", overflow: 'auto', width:"100%"}}>
-          <TabContext value={valuePropTab}>
+        <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }}>
+          <Accordion>
+            <AccordionSummary              
+              expandIcon={<ExpandMoreIcon color="primary" />}
+              aria-controls="panel1a-content"              
+              id="panel1a-header">
+              <Typography>Properties</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Stack sx={{ height: "100%" }}>
+                <EditOptions />
+                <ObjectProperties />
+              </Stack>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon color="secondary" />}
+              aria-controls="panel-properties"
+              id="panel-properties"
+            >
+              <Typography>Search</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <RetroSearch></RetroSearch>
+            </AccordionDetails>
+          </Accordion>
+          {/*<TabContext value={valuePropTab}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               
               <TabList
@@ -83,7 +136,7 @@ export function Home() {
             <TabPanel value="2" sx={{ padding: 1 }}>
               <RetroSearch></RetroSearch>
             </TabPanel>
-          </TabContext>
+          </TabContext>*/}
         </Paper>
 
       </Grid>
