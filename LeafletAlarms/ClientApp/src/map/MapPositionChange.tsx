@@ -1,14 +1,11 @@
 ﻿import * as React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { LocationMarkers } from "./LocationMarkers";
+import { useSelector } from "react-redux";
 import {
-  MapContainer,
-  TileLayer,
   useMap
 } from "react-leaflet";
 
-import { useEffect, useState } from "react";
-import * as L from 'leaflet';
+import { useEffect } from "react";
+
 
 export function MapPositionChange() {
 

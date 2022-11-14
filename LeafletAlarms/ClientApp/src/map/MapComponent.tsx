@@ -8,10 +8,18 @@ import {
 import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
 import { TrackViewer } from "../tracks/TrackViewer";
-
+import { Map as LeafletMap } from 'leaflet';
 
 export function MapComponent(props: any) {
 
+  const setMap = (map: LeafletMap) => {
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+
+    var container = document.getElementById('map-container')
+    resizeObserver.observe(container)
+  }
 
   var url = 'http://';
 
@@ -32,7 +40,10 @@ export function MapComponent(props: any) {
     <MapContainer
       center={[55.752696480817086, 37.583007383349745]}
       zoom={13}
-      scrollWheelZoom={true}>
+      scrollWheelZoom={true}
+      id='map-container'
+      whenCreated={setMap}
+    >
 
       <TrackViewer />
       <LocationMarkers />
