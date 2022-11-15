@@ -43,6 +43,8 @@ namespace LeafletAlarms
       services.AddSingleton<IRoutService, RoutService>();
       services.AddSingleton<ILevelService, LevelService>();
       services.AddSingleton<IStateService, StateService>();
+      services.AddSingleton<ILogicService, LogicService>();
+      
       services.AddSingleton<ITrackConsumer, StateWebSocketHandler>();
       
 

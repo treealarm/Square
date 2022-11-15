@@ -43,5 +43,27 @@ namespace LeafletAlarms
         }
       };
     }
-  }  
+  }
+
+  public class StaticLogicDTOExample : IExamplesProvider<StaticLogicDTO>
+  {
+    public StaticLogicDTO GetExamples()
+    {
+      return new StaticLogicDTO
+      {
+        logic = @"from-to",
+        figs= new List<List<string>>()
+        {
+          new List<string>()
+          {
+            "63712210d3461ffd39aae4c6"
+          },
+          new List<string>()
+          {
+            "6373a695ca6b610ed0884a94"
+          }
+        }
+      };
+    }
+  }
 }

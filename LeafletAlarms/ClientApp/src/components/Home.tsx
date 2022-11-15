@@ -43,7 +43,7 @@ export function Home() {
                 tabIndex={-1}
                 disableRipple
               />}
-                  label="Show pannels"
+                  label="Show panels"
                 />
               
           </FormGroup>
@@ -61,7 +61,7 @@ export function Home() {
               expandIcon={<ExpandMoreIcon color="primary"/>}
               aria-controls="panel-tree"
               id="panel-tree">
-              <Typography>Tree</Typography>
+              <Typography color="primary">Tree</Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
               <TabControl />
@@ -73,7 +73,7 @@ export function Home() {
               expandIcon={<ExpandMoreIcon color="secondary" />}
               aria-controls="panel-search-result"
               id="panel-search-result">
-              <Typography>Search result</Typography>
+              <Typography color="secondary">Search result</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <SearchResult></SearchResult>
@@ -95,7 +95,7 @@ export function Home() {
               expandIcon={<ExpandMoreIcon color="primary" />}
               aria-controls="panel1a-content"              
               id="panel1a-header">
-              <Typography>Properties</Typography>
+              <Typography color="primary">Properties</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Stack sx={{ height: "100%" }}>
@@ -111,7 +111,7 @@ export function Home() {
               aria-controls="panel-properties"
               id="panel-properties"
             >
-              <Typography>Search</Typography>
+              <Typography color="secondary">Search</Typography>
             </AccordionSummary>
             <AccordionDetails>
               <RetroSearch></RetroSearch>
