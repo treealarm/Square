@@ -45,6 +45,7 @@ namespace LeafletAlarms
     }
   }
 
+  
   public class StaticLogicDTOExample : IExamplesProvider<StaticLogicDTO>
   {
     public StaticLogicDTO GetExamples()
@@ -68,6 +69,23 @@ namespace LeafletAlarms
         logic = "from-to",
         figs = figs        
       };
+    }
+  }
+
+  public class StaticLogicDTOExampleList : IExamplesProvider<List<StaticLogicDTO>>
+  {
+    public List<StaticLogicDTO> GetExamples()
+    {
+      List<StaticLogicDTO> list = new List<StaticLogicDTO>();
+
+      var single = new StaticLogicDTOExample();
+
+      var logic = single.GetExamples();
+      list.Add(logic);
+      logic = single.GetExamples();
+      logic.logic = "to-from";
+      list.Add(logic);
+      return list;
     }
   }
 }

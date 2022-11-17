@@ -25,10 +25,14 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("UpdateLogic")]
-    public async Task<ActionResult<StaticLogicDTO>> Update(StaticLogicDTO newObj)
+    public async Task<ActionResult<List<StaticLogicDTO>>> Update(List<StaticLogicDTO> newObjs)
     {
-      await _logicService.UpdateAsync(newObj);
-      return CreatedAtAction(nameof(Update), newObj);
+      foreach (var newObj in newObjs)
+      {
+        await _logicService.UpdateAsync(newObj);
+      }
+      
+      return CreatedAtAction(nameof(Update), newObjs);
     }
 
     [HttpDelete("{id:length(24)}")]

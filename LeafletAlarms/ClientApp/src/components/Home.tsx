@@ -16,6 +16,7 @@ import { RetroSearch } from "../Tree/RetroSearch";
 import { SearchResult } from "../Tree/SearchResult";
 import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ObjectLogic } from "../Tree/ObjectLogic";
 
 
 export function Home() {
@@ -117,6 +118,20 @@ export function Home() {
               <RetroSearch></RetroSearch>
             </AccordionDetails>
           </Accordion>
+
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon color="action" />}
+              aria-controls="panel-logic"
+              id="panel-logic"
+            >
+              <Typography color="action">Logic</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <ObjectLogic/>
+            </AccordionDetails>
+          </Accordion>
+
         </Paper>
 
       </Grid>

@@ -6,6 +6,7 @@ import * as GUIStates from './GUIStates';
 import * as MarkersVisualStates from './MarkersVisualStates';
 import * as TracksStates from './TracksStates';
 import * as SearchResultStates from './SearchResultStates';
+import * as ObjLogicStates from './ObjLogicStates';
 // The top-level state object
 export interface ApplicationState {
   editState: EditStates.EditState | undefined;
@@ -15,7 +16,8 @@ export interface ApplicationState {
   guiStates: GUIStates.GUIState | undefined;
   markersVisualStates: MarkersVisualStates.MarkersVisualStates | undefined;
   tracksStates: TracksStates.TracksState | undefined;
-  searchResultStates: SearchResultStates.SearchResultState| undefined
+  searchResultStates: SearchResultStates.SearchResultState | undefined
+  objLogicStates: ObjLogicStates.ObjLogicState | undefined;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -29,7 +31,8 @@ export const reducers = {
   guiStates: GUIStates.reducer,
   markersVisualStates: MarkersVisualStates.reducer,
   tracksStates: TracksStates.reducer,
-  searchResultStates: SearchResultStates.reducer
+  searchResultStates: SearchResultStates.reducer,
+  objLogicStates: ObjLogicStates.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
@@ -42,5 +45,6 @@ export const ApiRootString = 'api/map';
 export const ApiTracksRootString = 'api/tracks';
 export const ApiRouterRootString = 'api/router';
 export const ApiStatesRootString = 'api/states';
+export const ApiLogicRootString = 'api/logic';
 export const ApiDefaultPagingNum = 100;
 export const ApiDefaultMaxCountResult = 1000;

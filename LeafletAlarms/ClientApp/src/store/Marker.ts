@@ -227,3 +227,14 @@ export interface ITrackPointDTO {
   timestamp: Date;
   figure: IGeoObjectDTO;
 }
+
+export interface ILogicFigureLinkDTO {
+  id: string;
+  group_id: string;
+}
+
+export interface IStaticLogicDTO {
+  id: string;
+  logic: string;
+  figs: ILogicFigureLinkDTO[]
+}

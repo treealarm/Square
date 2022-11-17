@@ -51,10 +51,12 @@
     <None Remove="ClientApp\src\store\GUIStates.ts" />
     <None Remove="ClientApp\src\store\Marker.ts" />
     <None Remove="ClientApp\src\store\MarkersVisualStates.ts" />
+    <None Remove="ClientApp\src\store\ObjLogicStates.ts" />
     <None Remove="ClientApp\src\store\ObjPropsStates.ts" />
     <None Remove="ClientApp\src\store\TreeStates.ts" />
     <None Remove="ClientApp\src\tracks\TrackViewer.tsx" />
     <None Remove="ClientApp\src\Tree\EditOptions.tsx" />
+    <None Remove="ClientApp\src\Tree\ObjectLogic.tsx" />
     <None Remove="ClientApp\src\Tree\ObjectProperties.tsx" />
     <None Remove="ClientApp\src\Tree\PropertyFilter.tsx" />
     <None Remove="ClientApp\src\Tree\RetroSearch.tsx" />
@@ -77,6 +79,9 @@
 
   <ItemGroup>
     <TypeScriptCompile Update="ClientApp\src\map\PolylineMaker.tsx">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Update="ClientApp\src\store\ObjLogicStates.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Update="ClientApp\src\Tree\RetroSearch.tsx">
