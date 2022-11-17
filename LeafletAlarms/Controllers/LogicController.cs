@@ -6,6 +6,7 @@ using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
@@ -48,6 +49,14 @@ namespace LeafletAlarms.Controllers
         return NotFound();
       }
 
+      return obj;
+    }
+
+    [HttpGet]
+    [Route("GetByFigureAsync")]
+    public async Task<List<StaticLogicDTO>> GetByFigureAsync(string id)
+    {
+      var obj = await _logicService.GetByFigureAsync(id);
       return obj;
     }
   }

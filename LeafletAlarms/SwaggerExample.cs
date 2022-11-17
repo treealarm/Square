@@ -49,20 +49,24 @@ namespace LeafletAlarms
   {
     public StaticLogicDTO GetExamples()
     {
+      var figs = new List<LogicFigureLinkDTO>();
+
+      figs.Add(new LogicFigureLinkDTO()
+      {
+        group_id = "from",
+        id = "63712210d3461ffd39aae4c6"
+      });
+
+      figs.Add(new LogicFigureLinkDTO()
+      {
+        group_id = "to",
+        id = "6373a695ca6b610ed0884a94"
+      });      
+
       return new StaticLogicDTO
       {
-        logic = @"from-to",
-        figs= new List<List<string>>()
-        {
-          new List<string>()
-          {
-            "63712210d3461ffd39aae4c6"
-          },
-          new List<string>()
-          {
-            "6373a695ca6b610ed0884a94"
-          }
-        }
+        logic = "from-to",
+        figs = figs        
       };
     }
   }

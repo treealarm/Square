@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Models
 {
-  [BsonIgnoreExtraElements]
-  public class DBStaticLogic
+  public class DBLogicFigureLink
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
-    public string logic { get; set; }
-    public List<DBLogicFigureLink> figs { get; set; }
+    public string group_id { get; set; }
   }
 }

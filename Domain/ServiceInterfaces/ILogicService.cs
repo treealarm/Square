@@ -11,5 +11,6 @@ namespace Domain.ServiceInterfaces
     public Task UpdateAsync(StaticLogicDTO obj2UpdateIn);
     public Task DeleteAsync(string id);
     public Task<StaticLogicDTO> GetAsync(string id);
+    public Task<List<StaticLogicDTO>> GetByFigureAsync(string id);
   }
 }

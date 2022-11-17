@@ -51,8 +51,8 @@ namespace DbLayer.Services
 
     public async Task UpdateAsync(StaticLogicDTO obj2UpdateIn)
     {
-      DBStaticLogic obj2Update = new DBStaticLogic();
-      obj2UpdateIn.CopyAllTo(obj2Update);
+      DBStaticLogic obj2Update;
+      obj2UpdateIn.CopyAllToAsJson(out obj2Update);
 
       if (string.IsNullOrEmpty(obj2Update.id))
       {
@@ -80,10 +80,38 @@ namespace DbLayer.Services
         return null;
       }
 
-      StaticLogicDTO ret = new StaticLogicDTO();
-      result.CopyAllTo(ret);
+      StaticLogicDTO ret;
+      result.CopyAllToAsJson(out ret);
 
       return ret;
+    }
+
+    public async Task<List<StaticLogicDTO>> GetByFigureAsync(string id)
+    {
+      List<StaticLogicDTO> listRet = new List<StaticLogicDTO>();
+
+      //var filter = Builders<DBStaticLogic>.Filter.Eq("figs._id", new ObjectId(id));
+
+      var filter = Builders<DBStaticLogic>.Filter
+        .ElemMatch(x => x.figs, d => d.id == id);
+
+      var result = await _coll
+        .Find(filter)
+        .ToListAsync();
+
+      if (result == null)
+      {
+        return null;
+      }
+
+      foreach (var f in result)
+      {
+        StaticLogicDTO ret;
+        f.CopyAllToAsJson(out ret);
+        listRet.Add(ret);
+      }      
+
+      return listRet;
     }
   }
 }
