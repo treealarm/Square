@@ -234,7 +234,7 @@ export interface ILogicFigureLinkDTO {
 }
 
 export interface IStaticLogicDTO {
-  id: string;
-  logic: string;
-  figs: ILogicFigureLinkDTO[]
+  id?: string;
+  logic?: string;
+  figs?: ILogicFigureLinkDTO[]
 }

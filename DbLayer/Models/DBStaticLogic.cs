@@ -14,6 +14,7 @@ namespace DbLayer.Models
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
+    public string name { get; set; }
     public string logic { get; set; }
     public List<DBLogicFigureLink> figs { get; set; }
   }

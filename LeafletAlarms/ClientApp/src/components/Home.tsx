@@ -16,7 +16,7 @@ import { RetroSearch } from "../Tree/RetroSearch";
 import { SearchResult } from "../Tree/SearchResult";
 import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ObjectLogic } from "../Tree/ObjectLogic";
+import { ObjectLogic } from "../Logic/ObjectLogic";
 
 
 export function Home() {
