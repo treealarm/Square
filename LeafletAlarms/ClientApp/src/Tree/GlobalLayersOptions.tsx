@@ -48,7 +48,7 @@ export default function GlobalLayersOptions() {
       <FormGroup row>
         {
           checks.map((item, index) =>
-            <FormControlLabel control={
+            <FormControlLabel key={"fkl"+item.id} control={
               <Checkbox
                 checked={item.checked != false}
                 id={item.id}

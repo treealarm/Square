@@ -72,8 +72,42 @@ export function ObjectLogic() {
       copyLogic[index2Replace] = copy;
 
       dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
-  },[logic]);
+    }, [logic]);
 
+  const deleteLogic = useCallback(
+    (logicObj: IStaticLogicDTO) => {
+      var newLogic = logic.filter(i => i != logicObj);
+      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(newLogic));
+    }, [logic]);
+
+  const addFigureLink = useCallback(
+    (logicObj: IStaticLogicDTO, item: ILogicFigureLinkDTO) => {
+
+      let copy = Object.assign({}, logicObj);
+
+      if (copy.figs == null) {
+        copy.figs = [item];
+      }
+      else {
+        copy.figs.push(item);
+      }
+
+      var copyLogic = [...logic];
+      var index2Replace = logic.findIndex(i => i == logicObj);
+      copyLogic[index2Replace] = copy;
+
+      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
+    }, [logic]);
+
+  const updateLogic = useCallback(
+    (oldLogic: IStaticLogicDTO, newLogic: IStaticLogicDTO) => {
+
+      var copyLogic = [...logic];
+      var index2Replace = logic.findIndex(i => i == oldLogic);
+      copyLogic[index2Replace] = newLogic;
+
+      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
+    }, [logic]);
 
   return (
     <Box sx={{
@@ -87,7 +121,7 @@ export function ObjectLogic() {
 
       <List>
         <ListItem>
-          <ButtonGroup variant="contained" aria-label="properties pannel">
+          <ButtonGroup variant="contained" aria-label="logic pannel">
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
             </IconButton>
@@ -104,7 +138,13 @@ export function ObjectLogic() {
         {
           logic?.map((item, index) =>
             <ListItem key={index}>
-              <LogicEditor logicObj={item} deleteFigureLink={deleteFigureLink} />
+              <LogicEditor
+                logicObj={item}
+                deleteFigureLink={deleteFigureLink}
+                addFigureLink={addFigureLink}
+                deleteLogic={deleteLogic}
+                updateLogic={updateLogic}
+              />
             </ListItem>
           )
         }

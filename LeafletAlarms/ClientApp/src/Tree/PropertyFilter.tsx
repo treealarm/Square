@@ -2,7 +2,6 @@
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { ApplicationState } from '../store';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from "@mui/icons-material/Close";
 import { KeyValueDTO } from '../store/Marker';
 import { Box, IconButton, List, ListItem } from '@mui/material';
