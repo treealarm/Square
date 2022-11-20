@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, ButtonGroup, IconButton, TextField, ToggleButton } from '@mui/material';
+import { Autocomplete, Box, ButtonGroup, IconButton, TextField, ToggleButton } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { ILogicFigureLinkDTO, IStaticLogicDTO } from '../store/Marker';
 import CloseIcon from "@mui/icons-material/Close";
@@ -45,6 +45,44 @@ export function LogicEditor(props: any) {
     props.addFigureLink(logicObj, item);
   };
 
+  function replaceFigureLink(oldFig: ILogicFigureLinkDTO, newFig: ILogicFigureLinkDTO) {
+
+    let copyLogic = Object.assign({}, logicObj);
+    var index = copyLogic.figs.findIndex(i => i == oldFig);
+
+    copyLogic.figs[index] = newFig;
+
+    props.updateLogic(logicObj, copyLogic);
+  }
+
+  function handleChangeFigGroupId(e: any) {
+    const { target: { id, value } } = e;
+
+    const fig = logicObj?.figs?.at(id);
+
+    if (fig == null) {
+      return;
+    }
+    let copy = Object.assign({}, fig);
+    copy.group_id = value;
+
+    replaceFigureLink(fig, copy);
+  };
+
+  function handleChangeFigId(e: any) {
+    const { target: { id, value } } = e;
+
+    const fig = logicObj?.figs?.at(id);
+
+    if (fig == null) {
+      return;
+    }
+    let copy = Object.assign({}, fig);
+    copy.id = value;
+
+    replaceFigureLink(fig, copy);
+  };
+
 
   React.useEffect(() => {
     if (figureIdMode != null && selected_id != null) {
@@ -52,16 +90,16 @@ export function LogicEditor(props: any) {
       let copy = Object.assign({}, figureIdMode);
       copy.id = selected_id;
 
-      let copyLogic = Object.assign({}, logicObj);
-      var index = copyLogic.figs.findIndex(i => i == figureIdMode);
-
-      copyLogic.figs[index] = copy;
-
-      props.updateLogic(logicObj, copyLogic);
+      replaceFigureLink(figureIdMode, copy);
 
       setFigureIdMode(null);
     }
   }, [selected_id]);
+
+  const groups = [
+    "from",
+    "to"
+  ];
 
   return (
     <Box sx={{
@@ -122,13 +160,23 @@ export function LogicEditor(props: any) {
               border: 1
             }}>
 
-
+              
               <ListItem key={index}>
-                <TextField size="small"
+
+                <Autocomplete
+                  sx={{ width: '100%' }}
+                  options={groups}
+                  renderInput={(params) => 
+                    <TextField
+                      {...params} 
+                      size="small"
                   fullWidth
-                  id={item.group_id} label={"group_id"}
+                  id={index.toString()}
+                  label={"group_id"}
                   value={item.group_id}
+                  onChange={handleChangeFigGroupId}
                 />
+                } />
 
                 <IconButton
                   aria-label="close"
@@ -143,8 +191,10 @@ export function LogicEditor(props: any) {
 
                 <TextField size="small"
                   fullWidth
-                  id={item.id} label={"fig_id"}
+                  id={index.toString()}
+                  label={"fig_id"}
                   value={item.id}
+                  onChange={handleChangeFigId}
                 />
 
                 <ToggleButton
