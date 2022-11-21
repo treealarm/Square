@@ -83,22 +83,61 @@ export function LogicEditor(props: any) {
     replaceFigureLink(fig, copy);
   };
 
+  function handleChangeLogicType(e: any) {
+    const { target: { id, value } } = e;
 
-  React.useEffect(() => {
-    if (figureIdMode != null && selected_id != null) {
+    let copyLogic = Object.assign({}, logicObj);
+    copyLogic.logic = value;
+
+    props.updateLogic(logicObj, copyLogic);
+  };
+
+  function handleChangeLogicName(e: any) {
+    const { target: { id, value } } = e;
+
+    let copyLogic = Object.assign({}, logicObj);
+    copyLogic.name = value;
+
+    props.updateLogic(logicObj, copyLogic);
+  };
+
+  function UpdateFigureId() {
+    if (figureIdMode != null &&
+      selected_id != null &&
+      selected_id != figureIdMode.id
+    )
+    {
 
       let copy = Object.assign({}, figureIdMode);
       copy.id = selected_id;
 
       replaceFigureLink(figureIdMode, copy);
+    }
+  }
+
+  React.useEffect(() => {
+    if (figureIdMode != null && selected_id != null) {
+
+      UpdateFigureId();
 
       setFigureIdMode(null);
     }
   }, [selected_id]);
 
+  React.useEffect(() => {
+      UpdateFigureId();
+  }, [figureIdMode]);
+
   const groups = [
     "from",
     "to"
+  ];
+
+  const logic_types = [
+    "from-to",
+    "from",
+    "to",
+    "counter"
   ];
 
   return (
@@ -122,23 +161,43 @@ export function LogicEditor(props: any) {
           />
           <IconButton color="primary"
             aria-label="addProp"
-            size="medium">
+            size="medium"
+            onClick={(e) => deleteLogic(e)}          >
 
             <DeleteIcon fontSize="inherit"
-              onClick={(e) => deleteLogic(e)}
+              
             />
 
           </IconButton>
         </ListItem>
 
-        <ListItem key={logicObj.id}>
+        <ListItem key={"logic_name"}>
 
           <TextField size="small"
             fullWidth
-            id={logicObj?.logic} label={"logic_name"}
-            value={logicObj?.logic}
+            id={logicObj?.name} label={"logic_name"}
+            value={logicObj?.name}
+            onChange={handleChangeLogicName}
           />
 
+        </ListItem>
+
+        <ListItem key={"logic_type"}>
+
+          <Autocomplete
+            sx={{ width: '100%' }}
+            options={logic_types}
+            renderInput={(params) =>
+              <TextField
+                {...params}
+                size="small"
+                fullWidth
+                id={"logic_type"}
+                label={"logic type"}
+                value={logicObj.logic}
+                onChange={handleChangeLogicType}
+              />
+            } />
         </ListItem>
         
         <ButtonGroup variant="contained" aria-label="logic pannel">
@@ -203,7 +262,11 @@ export function LogicEditor(props: any) {
                   aria-label="search"
                   selected={figureIdMode == item}
                   size="small"
-                  onChange={() => setFigureIdMode(figureIdMode == null ? item:null)}>
+                  onChange={
+                    () => {
+                      setFigureIdMode(figureIdMode == null ? item : null);                   
+                    }                      
+                  }>
                   <LocationSearchingIcon fontSize="small" />
                 </ToggleButton>
                 

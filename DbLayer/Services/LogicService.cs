@@ -51,6 +51,11 @@ namespace DbLayer.Services
 
     public async Task UpdateAsync(StaticLogicDTO obj2UpdateIn)
     {
+      if (obj2UpdateIn.figs != null)
+      {
+        obj2UpdateIn.figs.RemoveAll(t => string.IsNullOrEmpty(t.id));
+      }
+
       DBStaticLogic obj2Update;
       obj2UpdateIn.CopyAllToAsJson(out obj2Update);
 

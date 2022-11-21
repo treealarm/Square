@@ -29,8 +29,10 @@ export function ObjectLogic() {
   }, [selected_id]);
 
   const handleSave = useCallback(() => {
-
-  }, []);
+    if (logic != null && logic.length > 0) {
+      dispatch(ObjLogicStore.actionCreators.updateObjLogic(logic));
+    }    
+  }, [logic]);
 
   const handleSearch = useCallback(() => {
     if (selected_id == null) {
@@ -76,8 +78,14 @@ export function ObjectLogic() {
 
   const deleteLogic = useCallback(
     (logicObj: IStaticLogicDTO) => {
-      var newLogic = logic.filter(i => i != logicObj);
-      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(newLogic));
+
+      if (logicObj.id != null && logicObj.id != "") {
+        dispatch(ObjLogicStore.actionCreators.delObjLogic(logicObj.id));
+      }
+      else {
+        var newLogic = logic.filter(i => i != logicObj);
+        dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(newLogic));
+      }      
     }, [logic]);
 
   const addFigureLink = useCallback(

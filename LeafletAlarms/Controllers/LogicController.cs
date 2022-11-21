@@ -6,6 +6,7 @@ using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -38,8 +39,19 @@ namespace LeafletAlarms.Controllers
     [HttpDelete("{id:length(24)}")]
     public async Task<IActionResult> Delete(string id)
     {
-      await _logicService.DeleteAsync(id);
-      var ret = CreatedAtAction(nameof(Delete), id);
+      try
+      {
+        await _logicService.DeleteAsync(id);        
+      }
+      catch(Exception ex)
+      {
+        return StatusCode(
+          StatusCodes.Status500InternalServerError,
+          ex.Message
+        );
+      }
+
+      var ret = CreatedAtAction(nameof(Delete), null, id);
       return ret;
     }
 
