@@ -88,6 +88,30 @@ export const actionCreators = {
 
     dispatch({ type: "GET_LOGIC", object_id: object_id });
   },
+  getObjLogicByName: (objectName: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+
+    if (objectName == null) {
+      dispatch({ type: "SET_LOGIC", logic: null });
+      return;
+    }
+
+    var request = ApiLogicRootString + "/GetByName?name=" + objectName;
+
+    var fetched = fetch(request);
+
+    fetched
+      .then(response => {
+        if (!response.ok) throw response.statusText;
+        var json = response.json();
+        return json as Promise<IStaticLogicDTO[]>;
+      })
+      .then(data => {
+        dispatch({ type: "SET_LOGIC", logic: data });
+      })
+      .catch((error) => {
+        dispatch({ type: "SET_LOGIC", logic: null });
+      });
+  },
   updateObjLogic: (logic: IStaticLogicDTO[]): AppThunkAction<KnownAction> => (
     dispatch,
     getState

@@ -24,6 +24,8 @@ export function ObjectLogic() {
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const logic = useSelector((state) => state?.objLogicStates?.logic);
 
+  const [searchName, setSearchName] = React.useState<string>("");
+
   React.useEffect(() => {
    
   }, [selected_id]);
@@ -35,13 +37,24 @@ export function ObjectLogic() {
   }, [logic]);
 
   const handleSearch = useCallback(() => {
-    if (selected_id == null) {
+    if (selected_id == null && searchName == "") {
       dispatch(ObjLogicStore.actionCreators.setObjLogicLocally([]));
     }
     else {
-      dispatch(ObjLogicStore.actionCreators.getObjLogic(selected_id));
+      if (searchName != "") {
+        dispatch(ObjLogicStore.actionCreators.getObjLogicByName(searchName));
+      }
+      else {
+        dispatch(ObjLogicStore.actionCreators.getObjLogic(selected_id));
+      }      
     } 
-  }, [selected_id]);
+  }, [selected_id, searchName]);
+
+  function handleChangeSearchName(e: any) {
+    const { target: { id, value } } = e;
+
+    setSearchName(value);
+  };
 
   const handleAdd = useCallback(() => {
 
@@ -132,17 +145,29 @@ export function ObjectLogic() {
           <ButtonGroup variant="contained" aria-label="logic pannel">
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
-            </IconButton>
-            <IconButton aria-label="search" size="medium" onClick={handleSearch}>
-              <SearchIcon fontSize="inherit" />
-            </IconButton>
+            </IconButton>            
 
             <IconButton aria-label="add" size="medium" onClick={handleAdd}>
               <AddIcon fontSize="inherit" />
             </IconButton>
+
+            <IconButton aria-label="search" size="medium" onClick={handleSearch}>
+              <SearchIcon fontSize="inherit" />
+            </IconButton>
           </ButtonGroup>
 
-        </ListItem> 
+          <TextField size="small"
+            fullWidth
+            id={"searchByName"}
+            label={"search by name"}
+            value={searchName}
+            onChange={handleChangeSearchName}
+          />
+
+        </ListItem>
+        <ListItem>
+          
+        </ListItem>
         {
           logic?.map((item, index) =>
             <ListItem key={index}>

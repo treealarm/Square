@@ -75,5 +75,13 @@ namespace LeafletAlarms.Controllers
       var obj = await _logicService.GetByFigureAsync(id);
       return obj;
     }
+
+    [HttpGet]
+    [Route("GetByName")]
+    public async Task<List<StaticLogicDTO>> GetByName(string name)
+    {
+      var obj = await _logicService.GetByName(name);
+      return obj;
+    }
   }
 }

@@ -91,18 +91,9 @@ namespace DbLayer.Services
       return ret;
     }
 
-    public async Task<List<StaticLogicDTO>> GetByFigureAsync(string id)
+    private List<StaticLogicDTO> DBListToDTO(List<DBStaticLogic> result)
     {
       List<StaticLogicDTO> listRet = new List<StaticLogicDTO>();
-
-      //var filter = Builders<DBStaticLogic>.Filter.Eq("figs._id", new ObjectId(id));
-
-      var filter = Builders<DBStaticLogic>.Filter
-        .ElemMatch(x => x.figs, d => d.id == id);
-
-      var result = await _coll
-        .Find(filter)
-        .ToListAsync();
 
       if (result == null)
       {
@@ -114,7 +105,35 @@ namespace DbLayer.Services
         StaticLogicDTO ret;
         f.CopyAllToAsJson(out ret);
         listRet.Add(ret);
-      }      
+      }
+
+      return listRet;
+    }
+    public async Task<List<StaticLogicDTO>> GetByFigureAsync(string id)
+    {
+      //var filter = Builders<DBStaticLogic>.Filter.Eq("figs._id", new ObjectId(id));
+
+      var filter = Builders<DBStaticLogic>.Filter
+        .ElemMatch(x => x.figs, d => d.id == id);
+
+      var result = await _coll
+        .Find(filter)
+        .ToListAsync();
+
+      var listRet = DBListToDTO(result);
+      return listRet;
+    }
+
+    public async Task<List<StaticLogicDTO>> GetByName(string name)
+    {
+      var filter = Builders<DBStaticLogic>.Filter        
+        .Where(x => x.name.Contains(name));
+
+      var result = await _coll
+        .Find(filter)
+        .ToListAsync();
+
+      var listRet = DBListToDTO(result);
 
       return listRet;
     }
