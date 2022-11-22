@@ -43,6 +43,7 @@
     <None Remove="ClientApp\src\components\GlobalLayersOptions.tsx" />
     <None Remove="ClientApp\src\components\TreeControl.tsx" />
     <None Remove="ClientApp\src\components\WebSockClient.tsx" />
+    <None Remove="ClientApp\src\Logic\GroupSelector.tsx" />
     <None Remove="ClientApp\src\Logic\LogicEditor.tsx" />
     <None Remove="ClientApp\src\map\CircleMaker.tsx" />
     <None Remove="ClientApp\src\map\EditableFigure.tsx" />

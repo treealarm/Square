@@ -11,6 +11,7 @@ import { ILogicFigureLinkDTO, IStaticLogicDTO } from '../store/Marker';
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+import { GroupSelector } from './GroupSelector';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -55,16 +56,15 @@ export function LogicEditor(props: any) {
     props.updateLogic(logicObj, copyLogic);
   }
 
-  function handleChangeFigGroupId(e: any) {
-    const { target: { id, value } } = e;
+  function handleChangeFigGroupId(id: number, newValue: string | null) {
 
-    const fig = logicObj?.figs?.at(id);
+     const fig = logicObj?.figs?.at(id);
 
     if (fig == null) {
       return;
     }
     let copy = Object.assign({}, fig);
-    copy.group_id = value;
+    copy.group_id = newValue;
 
     replaceFigureLink(fig, copy);
   };
@@ -83,9 +83,7 @@ export function LogicEditor(props: any) {
     replaceFigureLink(fig, copy);
   };
 
-  function handleChangeLogicType(e: any) {
-    const { target: { id, value } } = e;
-
+  function handleChangeLogicType(id: any, value: any) {
     let copyLogic = Object.assign({}, logicObj);
     copyLogic.logic = value;
 
@@ -135,8 +133,6 @@ export function LogicEditor(props: any) {
 
   const logic_types = [
     "from-to",
-    "from",
-    "to",
     "counter"
   ];
 
@@ -150,8 +146,8 @@ export function LogicEditor(props: any) {
       border: 1
     }}>
 
-      <List>
-        <ListItem key={logicObj.id}>
+      <List key="ListLogic">
+        <ListItem key={"logic_id"}>
 
           <TextField size="small"
             fullWidth
@@ -183,21 +179,13 @@ export function LogicEditor(props: any) {
         </ListItem>
 
         <ListItem key={"logic_type"}>
-
-          <Autocomplete
-            sx={{ width: '100%' }}
+          <GroupSelector
+            id={"logic_type"}
+            value={logicObj.logic}
+            label={"logic type"}
             options={logic_types}
-            renderInput={(params) =>
-              <TextField
-                {...params}
-                size="small"
-                fullWidth
-                id={"logic_type"}
-                label={"logic type"}
-                value={logicObj.logic}
-                onChange={handleChangeLogicType}
-              />
-            } />
+            onChange={handleChangeLogicType}
+          />
         </ListItem>
         
         <ButtonGroup variant="contained" aria-label="logic pannel">
@@ -220,22 +208,14 @@ export function LogicEditor(props: any) {
             }}>
 
               
-              <ListItem key={index}>
-
-                <Autocomplete
-                  sx={{ width: '100%' }}
+              <ListItem key={"FigGroupId_" + index}>
+                <GroupSelector
+                  id={index}
+                  value={item.group_id} 
+                  label={"group id"}
                   options={groups}
-                  renderInput={(params) => 
-                    <TextField
-                      {...params} 
-                      size="small"
-                  fullWidth
-                  id={index.toString()}
-                  label={"group_id"}
-                  value={item.group_id}
                   onChange={handleChangeFigGroupId}
                 />
-                } />
 
                 <IconButton
                   aria-label="close"
