@@ -12,14 +12,14 @@ using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services
 {
-  public class StateWebSocketHandler : ITrackConsumer, IStateConsumer
+  public class ConsumerService : ITrackConsumer, IStateConsumer, IWebSockList
   {
     private IStateService _stateService;
     private IGeoService _geoService;
     private ILevelService _levelService;
     private IMapService _mapService;
     private IIdsQueue _stateIdsQueueService;
-    public StateWebSocketHandler(
+    public ConsumerService(
       IStateService stateService,
       IGeoService geoService,
       ILevelService levelService,

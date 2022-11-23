@@ -16,5 +16,6 @@ namespace Domain
     public string StateCollectionName { get; set; } = null!;
     public string StateDescrCollectionName { get; set; } = null!;
     public string LogicCollectionName { get; set; } = null!;
+    public string LogicProcessorCollectionName { get; set; } = null!;
   }
 }

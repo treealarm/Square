@@ -17,9 +17,7 @@ namespace LeafletAlarms.Services
   public class HierarhyStateService : IHostedService, IDisposable
   {
     private Task _timer;
-    private CancellationToken _cancellationToken = new CancellationToken();
-
-    private DateTime _lastUpdate = DateTime.UtcNow;
+    private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
 
     private IStateConsumer _stateConsumer;
     private IMapService _mapService;
@@ -181,7 +179,7 @@ namespace LeafletAlarms.Services
 
     Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
-      _timer = new Task(() => DoWork(), _cancellationToken);
+      _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 
       return Task.CompletedTask;
@@ -189,6 +187,7 @@ namespace LeafletAlarms.Services
 
     Task IHostedService.StopAsync(CancellationToken cancellationToken)
     {
+      _cancellationToken.Cancel();
       _timer?.Wait();
 
       return Task.CompletedTask;

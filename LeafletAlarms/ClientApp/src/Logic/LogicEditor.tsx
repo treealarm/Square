@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Autocomplete, Box, ButtonGroup, IconButton, TextField, ToggleButton } from '@mui/material';
+import { Box, ButtonGroup, IconButton, TextField, ToggleButton } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { ILogicFigureLinkDTO, IStaticLogicDTO } from '../store/Marker';
 import CloseIcon from "@mui/icons-material/Close";
@@ -25,7 +25,9 @@ export function LogicEditor(props: any) {
   const selected_id = useSelector((state) => state?.guiStates?.selected_id);
   const logic = useSelector((state) => state?.objLogicStates?.logic);
 
-  const [figureIdMode, setFigureIdMode] = React.useState <ILogicFigureLinkDTO>(null);
+  const [figureIdMode, setFigureIdMode] = React.useState<ILogicFigureLinkDTO>(null);
+
+  const [groupArray, setGroupArray] = React.useState([]);
 
   function deleteFigureLink
     (e: any, item: ILogicFigureLinkDTO) {
@@ -40,7 +42,7 @@ export function LogicEditor(props: any) {
   function addFigureLink
     (e: any) {
     const item: ILogicFigureLinkDTO = {
-      group_id: "new_group",
+      group_id: "",
       id: ""
     };
     props.addFigureLink(logicObj, item);
@@ -126,10 +128,16 @@ export function LogicEditor(props: any) {
       UpdateFigureId();
   }, [figureIdMode]);
 
-  const groups = [
-    "from",
-    "to"
-  ];
+  
+  React.useEffect(() => {
+    if (logicObj?.logic == "from-to") {
+      setGroupArray(["from", "to"]);
+    }
+    else {
+      setGroupArray(["count"]);
+    }
+
+  }, [logicObj.logic]);
 
   const logic_types = [
     "from-to",
@@ -213,7 +221,7 @@ export function LogicEditor(props: any) {
                   id={index}
                   value={item.group_id} 
                   label={"group id"}
-                  options={groups}
+                  options={groupArray}
                   onChange={handleChangeFigGroupId}
                 />
 

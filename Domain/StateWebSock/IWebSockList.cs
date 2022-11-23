@@ -1,5 +1,4 @@
-﻿using Domain.GeoDTO;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Domain.StateWebSock
 {
-  public interface ITrackConsumer
+  public interface IWebSockList
   {
-    void OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers);    
+    Task PushAsync(HttpContext context, WebSocket webSocket);
   }
 }

@@ -28,7 +28,7 @@ namespace LeafletAlarms.Services
     private IMapService _mapService;
     private IIdsQueue _stateIdsQueueService;
 
-    private Task? _timer;
+    private Task _timer;
     private CancellationTokenSource _cancellationTokenSource
       = new CancellationTokenSource();
 
@@ -227,6 +227,7 @@ namespace LeafletAlarms.Services
         }
       }      
     }
+
     private async Task DoUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       HashSet<string> toUpdate = new HashSet<string>();

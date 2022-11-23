@@ -13,7 +13,7 @@ namespace LeafletAlarms.Services
   {
     private readonly ILogger<InitHostedService> _logger;
     private Task _timer;
-    private CancellationToken _cancellationToken = new CancellationToken();
+    private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
     private ILevelService _levelService;
     private IStateService _stateService;
     public InitHostedService(
@@ -32,7 +32,7 @@ namespace LeafletAlarms.Services
     {
       _logger.LogInformation("Timed Hosted Service running.");
 
-      _timer = new Task(() => DoWork(), _cancellationToken);
+      _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 
       return Task.CompletedTask;
@@ -55,6 +55,7 @@ namespace LeafletAlarms.Services
 
     public Task StopAsync(CancellationToken stoppingToken)
     {
+      _cancellationToken.Cancel();
       _logger.LogInformation("Timed Hosted Service is stopping.");
       _timer?.Wait();
 

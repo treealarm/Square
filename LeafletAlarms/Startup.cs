@@ -44,18 +44,22 @@ namespace LeafletAlarms
       services.AddSingleton<ILevelService, LevelService>();
       services.AddSingleton<IStateService, StateService>();
       services.AddSingleton<ILogicService, LogicService>();
-      
-      services.AddSingleton<ITrackConsumer, StateWebSocketHandler>();
+      services.AddSingleton<ILogicProcessorService, LogicProcessorService>();
+
+      services.AddSingleton<ITrackConsumer, ConsumerService>();
       
 
       services.AddSingleton<IIdsQueue, StateQueueForUpdate>();
       services.AddHostedService<HierarhyStateService>();
 
-      services.AddSingleton<StateWebSocketHandler>(); // We must explicitly register Foo
-      services.AddSingleton<ITrackConsumer>(x => x.GetRequiredService<StateWebSocketHandler>()); // Forward requests to Foo
-      services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<StateWebSocketHandler>()); // Forward requests to Foo
+      services.AddSingleton<ConsumerService>(); // We must explicitly register Foo
+      services.AddSingleton<ITrackConsumer>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
+      services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
+      services.AddSingleton<IWebSockList>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
+
+      services.AddHostedService<LogicProcessorHost>();
       
-      
+
       services.AddControllersWithViews();
 
       // In production, the React files will be served from this directory
@@ -137,7 +141,7 @@ namespace LeafletAlarms
           {
             using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
             {
-              var handler = app.ApplicationServices.GetRequiredService<ITrackConsumer>();
+              var handler = app.ApplicationServices.GetRequiredService<IWebSockList>();
               await handler.PushAsync(context, webSocket);
             }
           }
