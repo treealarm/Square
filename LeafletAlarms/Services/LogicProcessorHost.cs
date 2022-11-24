@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Domain.ServiceInterfaces;
+using Domain.StateWebSock;
+using Microsoft.Extensions.Hosting;
+using OsmSharp.API;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +12,20 @@ namespace LeafletAlarms.Services
   {
     private Task _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
+    private PubSubService _pubsub;
+
+    public LogicProcessorHost(
+      PubSubService pubsub
+    )
+    {
+      _pubsub = pubsub;
+    }
+    
+
+    void OnUpdateTrackPosition(string channel,object message)
+    {
+
+    }
 
     public void Dispose()
     {
@@ -17,6 +34,8 @@ namespace LeafletAlarms.Services
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
+      _pubsub.Subscribe("UpdateTrackPosition", OnUpdateTrackPosition);
+
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 
@@ -34,6 +53,7 @@ namespace LeafletAlarms.Services
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
+      _pubsub.Unsubscribe("UpdateTrackPosition", OnUpdateTrackPosition);
       _cancellationToken.Cancel();
       _timer?.Wait();
 

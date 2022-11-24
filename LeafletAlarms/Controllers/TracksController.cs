@@ -1,17 +1,13 @@
-﻿using DbLayer;
-using Domain;
+﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
-using Microsoft.AspNetCore.Http;
+using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 
@@ -29,12 +25,15 @@ namespace LeafletAlarms.Controllers
     private IRoutService _routService;
     private const string TRACKS_ROOT_NAME = "__tracks";
 
+    private PubSubService _pubsub;
+
     public TracksController(
       IMapService mapsService,
       ITrackService tracksService,
       IRoutService routService,
       IGeoService geoService,
-      ITrackConsumer stateService
+      ITrackConsumer stateService,
+      PubSubService pubsub
     )
     {
       _mapService = mapsService;
@@ -42,6 +41,7 @@ namespace LeafletAlarms.Controllers
       _routService = routService;
       _stateService = stateService;
       _geoService = geoService;
+      _pubsub = pubsub;
     }
 
     private async Task<BaseMarkerDTO> GetTracksRoot()
@@ -198,6 +198,7 @@ namespace LeafletAlarms.Controllers
       }
       t1 = DateTime.Now;
       _stateService.OnUpdateTrackPosition(trackPoints);
+      _pubsub.Publish("UpdateTrackPosition", trackPoints);
       timing["UpdateTracksCall"] = t2 - t1;
       t2 = DateTime.Now;
 
