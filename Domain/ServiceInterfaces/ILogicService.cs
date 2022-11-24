@@ -13,5 +13,10 @@ namespace Domain.ServiceInterfaces
     public Task<StaticLogicDTO> GetAsync(string id);
     public Task<List<StaticLogicDTO>> GetByFigureAsync(string id);
     public Task<List<StaticLogicDTO>> GetByName(string name);
+    public Task<List<StaticLogicDTO>> GetListAsync(
+      string start_id,
+      bool forward,
+      int count
+    );
   }
 }

@@ -137,5 +137,47 @@ namespace DbLayer.Services
 
       return listRet;
     }
+
+    public async Task<List<StaticLogicDTO>> GetListAsync(
+      string start_id,
+      bool forward,
+      int count
+    )
+    {
+      List<DBStaticLogic> retDbList;
+
+      var builder = Builders<DBStaticLogic>.Filter;
+
+      var filter = builder.Empty;
+
+      if (!string.IsNullOrEmpty(start_id))
+      {
+        if (forward)
+          filter = Builders<DBStaticLogic>.Filter.Gt("_id", new ObjectId(start_id));
+        else
+          filter = Builders<DBStaticLogic>.Filter.Lt("_id", new ObjectId(start_id));
+      }
+
+      if (forward)
+      {
+        retDbList = await _coll
+        .Find(filter)
+        .Limit(count)
+        .ToListAsync();
+      }
+      else
+      {
+        retDbList = await _coll
+                  .Find(filter)
+                  .SortByDescending(x => x.id)
+                  .Limit(count)
+                  .ToListAsync()
+                  ;
+
+        retDbList.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
+      }
+
+      return DBListToDTO(retDbList);
+    }
   }
 }

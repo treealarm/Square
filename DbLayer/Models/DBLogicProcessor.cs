@@ -14,7 +14,6 @@ namespace DbLayer.Models
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
 
-    [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string logic_id { get; set; }
     public DBGeoObject figure { get; set; }
