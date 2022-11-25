@@ -19,9 +19,7 @@ using TrackSender.Models;
 namespace TrackSender
 {
   internal class TestStates
-  {
-
-   
+  {   
     TestClient _testClient = new TestClient();
     FiguresDTO m_figures = new FiguresDTO();
     

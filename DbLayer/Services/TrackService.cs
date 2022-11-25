@@ -266,6 +266,7 @@ namespace DbLayer.Services
 
       return DBListToDTO(dbTracks);
     }
+
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
       int limit = 10000;
@@ -276,19 +277,35 @@ namespace DbLayer.Services
       }
 
       var builder = Builders<DBTrackPoint>.Filter;
-      var geometry = GeoJson.Polygon(
-        new GeoJson2DCoordinates[]
-        {
-                GeoJson.Position(box.wn[0], box.wn[1]),
-                GeoJson.Position(box.es[0], box.wn[1]),
-                GeoJson.Position(box.es[0], box.es[1]),
-                GeoJson.Position(box.wn[0], box.es[1]),
-                GeoJson.Position(box.wn[0], box.wn[1])
-        }
-      );
+
+      GeoJsonGeometry<GeoJson2DCoordinates> geometry;
+
+      if (box.zone != null)
+      {
+        geometry = ModelGate.ConvertGeoDTO2DB(box.zone);
+      }
+      else
+      {
+        geometry = GeoJson.Polygon(
+          new GeoJson2DCoordinates[]
+          {
+                  GeoJson.Position(box.wn[0], box.wn[1]),
+                  GeoJson.Position(box.es[0], box.wn[1]),
+                  GeoJson.Position(box.es[0], box.es[1]),
+                  GeoJson.Position(box.wn[0], box.es[1]),
+                  GeoJson.Position(box.wn[0], box.wn[1])
+          }
+        );
+      }
+      
 
       FilterDefinition<DBTrackPoint> filter =
         builder.GeoIntersects(t => t.meta.figure.location, geometry);
+
+      if (box.not_in_zone)
+      {
+        filter = builder.Not(filter);
+      }
 
       if (box.zoom != null)
       {
