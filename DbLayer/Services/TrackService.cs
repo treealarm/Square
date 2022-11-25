@@ -279,10 +279,24 @@ namespace DbLayer.Services
       var builder = Builders<DBTrackPoint>.Filter;
 
       GeoJsonGeometry<GeoJson2DCoordinates> geometry;
+      FilterDefinition<DBTrackPoint> filter = null;
 
       if (box.zone != null)
       {
-        geometry = ModelGate.ConvertGeoDTO2DB(box.zone);
+        foreach ( var zone in box.zone)
+        {
+          geometry = ModelGate.ConvertGeoDTO2DB(zone);
+          var f1 = builder.GeoIntersects(t => t.meta.figure.location, geometry);
+
+          if (filter == null)
+          {
+            filter = f1;
+          }
+          else
+          {
+            filter = filter & f1;
+          }          
+        }        
       }
       else
       {
@@ -296,11 +310,12 @@ namespace DbLayer.Services
                   GeoJson.Position(box.wn[0], box.wn[1])
           }
         );
+
+        filter = builder.GeoIntersects(t => t.meta.figure.location, geometry);
       }
       
 
-      FilterDefinition<DBTrackPoint> filter =
-        builder.GeoIntersects(t => t.meta.figure.location, geometry);
+      
 
       if (box.not_in_zone)
       {

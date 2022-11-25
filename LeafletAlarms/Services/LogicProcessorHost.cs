@@ -106,40 +106,38 @@ namespace LeafletAlarms.Services
         foreach ( var zoneKeyVal in dicLogicToFigures)
         {
           var logic_id = zoneKeyVal.Key;
+          box.zone = zoneKeyVal.Value.Select(f => f.location).ToList();
 
-          foreach (var zone in zoneKeyVal.Value)
+          TrackCounter trackCounter;
+          _trackCounters.TryGetValue(logic_id, out trackCounter);
+
+          if (trackCounter != null)
           {
-            box.zone = zone.location;
-            TrackCounter trackCounter;
-            _trackCounters.TryGetValue(logic_id, out trackCounter);
+            var inZones = trackCounter.GetInZones();
+
+            if (inZones.Count > 0)
+            {
+              box.not_in_zone = true;
+              box.ids = inZones;
+              var tracksNotInZone = await _tracksService.GetTracksByBox(box);
+              trackCounter.NotFound(tracksNotInZone);
+            }              
+          }
+
+          box.ids = null;
+          box.not_in_zone = false;
+          listOfNewTracks = await _tracksService.GetTracksByBox(box);
+
+          if (listOfNewTracks != null && listOfNewTracks.Count > 0)
+          {
+            var logic = logics.Where(l => l.id == logic_id).FirstOrDefault();
 
             if (trackCounter != null)
             {
-              var inZones = trackCounter.GetInZones();
-
-              if (inZones.Count > 0)
-              {
-                box.not_in_zone = true;
-                box.ids = inZones;
-                var tracksNotInZone = await _tracksService.GetTracksByBox(box);
-                trackCounter.NotFound(tracksNotInZone);
-              }              
-            }
-
-            box.ids = null;
-            box.not_in_zone = false;
-            listOfNewTracks = await _tracksService.GetTracksByBox(box);
-
-            if (listOfNewTracks != null && listOfNewTracks.Count > 0)
-            {
-              var logic = logics.Where(l => l.id == logic_id).FirstOrDefault();
-
-              if (trackCounter != null)
-              {
-                trackCounter.Found(listOfNewTracks);
-              }
+              trackCounter.Found(listOfNewTracks);
             }
           }
+
         }
 
         curStart = box.time_end.Value;
