@@ -1,5 +1,6 @@
 ﻿using DbLayer.Services;
 using Domain.GeoDTO;
+using Domain.Logic;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using LeafletAlarms.Services.Logic;
@@ -18,7 +19,6 @@ namespace LeafletAlarms.Services
     private Task _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
     private PubSubService _pubsub;
-    private ILogicProcessorService _logicProcessorService;
     private ILogicService _logicService;
     private IGeoService _geoService;
     private readonly ITrackService _tracksService;
@@ -30,14 +30,12 @@ namespace LeafletAlarms.Services
 
     public LogicProcessorHost(
       PubSubService pubsub,
-      ILogicProcessorService logicProcessorService,
       ILogicService logicService,
       IGeoService geoService,
       ITrackService tracksService
     )
     {
       _tracksService = tracksService;
-      _logicProcessorService = logicProcessorService;
       _logicService = logicService;
       _geoService = geoService;
       _pubsub = pubsub;
@@ -80,31 +78,50 @@ namespace LeafletAlarms.Services
          = new Dictionary<string, List<GeoObjectDTO>>();
 
       DateTime curStart = DateTime.UtcNow;
+      BoxTrackDTO box = new BoxTrackDTO();
 
       foreach (var logic in logics)
       {
         var geoFigs = await
             _geoService.GetGeoObjectsAsync(logic.figs.Select(f => f.id).ToList());
 
-        dicLogicToFigures[logic.id] = geoFigs.Values.ToList();
+        var zones = geoFigs.Values.ToList();
+        dicLogicToFigures[logic.id] = zones;
 
         if (logic.logic == "counter")
         {
-          _trackCounters[logic.id] = new TrackCounter(logic.id);
+          var trackCounter = new TrackCounter(logic.id);
+          _trackCounters[logic.id] = trackCounter;
+          box.zone = zones.Select(f => f.location).ToList();
+          var objectsNowInZone = await _geoService.GetGeoAsync(box);
+          
+          var removeFigs = logic.figs.Select(f => f.id).ToHashSet();
+
+          var initList = objectsNowInZone.Values
+            .Select(f => f.id)
+            .Where(d => !removeFigs.Contains(d))
+            .ToList();
+          trackCounter.InitZone(initList);
+
+          LogicTriggered triggeredVal = new LogicTriggered()
+          {
+            count = trackCounter.GetInZonesCount(),
+            logic_id = logic.id
+          };
+          _pubsub.Publish("LogicTriggered", triggeredVal);
         }        
       }
 
-      BoxTrackDTO box = new BoxTrackDTO();
-
-
       while (!_cancellationToken.IsCancellationRequested)
-      {
-        List<TrackPointDTO> listOfNewTracks;
+      {        
         box.time_start = curStart;
         box.time_end = DateTime.UtcNow;
 
         foreach ( var zoneKeyVal in dicLogicToFigures)
         {
+          List<TrackPointDTO> tracksInZone = null;
+          List<TrackPointDTO> tracksOutZone = null;
+
           var logic_id = zoneKeyVal.Key;
           box.zone = zoneKeyVal.Value.Select(f => f.location).ToList();
 
@@ -113,31 +130,35 @@ namespace LeafletAlarms.Services
 
           if (trackCounter != null)
           {
+            // Get what we have for current time;
             var inZones = trackCounter.GetInZones();
+            
+            box.ids = null;
+            box.not_in_zone = false;
+            tracksInZone = await _tracksService.GetTracksByBox(box);
+
+            // Add figures which were in zone for period in case they cross border.
+            inZones.AddRange(tracksInZone.Select(t => t.figure.id).ToList());
 
             if (inZones.Count > 0)
             {
               box.not_in_zone = true;
               box.ids = inZones;
-              var tracksNotInZone = await _tracksService.GetTracksByBox(box);
-              trackCounter.NotFound(tracksNotInZone);
-            }              
-          }
+              tracksOutZone = await _tracksService.GetTracksByBox(box);              
+            }
 
-          box.ids = null;
-          box.not_in_zone = false;
-          listOfNewTracks = await _tracksService.GetTracksByBox(box);
+            bool bChanged = trackCounter.Process(tracksOutZone, tracksInZone);
 
-          if (listOfNewTracks != null && listOfNewTracks.Count > 0)
-          {
-            var logic = logics.Where(l => l.id == logic_id).FirstOrDefault();
-
-            if (trackCounter != null)
+            if (bChanged)
             {
-              trackCounter.Found(listOfNewTracks);
+              LogicTriggered triggeredVal = new LogicTriggered()
+              {
+                count = trackCounter.GetInZonesCount(),
+                logic_id = logic_id
+              };
+              _pubsub.Publish("LogicTriggered", triggeredVal);
             }
           }
-
         }
 
         curStart = box.time_end.Value;

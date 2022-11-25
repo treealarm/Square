@@ -446,5 +446,10 @@ namespace LeafletAlarms.Services
         _stateIdsQueueService.AddIds(newIds.Select(i => i.Key).ToList());
       }
     }
+
+    public void LogicTriggered(object message)
+    {
+
+    }
   }
 }

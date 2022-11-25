@@ -160,24 +160,57 @@ namespace DbLayer.Services
       }
 
       var builder = Builders<DBGeoObject>.Filter;
-      var geometry = GeoJson.Polygon(
-        new GeoJson2DCoordinates[]
+
+      GeoJsonGeometry<GeoJson2DCoordinates> geometry;
+      FilterDefinition<DBGeoObject> filter = null;
+
+      if (box.zone != null)
+      {
+        foreach (var zone in box.zone)
         {
-          GeoJson.Position(box.wn[0], box.wn[1]),
-          GeoJson.Position(box.es[0], box.wn[1]),
-          GeoJson.Position(box.es[0], box.es[1]),
-          GeoJson.Position(box.wn[0], box.es[1]),
-          GeoJson.Position(box.wn[0], box.wn[1])
+          geometry = ModelGate.ConvertGeoDTO2DB(zone);
+          var f1 = builder.GeoIntersects(t => t.location, geometry);
+
+          if (filter == null)
+          {
+            filter = f1;
+          }
+          else
+          {
+            filter = filter | f1;
+          }
         }
-      );
+      }
+      else
+      {
+        geometry = GeoJson.Polygon(
+          new GeoJson2DCoordinates[]
+          {
+                  GeoJson.Position(box.wn[0], box.wn[1]),
+                  GeoJson.Position(box.es[0], box.wn[1]),
+                  GeoJson.Position(box.es[0], box.es[1]),
+                  GeoJson.Position(box.wn[0], box.es[1]),
+                  GeoJson.Position(box.wn[0], box.wn[1])
+          }
+        );
+
+        filter = builder.GeoIntersects(t => t.location, geometry);
+      }
+
+      if (box.not_in_zone)
+      {
+        filter = builder.Not(filter);
+      }
 
       var levels = await _levelService.GetLevelsByZoom(box.zoom);
 
-      var filter =
-        builder.GeoIntersects(t => t.location, geometry)
+      if (box.zoom != null)
+      {
+        filter = filter
         &
         builder.Where(p => levels.Contains(p.zoom_level) || string.IsNullOrEmpty(p.zoom_level))
         ;
+      }      
 
       if (box.ids != null &&
         (box.ids.Count > 0 || (box.property_filter != null && box.property_filter.props.Count > 0))

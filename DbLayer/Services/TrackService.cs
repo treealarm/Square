@@ -294,7 +294,7 @@ namespace DbLayer.Services
           }
           else
           {
-            filter = filter & f1;
+            filter = filter | f1;
           }          
         }        
       }
@@ -313,9 +313,6 @@ namespace DbLayer.Services
 
         filter = builder.GeoIntersects(t => t.meta.figure.location, geometry);
       }
-      
-
-      
 
       if (box.not_in_zone)
       {

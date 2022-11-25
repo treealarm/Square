@@ -1,4 +1,5 @@
 ﻿using Domain.StateWebSock;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,31 +14,77 @@ namespace LeafletAlarms.Services.Logic
       _logic_id = logic_id;
     }
 
-    public void Found(List<TrackPointDTO> listOfTracks)
+    public void InitZone(List<string> objs)
     {
-      foreach (TrackPointDTO trackPoint in listOfTracks)
-      {
-        if (!_objectsInZone.Contains(trackPoint.figure.id))
-        {
-          _objectsInZone.Add(trackPoint.figure.id);
-        }
-      }
+      _objectsInZone = objs.ToHashSet();
     }
-
-    public void NotFound(List<TrackPointDTO> listOfTracks)
+    public bool Process(List<TrackPointDTO> listOutZone, List<TrackPointDTO> listInZone)
     {
-      foreach (TrackPointDTO trackPoint in listOfTracks)
+      bool bChanged = false;
+
+      List<TrackZonePosition> trackPoints = new List<TrackZonePosition>();
+
+      if (listOutZone != null)
       {
-        if (_objectsInZone.Contains(trackPoint.figure.id))
+        foreach (var trackPoint in listOutZone)
         {
-          _objectsInZone.Remove(trackPoint.figure.id);
+          trackPoints.Add(
+            new TrackZonePosition()
+            {
+              Track = trackPoint,
+              IsInZone = false
+            });
         }
       }
+      
+      if (listInZone != null)
+      {
+        foreach (var trackPoint in listInZone)
+        {
+          trackPoints.Add(
+            new TrackZonePosition()
+            {
+              Track = trackPoint,
+              IsInZone = true
+            });
+        }
+      }
+
+      var sorted = trackPoints.OrderBy(t => t.Track.timestamp);
+
+      foreach (var trackPoint in sorted)
+      {
+        var id = trackPoint.Track.figure.id;
+
+        if (trackPoint.IsInZone)
+        {
+          if (!_objectsInZone.Contains(id))
+          {
+            bChanged = true;
+            _objectsInZone.Add(id);
+          }          
+        }
+        else
+        {
+          if (_objectsInZone.Contains(id))
+          {
+            bChanged = true;
+            _objectsInZone.Remove(id);
+          }            
+        }
+      }
+
+      return bChanged;
     }
 
     public List<string> GetInZones()
     {
       return _objectsInZone.ToList();
+    }
+
+    public int GetInZonesCount()
+    {
+      return _objectsInZone.Count;
     }
   }
 }

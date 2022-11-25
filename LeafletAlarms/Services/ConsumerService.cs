@@ -19,12 +19,15 @@ namespace LeafletAlarms.Services
     private ILevelService _levelService;
     private IMapService _mapService;
     private IIdsQueue _stateIdsQueueService;
+    private PubSubService _pubsub;
+
     public ConsumerService(
       IStateService stateService,
       IGeoService geoService,
       ILevelService levelService,
       IMapService mapService,
-      IIdsQueue stateIdsQueueService
+      IIdsQueue stateIdsQueueService,
+      PubSubService pubsub
     )
     {
       _stateService = stateService;
@@ -32,6 +35,8 @@ namespace LeafletAlarms.Services
       _levelService = levelService;
       _mapService = mapService;
       _stateIdsQueueService = stateIdsQueueService;
+      _pubsub = pubsub;
+      _pubsub.Subscribe("LogicTriggered", LogicTriggered);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
@@ -93,6 +98,14 @@ namespace LeafletAlarms.Services
       foreach (var sock in StateSockets)
       {
         await sock.Value.OnBlinkStateChanged(state);
+      }
+    }
+
+    void LogicTriggered(string channel, object message)
+    {
+      foreach (var sock in StateSockets)
+      {
+        sock.Value.LogicTriggered(message);
       }
     }
   }
