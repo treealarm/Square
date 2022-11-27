@@ -1,20 +1,19 @@
-﻿using DbLayer.Services;
-using Domain;
+﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.Logic;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
+using OsmSharp.API;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 
 namespace LeafletAlarms.Services
 {
@@ -36,6 +35,7 @@ namespace LeafletAlarms.Services
       new Dictionary<string, TrackPointDTO>();
     private object _lockerTracks = new object();
 
+    private HashSet<string> _setIdsToUpdate = new HashSet<string>();
     private HashSet<string> _dicIds = new HashSet<string>();
     private object _locker = new object();
     private BoxDTO _currentBox;
@@ -80,7 +80,10 @@ namespace LeafletAlarms.Services
     {
       while (!_cancellationTokenSource.IsCancellationRequested)
       {
+        await Task.Delay(1000);
+
         List<TrackPointDTO> movedMarkers;
+        HashSet<string> idsToUpdate = null;
 
         lock (_lockerTracks)
         {
@@ -88,15 +91,20 @@ namespace LeafletAlarms.Services
           _dicUpdatedTracks.Clear();
         }
 
+        lock (_locker)
+        {
+          idsToUpdate = _setIdsToUpdate.ToHashSet();
+        }          
+
+        if (idsToUpdate.Any())
+        {
+          await UpdateIds(idsToUpdate);          
+        }
+
         if (movedMarkers.Any())
         {
           await DoUpdateTrackPosition(movedMarkers);
-          await Task.Delay(500);
-        }
-        else
-        {
-          await Task.Delay(1000);
-        }
+        }        
       }
     }
 
@@ -228,6 +236,23 @@ namespace LeafletAlarms.Services
       }      
     }
 
+    private async Task UpdateIds(HashSet<string> toUpdate)
+    {
+      StateBaseDTO packet = new StateBaseDTO()
+      {
+        action = "set_ids2update",
+        data = toUpdate
+      };
+
+      if (toUpdate.Count > 1000 || GetCurObjectCount() >  1000)
+      {
+        packet.action = "update_viewbox";
+        packet.data = null;
+      }
+
+      await SendPacket(packet);
+    }
+
     private async Task DoUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
     {
       HashSet<string> toUpdate = new HashSet<string>();
@@ -292,19 +317,7 @@ namespace LeafletAlarms.Services
       {
         await RemoveFilteredIds(curBox, toUpdate);
 
-        StateBaseDTO packet = new StateBaseDTO()
-        {
-          action = "set_ids2update",
-          data = toUpdate
-        };
-
-        if (GetCurObjectCount() > 1000)
-        {
-          packet.action = "update_viewbox";
-          packet.data = null;
-        }
-
-        await SendPacket(packet);
+        await UpdateIds(toUpdate);
       }
     }
 
@@ -449,7 +462,18 @@ namespace LeafletAlarms.Services
 
     public void LogicTriggered(object message)
     {
+      var triggeredVal = message as LogicTriggered;
 
+      lock (_locker)
+      {
+        foreach (var textObj in triggeredVal.LogicTextObjects)
+        {
+          if (_dicIds.Contains(textObj))
+          {
+            _setIdsToUpdate.Add(textObj);
+          }
+        }
+      }
     }
   }
 }

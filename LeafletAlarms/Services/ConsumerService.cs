@@ -1,7 +1,6 @@
 ﻿using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
-using Itinero;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Concurrent;

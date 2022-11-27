@@ -14,7 +14,8 @@ import {
   useMapEvents,
   Circle,
   Polygon,
-  Polyline
+  Polyline,
+  Marker
 } from 'react-leaflet'
 
 
@@ -95,6 +96,24 @@ function MyCircle(props: any) {
     [],
   )
 
+  var obj_text = getExtraProp(fig, "text");
+
+  var textIcon: L.DivIcon = null;
+
+  if (obj_text != null && obj_text != "")
+  {
+    textIcon = L.divIcon({ html: "<h2>"+obj_text+"</h2>", iconSize: [0, 0] });
+  }
+
+  if (textIcon != null) {
+    return (
+      <Marker
+        position={center}
+        icon={textIcon}
+        eventHandlers={eventHandlers}/>
+    );
+  }
+
   return (
     <React.Fragment>
       <Circle
@@ -103,6 +122,7 @@ function MyCircle(props: any) {
         radius={radius}
         eventHandlers={eventHandlers}
       >
+
       </Circle>
     </React.Fragment>
   );
@@ -116,15 +136,19 @@ function MyCommonFig(props: any) {
 
   var fig: ICommonFig = props.marker;
   var geo: IGeometryDTO = fig.geometry;
-
+    
+  
   if (geo.type == PointType) {
+    const center = geo.coord as [number, number];
     return (
       <MyCircle {...props}>
+        
       </MyCircle>
     );
   }
 
   if (geo.type == PolygonType) {
+    const center = L.polygon(geo.coord).getBounds().getCenter();
     return (
       <MyPolygon {...props}>
       </MyPolygon>
@@ -132,6 +156,7 @@ function MyCommonFig(props: any) {
   }
 
   if (geo.type == LineStringType) {
+    const center = L.polyline(geo.coord).getBounds().getCenter();
     return (
       <MyPolyline {...props}>
       </MyPolyline>
@@ -304,6 +329,7 @@ export function LocationMarkers() {
   if (selectedEditMode.edit_mode) {
     hidden_id = objProps?.id;
   }
+
 
   return (
     <React.Fragment>

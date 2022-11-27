@@ -1,4 +1,5 @@
 ﻿using DbLayer.Services;
+using Domain;
 using Domain.GeoDTO;
 using Domain.Logic;
 using Domain.ServiceInterfaces;
@@ -21,6 +22,7 @@ namespace LeafletAlarms.Services
     private PubSubService _pubsub;
     private ILogicService _logicService;
     private IGeoService _geoService;
+    private readonly IMapService _mapService;
     private readonly ITrackService _tracksService;
     private List<TrackPointDTO> _listOfNewTracks = new List<TrackPointDTO>();
     private object _locker = new object();
@@ -32,9 +34,11 @@ namespace LeafletAlarms.Services
       PubSubService pubsub,
       ILogicService logicService,
       IGeoService geoService,
-      ITrackService tracksService
+      ITrackService tracksService,
+      IMapService mapService
     )
     {
+      _mapService = mapService;
       _tracksService = tracksService;
       _logicService = logicService;
       _geoService = geoService;
@@ -71,6 +75,47 @@ namespace LeafletAlarms.Services
       _timer.Start();
     }
 
+    private async Task OnUpdateCounterLogic(string logic_id)
+    {
+      TrackCounter trackCounter;
+
+      if (_trackCounters.TryGetValue(logic_id, out trackCounter))
+      {
+        LogicTriggered triggeredVal = new LogicTriggered()
+        {
+          Count = trackCounter.GetInZonesCount(),
+          LogicId = trackCounter.LogicId,
+          LogicTextObjects = trackCounter.TextObjectsIds
+        };
+
+        if (trackCounter.TextObjectsIds != null && trackCounter.TextObjectsIds.Count > 0)
+        {
+          var updatedProps = new List<ObjPropsDTO>();
+
+          foreach (var textObjId in trackCounter.TextObjectsIds)
+          {
+            var updatedObj = new ObjPropsDTO()
+            {
+              id = textObjId,
+              extra_props = new List<ObjExtraPropertyDTO>()
+              {
+                new ObjExtraPropertyDTO()
+                {
+                  prop_name = "text",
+                  str_val = triggeredVal.Count.ToString()
+                }
+              }
+            };
+
+            updatedProps.Add(updatedObj);
+          }
+
+          await _mapService.UpdatePropNotDeleteAsync(updatedProps);
+        }
+
+        _pubsub.Publish("LogicTriggered", triggeredVal);
+      }
+    }
     private async void DoWork()
     {
       var logics = await _logicService.GetListAsync(null, true, 1000);
@@ -82,15 +127,22 @@ namespace LeafletAlarms.Services
 
       foreach (var logic in logics)
       {
+        var textObjsIds = logic.figs
+          .Where(f => f.group_id == "text")
+          .Select(f => f.id)
+          .ToHashSet();
+
+        var logicObjs = logic.figs.Where(f => f.group_id != "text").ToList();
+
         var geoFigs = await
-            _geoService.GetGeoObjectsAsync(logic.figs.Select(f => f.id).ToList());
+            _geoService.GetGeoObjectsAsync(logicObjs.Select(f => f.id).ToList());
 
         var zones = geoFigs.Values.ToList();
         dicLogicToFigures[logic.id] = zones;
 
         if (logic.logic == "counter")
         {
-          var trackCounter = new TrackCounter(logic.id);
+          var trackCounter = new TrackCounter(logic.id, textObjsIds);
           _trackCounters[logic.id] = trackCounter;
           box.zone = zones.Select(f => f.location).ToList();
           var objectsNowInZone = await _geoService.GetGeoAsync(box);
@@ -103,12 +155,7 @@ namespace LeafletAlarms.Services
             .ToList();
           trackCounter.InitZone(initList);
 
-          LogicTriggered triggeredVal = new LogicTriggered()
-          {
-            count = trackCounter.GetInZonesCount(),
-            logic_id = logic.id
-          };
-          _pubsub.Publish("LogicTriggered", triggeredVal);
+          await OnUpdateCounterLogic(logic.id);
         }        
       }
 
@@ -138,7 +185,8 @@ namespace LeafletAlarms.Services
             tracksInZone = await _tracksService.GetTracksByBox(box);
 
             // Add figures which were in zone for period in case they cross border.
-            inZones.AddRange(tracksInZone.Select(t => t.figure.id).ToList());
+            var listInZone = tracksInZone.Select(t => t.figure.id).ToList();
+            inZones.AddRange(listInZone);
 
             if (inZones.Count > 0)
             {
@@ -151,19 +199,14 @@ namespace LeafletAlarms.Services
 
             if (bChanged)
             {
-              LogicTriggered triggeredVal = new LogicTriggered()
-              {
-                count = trackCounter.GetInZonesCount(),
-                logic_id = logic_id
-              };
-              _pubsub.Publish("LogicTriggered", triggeredVal);
+              await OnUpdateCounterLogic(logic_id);
             }
           }
         }
 
         curStart = box.time_end.Value;
 
-        await Task.Delay(1000);
+        await Task.Delay(5000);
 
       }
     }

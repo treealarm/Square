@@ -8,7 +8,8 @@ namespace Domain.Logic
 {
   public class LogicTriggered
   {
-    public string logic_id { get; set; }
-    public int count { get; set; }
+    public string LogicId { get; set; }
+    public HashSet<string> LogicTextObjects { get; set; }
+    public int Count { get; set; }
   }
 }

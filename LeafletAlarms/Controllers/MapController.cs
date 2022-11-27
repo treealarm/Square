@@ -273,7 +273,6 @@ namespace LeafletAlarms.Controllers
 
       var tree = await _mapService.GetAsync(ids);
 
-      // For now we use props only for default color.
       var props = await _mapService.GetPropsAsync(ids);
 
       foreach (var item in tree.Values)
@@ -296,25 +295,18 @@ namespace LeafletAlarms.Controllers
             retItem.id = item.id;
             retItem.name = item.name;
             retItem.parent_id = item.parent_id;            
-            retItem.zoom_level = geoPart.zoom_level?.ToString();
-
-            ObjPropsDTO objProp = null;
+            retItem.zoom_level = geoPart.zoom_level?.ToString();         
             
-            props.TryGetValue(retItem.id, out objProp);            
-            
-            if (objProp != null)
+            if (props.TryGetValue(retItem.id, out var objProp))
             {
-              var color = objProp.extra_props.Where(p => p.prop_name == "color").FirstOrDefault();
-
-              if (color != null)
+              if (retItem.extra_props != null)
               {
-                if (retItem.extra_props == null)
-                {
-                  retItem.extra_props = new List<ObjExtraPropertyDTO>();
-                }
-
-                retItem.extra_props.Add(color);
+                retItem.extra_props.AddRange(objProp.extra_props);
               }
+              else
+              {
+                retItem.extra_props = objProp.extra_props;
+              }              
             }
           }
 

@@ -8,10 +8,12 @@ namespace LeafletAlarms.Services.Logic
   public class TrackCounter
   {
     private HashSet<string> _objectsInZone = new HashSet<string>();
-    private string _logic_id;
-    public TrackCounter(string logic_id)
+    public string LogicId { get; set; }
+    public HashSet<string> TextObjectsIds { get; set; }
+    public TrackCounter(string logic_id, HashSet<string> logic_text_objects)
     {
-      _logic_id = logic_id;
+      LogicId = logic_id;
+      TextObjectsIds = logic_text_objects;
     }
 
     public void InitZone(List<string> objs)
