@@ -1,26 +1,48 @@
-﻿using Domain.StateWebSock;
+﻿using Domain;
+using Domain.GeoDBDTO;
+using Domain.GeoDTO;
+using Domain.ServiceInterfaces;
+using Domain.StateWebSock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services.Logic
 {
-  public class TrackCounter
+  public class TrackCounter : BaseLogicProc
   {
     private HashSet<string> _objectsInZone = new HashSet<string>();
-    public string LogicId { get; set; }
-    public HashSet<string> TextObjectsIds { get; set; }
-    public TrackCounter(string logic_id, HashSet<string> logic_text_objects)
+    public List<GeometryDTO> Zone { get; set; }
+
+    public TrackCounter(StaticLogicDTO logicDto)
+      :base(logicDto)
     {
-      LogicId = logic_id;
-      TextObjectsIds = logic_text_objects;
     }
 
-    public void InitZone(List<string> objs)
+    public override async Task InitFromDb(IGeoService geoService)
     {
-      _objectsInZone = objs.ToHashSet();
+      var logicObjs = LogicDTO.figs.Where(f => f.group_id != "text").ToList();
+
+      var geoFigs = await
+          geoService.GetGeoObjectsAsync(logicObjs.Select(f => f.id).ToList());
+
+      var zones = geoFigs.Values.ToList();
+
+      BoxTrackDTO box = new BoxTrackDTO();
+      Zone = zones.Select(f => f.location).ToList();
+      box.zone = Zone; 
+      var objectsNowInZone = await geoService.GetGeoAsync(box);
+
+      var removeFigs = LogicDTO.figs.Select(f => f.id).ToHashSet();
+
+      _objectsInZone = objectsNowInZone.Values
+        .Select(f => f.id)
+        .Where(d => !removeFigs.Contains(d))
+        .ToHashSet();
     }
-    public bool Process(List<TrackPointDTO> listOutZone, List<TrackPointDTO> listInZone)
+
+    private bool Process(List<TrackPointDTO> listOutZone, List<TrackPointDTO> listInZone)
     {
       bool bChanged = false;
 
@@ -79,14 +101,49 @@ namespace LeafletAlarms.Services.Logic
       return bChanged;
     }
 
-    public List<string> GetInZones()
+    private List<string> GetInZones()
     {
       return _objectsInZone.ToList();
     }
 
-    public int GetInZonesCount()
+    public override string GetUpdatedResult()
     {
-      return _objectsInZone.Count;
+      return _objectsInZone.Count.ToString();
+    }
+
+    public override async Task<bool> ProcessTracks(
+      ITrackService tracksService,
+      DateTime? time_start,
+      DateTime? time_end
+      )
+    {
+      BoxTrackDTO box = new BoxTrackDTO();
+      box.time_start = time_start;
+      box.time_end = time_end;
+      box.zone = this.Zone;
+      // Get what we have for current time;
+      var inZones = this.GetInZones();
+
+      box.ids = null;
+      box.not_in_zone = false;
+      var tracksInZone = await tracksService.GetTracksByBox(box);
+
+      // Add figures which were in zone for period in case they cross border.
+      var listInZone = tracksInZone.Select(t => t.figure.id).ToList();
+      inZones.AddRange(listInZone);
+
+      List<TrackPointDTO> tracksOutZone = null;
+
+      if (inZones.Count > 0)
+      {
+        box.not_in_zone = true;
+        box.ids = inZones;
+        tracksOutZone = await tracksService.GetTracksByBox(box);
+      }
+
+      bool bChanged = this.Process(tracksOutZone, tracksInZone);
+
+      return bChanged;
     }
   }
 }

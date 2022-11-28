@@ -28,8 +28,9 @@ namespace LeafletAlarms.Services
     private readonly IUtilService _utilService;
     private object _locker = new object();
 
-    private Dictionary<string, TrackCounter> _trackCounters =
-      new Dictionary<string, TrackCounter>();
+    private Dictionary<string, BaseLogicProc> _logicProcs =
+      new Dictionary<string, BaseLogicProc>();
+    
 
     private TracksUpdatedEvent _rangeToProcess = new TracksUpdatedEvent();
 
@@ -48,9 +49,6 @@ namespace LeafletAlarms.Services
       _logicService = logicService;
       _geoService = geoService;
       _pubsub = pubsub;
-
-      _rangeToProcess.ts_start = DateTime.MaxValue;
-      _rangeToProcess.ts_end = DateTime.MinValue;
     }    
 
     void OnUpdateTrackPosition(string channel,object message)
@@ -64,22 +62,26 @@ namespace LeafletAlarms.Services
 
       lock(_locker)
       {
-        if (_rangeToProcess.ts_start > ev.ts_start)
+        if (_rangeToProcess.ts_start == null ||
+          _rangeToProcess.ts_start > ev.ts_start)
         {
           _rangeToProcess.ts_start = ev.ts_start;
         }
 
-        if (_rangeToProcess.ts_end < ev.ts_end)
+        if (_rangeToProcess.ts_end == null ||
+          _rangeToProcess.ts_end < ev.ts_end)
         {
           _rangeToProcess.ts_end = ev.ts_end;
         }
 
-        if (_utilService.Compare(_rangeToProcess.id_start, ev.id_start) > 0)
+        if (_rangeToProcess.id_start == null ||
+          _utilService.Compare(_rangeToProcess.id_start, ev.id_start) > 0)
         {
           _rangeToProcess.id_start = ev.id_start;
         }
 
-        if (_utilService.Compare(_rangeToProcess.id_end, ev.id_end) < 0)
+        if (_rangeToProcess.id_end == null ||
+          _utilService.Compare(_rangeToProcess.id_end, ev.id_end) < 0)
         {
           _rangeToProcess.id_end = ev.id_end;
         }
@@ -101,24 +103,24 @@ namespace LeafletAlarms.Services
       _timer.Start();
     }
 
-    private async Task OnUpdateCounterLogic(string logic_id)
+    private async Task OnUpdateLogic(string logic_id)
     {
-      TrackCounter trackCounter;
+      BaseLogicProc logicProc = null;
 
-      if (_trackCounters.TryGetValue(logic_id, out trackCounter))
+      if (_logicProcs.TryGetValue(logic_id, out logicProc))
       {
         LogicTriggered triggeredVal = new LogicTriggered()
         {
-          Count = trackCounter.GetInZonesCount(),
-          LogicId = trackCounter.LogicId,
-          LogicTextObjects = trackCounter.TextObjectsIds
+          Text = logicProc.GetUpdatedResult(),
+          LogicId = logicProc.LogicId,
+          LogicTextObjects = logicProc.TextObjectsIds
         };
 
-        if (trackCounter.TextObjectsIds != null && trackCounter.TextObjectsIds.Count > 0)
+        if (logicProc.TextObjectsIds != null && logicProc.TextObjectsIds.Count > 0)
         {
           var updatedProps = new List<ObjPropsDTO>();
 
-          foreach (var textObjId in trackCounter.TextObjectsIds)
+          foreach (var textObjId in logicProc.TextObjectsIds)
           {
             var updatedObj = new ObjPropsDTO()
             {
@@ -128,7 +130,7 @@ namespace LeafletAlarms.Services
                 new ObjExtraPropertyDTO()
                 {
                   prop_name = "text",
-                  str_val = triggeredVal.Count.ToString()
+                  str_val = triggeredVal.Text
                 }
               }
             };
@@ -142,54 +144,46 @@ namespace LeafletAlarms.Services
         _pubsub.Publish("LogicTriggered", triggeredVal);
       }
     }
+
     private async void DoWork()
     {
       var logics = await _logicService.GetListAsync(null, true, 1000);
-      Dictionary<string, List<GeoObjectDTO>> dicLogicToFigures
-         = new Dictionary<string, List<GeoObjectDTO>>();
 
       BoxTrackDTO box = new BoxTrackDTO();
 
       foreach (var logic in logics)
       {
-        var textObjsIds = logic.figs
-          .Where(f => f.group_id == "text")
-          .Select(f => f.id)
-          .ToHashSet();
-
-        var logicObjs = logic.figs.Where(f => f.group_id != "text").ToList();
-
-        var geoFigs = await
-            _geoService.GetGeoObjectsAsync(logicObjs.Select(f => f.id).ToList());
-
-        var zones = geoFigs.Values.ToList();
-        dicLogicToFigures[logic.id] = zones;
+        BaseLogicProc logicProc = null;
 
         if (logic.logic == "counter")
         {
-          var trackCounter = new TrackCounter(logic.id, textObjsIds);
-          _trackCounters[logic.id] = trackCounter;
-          box.zone = zones.Select(f => f.location).ToList();
-          var objectsNowInZone = await _geoService.GetGeoAsync(box);
-          
-          var removeFigs = logic.figs.Select(f => f.id).ToHashSet();
+          logicProc = new TrackCounter(logic);
+          _logicProcs[logic.id] = logicProc;
+        }
 
-          var initList = objectsNowInZone.Values
-            .Select(f => f.id)
-            .Where(d => !removeFigs.Contains(d))
-            .ToList();
-          trackCounter.InitZone(initList);
+        if (logic.logic == "from-to")
+        {
+          logicProc = new FromToTrigger(logic);
+          _logicProcs[logic.id] = logicProc;
+        }
 
-          await OnUpdateCounterLogic(logic.id);
-        }        
+        await logicProc?.InitFromDb(_geoService);
+        await OnUpdateLogic(logic.id);
       }
 
 
       while (!_cancellationToken.IsCancellationRequested)
       {
         bool bContinue = false;
+
         lock (_locker)
         {
+          if (_rangeToProcess.ts_start == null ||
+            _rangeToProcess.ts_end == null)
+          {
+            bContinue = true;
+          }
+
           if (box.time_start == _rangeToProcess.ts_start &&
           box.time_end == _rangeToProcess.ts_end)
           {            
@@ -206,48 +200,23 @@ namespace LeafletAlarms.Services
           continue;
         }
 
-        foreach ( var zoneKeyVal in dicLogicToFigures)
-        {
-          List<TrackPointDTO> tracksInZone = null;
-          List<TrackPointDTO> tracksOutZone = null;
+        foreach (var logicProc in _logicProcs)
+        {      
+          var curLogicProc = logicProc.Value;
 
-          var logic_id = zoneKeyVal.Key;
-          box.zone = zoneKeyVal.Value.Select(f => f.location).ToList();
+          var bChanged = await curLogicProc.ProcessTracks(
+            _tracksService,
+            box.time_start,
+            box.time_end
+            );
 
-          TrackCounter trackCounter;
-          _trackCounters.TryGetValue(logic_id, out trackCounter);
-
-          if (trackCounter != null)
+          if (bChanged)
           {
-            // Get what we have for current time;
-            var inZones = trackCounter.GetInZones();
-            
-            box.ids = null;
-            box.not_in_zone = false;
-            tracksInZone = await _tracksService.GetTracksByBox(box);
-
-            // Add figures which were in zone for period in case they cross border.
-            var listInZone = tracksInZone.Select(t => t.figure.id).ToList();
-            inZones.AddRange(listInZone);
-
-            if (inZones.Count > 0)
-            {
-              box.not_in_zone = true;
-              box.ids = inZones;
-              tracksOutZone = await _tracksService.GetTracksByBox(box);              
-            }
-
-            bool bChanged = trackCounter.Process(tracksOutZone, tracksInZone);
-
-            if (bChanged)
-            {
-              await OnUpdateCounterLogic(logic_id);
-            }
+            await OnUpdateLogic(curLogicProc.LogicId);
           }
         }
 
         await Task.Delay(5000);
-
       }
     }
 

@@ -37,6 +37,11 @@ namespace LeafletAlarms.Services
       _pubsub = pubsub;
       _pubsub.Subscribe("LogicTriggered", LogicTriggered);
     }
+
+    ~ConsumerService()
+    {
+      _pubsub.Unsubscribe("LogicTriggered", LogicTriggered);
+    }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
     public async Task PushAsync(HttpContext context, WebSocket webSocket)

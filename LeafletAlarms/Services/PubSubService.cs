@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services
 {
@@ -25,10 +26,13 @@ namespace LeafletAlarms.Services
 
       if (topicList != null)
       {
-        foreach (var action in topicList)
-        {
-          action(channel, message);
-        }
+        Task.Run(() => {
+          foreach (var action in topicList)
+          {
+            action(channel, message);
+          }
+        });
+        
         return topicList.Count;
       }      
 

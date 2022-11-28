@@ -204,8 +204,8 @@ namespace LeafletAlarms.Controllers
       timing["UpdateTracksCall"] = t2 - t1;
       t2 = DateTime.Now;
 
-      var track_0 = trackPoints.FirstOrDefault();
-      var track_n = trackPoints.LastOrDefault();
+      var track_0 = trackPointsInserted.FirstOrDefault();
+      var track_n = trackPointsInserted.LastOrDefault();
 
       TracksUpdatedEvent ev = new TracksUpdatedEvent()
       {

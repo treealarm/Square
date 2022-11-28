@@ -10,6 +10,6 @@ namespace Domain.Logic
   {
     public string LogicId { get; set; }
     public HashSet<string> LogicTextObjects { get; set; }
-    public int Count { get; set; }
+    public string Text { get; set; }
   }
 }
