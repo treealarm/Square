@@ -80,31 +80,38 @@ namespace LeafletAlarms.Services
     {
       while (!_cancellationTokenSource.IsCancellationRequested)
       {
-        await Task.Delay(1000);
-
-        List<TrackPointDTO> movedMarkers;
-        HashSet<string> idsToUpdate = null;
-
-        lock (_lockerTracks)
+        try
         {
-          movedMarkers = _dicUpdatedTracks.Values.ToList();
-          _dicUpdatedTracks.Clear();
+          await Task.Delay(1000);
+
+          List<TrackPointDTO> movedMarkers;
+          HashSet<string> idsToUpdate = null;
+
+          lock (_lockerTracks)
+          {
+            movedMarkers = _dicUpdatedTracks.Values.ToList();
+            _dicUpdatedTracks.Clear();
+          }
+
+          lock (_locker)
+          {
+            idsToUpdate = _setIdsToUpdate.ToHashSet();
+          }
+
+          if (idsToUpdate.Any())
+          {
+            await UpdateIds(idsToUpdate);
+          }
+
+          if (movedMarkers.Any())
+          {
+            await DoUpdateTrackPosition(movedMarkers);
+          }
         }
-
-        lock (_locker)
+        catch(Exception ex)
         {
-          idsToUpdate = _setIdsToUpdate.ToHashSet();
-        }          
 
-        if (idsToUpdate.Any())
-        {
-          await UpdateIds(idsToUpdate);          
         }
-
-        if (movedMarkers.Any())
-        {
-          await DoUpdateTrackPosition(movedMarkers);
-        }        
       }
     }
 
@@ -434,7 +441,7 @@ namespace LeafletAlarms.Services
         new ArraySegment<byte>(buffer, 0, buffer.Length),
         WebSocketMessageType.Text,
         true,
-        CancellationToken.None
+        _cancellationTokenSource.Token
       );
     }
 
