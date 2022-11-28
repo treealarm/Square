@@ -1,6 +1,7 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using LeafletAlarms.Services;
@@ -198,9 +199,23 @@ namespace LeafletAlarms.Controllers
       }
       t1 = DateTime.Now;
       _stateService.OnUpdateTrackPosition(trackPoints);
-      _pubsub.Publish("UpdateTrackPosition", trackPoints);
+
+
       timing["UpdateTracksCall"] = t2 - t1;
       t2 = DateTime.Now;
+
+      var track_0 = trackPoints.FirstOrDefault();
+      var track_n = trackPoints.LastOrDefault();
+
+      TracksUpdatedEvent ev = new TracksUpdatedEvent()
+      {
+        id_start = track_0.id,
+        id_end = track_n.id,
+        ts_start = track_0.timestamp,
+        ts_end = track_n.timestamp
+      };
+
+      _pubsub.Publish("UpdateTrackPosition", ev);
 
       return timing;
     }

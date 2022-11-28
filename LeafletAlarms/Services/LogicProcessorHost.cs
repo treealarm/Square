@@ -2,6 +2,7 @@
 using Domain;
 using Domain.GeoDTO;
 using Domain.Logic;
+using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using LeafletAlarms.Services.Logic;
@@ -24,39 +25,64 @@ namespace LeafletAlarms.Services
     private IGeoService _geoService;
     private readonly IMapService _mapService;
     private readonly ITrackService _tracksService;
-    private List<TrackPointDTO> _listOfNewTracks = new List<TrackPointDTO>();
+    private readonly IUtilService _utilService;
     private object _locker = new object();
 
     private Dictionary<string, TrackCounter> _trackCounters =
       new Dictionary<string, TrackCounter>();
+
+    private TracksUpdatedEvent _rangeToProcess = new TracksUpdatedEvent();
 
     public LogicProcessorHost(
       PubSubService pubsub,
       ILogicService logicService,
       IGeoService geoService,
       ITrackService tracksService,
-      IMapService mapService
+      IMapService mapService,
+      IUtilService utilService
     )
     {
+      _utilService = utilService;
       _mapService = mapService;
       _tracksService = tracksService;
       _logicService = logicService;
       _geoService = geoService;
       _pubsub = pubsub;
+
+      _rangeToProcess.ts_start = DateTime.MaxValue;
+      _rangeToProcess.ts_end = DateTime.MinValue;
     }    
 
     void OnUpdateTrackPosition(string channel,object message)
     {
-      var list = message as List<TrackPointDTO>;
+      var ev = message as TracksUpdatedEvent;
 
-      if (list == null)
+      if (ev == null)
       {
         return;
       }
 
       lock(_locker)
       {
-        _listOfNewTracks.AddRange(list);
+        if (_rangeToProcess.ts_start > ev.ts_start)
+        {
+          _rangeToProcess.ts_start = ev.ts_start;
+        }
+
+        if (_rangeToProcess.ts_end < ev.ts_end)
+        {
+          _rangeToProcess.ts_end = ev.ts_end;
+        }
+
+        if (_utilService.Compare(_rangeToProcess.id_start, ev.id_start) > 0)
+        {
+          _rangeToProcess.id_start = ev.id_start;
+        }
+
+        if (_utilService.Compare(_rangeToProcess.id_end, ev.id_end) < 0)
+        {
+          _rangeToProcess.id_end = ev.id_end;
+        }
       }           
     }
 
@@ -122,7 +148,6 @@ namespace LeafletAlarms.Services
       Dictionary<string, List<GeoObjectDTO>> dicLogicToFigures
          = new Dictionary<string, List<GeoObjectDTO>>();
 
-      DateTime curStart = DateTime.UtcNow;
       BoxTrackDTO box = new BoxTrackDTO();
 
       foreach (var logic in logics)
@@ -159,10 +184,27 @@ namespace LeafletAlarms.Services
         }        
       }
 
+
       while (!_cancellationToken.IsCancellationRequested)
-      {        
-        box.time_start = curStart;
-        box.time_end = DateTime.UtcNow;
+      {
+        bool bContinue = false;
+        lock (_locker)
+        {
+          if (box.time_start == _rangeToProcess.ts_start &&
+          box.time_end == _rangeToProcess.ts_end)
+          {            
+            bContinue = true;
+          }
+
+          box.time_start = _rangeToProcess.ts_start;
+          box.time_end = _rangeToProcess.ts_end;
+        }
+        
+        if (bContinue)
+        {
+          await Task.Delay(1000);
+          continue;
+        }
 
         foreach ( var zoneKeyVal in dicLogicToFigures)
         {
@@ -203,8 +245,6 @@ namespace LeafletAlarms.Services
             }
           }
         }
-
-        curStart = box.time_end.Value;
 
         await Task.Delay(5000);
 

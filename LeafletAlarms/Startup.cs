@@ -36,6 +36,8 @@ namespace LeafletAlarms
       services.AddHostedService<InitHostedService>();
 
       
+      services.AddSingleton<IUtilService, UtilService>();
+
       services.AddSingleton<PubSubService>();
 
       services.AddSingleton<IMapService, MapService>();
