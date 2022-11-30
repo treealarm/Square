@@ -2,6 +2,7 @@
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.Logic;
+using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
@@ -467,9 +468,9 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public void LogicTriggered(object message)
+    public void LogicTriggered(string message)
     {
-      var triggeredVal = message as LogicTriggered;
+      var triggeredVal = JsonSerializer.Deserialize<LogicTriggered>(message);
 
       lock (_locker)
       {

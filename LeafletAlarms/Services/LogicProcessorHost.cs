@@ -11,6 +11,7 @@ using OsmSharp.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace LeafletAlarms.Services
   {
     private Task _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-    private PubSubService _pubsub;
+    private IPubSubService _pubsub;
     private ILogicService _logicService;
     private IGeoService _geoService;
     private readonly IMapService _mapService;
@@ -35,7 +36,7 @@ namespace LeafletAlarms.Services
     private TracksUpdatedEvent _rangeToProcess = new TracksUpdatedEvent();
 
     public LogicProcessorHost(
-      PubSubService pubsub,
+      IPubSubService pubsub,
       ILogicService logicService,
       IGeoService geoService,
       ITrackService tracksService,
@@ -51,9 +52,9 @@ namespace LeafletAlarms.Services
       _pubsub = pubsub;
     }    
 
-    void OnUpdateTrackPosition(string channel,object message)
+    void OnUpdateTrackPosition(string channel, string message)
     {
-      var ev = message as TracksUpdatedEvent;
+      var ev = JsonSerializer.Deserialize<TracksUpdatedEvent>(message);
 
       if (ev == null)
       {
@@ -97,7 +98,7 @@ namespace LeafletAlarms.Services
     {
       await Task.Delay(0);
 
-      _pubsub.Subscribe("UpdateTrackPosition", OnUpdateTrackPosition);
+      await _pubsub.Subscribe("UpdateTrackPosition", OnUpdateTrackPosition);
 
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
@@ -141,7 +142,7 @@ namespace LeafletAlarms.Services
           await _mapService.UpdatePropNotDeleteAsync(updatedProps);
         }
 
-        _pubsub.Publish("LogicTriggered", triggeredVal);
+        await _pubsub.Publish("LogicTriggered", JsonSerializer.Serialize(triggeredVal));
       }
     }
 
@@ -220,13 +221,11 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-      _pubsub.Unsubscribe("UpdateTrackPosition", OnUpdateTrackPosition);
+      await _pubsub.Unsubscribe("UpdateTrackPosition", OnUpdateTrackPosition);
       _cancellationToken.Cancel();
       _timer?.Wait();
-
-      return Task.CompletedTask;
     }
   }
 }

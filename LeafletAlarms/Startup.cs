@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Net;
@@ -38,7 +39,7 @@ namespace LeafletAlarms
       
       services.AddSingleton<IUtilService, UtilService>();
 
-      services.AddSingleton<PubSubService>();
+      services.AddSingleton<IPubSubService, PubSubService>();
 
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();

@@ -18,7 +18,7 @@ namespace LeafletAlarms.Services
     private ILevelService _levelService;
     private IMapService _mapService;
     private IIdsQueue _stateIdsQueueService;
-    private PubSubService _pubsub;
+    private IPubSubService _pubsub;
 
     public ConsumerService(
       IStateService stateService,
@@ -26,7 +26,7 @@ namespace LeafletAlarms.Services
       ILevelService levelService,
       IMapService mapService,
       IIdsQueue stateIdsQueueService,
-      PubSubService pubsub
+      IPubSubService pubsub
     )
     {
       _stateService = stateService;
@@ -105,7 +105,7 @@ namespace LeafletAlarms.Services
       }
     }
 
-    void LogicTriggered(string channel, object message)
+    void LogicTriggered(string channel, string message)
     {
       foreach (var sock in StateSockets)
       {

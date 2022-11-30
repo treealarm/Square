@@ -28,14 +28,13 @@ namespace LeafletAlarms.Services
     }
 
     // 
-    public Task StartAsync(CancellationToken stoppingToken)
+    public async Task StartAsync(CancellationToken stoppingToken)
     {
       _logger.LogInformation("Timed Hosted Service running.");
 
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
-
-      return Task.CompletedTask;
+      await Task.Delay(0);
     }
 
     private async void DoWork()
@@ -53,13 +52,12 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public Task StopAsync(CancellationToken stoppingToken)
+    public async Task StopAsync(CancellationToken stoppingToken)
     {
       _cancellationToken.Cancel();
       _logger.LogInformation("Timed Hosted Service is stopping.");
       _timer?.Wait();
-
-      return Task.CompletedTask;
+      await Task.Delay(0);
     }
 
     public void Dispose()

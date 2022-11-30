@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 
@@ -26,7 +27,7 @@ namespace LeafletAlarms.Controllers
     private IRoutService _routService;
     private const string TRACKS_ROOT_NAME = "__tracks";
 
-    private PubSubService _pubsub;
+    private IPubSubService _pubsub;
 
     public TracksController(
       IMapService mapsService,
@@ -34,7 +35,7 @@ namespace LeafletAlarms.Controllers
       IRoutService routService,
       IGeoService geoService,
       ITrackConsumer stateService,
-      PubSubService pubsub
+      IPubSubService pubsub
     )
     {
       _mapService = mapsService;
@@ -215,7 +216,7 @@ namespace LeafletAlarms.Controllers
         ts_end = track_n.timestamp
       };
 
-      _pubsub.Publish("UpdateTrackPosition", ev);
+      await _pubsub.Publish("UpdateTrackPosition", JsonSerializer.Serialize(ev));
 
       return timing;
     }
