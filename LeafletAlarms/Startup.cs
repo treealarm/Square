@@ -63,9 +63,6 @@ namespace LeafletAlarms
       services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
 
-      services.AddHostedService<LogicProcessorHost>();
-      
-
       services.AddControllersWithViews();
 
       // In production, the React files will be served from this directory

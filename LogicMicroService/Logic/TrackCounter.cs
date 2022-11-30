@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LeafletAlarms.Services.Logic
+namespace LogicMicroService
 {
   public class TrackCounter : BaseLogicProc
   {

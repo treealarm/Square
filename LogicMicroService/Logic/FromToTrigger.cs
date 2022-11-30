@@ -1,7 +1,7 @@
 ﻿using Domain;
 using System.Collections.Generic;
 
-namespace LeafletAlarms.Services.Logic
+namespace LogicMicroService
 {
   public class FromToTrigger: BaseLogicProc
   {

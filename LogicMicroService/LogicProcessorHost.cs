@@ -1,37 +1,27 @@
-﻿using DbLayer.Services;
 using Domain;
 using Domain.GeoDTO;
 using Domain.Logic;
 using Domain.NonDto;
 using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
-using LeafletAlarms.Services.Logic;
-using Microsoft.Extensions.Hosting;
-using OsmSharp.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace LeafletAlarms.Services
+namespace LogicMicroService
 {
-  public class LogicProcessorHost : IHostedService, IDisposable
+  public class LogicProcessorHost : BackgroundService
   {
-    private Task _timer;
+    private readonly ILogger<LogicProcessorHost> _logger;
+
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
     private IPubSubService _pubsub;
     private ILogicService _logicService;
     private IGeoService _geoService;
     private readonly IMapService _mapService;
     private readonly ITrackService _tracksService;
-    private readonly IUtilService _utilService;
     private object _locker = new object();
 
     private Dictionary<string, BaseLogicProc> _logicProcs =
       new Dictionary<string, BaseLogicProc>();
-    
+
 
     private TracksUpdatedEvent _rangeToProcess = new TracksUpdatedEvent();
 
@@ -41,16 +31,16 @@ namespace LeafletAlarms.Services
       IGeoService geoService,
       ITrackService tracksService,
       IMapService mapService,
-      IUtilService utilService
+      ILogger<LogicProcessorHost> logger
     )
     {
-      _utilService = utilService;
+      _logger = logger;
       _mapService = mapService;
       _tracksService = tracksService;
       _logicService = logicService;
       _geoService = geoService;
       _pubsub = pubsub;
-    }    
+    }
 
     void OnUpdateTrackPosition(string channel, string message)
     {
@@ -61,7 +51,7 @@ namespace LeafletAlarms.Services
         return;
       }
 
-      lock(_locker)
+      lock (_locker)
       {
         if (_rangeToProcess.ts_start == null ||
           _rangeToProcess.ts_start > ev.ts_start)
@@ -74,39 +64,18 @@ namespace LeafletAlarms.Services
         {
           _rangeToProcess.ts_end = ev.ts_end;
         }
-
-        if (_rangeToProcess.id_start == null ||
-          _utilService.Compare(_rangeToProcess.id_start, ev.id_start) > 0)
-        {
-          _rangeToProcess.id_start = ev.id_start;
-        }
-
-        if (_rangeToProcess.id_end == null ||
-          _utilService.Compare(_rangeToProcess.id_end, ev.id_end) < 0)
-        {
-          _rangeToProcess.id_end = ev.id_end;
-        }
-      }           
+      }
     }
 
-    public void Dispose()
+    public async override Task StartAsync(CancellationToken cancellationToken)
     {
-      _timer?.Dispose();
-    }
-
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-      await Task.Delay(0);
-
       await _pubsub.Subscribe("UpdateTrackPosition", OnUpdateTrackPosition);
-
-      _timer = new Task(() => DoWork(), _cancellationToken.Token);
-      _timer.Start();
+      await base.StartAsync(cancellationToken);
     }
 
     private async Task OnUpdateLogic(string logic_id)
     {
-      BaseLogicProc logicProc = null;
+      BaseLogicProc? logicProc = null;
 
       if (_logicProcs.TryGetValue(logic_id, out logicProc))
       {
@@ -146,7 +115,7 @@ namespace LeafletAlarms.Services
       }
     }
 
-    private async void DoWork()
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
       var logics = await _logicService.GetListAsync(null, true, 1000);
 
@@ -187,14 +156,14 @@ namespace LeafletAlarms.Services
 
           if (box.time_start == _rangeToProcess.ts_start &&
           box.time_end == _rangeToProcess.ts_end)
-          {            
+          {
             bContinue = true;
           }
 
           box.time_start = _rangeToProcess.ts_start;
           box.time_end = _rangeToProcess.ts_end;
         }
-        
+
         if (bContinue)
         {
           await Task.Delay(1000);
@@ -202,7 +171,7 @@ namespace LeafletAlarms.Services
         }
 
         foreach (var logicProc in _logicProcs)
-        {      
+        {
           var curLogicProc = logicProc.Value;
 
           var bChanged = await curLogicProc.ProcessTracks(
@@ -221,11 +190,10 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public async Task StopAsync(CancellationToken cancellationToken)
+    public async override Task StopAsync(CancellationToken cancellationToken)
     {
       await _pubsub.Unsubscribe("UpdateTrackPosition", OnUpdateTrackPosition);
-      _cancellationToken.Cancel();
-      _timer?.Wait();
+      await base.StopAsync(cancellationToken);
     }
   }
 }
