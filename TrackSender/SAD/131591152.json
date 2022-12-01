@@ -1,0 +1,62 @@
+{
+    "place_id": 135863588,
+    "parent_place_id": 297455095,
+    "osm_type": "W",
+    "osm_id": 131591152,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Нижняя Краснохолмская улица",
+    "names": {
+        "name": "Нижняя Краснохолмская улица"
+    },
+    "addresstags": {
+        "postcode": "115054"
+    },
+    "housenumber": null,
+    "calculated_postcode": "115054",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:07+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6426175,
+            55.7339847
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6428703,
+                55.7341202
+            ],
+            [
+                37.6426175,
+                55.7339847
+            ],
+            [
+                37.6422252,
+                55.7337815
+            ],
+            [
+                37.6421126,
+                55.7337219
+            ]
+        ]
+    }
+}

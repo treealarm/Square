@@ -1,0 +1,77 @@
+{
+    "place_id": 141638628,
+    "parent_place_id": 297976863,
+    "osm_type": "W",
+    "osm_id": 154534765,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Зубовский бульвар",
+    "names": {
+        "name": "Зубовский бульвар",
+        "name:en": "Zubovskiy Boulevard",
+        "name:ru": "Зубовский бульвар"
+    },
+    "addresstags": {
+        "postcode": "119034"
+    },
+    "housenumber": null,
+    "calculated_postcode": "119034",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:04+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5914138,
+            55.7365545
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5937327,
+                55.735767
+            ],
+            [
+                37.5930372,
+                55.7360058
+            ],
+            [
+                37.5926732,
+                55.7361253
+            ],
+            [
+                37.5914138,
+                55.7365545
+            ],
+            [
+                37.5910427,
+                55.7366866
+            ],
+            [
+                37.5902173,
+                55.7370082
+            ],
+            [
+                37.5899619,
+                55.7371077
+            ]
+        ]
+    }
+}

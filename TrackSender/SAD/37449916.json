@@ -1,0 +1,54 @@
+{
+    "place_id": 115246617,
+    "parent_place_id": 297305087,
+    "osm_type": "W",
+    "osm_id": 37449916,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Каретная улица",
+    "names": {
+        "name": "Садовая-Каретная улица",
+        "name:ru": "Садовая-Каретная улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "127006",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:17+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "4",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6089518,
+            55.7732161
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6089518,
+                55.7732161
+            ],
+            [
+                37.6085855,
+                55.7731823
+            ]
+        ]
+    }
+}

@@ -1,0 +1,82 @@
+{
+    "place_id": 141387104,
+    "parent_place_id": 297559305,
+    "osm_type": "W",
+    "osm_id": 156291403,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": null,
+    "names": [],
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "111991",
+    "country_code": "ru",
+    "indexed_date": "2022-10-10T23:09:36+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "layer": "-1",
+        "lit": "yes",
+        "maxheight": "4.1",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "shoulder": "no",
+        "sidewalk": "no",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.612904,
+            55.7297509
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6114519,
+                55.7299989
+            ],
+            [
+                37.6117975,
+                55.7299302
+            ],
+            [
+                37.6121614,
+                55.7298635
+            ],
+            [
+                37.6125297,
+                55.7298041
+            ],
+            [
+                37.612904,
+                55.7297509
+            ],
+            [
+                37.6132869,
+                55.7297098
+            ],
+            [
+                37.6136765,
+                55.7296745
+            ],
+            [
+                37.614098,
+                55.729643
+            ],
+            [
+                37.6145223,
+                55.7296174
+            ]
+        ]
+    }
+}

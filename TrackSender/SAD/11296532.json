@@ -1,0 +1,86 @@
+{
+    "place_id": 103822061,
+    "parent_place_id": 298044744,
+    "osm_type": "W",
+    "osm_id": 11296532,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Спасская улица",
+    "names": {
+        "name": "Садовая-Спасская улица",
+        "name:en": "Sadovaya-Spasskaya St",
+        "name:ru": "Садовая-Спасская улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "129010",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:05+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6397699,
+            55.7714024
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6373419,
+                55.772045
+            ],
+            [
+                37.6378888,
+                55.7719325
+            ],
+            [
+                37.6383931,
+                55.7718059
+            ],
+            [
+                37.6388812,
+                55.771673
+            ],
+            [
+                37.6392591,
+                55.7715582
+            ],
+            [
+                37.6394515,
+                55.7714998
+            ],
+            [
+                37.6397699,
+                55.7714024
+            ],
+            [
+                37.6400896,
+                55.7713046
+            ],
+            [
+                37.6415445,
+                55.7708556
+            ],
+            [
+                37.6423919,
+                55.7705987
+            ]
+        ]
+    }
+}

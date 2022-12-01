@@ -1,0 +1,94 @@
+{
+    "place_id": 141023318,
+    "parent_place_id": 297305087,
+    "osm_type": "W",
+    "osm_id": 156291367,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Триумфальная улица",
+    "names": {
+        "name": "Садовая-Триумфальная улица",
+        "name:en": "Sadovaya-Triumfalnaya Street",
+        "name:ru": "Садовая-Триумфальная улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "127006",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:17+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5995446,
+            55.7709667
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5977561,
+                55.7702208
+            ],
+            [
+                37.5980291,
+                55.770355
+            ],
+            [
+                37.5983422,
+                55.7704953
+            ],
+            [
+                37.5986338,
+                55.7706206
+            ],
+            [
+                37.5989648,
+                55.7707509
+            ],
+            [
+                37.5992498,
+                55.7708569
+            ],
+            [
+                37.5995446,
+                55.7709667
+            ],
+            [
+                37.600065,
+                55.7711408
+            ],
+            [
+                37.6003745,
+                55.7712386
+            ],
+            [
+                37.6006885,
+                55.7713286
+            ],
+            [
+                37.6010014,
+                55.7714099
+            ],
+            [
+                37.60141,
+                55.7714991
+            ]
+        ]
+    }
+}

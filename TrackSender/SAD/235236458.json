@@ -1,0 +1,78 @@
+{
+    "place_id": 163596598,
+    "parent_place_id": 297683144,
+    "osm_type": "W",
+    "osm_id": 235236458,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Смоленская-Сенная площадь",
+    "names": {
+        "name": "Смоленская-Сенная площадь",
+        "name:en": "Smolenskaya-Sennaya Square",
+        "name:ru": "Смоленская-Сенная площадь"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121099",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:12+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "surface": "asphalt",
+        "trolley_wire": "forward",
+        "wikidata": "Q4424930",
+        "wikipedia": "ru:Смоленская-Сенная площадь"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5825843,
+            55.7460939
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5823193,
+                55.7467922
+            ],
+            [
+                37.5823374,
+                55.746688
+            ],
+            [
+                37.582372,
+                55.7465894
+            ],
+            [
+                37.5824722,
+                55.7463465
+            ],
+            [
+                37.5825086,
+                55.7462682
+            ],
+            [
+                37.5825843,
+                55.7460939
+            ],
+            [
+                37.5828704,
+                55.7454333
+            ]
+        ]
+    }
+}

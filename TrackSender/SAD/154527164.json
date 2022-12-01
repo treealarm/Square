@@ -1,0 +1,79 @@
+{
+    "place_id": 141287092,
+    "parent_place_id": 297305087,
+    "osm_type": "W",
+    "osm_id": 154527164,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Триумфальная улица",
+    "names": {
+        "name": "Садовая-Триумфальная улица",
+        "name:en": "Sadovaya-Triumfalnaya street",
+        "name:ru": "Садовая-Триумфальная улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "127006",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:08+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lanes:psv": "1",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6031808,
+            55.7720143
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.60141,
+                55.7714991
+            ],
+            [
+                37.6018064,
+                55.7716098
+            ],
+            [
+                37.6023706,
+                55.7717745
+            ],
+            [
+                37.6031808,
+                55.7720143
+            ],
+            [
+                37.6038917,
+                55.7722182
+            ],
+            [
+                37.6041319,
+                55.7722881
+            ],
+            [
+                37.6042387,
+                55.7723179
+            ],
+            [
+                37.6044701,
+                55.7723803
+            ]
+        ]
+    }
+}

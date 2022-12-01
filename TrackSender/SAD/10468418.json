@@ -1,0 +1,99 @@
+{
+    "place_id": 103498531,
+    "parent_place_id": 297305087,
+    "osm_type": "W",
+    "osm_id": 10468418,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Каретная улица",
+    "names": {
+        "name": "Садовая-Каретная улица",
+        "name:en": "Sadovaya-Karetnaya street",
+        "name:ru": "Садовая-Каретная улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "127006",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:05+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6070019,
+            55.7728139
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6044701,
+                55.7723803
+            ],
+            [
+                37.6046804,
+                55.7724266
+            ],
+            [
+                37.6049322,
+                55.772484
+            ],
+            [
+                37.6052099,
+                55.7725414
+            ],
+            [
+                37.6054032,
+                55.772576
+            ],
+            [
+                37.6055289,
+                55.772597
+            ],
+            [
+                37.6057452,
+                55.7726304
+            ],
+            [
+                37.6070019,
+                55.7728139
+            ],
+            [
+                37.6073058,
+                55.7728569
+            ],
+            [
+                37.6075878,
+                55.7728953
+            ],
+            [
+                37.6082543,
+                55.7729788
+            ],
+            [
+                37.608455,
+                55.7730003
+            ],
+            [
+                37.6090519,
+                55.7730613
+            ]
+        ]
+    }
+}

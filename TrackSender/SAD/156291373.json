@@ -1,0 +1,57 @@
+{
+    "place_id": 141960502,
+    "parent_place_id": 297683144,
+    "osm_type": "W",
+    "osm_id": 156291373,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Чайковский тоннель",
+    "names": {
+        "name": "Чайковский тоннель",
+        "name:ru": "Чайковский тоннель"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121099",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:04+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "layer": "-1",
+        "lit": "yes",
+        "maxheight": "4.2",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "surface": "asphalt",
+        "trolley_wire": "forward"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5833619,
+            55.7519947
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5833619,
+                55.7519947
+            ],
+            [
+                37.5835043,
+                55.7529527
+            ]
+        ]
+    }
+}

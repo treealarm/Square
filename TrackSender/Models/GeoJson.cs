@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 
 namespace TrackSender.Models
 {
@@ -80,7 +81,31 @@ namespace TrackSender.Models
     public string type { get; set; }
     public int admin_level { get; set; }
     public string localname { get; set; }
-    public Names names { get; set; }
+
+    [JsonIgnore]
+    public Names names
+    { 
+      get
+      {
+        try
+        {
+          var names_temp = _names as Names;
+
+          if (names_temp == null)
+          {
+            return new Names();
+          }
+
+          return names_temp;
+        }
+        catch (Exception) { }
+
+        return new Names();
+      }
+    }
+
+    [JsonPropertyName("names")]
+    public object _names { get; set; }
     public object addresstags { get; set; }
     public object housenumber { get; set; }
     public object calculated_postcode { get; set; }

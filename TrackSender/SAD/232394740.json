@@ -1,0 +1,68 @@
+{
+    "place_id": 163523116,
+    "parent_place_id": 297559305,
+    "osm_type": "W",
+    "osm_id": 232394740,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовое кольцо",
+    "names": {
+        "name": "Садовое кольцо",
+        "name:en": "Garden Ring",
+        "name:ru": "Садовое кольцо"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "111991",
+    "country_code": "ru",
+    "indexed_date": "2022-10-10T23:09:36+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "sidewalk": "no",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6151642,
+            55.7297023
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6161141,
+                55.729703
+            ],
+            [
+                37.6155309,
+                55.7296989
+            ],
+            [
+                37.6151642,
+                55.7297023
+            ],
+            [
+                37.6148485,
+                55.7297093
+            ],
+            [
+                37.6145387,
+                55.729725
+            ]
+        ]
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "place_id": 140732449,
+    "parent_place_id": 297305087,
+    "osm_type": "W",
+    "osm_id": 151394839,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Сухаревская эстакада",
+    "names": {
+        "name": "Сухаревская эстакада",
+        "name:ru": "Сухаревская эстакада"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "127473",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:17+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6144845,
+            55.7735488
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6151497,
+                55.773569
+            ],
+            [
+                37.6144845,
+                55.7735488
+            ],
+            [
+                37.6139313,
+                55.7735362
+            ],
+            [
+                37.6134101,
+                55.7735299
+            ]
+        ]
+    }
+}

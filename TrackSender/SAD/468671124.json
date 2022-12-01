@@ -1,0 +1,69 @@
+{
+    "place_id": 209642902,
+    "parent_place_id": 297559305,
+    "osm_type": "W",
+    "osm_id": 468671124,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "улица Крымский Вал",
+    "names": {
+        "name": "улица Крымский Вал",
+        "name:en": "Krymskiy Val St",
+        "name:ru": "улица Крымский Вал"
+    },
+    "addresstags": {
+        "postcode": "119049"
+    },
+    "housenumber": null,
+    "calculated_postcode": "119049",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:13+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.606907,
+            55.7315214
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6086066,
+                55.7309754
+            ],
+            [
+                37.6080439,
+                55.7311544
+            ],
+            [
+                37.606907,
+                55.7315214
+            ],
+            [
+                37.6068334,
+                55.7315465
+            ],
+            [
+                37.6051554,
+                55.7320867
+            ]
+        ]
+    }
+}

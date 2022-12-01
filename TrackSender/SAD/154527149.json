@@ -1,0 +1,66 @@
+{
+    "place_id": 141387807,
+    "parent_place_id": 298106674,
+    "osm_type": "W",
+    "osm_id": 154527149,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Большая Садовая улица",
+    "names": {
+        "name": "Большая Садовая улица",
+        "name:en": "Bolshaya Sadovaya street",
+        "name:ru": "Большая Садовая улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "123001",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:12+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5916327,
+            55.7666581
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5932022,
+                55.7677862
+            ],
+            [
+                37.5926597,
+                55.7673829
+            ],
+            [
+                37.5923324,
+                55.7671505
+            ],
+            [
+                37.5916327,
+                55.7666581
+            ],
+            [
+                37.5907352,
+                55.7660191
+            ]
+        ]
+    }
+}

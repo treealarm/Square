@@ -1,0 +1,91 @@
+{
+    "place_id": 125588296,
+    "parent_place_id": 49655244,
+    "osm_type": "W",
+    "osm_id": 91708982,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Смоленский бульвар",
+    "names": {
+        "name": "Смоленский бульвар",
+        "name:en": "Smolenskiy Boulevard",
+        "name:ru": "Смоленский бульвар"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "119021",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:04+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "sidewalk": "none",
+        "surface": "asphalt",
+        "trolley_wire": "no",
+        "wikidata": "Q4424970",
+        "wikipedia": "ru:Смоленский бульвар"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5844698,
+            55.7423545
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5850277,
+                55.7408847
+            ],
+            [
+                37.5849082,
+                55.7411843
+            ],
+            [
+                37.5848796,
+                55.7412549
+            ],
+            [
+                37.5846835,
+                55.7417821
+            ],
+            [
+                37.5845041,
+                55.7422629
+            ],
+            [
+                37.5844698,
+                55.7423545
+            ],
+            [
+                37.5844579,
+                55.7423862
+            ],
+            [
+                37.5842114,
+                55.7430385
+            ],
+            [
+                37.584149,
+                55.7431956
+            ],
+            [
+                37.5839218,
+                55.7437646
+            ]
+        ]
+    }
+}

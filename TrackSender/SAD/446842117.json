@@ -1,0 +1,57 @@
+{
+    "place_id": 205640342,
+    "parent_place_id": 298106674,
+    "osm_type": "W",
+    "osm_id": 446842117,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Кудринская площадь",
+    "names": {
+        "name": "Кудринская площадь",
+        "name:ca": "Plaça Kúdrinskaia",
+        "name:ru": "Кудринская площадь"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "123056",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:08+00:00",
+    "importance": 0.35570776425552836,
+    "calculated_importance": 0.35570776425552836,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "площадь Восстания (1925 г.) площадь Потье (1922 г.) Кудринская площадь (до 1917 г.)",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "wikidata": "Q4244539",
+        "wikipedia": "ru:Кудринская площадь"
+    },
+    "calculated_wikipedia": "ru:Кудринская_площадь",
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5845968,
+            55.7589984
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5845968,
+                55.7589984
+            ],
+            [
+                37.584566,
+                55.7589308
+            ]
+        ]
+    }
+}

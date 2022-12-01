@@ -111,7 +111,7 @@ namespace LogicMicroService
           await _mapService.UpdatePropNotDeleteAsync(updatedProps);
         }
 
-        await _pubsub.Publish("LogicTriggered", JsonSerializer.Serialize(triggeredVal));
+        _pubsub.PublishNoWait("LogicTriggered", JsonSerializer.Serialize(triggeredVal));
       }
     }
 

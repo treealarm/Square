@@ -1,0 +1,93 @@
+{
+    "place_id": 241789826,
+    "parent_place_id": 297455095,
+    "osm_type": "W",
+    "osm_id": 685580274,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "улица Зацепский Вал",
+    "names": {
+        "name": "улица Зацепский Вал",
+        "name:en": "Zatsepskiy Val St",
+        "name:ru": "улица Зацепский Вал"
+    },
+    "addresstags": {
+        "postcode": "115054"
+    },
+    "housenumber": null,
+    "calculated_postcode": "115054",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:07+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "4",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6371069,
+            55.7312424
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.637809,
+                55.7314505
+            ],
+            [
+                37.6376239,
+                55.7313825
+            ],
+            [
+                37.6375421,
+                55.7313538
+            ],
+            [
+                37.6374724,
+                55.7313342
+            ],
+            [
+                37.6372571,
+                55.7312783
+            ],
+            [
+                37.6371069,
+                55.7312424
+            ],
+            [
+                37.6369252,
+                55.7312011
+            ],
+            [
+                37.6367596,
+                55.7311666
+            ],
+            [
+                37.6364679,
+                55.7311097
+            ],
+            [
+                37.6363596,
+                55.7310963
+            ],
+            [
+                37.6362491,
+                55.7310862
+            ]
+        ]
+    }
+}

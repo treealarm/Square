@@ -53,11 +53,20 @@ namespace TrackSender
         //var taskStates = testStates.RunAsync(token, tasks);        
         //tasks.Add(taskStates);
 
-        var taskMove = testMove.RunAsync(token, tasks);
-        tasks.Add(taskMove);
+        //var taskMove = testMove.RunAsync(token, tasks);
+        //tasks.Add(taskMove);
+
+        var taskLogic = testMove.TestLogicAsync(token, tasks);
+        tasks.Add(taskLogic);
 
         Console.WriteLine("Press any key to stop emulation\n");
-        Console.ReadKey();
+        ConsoleKeyInfo key = Console.ReadKey();
+
+        while (key.Key != ConsoleKey.Escape)
+        {
+          key = Console.ReadKey();
+        }
+        
         tokenSource.Cancel();
 
         Task.WaitAll(tasks.ToArray());

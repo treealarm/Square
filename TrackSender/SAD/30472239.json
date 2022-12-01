@@ -1,0 +1,67 @@
+{
+    "place_id": 113214075,
+    "parent_place_id": 297893723,
+    "osm_type": "W",
+    "osm_id": 30472239,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Малая Сухаревская площадь",
+    "names": {
+        "name": "Малая Сухаревская площадь",
+        "name:ru": "Малая Сухаревская площадь"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "129010",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:16+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "Малая Колхозная площадь (1939 г.) Колхозная площадь (1934 г.) Малая Сухаревская площадь (до 1917 г.)",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6311638,
+            55.7730166
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6322671,
+                55.7728589
+            ],
+            [
+                37.6320525,
+                55.772885
+            ],
+            [
+                37.6316504,
+                55.7729445
+            ],
+            [
+                37.6311638,
+                55.7730166
+            ],
+            [
+                37.6304877,
+                55.7731167
+            ]
+        ]
+    }
+}

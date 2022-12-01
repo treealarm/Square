@@ -1,0 +1,78 @@
+{
+    "place_id": 242279894,
+    "parent_place_id": 297455095,
+    "osm_type": "W",
+    "osm_id": 685577853,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "улица Зацепский Вал",
+    "names": {
+        "name": "улица Зацепский Вал",
+        "name:ru": "улица Зацепский Вал"
+    },
+    "addresstags": {
+        "postcode": "115054"
+    },
+    "housenumber": null,
+    "calculated_postcode": "115054",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:17+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lanes:psv": "1",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "улица Зацепский Вал (до 1917 г.)",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6366811,
+            55.7310074
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6362251,
+                55.7309319
+            ],
+            [
+                37.6363261,
+                55.7309462
+            ],
+            [
+                37.6364256,
+                55.7309615
+            ],
+            [
+                37.6365544,
+                55.730984
+            ],
+            [
+                37.6366811,
+                55.7310074
+            ],
+            [
+                37.6368414,
+                55.7310382
+            ],
+            [
+                37.637013,
+                55.7310769
+            ]
+        ]
+    }
+}

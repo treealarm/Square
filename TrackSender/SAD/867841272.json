@@ -1,0 +1,56 @@
+{
+    "place_id": 271076705,
+    "parent_place_id": 298306113,
+    "osm_type": "W",
+    "osm_id": 867841272,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Черногрязская улица",
+    "names": {
+        "name": "Садовая-Черногрязская улица",
+        "name:ru": "Садовая-Черногрязская улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "107053",
+    "country_code": "ru",
+    "indexed_date": "2022-10-02T03:43:43+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "smoothness": "excellent",
+        "surface": "asphalt",
+        "trolley_wire": "no",
+        "turn:lanes": "through|through|through|through|through;slight_right|right"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6509628,
+            55.7679001
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6509628,
+                55.7679001
+            ],
+            [
+                37.6502194,
+                55.7684267
+            ]
+        ]
+    }
+}

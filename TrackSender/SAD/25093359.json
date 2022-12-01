@@ -1,0 +1,92 @@
+{
+    "place_id": 110649401,
+    "parent_place_id": 297559305,
+    "osm_type": "W",
+    "osm_id": 25093359,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "улица Крымский Вал",
+    "names": {
+        "name": "улица Крымский Вал",
+        "name:en": "Krymskiy Val St",
+        "name:ru": "улица Крымский Вал"
+    },
+    "addresstags": {
+        "postcode": "119049"
+    },
+    "housenumber": null,
+    "calculated_postcode": "119049",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:07+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6097796,
+            55.7304772
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6084464,
+                55.7309041
+            ],
+            [
+                37.6085135,
+                55.730884
+            ],
+            [
+                37.6085411,
+                55.7308751
+            ],
+            [
+                37.6089268,
+                55.7307507
+            ],
+            [
+                37.6093888,
+                55.7306017
+            ],
+            [
+                37.6097796,
+                55.7304772
+            ],
+            [
+                37.610134,
+                55.7303632
+            ],
+            [
+                37.6104965,
+                55.7302515
+            ],
+            [
+                37.6108282,
+                55.7301545
+            ],
+            [
+                37.6111489,
+                55.73007
+            ],
+            [
+                37.6114519,
+                55.7299989
+            ]
+        ]
+    }
+}

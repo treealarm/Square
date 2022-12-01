@@ -55,7 +55,7 @@ namespace TrackSender
       tasks.Add(task);
 
       var task1 = GetOrBuildFiguresOnRoadAsync("CKAD", token, 1000000);
-      //tasks.Add(task1);
+      tasks.Add(task1);
     }
 
     private async Task GetOrBuildFiguresAsync()
@@ -127,7 +127,8 @@ namespace TrackSender
 
     private async Task BuildMachines(string resFolder,
       GeometryPolylineDTO geometry_mkad,
-      int maxMachines
+      int maxMachines,
+      string zoom_level
       )
     {
       int maxPoint = geometry_mkad.coord.Count;
@@ -193,7 +194,7 @@ namespace TrackSender
             {
               name = obj_name,
               radius = 50,
-              zoom_level = i == 0 ? "":"13",
+              zoom_level = i == 0 ? "" : zoom_level,
               geometry = start,
               extra_props = extra_props
             };
@@ -206,7 +207,9 @@ namespace TrackSender
     private async Task GetOrBuildFiguresOnRoadAsync(
       string resFolder,
       CancellationToken token,
-      int maxMachines)
+      int maxMachines,
+      string zoom_level = "13"
+    )
     {
       var tempFigure = await NominatimProcessor.GetRoadPolyline(resFolder);
 
@@ -230,13 +233,15 @@ namespace TrackSender
       var max_circles = 10000;
       string start_id = string.Empty;
 
-      await BuildMachines(resFolder, geometry_mkad, maxMachines);
+      await BuildMachines(resFolder, geometry_mkad, maxMachines, zoom_level);
 
       int counter = 0;
       Dictionary<string, CircleShifter> dicShifter = new Dictionary<string, CircleShifter>();
 
       while (!token.IsCancellationRequested)
       {
+        await Task.Delay(100);
+
         var figures = await _testClient.GetByParams("track_name", $"{resFolder}", start_id, max_circles);
 
         if (figures == null || figures.figs.Count == 0)
@@ -348,6 +353,12 @@ namespace TrackSender
         mkad.figs = await NominatimProcessor.GetRoadPolyline(xmlFolderName);
         mkad = await _testClient.UpdateFiguresAsync(mkad);
       }
+    }
+
+    public async Task TestLogicAsync(CancellationToken token, List<Task> tasks)
+    {
+      var task1 = GetOrBuildFiguresOnRoadAsync("SAD", token, 10, "");
+      tasks.Add(task1);
     }
   }
 }

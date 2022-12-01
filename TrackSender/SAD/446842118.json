@@ -1,0 +1,56 @@
+{
+    "place_id": 206013230,
+    "parent_place_id": 298106674,
+    "osm_type": "W",
+    "osm_id": 446842118,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Кудринская улица",
+    "names": {
+        "name": "Садовая-Кудринская улица",
+        "name:en": "Sadovaya-Kudrinskaya Street",
+        "name:ru": "Садовая-Кудринская улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "123056",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:20+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "wikidata": "Q4404626",
+        "wikipedia": "ru:Садовая-Кудринская улица"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5847929,
+            55.7588468
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5847929,
+                55.7588468
+            ],
+            [
+                37.5848184,
+                55.7589119
+            ]
+        ]
+    }
+}

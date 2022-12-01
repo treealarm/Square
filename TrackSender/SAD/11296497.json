@@ -1,0 +1,74 @@
+{
+    "place_id": 104001084,
+    "parent_place_id": 297893723,
+    "osm_type": "W",
+    "osm_id": 11296497,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Большая Сухаревская площадь",
+    "names": {
+        "name": "Большая Сухаревская площадь",
+        "name:en": "Bolshaya Sukharevskaya Sq",
+        "name:ru": "Большая Сухаревская площадь"
+    },
+    "addresstags": {
+        "postcode": "107045"
+    },
+    "housenumber": null,
+    "calculated_postcode": "107045",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:08+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "Большая Колхозная площадь (1939 г.) Колхозная площадь (1934 г.) Большая Сухаревская площадь (до 1917 г.)",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6364315,
+            55.7723699
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6373071,
+                55.7722363
+            ],
+            [
+                37.6368754,
+                55.7723053
+            ],
+            [
+                37.6364315,
+                55.7723699
+            ],
+            [
+                37.6332666,
+                55.7727372
+            ],
+            [
+                37.6327886,
+                55.7727955
+            ],
+            [
+                37.6325106,
+                55.7728284
+            ]
+        ]
+    }
+}

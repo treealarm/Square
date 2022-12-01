@@ -24,6 +24,16 @@ namespace PubSubLib
       redis = ConnectionMultiplexer.Connect(configuration);
     }
 
+    public void PublishNoWait(string channel, string message)
+    {
+      try
+      {
+        ISubscriber sub = redis.GetSubscriber();
+        sub.PublishAsync(channel, message);
+      }
+      catch (Exception)
+      { }
+    }
     public async Task<long> Publish(string channel, string message)
     {
       try

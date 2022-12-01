@@ -1,0 +1,56 @@
+{
+    "place_id": 141446206,
+    "parent_place_id": 140910744,
+    "osm_type": "W",
+    "osm_id": 156291358,
+    "category": "bridge",
+    "type": "yes",
+    "admin_level": 15,
+    "localname": "Высокояузский мост",
+    "names": {
+        "name": "Высокояузский мост"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "109189",
+    "country_code": "ru",
+    "indexed_date": "2022-08-08T17:44:16+00:00",
+    "importance": 0,
+    "calculated_importance": 0,
+    "extratags": {
+        "bridge:name": "Высокояузский мост",
+        "lanes": "4",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "sidewalk": "both",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 30,
+    "rank_search": 30,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6557521,
+            55.7504481
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6557521,
+                55.7504481
+            ],
+            [
+                37.6556988,
+                55.7497693
+            ]
+        ]
+    }
+}

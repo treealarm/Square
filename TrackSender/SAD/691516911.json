@@ -1,0 +1,59 @@
+{
+    "place_id": 242686927,
+    "parent_place_id": 49655244,
+    "osm_type": "W",
+    "osm_id": 691516911,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Смоленский бульвар",
+    "names": {
+        "name": "Смоленский бульвар",
+        "name:en": "Smolenskiy Boulevard",
+        "name:ru": "Смоленский бульвар"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "119021",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:04+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "surface": "asphalt",
+        "trolley_wire": "no",
+        "turn:lanes": "reverse|through|through|through|through|through",
+        "wikidata": "Q4424970",
+        "wikipedia": "ru:Смоленский бульвар"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5854681,
+            55.7393715
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5854681,
+                55.7393715
+            ],
+            [
+                37.5857332,
+                55.7389331
+            ]
+        ]
+    }
+}

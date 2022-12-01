@@ -1,0 +1,56 @@
+{
+    "place_id": 112250508,
+    "parent_place_id": 297543889,
+    "osm_type": "W",
+    "osm_id": 28071684,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "улица Земляной Вал",
+    "names": {
+        "name": "улица Земляной Вал",
+        "name:en": "Zemlyanoy Val Street",
+        "name:ru": "улица Земляной Вал"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "109004",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:20+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "3",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "omkum:old_name": "улица Чкалова (1953 г.) Чкаловская улица (1938 г.) улица Земляной Вал (до 1917 г.)",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6555856,
+            55.7485643
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6555856,
+                55.7485643
+            ],
+            [
+                37.6551071,
+                55.7447107
+            ]
+        ]
+    }
+}

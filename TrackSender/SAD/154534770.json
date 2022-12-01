@@ -1,0 +1,66 @@
+{
+    "place_id": 141172040,
+    "parent_place_id": 297683144,
+    "osm_type": "W",
+    "osm_id": 154534770,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Смоленская площадь",
+    "names": {
+        "name": "Смоленская площадь",
+        "name:ru": "Смоленская площадь"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121099",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:05+00:00",
+    "importance": 0.15315075904307598,
+    "calculated_importance": 0.15315075904307598,
+    "extratags": {
+        "lanes": "6",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "площадь Смоленского Рынка (до 1917 г.)",
+        "oneway": "yes",
+        "shoulder": "no",
+        "sidewalk": "separate",
+        "surface": "asphalt",
+        "trolley_wire": "forward",
+        "wikidata": "Q4355223",
+        "wikipedia": "ru:Смоленская площадь"
+    },
+    "calculated_wikipedia": "en:Smolenskaya_Square",
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.5823368,
+            55.7472757
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5824282,
+                55.747936
+            ],
+            [
+                37.5824104,
+                55.7478313
+            ],
+            [
+                37.5823368,
+                55.7472757
+            ],
+            [
+                37.5823215,
+                55.7471656
+            ]
+        ]
+    }
+}

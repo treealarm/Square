@@ -1,0 +1,89 @@
+{
+    "place_id": 102687557,
+    "parent_place_id": 297559305,
+    "osm_type": "W",
+    "osm_id": 10695913,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "улица Крымский Вал",
+    "names": {
+        "name": "улица Крымский Вал",
+        "name:en": "Krymskiy Val St",
+        "name:ru": "улица Крымский Вал"
+    },
+    "addresstags": {
+        "postcode": "119049"
+    },
+    "housenumber": null,
+    "calculated_postcode": "119049",
+    "country_code": "ru",
+    "indexed_date": "2022-10-10T23:09:36+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "oneway": "yes",
+        "sidewalk": "no",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6102279,
+            55.7304544
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.61152,
+                55.7301005
+            ],
+            [
+                37.6112197,
+                55.7301679
+            ],
+            [
+                37.6109054,
+                55.7302507
+            ],
+            [
+                37.6105884,
+                55.7303432
+            ],
+            [
+                37.6102279,
+                55.7304544
+            ],
+            [
+                37.6098733,
+                55.7305683
+            ],
+            [
+                37.6094826,
+                55.7306929
+            ],
+            [
+                37.60902,
+                55.7308421
+            ],
+            [
+                37.6086268,
+                55.7309689
+            ],
+            [
+                37.6086066,
+                55.7309754
+            ]
+        ]
+    }
+}

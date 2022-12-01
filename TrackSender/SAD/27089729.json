@@ -1,0 +1,92 @@
+{
+    "place_id": 111369939,
+    "parent_place_id": 298306113,
+    "osm_type": "W",
+    "osm_id": 27089729,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Черногрязская улица",
+    "names": {
+        "name": "Садовая-Черногрязская улица",
+        "name:ru": "Садовая-Черногрязская улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "107053",
+    "country_code": "ru",
+    "indexed_date": "2022-10-07T03:48:06+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "smoothness": "excellent",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6533301,
+            55.7662096
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6562434,
+                55.7642639
+            ],
+            [
+                37.6557227,
+                55.7646241
+            ],
+            [
+                37.6555841,
+                55.7647203
+            ],
+            [
+                37.6541826,
+                55.7656427
+            ],
+            [
+                37.6533301,
+                55.7662096
+            ],
+            [
+                37.6530901,
+                55.766366
+            ],
+            [
+                37.6523768,
+                55.7668732
+            ],
+            [
+                37.6522564,
+                55.7669588
+            ],
+            [
+                37.6518833,
+                55.7672321
+            ],
+            [
+                37.6514879,
+                55.7675192
+            ],
+            [
+                37.6509628,
+                55.7679001
+            ]
+        ]
+    }
+}

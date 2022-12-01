@@ -1,0 +1,78 @@
+{
+    "place_id": 142208214,
+    "parent_place_id": 297559305,
+    "osm_type": "W",
+    "osm_id": 156291356,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовое кольцо",
+    "names": {
+        "name": "Садовое кольцо",
+        "name:en": "Garden Ring",
+        "name:ru": "Садовое кольцо"
+    },
+    "addresstags": {
+        "postcode": "119049"
+    },
+    "housenumber": null,
+    "calculated_postcode": "119049",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:16+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "улица Зацепский Вал (до 1917 г.)",
+        "oneway": "yes",
+        "sidewalk": "none",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6202038,
+            55.7296579
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6171062,
+                55.7296119
+            ],
+            [
+                37.6175892,
+                55.7296217
+            ],
+            [
+                37.6177195,
+                55.7296243
+            ],
+            [
+                37.6183825,
+                55.7296354
+            ],
+            [
+                37.6191046,
+                55.7296461
+            ],
+            [
+                37.6202038,
+                55.7296579
+            ],
+            [
+                37.6231585,
+                55.7297021
+            ]
+        ]
+    }
+}

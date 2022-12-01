@@ -1,0 +1,55 @@
+{
+    "place_id": 112573039,
+    "parent_place_id": 177571475,
+    "osm_type": "W",
+    "osm_id": 28408935,
+    "category": "bridge",
+    "type": "yes",
+    "admin_level": 15,
+    "localname": "Малый Краснохолмский мост",
+    "names": {
+        "name": "Малый Краснохолмский мост"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "115054",
+    "country_code": "ru",
+    "indexed_date": "2022-08-05T15:14:08+00:00",
+    "importance": 0,
+    "calculated_importance": 0,
+    "extratags": {
+        "bridge:name": "Малый Краснохолмский мост",
+        "lanes": "5",
+        "layer": "1",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no",
+        "turn:lanes": "none|none|none|none|merge_to_left"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 30,
+    "rank_search": 30,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6417559,
+            55.7333307
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6417559,
+                55.7333307
+            ],
+            [
+                37.6422662,
+                55.7335988
+            ]
+        ]
+    }
+}

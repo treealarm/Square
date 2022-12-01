@@ -1,0 +1,57 @@
+{
+    "place_id": 164211268,
+    "parent_place_id": 298306113,
+    "osm_type": "W",
+    "osm_id": 239564409,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "площадь Земляной Вал",
+    "names": {
+        "name": "площадь Земляной Вал"
+    },
+    "addresstags": {
+        "postcode": "105064"
+    },
+    "housenumber": null,
+    "calculated_postcode": "105064",
+    "country_code": "ru",
+    "indexed_date": "2022-10-07T03:48:06+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "shoulder": "no",
+        "smoothness": "excellent",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6564269,
+            55.7641028
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6564269,
+                55.7641028
+            ],
+            [
+                37.6563983,
+                55.7641383
+            ]
+        ]
+    }
+}

@@ -1,0 +1,65 @@
+{
+    "place_id": 341483986,
+    "parent_place_id": 297455095,
+    "osm_type": "W",
+    "osm_id": 1089608746,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Валовая улица",
+    "names": {
+        "name": "Валовая улица",
+        "name:en": "Zatsepskiy Val St",
+        "name:ru": "Валовая улица"
+    },
+    "addresstags": {
+        "postcode": "115054"
+    },
+    "housenumber": null,
+    "calculated_postcode": "115054",
+    "country_code": "ru",
+    "indexed_date": "2022-08-27T05:34:43+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "улица Зацепский Вал (до 1917 г.)",
+        "oneway": "yes",
+        "shoulder": "no",
+        "smoothness": "intermediate",
+        "surface": "asphalt",
+        "trolley_wire": "no",
+        "turn:lanes": "through|through|through|through|through;right"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6359184,
+            55.7308954
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6358857,
+                55.7308911
+            ],
+            [
+                37.6359184,
+                55.7308954
+            ],
+            [
+                37.6359456,
+                55.7308986
+            ]
+        ]
+    }
+}

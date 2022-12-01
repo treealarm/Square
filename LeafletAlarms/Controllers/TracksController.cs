@@ -216,7 +216,7 @@ namespace LeafletAlarms.Controllers
         ts_end = track_n.timestamp
       };
 
-      await _pubsub.Publish("UpdateTrackPosition", JsonSerializer.Serialize(ev));
+      _pubsub.PublishNoWait("UpdateTrackPosition", JsonSerializer.Serialize(ev));
 
       return timing;
     }

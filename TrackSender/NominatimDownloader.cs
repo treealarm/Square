@@ -31,7 +31,11 @@ namespace TrackSender
 
     HttpClient _client = new HttpClient();
    
-    public async Task RunAsync(CancellationToken token, List<Task> tasks, [CallerFilePath] string? callerFilePath = null)
+    public async Task RunAsync(
+      CancellationToken token,
+      List<Task> tasks,
+      [CallerFilePath] string? callerFilePath = null
+    )
     {
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
       _client.DefaultRequestHeaders.Accept.Clear();
@@ -54,6 +58,9 @@ namespace TrackSender
       //await SaveJsonToLocalDisk("MKAD");
 
       //await SaveJsonToLocalDisk("CKAD", ckadFolder);
+
+      //var folder = Path.Combine(callerDir, "SAD");
+     // await SaveJsonToLocalDisk("SAD", folder);
 
       //var mkad = await GetMkadPolyline();
     }

@@ -1,0 +1,87 @@
+{
+    "place_id": 141084861,
+    "parent_place_id": 297455095,
+    "osm_type": "W",
+    "osm_id": 156291355,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Валовая улица",
+    "names": {
+        "name": "Валовая улица",
+        "name:en": "Valovaya St",
+        "name:ru": "Валовая улица"
+    },
+    "addresstags": {
+        "postcode": "115054"
+    },
+    "housenumber": null,
+    "calculated_postcode": "115054",
+    "country_code": "ru",
+    "indexed_date": "2022-09-13T20:57:02+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "улица Зацепский Вал (до 1917 г.)",
+        "oneway": "yes",
+        "shoulder": "no",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6329715,
+            55.7307186
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6358172,
+                55.7310405
+            ],
+            [
+                37.6357838,
+                55.7310368
+            ],
+            [
+                37.6344637,
+                55.7308888
+            ],
+            [
+                37.6335504,
+                55.7307846
+            ],
+            [
+                37.6329715,
+                55.7307186
+            ],
+            [
+                37.6315219,
+                55.7305631
+            ],
+            [
+                37.6305766,
+                55.7304617
+            ],
+            [
+                37.6303315,
+                55.730434
+            ],
+            [
+                37.630297,
+                55.7304301
+            ]
+        ]
+    }
+}

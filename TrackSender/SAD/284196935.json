@@ -1,0 +1,100 @@
+{
+    "place_id": 174117774,
+    "parent_place_id": 298306113,
+    "osm_type": "W",
+    "osm_id": 284196935,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "улица Земляной Вал",
+    "names": {
+        "name": "улица Земляной Вал",
+        "name:en": "Zemlyanoy Val Street",
+        "name:ru": "улица Земляной Вал"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "105064",
+    "country_code": "ru",
+    "indexed_date": "2022-09-13T16:39:06+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "RU:urban",
+        "omkum:old_name": "улица Чкалова (1953 г.) Чкаловская улица (1938 г.) улица Земляной Вал (до 1917 г.)",
+        "oneway": "yes",
+        "smoothness": "excellent",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6573543,
+            55.7613387
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.656265,
+                55.7638961
+            ],
+            [
+                37.6563997,
+                55.7636733
+            ],
+            [
+                37.6566239,
+                55.7632373
+            ],
+            [
+                37.6569178,
+                55.7626524
+            ],
+            [
+                37.6570073,
+                55.762449
+            ],
+            [
+                37.6570505,
+                55.7623441
+            ],
+            [
+                37.6571629,
+                55.7620431
+            ],
+            [
+                37.6572497,
+                55.761772
+            ],
+            [
+                37.6573543,
+                55.7613387
+            ],
+            [
+                37.6574567,
+                55.7606228
+            ],
+            [
+                37.65748,
+                55.7603963
+            ],
+            [
+                37.6575637,
+                55.7593467
+            ],
+            [
+                37.6576098,
+                55.7584065
+            ]
+        ]
+    }
+}

@@ -1,0 +1,66 @@
+{
+    "place_id": 110045989,
+    "parent_place_id": 297683144,
+    "osm_type": "W",
+    "osm_id": 23370183,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Новинский бульвар",
+    "names": {
+        "name": "Новинский бульвар",
+        "name:ru": "Новинский бульвар"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "121099",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:10+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "foot": "no",
+        "lanes": "3",
+        "lit": "yes",
+        "maxspeed": "60",
+        "omkum:old_name": "улица Чайковского (1940 г.) Новинский бульвар (до 1917 г.)",
+        "oneway": "yes",
+        "surface": "asphalt"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.583841,
+            55.7548685
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.5835043,
+                55.7529527
+            ],
+            [
+                37.583841,
+                55.7548685
+            ],
+            [
+                37.5838812,
+                55.7549996
+            ],
+            [
+                37.5839241,
+                55.755112
+            ],
+            [
+                37.5839601,
+                55.7552289
+            ]
+        ]
+    }
+}

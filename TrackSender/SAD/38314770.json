@@ -1,0 +1,82 @@
+{
+    "place_id": 115778564,
+    "parent_place_id": 298044744,
+    "osm_type": "W",
+    "osm_id": 38314770,
+    "category": "highway",
+    "type": "primary",
+    "admin_level": 15,
+    "localname": "Садовая-Спасская улица",
+    "names": {
+        "name": "Садовая-Спасская улица",
+        "name:en": "Sadovaya-Spasskaya St",
+        "name:ru": "Садовая-Спасская улица"
+    },
+    "addresstags": [],
+    "housenumber": null,
+    "calculated_postcode": "129010",
+    "country_code": "ru",
+    "indexed_date": "2022-07-17T10:32:08+00:00",
+    "importance": 0,
+    "calculated_importance": 0.09999999999999998,
+    "extratags": {
+        "lanes": "5",
+        "lit": "yes",
+        "maxspeed": "60",
+        "oneway": "yes",
+        "surface": "asphalt",
+        "trolley_wire": "no"
+    },
+    "calculated_wikipedia": null,
+    "rank_address": 26,
+    "rank_search": 26,
+    "isarea": false,
+    "centroid": {
+        "type": "Point",
+        "coordinates": [
+            37.6406181,
+            55.7713569
+        ]
+    },
+    "geometry": {
+        "type": "LineString",
+        "coordinates": [
+            [
+                37.6436616,
+                55.7704253
+            ],
+            [
+                37.6425109,
+                55.7707894
+            ],
+            [
+                37.6418372,
+                55.7709894
+            ],
+            [
+                37.6406181,
+                55.7713569
+            ],
+            [
+                37.639624,
+                55.7716544
+            ],
+            [
+                37.638992,
+                55.7718435
+            ],
+            [
+                37.6384571,
+                55.7719929
+            ],
+            [
+                37.6379195,
+                55.7721162
+            ],
+            [
+                37.6373071,
+                55.7722363
+            ]
+        ]
+    }
+}
