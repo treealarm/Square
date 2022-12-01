@@ -23,7 +23,7 @@ namespace LogicMicroService
       new Dictionary<string, BaseLogicProc>();
 
 
-    private TracksUpdatedEvent _rangeToProcess = new TracksUpdatedEvent();
+    private List<TracksUpdatedEvent> _rangeToProcess = new List<TracksUpdatedEvent>();
 
     public LogicProcessorHost(
       IPubSubService pubsub,
@@ -53,17 +53,7 @@ namespace LogicMicroService
 
       lock (_locker)
       {
-        if (_rangeToProcess.ts_start == null ||
-          _rangeToProcess.ts_start > ev.ts_start)
-        {
-          _rangeToProcess.ts_start = ev.ts_start;
-        }
-
-        if (_rangeToProcess.ts_end == null ||
-          _rangeToProcess.ts_end < ev.ts_end)
-        {
-          _rangeToProcess.ts_end = ev.ts_end;
-        }
+        _rangeToProcess.Add(ev);
       }
     }
 
@@ -75,7 +65,7 @@ namespace LogicMicroService
 
     private async Task OnUpdateLogic(string logic_id)
     {
-      BaseLogicProc? logicProc = null;
+      BaseLogicProc logicProc;
 
       if (_logicProcs.TryGetValue(logic_id, out logicProc))
       {
@@ -148,20 +138,19 @@ namespace LogicMicroService
 
         lock (_locker)
         {
-          if (_rangeToProcess.ts_start == null ||
-            _rangeToProcess.ts_end == null)
+          if (_rangeToProcess.Count == 0)
           {
             bContinue = true;
           }
-
-          if (box.time_start == _rangeToProcess.ts_start &&
-          box.time_end == _rangeToProcess.ts_end)
+          else
           {
-            bContinue = true;
-          }
 
-          box.time_start = _rangeToProcess.ts_start;
-          box.time_end = _rangeToProcess.ts_end;
+          }
+          
+          box.time_start = _rangeToProcess.MinBy(e => e.ts_start).ts_start;
+          box.time_end = _rangeToProcess.MaxBy(e => e.ts_end).ts_end;
+
+          _rangeToProcess.Clear();
         }
 
         if (bContinue)
@@ -178,7 +167,7 @@ namespace LogicMicroService
             _tracksService,
             box.time_start,
             box.time_end
-            );
+          );
 
           if (bChanged)
           {

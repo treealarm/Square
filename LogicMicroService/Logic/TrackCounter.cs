@@ -137,8 +137,13 @@ namespace LogicMicroService
       if (inZones.Count > 0)
       {
         box.not_in_zone = true;
-        box.ids = inZones;
+        box.ids = inZones.Distinct().ToList();
         tracksOutZone = await tracksService.GetTracksByBox(box);
+
+        if (tracksOutZone.Count > 999)
+        {
+          int test = 0;
+        }
       }
 
       bool bChanged = this.Process(tracksOutZone, tracksInZone);
