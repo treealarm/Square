@@ -18,5 +18,6 @@ namespace Domain
     public string name { get; set; }
     public string logic { get; set; }
     public List<LogicFigureLinkDTO> figs { get; set; }
+    public ObjPropsSearchDTO property_filter { get; set; }
   }
 }

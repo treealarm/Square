@@ -107,7 +107,7 @@ namespace LeafletAlarms.Controllers
       }
       catch(Exception ex)
       {
-
+        Console.WriteLine(ex.ToString());
       }
 
       return File(data, "image/png");

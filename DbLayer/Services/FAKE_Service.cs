@@ -12,13 +12,13 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class LogicProcessorService: ILogicProcessorService
+  public class FAKE_Service: ILogicProcessorService
   {
-    private IMongoCollection<DBLogicProcessor> _collection;
+    private IMongoCollection<DB__FAKE> _collection;
     private readonly MongoClient _mongoClient;
     private readonly IMongoDatabase _mongoDatabase;
     private string _tableName;
-    public LogicProcessorService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    public FAKE_Service(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
       _mongoClient = new MongoClient(
         geoStoreDatabaseSettings.Value.ConnectionString);
@@ -28,7 +28,7 @@ namespace DbLayer.Services
 
       _tableName = geoStoreDatabaseSettings.Value.LogicProcessorCollectionName;
       _collection =
-        _mongoDatabase.GetCollection<DBLogicProcessor>(
+        _mongoDatabase.GetCollection<DB__FAKE>(
           _tableName
           );
 
@@ -38,12 +38,12 @@ namespace DbLayer.Services
     private void CreateIndexes()
     {
       {
-        IndexKeysDefinition<DBLogicProcessor> keys =
-          new IndexKeysDefinitionBuilder<DBLogicProcessor>()
+        IndexKeysDefinition<DB__FAKE> keys =
+          new IndexKeysDefinitionBuilder<DB__FAKE>()
           .Geo2DSphere(d => d.figure.location)
           ;
 
-        var indexModel = new CreateIndexModel<DBLogicProcessor>(
+        var indexModel = new CreateIndexModel<DB__FAKE>(
           keys, new CreateIndexOptions()
           { Name = "geo" }
         );
@@ -56,7 +56,7 @@ namespace DbLayer.Services
     {
       var location = ModelGate.ConvertGeoDTO2DB(figure.location);
 
-      var builder = Builders<DBLogicProcessor>.Filter;
+      var builder = Builders<DB__FAKE>.Filter;
       var filter =
         builder.GeoIntersects(t => t.figure.location, location)
         ;
@@ -76,7 +76,7 @@ namespace DbLayer.Services
       await _mongoDatabase.DropCollectionAsync(_tableName);
 
         _collection =
-        _mongoDatabase.GetCollection<DBLogicProcessor>(
+        _mongoDatabase.GetCollection<DB__FAKE>(
           _tableName
         );
 
@@ -85,7 +85,7 @@ namespace DbLayer.Services
 
     public async Task Insert(GeoObjectDTO figure, string logic_id)
     {
-      DBLogicProcessor processor = new DBLogicProcessor()
+      DB__FAKE processor = new DB__FAKE()
       {
         figure = ModelGate.ConvertDTO2DB(figure),
         logic_id = logic_id

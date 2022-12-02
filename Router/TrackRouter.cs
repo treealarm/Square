@@ -78,7 +78,7 @@ namespace LeafletAlarmsRouter
         }
         catch(Exception ex)
         {
-
+          Console.WriteLine(ex.ToString());
         }        
       }
 

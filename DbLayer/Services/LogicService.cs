@@ -49,6 +49,87 @@ namespace DbLayer.Services
       }
     }
 
+    private DBStaticLogic ConvertDTO2DB(StaticLogicDTO obj2UpdateIn)
+    {
+      DBStaticLogic ret = new DBStaticLogic()
+      {
+        id = obj2UpdateIn.id,
+        logic = obj2UpdateIn.logic,
+        name = obj2UpdateIn.name
+      };
+
+      if (obj2UpdateIn.figs != null)
+      {
+        List<DBLogicFigureLink> figs;
+        obj2UpdateIn.figs.CopyAllToAsJson(out figs);
+        ret.figs = figs;
+      }
+
+      if (
+        obj2UpdateIn.property_filter != null &&
+        obj2UpdateIn.property_filter.props != null &&
+        obj2UpdateIn.property_filter.props.Count > 0
+      )
+      {
+        ret.property_filter = new DBObjPropsSearch()
+        {
+          props = new List<DBObjExtraProperty>()
+        };
+
+        foreach (var prop in obj2UpdateIn.property_filter.props)
+        {
+          var prop1 = new DBObjExtraProperty()
+          {
+            prop_name = prop.prop_name,
+            str_val = new BsonDocument(
+              "str_val",
+              prop.str_val
+            )
+          };
+          ret.property_filter.props.Add(prop1);
+        }
+      }
+
+      return ret;
+    }
+
+    private StaticLogicDTO ConvertDB2DTO(DBStaticLogic obj2UpdateIn)
+    {
+      StaticLogicDTO ret = new StaticLogicDTO()
+      {
+        id = obj2UpdateIn.id,
+        logic = obj2UpdateIn.logic,
+        name = obj2UpdateIn.name
+      };
+
+      if (obj2UpdateIn.figs != null)
+      {
+        List<LogicFigureLinkDTO> figs;
+        obj2UpdateIn.figs.CopyAllToAsJson(out figs);
+        ret.figs = figs;
+      }
+
+      if (obj2UpdateIn.property_filter != null && obj2UpdateIn.property_filter.props != null)
+      {
+        ret.property_filter = new ObjPropsSearchDTO()
+        {
+          props = new List<KeyValueDTO>()
+        };
+
+        foreach (var prop in obj2UpdateIn.property_filter.props)
+        {
+          var prop1 = new KeyValueDTO()
+          {
+            prop_name = prop.prop_name,
+            str_val = prop.str_val.GetValue("str_val", string.Empty).ToString()
+          };
+          ret.property_filter.props.Add(prop1);
+        }
+      }
+
+      return ret;
+    }
+
     public async Task UpdateAsync(StaticLogicDTO obj2UpdateIn)
     {
       if (obj2UpdateIn.figs != null)
@@ -56,8 +137,7 @@ namespace DbLayer.Services
         obj2UpdateIn.figs.RemoveAll(t => string.IsNullOrEmpty(t.id));
       }
 
-      DBStaticLogic obj2Update;
-      obj2UpdateIn.CopyAllToAsJson(out obj2Update);
+      DBStaticLogic obj2Update = ConvertDTO2DB(obj2UpdateIn);
 
       if (string.IsNullOrEmpty(obj2Update.id))
       {
@@ -85,8 +165,7 @@ namespace DbLayer.Services
         return null;
       }
 
-      StaticLogicDTO ret;
-      result.CopyAllToAsJson(out ret);
+      StaticLogicDTO ret = ConvertDB2DTO(result);
 
       return ret;
     }
@@ -102,8 +181,7 @@ namespace DbLayer.Services
 
       foreach (var f in result)
       {
-        StaticLogicDTO ret;
-        f.CopyAllToAsJson(out ret);
+        StaticLogicDTO ret = ConvertDB2DTO(f);
         listRet.Add(ret);
       }
 

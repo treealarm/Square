@@ -152,7 +152,8 @@ namespace RouterMicroService
         }
       }
       catch(Exception ex)
-      {        
+      {
+        Console.WriteLine(ex.ToString());
         return false;
       }
 

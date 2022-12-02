@@ -221,7 +221,7 @@ namespace LeafletAlarms.Services
         }
         catch(Exception ex)
         {
-
+          Console.WriteLine(ex.ToString());
         }
       }
     }

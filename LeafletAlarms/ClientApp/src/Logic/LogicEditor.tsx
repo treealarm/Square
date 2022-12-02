@@ -7,11 +7,12 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Box, ButtonGroup, IconButton, TextField, ToggleButton } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import { ILogicFigureLinkDTO, IStaticLogicDTO } from '../store/Marker';
+import { ILogicFigureLinkDTO, IStaticLogicDTO, ObjPropsSearchDTO } from '../store/Marker';
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import { GroupSelector } from './GroupSelector';
+import { PropertyFilter } from '../Tree/PropertyFilter';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -127,6 +128,26 @@ export function LogicEditor(props: any) {
   React.useEffect(() => {
       UpdateFigureId();
   }, [figureIdMode]);
+
+  const setPropsFilter = useCallback(
+    (propsFilter: ObjPropsSearchDTO) => {
+
+      let copyLogic = Object.assign({}, logicObj);
+      copyLogic.property_filter = propsFilter;
+      props.updateLogic(logicObj, copyLogic);
+    }, [logicObj]);
+
+  const addProperty = useCallback(
+    (e) => {
+      let copyLogic = Object.assign({}, logicObj);
+      if (copyLogic.property_filter == null) {
+        copyLogic.property_filter = {
+          props: []
+        };
+      }
+      copyLogic.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
+      props.updateLogic(logicObj, copyLogic);
+    }, [logicObj]);
 
   
   React.useEffect(() => {
@@ -262,6 +283,20 @@ export function LogicEditor(props: any) {
             </List>
           )
         }
+        <Box display="flex"
+          justifyContent="flex-start"
+        >
+          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e) => addProperty(e)}>
+            <LibraryAddIcon fontSize="inherit" />
+          </IconButton>
+        </Box>
+
+        <ListItem>
+          
+          <PropertyFilter
+            propsFilter={logicObj?.property_filter}
+            setPropsFilter={setPropsFilter} />
+        </ListItem>
       </List>
     </Box>
   );

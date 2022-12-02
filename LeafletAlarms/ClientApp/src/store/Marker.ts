@@ -237,5 +237,6 @@ export interface IStaticLogicDTO {
   id?: string;
   name?: string;
   logic?: string;
-  figs?: ILogicFigureLinkDTO[]
+  figs?: ILogicFigureLinkDTO[];
+  property_filter?: ObjPropsSearchDTO;
 }

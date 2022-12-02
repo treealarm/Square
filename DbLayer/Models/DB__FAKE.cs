@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Models
 {
-  internal class DBLogicProcessor
+  internal class DB__FAKE
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

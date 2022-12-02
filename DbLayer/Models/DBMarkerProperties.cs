@@ -10,6 +10,7 @@ namespace DbLayer
 {
   public class DBObjExtraProperty
   {
+    [BsonIgnoreIfNull]
     public string visual_type { get; set; }
     [BsonExtraElements]
     public BsonDocument str_val { get; set; }
