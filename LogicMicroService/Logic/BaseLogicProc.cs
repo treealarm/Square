@@ -15,6 +15,7 @@ namespace LogicMicroService
       get { return LogicDTO.id; }
     }
     public HashSet<string> TextObjectsIds { get; set; }
+    public HashSet<string> PropFilterObjIds { get; set; }
 
     public BaseLogicProc(StaticLogicDTO logicDto)
     {
@@ -26,9 +27,30 @@ namespace LogicMicroService
           .ToHashSet();
     }
 
-    public virtual async Task InitFromDb(IGeoService geoService)
+    public virtual async Task InitFromDb(IGeoService geoService, IMapService mapService)
     {
-      await Task.Delay(0);
+      await SetIdsByProperties(LogicDTO.property_filter, mapService);
+    }
+
+    protected virtual async Task SetIdsByProperties(
+      ObjPropsSearchDTO property_filter,
+      IMapService mapService
+    )
+    {
+      // This methods means filter by properties if exists.
+      PropFilterObjIds = null;
+
+      if (property_filter != null && property_filter.props.Count > 0)
+      {
+        var props = await mapService.GetPropByValuesAsync(
+          property_filter,
+          null,
+          true,
+          1000
+        );
+
+        PropFilterObjIds = props.Select(i => i.id).ToHashSet();
+      }
     }
 
     public virtual async Task<bool> ProcessTracks(

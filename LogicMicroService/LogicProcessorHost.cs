@@ -148,7 +148,7 @@ namespace LogicMicroService
           _logicProcs[logic.id] = logicProc;
         }
 
-        await logicProc?.InitFromDb(_geoService);
+        await logicProc?.InitFromDb(_geoService, _mapService);
         await OnUpdateLogic(logic.id);
       }
     }

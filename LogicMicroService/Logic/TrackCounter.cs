@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DbLayer.Services;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
@@ -20,8 +21,10 @@ namespace LogicMicroService
     {
     }
 
-    public override async Task InitFromDb(IGeoService geoService)
+    public override async Task InitFromDb(IGeoService geoService, IMapService mapService)
     {
+      await base.InitFromDb(geoService, mapService);
+
       var logicObjs = LogicDTO.figs.Where(f => f.group_id != "text").ToList();
 
       var geoFigs = await
@@ -30,16 +33,22 @@ namespace LogicMicroService
       var zones = geoFigs.Values.ToList();
 
       BoxTrackDTO box = new BoxTrackDTO();
+      box.ids = PropFilterObjIds.ToList();
+      box.property_filter = LogicDTO.property_filter;
+
       Zone = zones.Select(f => f.location).ToList();
       box.zone = Zone; 
       var objectsNowInZone = await geoService.GetGeoAsync(box);
 
       var removeFigs = LogicDTO.figs.Select(f => f.id).ToHashSet();
 
-      _objectsInZone = objectsNowInZone.Values
-        .Select(f => f.id)
-        .Where(d => !removeFigs.Contains(d))
-        .ToHashSet();
+      if (objectsNowInZone != null)
+      {
+        _objectsInZone = objectsNowInZone.Values
+          .Select(f => f.id)
+          .Where(d => !removeFigs.Contains(d))
+          .ToHashSet();
+      }      
     }
 
     private bool Process(List<TrackPointDTO> listOutZone, List<TrackPointDTO> listInZone)
@@ -121,6 +130,9 @@ namespace LogicMicroService
       box.time_start = time_start;
       box.time_end = time_end;
       box.zone = this.Zone;
+      box.ids = PropFilterObjIds.ToList();
+      box.property_filter = LogicDTO.property_filter;
+
       // Get what we have for current time;
       var inZones = this.GetInZones();
 
