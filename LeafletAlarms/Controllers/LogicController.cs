@@ -1,13 +1,11 @@
-﻿using DbLayer;
-using DbLayer.Services;
-using Domain;
+﻿using Domain;
 using Domain.ServiceInterfaces;
-using Domain.States;
-using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
@@ -17,11 +15,14 @@ namespace LeafletAlarms.Controllers
   public class LogicController : ControllerBase
   {
     private readonly ILogicService _logicService;
+    private IPubSubService _pubsub;
     public LogicController(
-      ILogicService logicService
+      ILogicService logicService,
+      IPubSubService pubsub
     )
     {
       _logicService = logicService;
+      _pubsub = pubsub;
     }
 
     [HttpPost]
@@ -32,7 +33,11 @@ namespace LeafletAlarms.Controllers
       {
         await _logicService.UpdateAsync(newObj);
       }
-      
+
+      var listIds = newObjs.Select(o => o.id).ToList();
+
+      _pubsub.PublishNoWait("UpdateLogicProc", JsonSerializer.Serialize(listIds));
+
       return CreatedAtAction(nameof(Update), newObjs);
     }
 
@@ -51,6 +56,10 @@ namespace LeafletAlarms.Controllers
         );
       }
 
+      var listIds = new List<string>() { id };
+
+      _pubsub.PublishNoWait("UpdateLogicProc", JsonSerializer.Serialize(listIds));
+
       var ret = CreatedAtAction(nameof(Delete), null, id);
       return ret;
     }
@@ -58,14 +67,14 @@ namespace LeafletAlarms.Controllers
     [HttpGet("{id:length(24)}")]
     public async Task<ActionResult<StaticLogicDTO>> Get(string id)
     {
-      var obj = await _logicService.GetAsync(id);
+      var obj = await _logicService.GetListByIdsAsync(new List<string>() { id });
 
-      if (obj is null)
+      if (obj is null || obj.Count == 0)
       {
         return NotFound();
       }
 
-      return obj;
+      return obj.FirstOrDefault();
     }
 
     [HttpGet]

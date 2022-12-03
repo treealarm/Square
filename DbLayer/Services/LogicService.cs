@@ -156,18 +156,25 @@ namespace DbLayer.Services
       await _coll.DeleteOneAsync(x => x.id == id);
     }
 
-    public async Task<StaticLogicDTO> GetAsync(string id)
+    public async Task<List<StaticLogicDTO>> GetListByIdsAsync(List<string> ids)
     {
-      var result = await _coll.Find(x => x.id == id).FirstOrDefaultAsync();
+      List<StaticLogicDTO> retVal = new List<StaticLogicDTO>();
+
+      var result = await _coll.Find(x => ids.Contains(x.id)).ToListAsync();
 
       if (result == null)
       {
         return null;
       }
 
-      StaticLogicDTO ret = ConvertDB2DTO(result);
+      foreach (var res in result)
+      {
+        StaticLogicDTO ret = ConvertDB2DTO(res);
+        retVal.Add(ret);
+      }
+      
 
-      return ret;
+      return retVal;
     }
 
     private List<StaticLogicDTO> DBListToDTO(List<DBStaticLogic> result)

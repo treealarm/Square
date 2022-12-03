@@ -3,6 +3,7 @@ using Domain.GeoDTO;
 using Domain.Logic;
 using Domain.NonDto;
 using Domain.ServiceInterfaces;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace LogicMicroService
@@ -21,6 +22,8 @@ namespace LogicMicroService
 
     private Dictionary<string, BaseLogicProc> _logicProcs =
       new Dictionary<string, BaseLogicProc>();
+
+    private HashSet<string> _logicIdsToUpdate = new HashSet<string>();
 
 
     private List<TracksUpdatedEvent> _rangeToProcess = new List<TracksUpdatedEvent>();
@@ -57,9 +60,29 @@ namespace LogicMicroService
       }
     }
 
+    void OnUpdateLogicProc(string channel, string message)
+    {
+      var ids = JsonSerializer.Deserialize<List<string>>(message);
+
+      if (ids == null)
+      {
+        return;
+      }
+
+      lock(_locker)
+      {
+        foreach (var id in ids)
+        {
+          _logicIdsToUpdate.Add(id);
+        }
+      }      
+    }
+
     public async override Task StartAsync(CancellationToken cancellationToken)
     {
       await _pubsub.Subscribe("UpdateTrackPosition", OnUpdateTrackPosition);
+      await _pubsub.Subscribe("UpdateLogicProc", OnUpdateLogicProc); 
+
       await base.StartAsync(cancellationToken);
     }
 
@@ -105,14 +128,12 @@ namespace LogicMicroService
       }
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    private async Task  DoUpdateLogicProc(List<StaticLogicDTO> logics)
     {
-      var logics = await _logicService.GetListAsync(null, true, 1000);
-
-      BoxTrackDTO box = new BoxTrackDTO();
-
       foreach (var logic in logics)
       {
+        _logicProcs.Remove(logic.id);
+
         BaseLogicProc logicProc = null;
 
         if (logic.logic == "counter")
@@ -130,11 +151,20 @@ namespace LogicMicroService
         await logicProc?.InitFromDb(_geoService);
         await OnUpdateLogic(logic.id);
       }
+    }
 
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+      var logics = await _logicService.GetListAsync(null, true, 1000);
+
+      BoxTrackDTO box = new BoxTrackDTO();
+
+      await DoUpdateLogicProc(logics);
 
       while (!_cancellationToken.IsCancellationRequested)
       {
         bool bContinue = false;
+        List<string> logicToUpdate = null;
 
         lock (_locker)
         {
@@ -144,13 +174,33 @@ namespace LogicMicroService
           }
           else
           {
-
-          }
-          
-          box.time_start = _rangeToProcess.MinBy(e => e.ts_start).ts_start;
-          box.time_end = _rangeToProcess.MaxBy(e => e.ts_end).ts_end;
+            box.time_start = _rangeToProcess.MinBy(e => e.ts_start).ts_start;
+            box.time_end = _rangeToProcess.MaxBy(e => e.ts_end).ts_end;
+          }          
 
           _rangeToProcess.Clear();
+
+          if (_logicIdsToUpdate.Count > 0)
+          {
+            logicToUpdate = _logicIdsToUpdate.ToList();
+            _logicIdsToUpdate.Clear();
+          }
+        }
+
+        if (logicToUpdate != null && logicToUpdate.Count > 0)
+        {          
+          logics = await _logicService.GetListByIdsAsync(logicToUpdate);
+
+          var logicToDelete = logicToUpdate
+            .Where(id => logics.Find(l => l.id == id) == null)
+            .ToList();
+
+          foreach (var del in logicToDelete)
+          {
+            _logicProcs.Remove(del);
+          }
+
+          await DoUpdateLogicProc(logics);
         }
 
         if (bContinue)
