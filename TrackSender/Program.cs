@@ -47,14 +47,14 @@ namespace TrackSender
         //Console.WriteLine($"10K calls:{(DateTime.Now - t1).TotalSeconds}");
         //return;
 
-        //var taskMoscowBuild = moscowBuilder.RunAsync(token, tasks);
-        //Task.WaitAll(taskMoscowBuild);
+        var taskMoscowBuild = moscowBuilder.RunAsync(token, tasks);
+        Task.WaitAll(taskMoscowBuild);
 
-        //var taskStates = testStates.RunAsync(token, tasks);        
-        //tasks.Add(taskStates);
+        var taskStates = testStates.RunAsync(token, tasks);        
+        tasks.Add(taskStates);
 
-        //var taskMove = testMove.RunAsync(token, tasks);
-        //tasks.Add(taskMove);
+        var taskMove = testMove.RunAsync(token, tasks);
+        tasks.Add(taskMove);
 
         var taskLogic = testMove.TestLogicAsync(token, tasks);
         tasks.Add(taskLogic);

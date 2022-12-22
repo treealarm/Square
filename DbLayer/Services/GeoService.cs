@@ -206,9 +206,11 @@ namespace DbLayer.Services
 
       if (box.zoom != null)
       {
+        levels.Add(null);
+        levels.Add(string.Empty);
         filter = filter
         &
-        builder.Where(p => levels.Contains(p.zoom_level) || string.IsNullOrEmpty(p.zoom_level))
+        builder.Where(p => levels.Contains(p.zoom_level))
         ;
       }      
 
