@@ -215,7 +215,8 @@ namespace DbLayer.Services
       }      
 
       if (box.ids != null &&
-        (box.ids.Count > 0 || (box.property_filter != null && box.property_filter.props.Count > 0))
+        (box.ids.Count > 0 || 
+        (box.property_filter != null && box.property_filter.props.Count > 0))
       )
       {
         filter = filter & builder.Where(t => box.ids.Contains(t.id));
