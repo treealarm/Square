@@ -1,5 +1,6 @@
 ﻿import { Action, Reducer } from "redux";
 import { ApiStatesRootString, AppThunkAction } from "./";
+import { DoFetch } from "./Fetcher";
 import { AlarmObject, MarkerVisualStateDTO } from "./Marker";
 
 
@@ -57,7 +58,7 @@ export const actionCreators = {
       let body = JSON.stringify(ids);
       var request = ApiStatesRootString + "/GetVisualStates";
 
-      var fetched = fetch(request, {
+      var fetched = DoFetch(request, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: body

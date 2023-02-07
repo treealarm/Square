@@ -1,5 +1,6 @@
 ﻿import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
+import { DoFetch } from "./Fetcher";
 import { GetByParentDTO, TreeMarker } from "./Marker";
 
 // -----------------
@@ -73,7 +74,7 @@ export const actionCreators = {
       request += "&end_id=" + end_id;
     }
 
-    var fetched = fetch(request);
+    var fetched = DoFetch(request);
 
     console.log("fetched:", fetched);
 

@@ -1,8 +1,8 @@
 ﻿import { Action, Reducer } from 'redux';
 import { ApiLogicRootString, AppThunkAction } from '.';
+import UserService from '../auth/UserService';
 import { IStaticLogicDTO } from './Marker';
-
-
+import { DoFetch } from './Fetcher';
 // -----------------
 
 export interface ObjLogicState {
@@ -71,7 +71,7 @@ export const actionCreators = {
 
     var request = ApiLogicRootString + "/GetByFigureAsync?id=" + object_id;
 
-    var fetched = fetch(request);
+    var fetched = DoFetch(request);
 
     fetched
       .then(response => {
@@ -97,7 +97,7 @@ export const actionCreators = {
 
     var request = ApiLogicRootString + "/GetByName?name=" + objectName;
 
-    var fetched = fetch(request);
+    var fetched = DoFetch(request);
 
     fetched
       .then(response => {
@@ -119,7 +119,7 @@ export const actionCreators = {
 
     // Send data to the backend via POST
     let body = JSON.stringify(logic);
-    var fetched = fetch(ApiLogicRootString + "/UpdateLogic", {
+    var fetched = DoFetch(ApiLogicRootString + "/UpdateLogic", {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: body
@@ -145,7 +145,7 @@ export const actionCreators = {
     getState
   ) => {
 
-    var fetched = fetch(ApiLogicRootString + "/" + logic_id, {
+    var fetched = DoFetch(ApiLogicRootString + "/" + logic_id, {
       method: "DELETE"
     });
 

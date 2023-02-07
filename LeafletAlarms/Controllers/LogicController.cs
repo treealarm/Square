@@ -1,5 +1,7 @@
 ﻿using Domain;
 using Domain.ServiceInterfaces;
+using Itinero;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,6 +14,7 @@ namespace LeafletAlarms.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
+  [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
   public class LogicController : ControllerBase
   {
     private readonly ILogicService _logicService;
@@ -89,6 +92,10 @@ namespace LeafletAlarms.Controllers
     [Route("GetByName")]
     public async Task<List<StaticLogicDTO>> GetByName(string name)
     {
+      if (User.IsInRole("admin"))
+      {
+        int test = 0;
+      }
       var obj = await _logicService.GetByName(name);
       return obj;
     }

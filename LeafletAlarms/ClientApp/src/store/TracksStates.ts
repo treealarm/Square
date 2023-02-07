@@ -1,5 +1,6 @@
 import { Action, Reducer } from "redux";
 import { ApiDefaultMaxCountResult, ApiRouterRootString, ApiTracksRootString, AppThunkAction } from "./";
+import { DoFetch } from "./Fetcher";
 import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -68,7 +69,7 @@ export const actionCreators = {
       let body = JSON.stringify(box);
       var request = ApiRouterRootString + "/GetRoutsByBox";
 
-      var fetched = fetch(request, {
+      var fetched = DoFetch(request, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: body
@@ -108,7 +109,7 @@ export const actionCreators = {
       let body = JSON.stringify(box);
       var request = ApiTracksRootString + "/GetTracksByBox";
 
-      var fetched = fetch(request, {
+      var fetched = DoFetch(request, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: body

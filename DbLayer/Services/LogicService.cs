@@ -211,6 +211,11 @@ namespace DbLayer.Services
 
     public async Task<List<StaticLogicDTO>> GetByName(string name)
     {
+      if (string.IsNullOrEmpty(name))
+      {
+        name= string.Empty;
+      }
+
       var filter = Builders<DBStaticLogic>.Filter        
         .Where(x => x.name.Contains(name));
 

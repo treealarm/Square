@@ -1,5 +1,6 @@
 import { Action, Reducer } from "redux";
 import { ApiRootString, ApiTracksRootString, AppThunkAction } from "./";
+import { DoFetch } from "./Fetcher";
 import { BoundBox, IFigures, Marker } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -93,7 +94,7 @@ export const actionCreators = {
       let body = JSON.stringify(box);
       var request = ApiRootString + "/GetByBox";
 
-      var fetched = fetch(request, {
+      var fetched = DoFetch(request, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: body
@@ -128,7 +129,7 @@ export const actionCreators = {
 
     var request = ApiTracksRootString + "/AddTracks";
 
-    var fetched = fetch(request, {
+    var fetched = DoFetch(request, {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: body
@@ -153,7 +154,7 @@ export const actionCreators = {
 
     // Send data to the backend via DELETE
 
-    var fetched = fetch(ApiRootString, {
+    var fetched = DoFetch(ApiRootString, {
       method: "DELETE",
       headers: { 'Content-type': 'application/json' },
       body: body
@@ -190,7 +191,7 @@ export const actionCreators = {
       let body = JSON.stringify(ids);
       var request = ApiRootString + "/GetByIds";
 
-      var fetched = fetch(request, {
+      var fetched = DoFetch(request, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: body

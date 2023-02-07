@@ -1,5 +1,6 @@
 ﻿import { Action, Reducer } from 'redux';
 import { ApiRootString, AppThunkAction } from '.';
+import { DoFetch } from './Fetcher';
 import { IObjProps } from './Marker';
 
 
@@ -59,7 +60,7 @@ export const actionCreators = {
 
     var request = ApiRootString + "/GetObjProps?id=" + object_id;
 
-    var fetched = fetch(request);
+    var fetched = DoFetch(request);
 
     fetched
       .then(response => {
@@ -83,7 +84,7 @@ export const actionCreators = {
 
     // Send data to the backend via POST
     let body = JSON.stringify(marker);
-    var fetched = fetch(ApiRootString + "/UpdateProperties", {
+    var fetched = DoFetch(ApiRootString + "/UpdateProperties", {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: body

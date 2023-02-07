@@ -1,5 +1,6 @@
 ﻿import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
+import { DoFetch } from "./Fetcher";
 import { GetBySearchDTO, SearchFilterDTO, TreeMarker } from "./Marker";
 
 // -----------------
@@ -64,7 +65,7 @@ export const actionCreators = {
     let body = JSON.stringify(filter);
     var request = ApiRootString + "/GetByFilter";
 
-    var fetched = fetch(request, {
+    var fetched = DoFetch(request, {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: body

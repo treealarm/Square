@@ -2,17 +2,21 @@ using DbLayer.Services;
 using Domain;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using LeafletAlarms.Authentication;
 using LeafletAlarms.Services;
 using LeafletAlarmsRouter;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -21,16 +25,21 @@ namespace LeafletAlarms
 {
   public class Startup
   {
-    public Startup(IConfiguration configuration)
+    public Startup(IConfiguration configuration, IWebHostEnvironment env)
     {
       Configuration = configuration;
+      _currentEnvironment = env;
     }
 
     public IConfiguration Configuration { get; }
-
+    private readonly IWebHostEnvironment _currentEnvironment;
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      services.ConfigureJWT(_currentEnvironment.IsDevelopment(),             
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Z2BPcUdfDSJc8PiypOobTzdL75hciMJyaEti7tvLnd3Nq1VgnrlXr/4NHp9Nw5b3SbxaoxMHOq1Xk/2RbA0EmgCT8Gr/JJUDQHHKm/dDxsGiDJaK1Zqu+ofVi/PdHSTDfja3O68890teCLh8BOZJ+rt2SmpRUiQf8aXw7nbQ+4GdOvT9AE5c+tcOD4LdxrVo0gplJUx6fOrgr0E/LGZuKOZd80NCF2qjW/Jt2HTpHfgmQZpfl4eRCQ2Q5wDcNWe/dRNeu2RmQePrIJKuJ8AScjaV5ZmQ5Zob/FZpB2VlAavSdhmbwaIDMBJeQCUVVaUgsjrXwcM4So/ShHb6yagzQIDAQAB"
+      );
+
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
 
@@ -83,6 +92,26 @@ namespace LeafletAlarms
         var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         //setUpAction.IncludeXmlComments(xmlCommentsFile);
         //setUpAction.AddFluentValidationRules();
+
+        //First we define the security scheme
+        setUpAction.AddSecurityDefinition("Bearer", //Name the security scheme
+            new OpenApiSecurityScheme
+            {
+              Description = "JWT Authorization header using the Bearer scheme.",
+              Type = SecuritySchemeType.Http, //We set the scheme type to http since we're using bearer authentication
+              Scheme = JwtBearerDefaults.AuthenticationScheme //The name of the HTTP Authorization scheme to be used in the Authorization header. In this case "bearer".
+            });
+
+        setUpAction.AddSecurityRequirement(new OpenApiSecurityRequirement{
+          {
+              new OpenApiSecurityScheme{
+                  Reference = new OpenApiReference{
+                      Id = JwtBearerDefaults.AuthenticationScheme, //The name of the previously defined security scheme.
+                      Type = ReferenceType.SecurityScheme
+                  }
+              },new List<string>()
+          }
+        });
       });
       services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
     }
@@ -122,6 +151,8 @@ namespace LeafletAlarms
 
       app.UseRouting();
 
+      app.UseAuthorization();
+
       app.UseEndpoints(endpoints =>
       {
         endpoints.MapControllerRoute(
@@ -157,7 +188,6 @@ namespace LeafletAlarms
         {
           await next();
         }
-
       });
 
       app.UseSpa(spa =>

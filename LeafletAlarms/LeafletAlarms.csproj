@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
@@ -14,6 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.9" />
     <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.5.3">
       <PrivateAssets>all</PrivateAssets>
@@ -40,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\auth\Login.tsx" />
     <None Remove="ClientApp\src\components\GlobalLayersOptions.tsx" />
     <None Remove="ClientApp\src\components\TreeControl.tsx" />
     <None Remove="ClientApp\src\components\WebSockClient.tsx" />
@@ -50,6 +52,7 @@
     <None Remove="ClientApp\src\map\MapPositionChange.tsx" />
     <None Remove="ClientApp\src\map\PolygonMaker.tsx" />
     <None Remove="ClientApp\src\map\PolylineMaker.tsx" />
+    <None Remove="ClientApp\src\store\Fetcher.ts" />
     <None Remove="ClientApp\src\store\GUIStates.ts" />
     <None Remove="ClientApp\src\store\Marker.ts" />
     <None Remove="ClientApp\src\store\MarkersVisualStates.ts" />
@@ -66,6 +69,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\src\auth\UserService.ts" />
     <TypeScriptCompile Remove="ClientApp\src\map\LocationMarkers.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\map\MapComponent.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\store\SearchResultStates.ts" />
