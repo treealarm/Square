@@ -28,13 +28,13 @@ function CirclePopup(props: any) {
         <table>
           <tbody>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.DeleteVertex(props?.index, e)}>Delete vertex</span>
+              <span className="menu_item" onClick={(e: any) => props.DeleteVertex(props?.index, e)}>Delete vertex</span>
             </td></tr>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.MoveVertex(props?.index, e)}>Move vertex</span>
+              <span className="menu_item" onClick={(e: any) => props.MoveVertex(props?.index, e)}>Move vertex</span>
             </td></tr>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.AddVertex(props?.index, e)}>Add vertex</span>
+              <span className="menu_item" onClick={(e: any) => props.AddVertex(props?.index, e)}>Add vertex</span>
             </td></tr>
           </tbody>
         </table>
@@ -54,10 +54,10 @@ function PolygonPopup(props: any) {
         <table>
           <tbody>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.FigureChanged(e)}>Save Polygon</span>
+              <span className="menu_item" onClick={(e: any) => props.FigureChanged(e)}>Save Polygon</span>
             </td></tr>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.MoveAllPoints(e)}>Move Polygon</span>
+              <span className="menu_item" onClick={(e: any) => props.MoveAllPoints(e)}>Move Polygon</span>
             </td></tr>
           </tbody>
         </table>
@@ -71,11 +71,11 @@ export function PolygonMaker(props: any) {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
   const [isMoveAll, setIsMoveAll] = React.useState(false);
-  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
+  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
 
   const initPolygon: IPolygon = {
     id: null,
@@ -106,12 +106,12 @@ export function PolygonMaker(props: any) {
     }
 
     setExtraProp(copy,"geometry",JSON.stringify(curPolygon.geometry), null);
-    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   }, [curPolygon]);
 
     
   const mapEvents = useMapEvents({
-    click(e) {
+    click(e: any) {
       
       var ll: L.LatLng = e.latlng as L.LatLng;
 
@@ -197,14 +197,14 @@ export function PolygonMaker(props: any) {
 
     
   const moveVertex = useCallback(
-    (index, e) => {
+    (index: any, e: any) => {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
       setMovedIndex(index);
     }, [curPolygon])
 
   const addVertex = useCallback(
-    (index, e) => {
+    (index: any, e: any) => {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
 
@@ -225,7 +225,7 @@ export function PolygonMaker(props: any) {
     }, [curPolygon])
 
   const deleteVertex = useCallback(
-    (index, e) => {      
+    (index: any, e: any) => {      
       parentMap.closePopup();
 
       var geometry_upd: IPolygonCoord =
@@ -247,7 +247,7 @@ export function PolygonMaker(props: any) {
   const colorOptionsCircle = { color: 'red' }
 
   const figureChanged = useCallback(
-    (e) => {
+    (e: any) => {
       props.figureChanged(curPolygon, e);
       setPolygon(initPolygon);
     }, [curPolygon])

@@ -1,10 +1,7 @@
 import * as React from "react";
 
-export default class Layout extends React.PureComponent<
-  {},
-  { children?: React.ReactNode }
-> {
-  public render() {
-    return <React.Fragment>{this.props.children}</React.Fragment>;
-  }
+export function Layout(props :any) {
+  return (
+    <React.Fragment>{props.children}</React.Fragment>
+  );
 }

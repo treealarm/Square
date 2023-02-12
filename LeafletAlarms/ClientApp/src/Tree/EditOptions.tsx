@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import AddIcon from '@mui/icons-material/Add';
+import { ApplicationState } from '../store';
 
 export default function EditOptions() {
 
@@ -14,7 +15,7 @@ export default function EditOptions() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -40,8 +41,8 @@ export default function EditOptions() {
         type: PolygonType
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry1), null);
-      dispatch(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+      dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
+      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
     }
    
@@ -58,8 +59,8 @@ export default function EditOptions() {
         type: LineStringType
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry2), null);
-      dispatch(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+      dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
+      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
     }
 
@@ -76,11 +77,11 @@ export default function EditOptions() {
         type: PointType
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry3), null);
-      dispatch(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+      dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
+      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
     }
-    dispatch(EditStore.actionCreators.setFigureEditMode(false));
+    dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
   };
 
   const handleClose = () => {

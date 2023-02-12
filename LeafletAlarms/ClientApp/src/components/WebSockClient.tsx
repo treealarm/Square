@@ -5,6 +5,7 @@ import { Box, IconButton, Paper, styled, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
 import { useDispatch, useSelector } from "react-redux";
+import { ApplicationState } from "../store";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -27,7 +28,7 @@ export function WebSockClient() {
 
   const dispatch = useDispatch();
 
-  const box = useSelector((state) => state?.markersStates?.box);
+  const box = useSelector((state: ApplicationState) => state?.markersStates?.box);
 
   const [isConnected, setIsConnected] = useState(false);
 
@@ -42,7 +43,7 @@ export function WebSockClient() {
     }, 1000);
   };
 
-  const markers = useSelector((state) => state?.markersStates?.markers);
+  const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
 
   function socket_onmessage(event: any) {
     try {
@@ -50,20 +51,20 @@ export function WebSockClient() {
       var received = JSON.parse(event.data);
 
       if (received.action == "set_visual_states") {
-        dispatch(MarkersVisualStore.actionCreators.updateMarkersVisualStates(received.data));
+        dispatch<any>(MarkersVisualStore.actionCreators.updateMarkersVisualStates(received.data));
       }
 
       if (received.action == "set_ids2update") {
-        dispatch(MarkersStore.actionCreators.requestMarkersByIds(received.data));
+        dispatch<any>(MarkersStore.actionCreators.requestMarkersByIds(received.data));
       }
       if (received.action == "set_ids2delete") {
-        dispatch(MarkersStore.actionCreators.deleteMarkersLocally(received.data));
+        dispatch<any>(MarkersStore.actionCreators.deleteMarkersLocally(received.data));
       }
       if (received.action == "set_alarm_states") {
-        dispatch(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
+        dispatch<any>(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
       }
       if (received.action == "update_viewbox") {
-        dispatch(MarkersStore.actionCreators.initiateUpdateAll());
+        dispatch<any>(MarkersStore.actionCreators.initiateUpdateAll());
       }      
       
     } catch (err) {
@@ -128,3 +129,4 @@ export function WebSockClient() {
       </React.Fragment>
   );
 }
+

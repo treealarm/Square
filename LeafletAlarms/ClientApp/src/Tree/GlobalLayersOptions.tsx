@@ -6,11 +6,12 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchFilterGUI } from '../store/Marker';
 import * as GuiStore from '../store/GUIStates';
+import { ApplicationState } from '../store';
 
 export default function GlobalLayersOptions() {
 
   const dispatch = useDispatch();
-  const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
+  const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = Object.assign({}, searchFilter);
@@ -34,7 +35,7 @@ export default function GlobalLayersOptions() {
       filter.show_routs = event.target.checked;
     }
 
-    dispatch(GuiStore.actionCreators.applyFilter(filter));
+    dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
   }, [searchFilter]);
 
   var checks = [

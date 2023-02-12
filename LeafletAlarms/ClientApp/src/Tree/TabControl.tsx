@@ -7,13 +7,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import * as TreeStore from '../store/TreeStates';
 import { TreeMarker } from '../store/Marker';
+import { ApplicationState } from '../store';
 
 export default function TabControl() {
 
-  const treeState = useSelector((state) => state?.treeStates);
+  const treeState = useSelector((state: ApplicationState) => state?.treeStates);
   const parent_list = treeState.parents;
 
-  let curMarker = parent_list.find((element) => {
+  let curMarker = parent_list.find((element: any) => {
     return element?.id == treeState?.parent_id;
   });
 
@@ -21,7 +22,7 @@ export default function TabControl() {
   const dispatch = useDispatch();
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker|null) => {
-    dispatch(TreeStore.actionCreators.getByParent(newValue?.id, null, null));
+    dispatch<any>(TreeStore.actionCreators.getByParent(newValue?.id, null, null));
   };
   
 

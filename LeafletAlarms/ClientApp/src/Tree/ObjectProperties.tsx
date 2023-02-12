@@ -28,27 +28,27 @@ export function ObjectProperties() {
 
   const dispatch = useDispatch();
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
-  const propsUpdated = useSelector((state) => state?.objPropsStates?.updated);
-  const selectedEditMode = useSelector((state) => state.editState);
-  const markers = useSelector((state) => state?.markersStates?.markers);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
+  const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
+  const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
   
   useEffect(() => {
     if (selected_id == null) {
-      dispatch(EditStore.actionCreators.setFigureEditMode(false));
+      dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
     }
     else if (selected_id?.startsWith('00000000', 0))
     {
       var selectedMarker = markers.figs.find(m => m.id == selected_id);
 
       if (selectedMarker != null) {
-        dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
+        dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
         return;
       }
     }
 
-    dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
+    dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
   }, [selected_id]);
 
 
@@ -59,7 +59,7 @@ export function ObjectProperties() {
       return;
     }
     copy.name = value;
-    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
   function handleChangeProp(e: any) {
@@ -77,13 +77,13 @@ export function ObjectProperties() {
       first.str_val = value;
     }
     
-    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
   useEffect(() => {
     if (propsUpdated) {
       // Update figure.
-      dispatch(MarkersStore.actionCreators.requestMarkersByIds([objProps.id]));
+      dispatch<any>(MarkersStore.actionCreators.requestMarkersByIds([objProps.id]));
     }
 
   }, [propsUpdated]);
@@ -94,30 +94,30 @@ export function ObjectProperties() {
       return;
     }
 
-    dispatch(ObjPropsStore.actionCreators.updateObjProps(copy));
+    dispatch<any>(ObjPropsStore.actionCreators.updateObjProps(copy));
 
     // Update name in tree control.
     var treeItem: TreeMarker = {
       id: copy.id,
       name: copy.name
     }
-    dispatch(TreeStore.actionCreators.setTreeItem(copy));
+    dispatch<any>(TreeStore.actionCreators.setTreeItem(copy));
 
     // Stop edit mode.
-    dispatch(EditStore.actionCreators.setFigureEditMode(false));
+    dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
 
   }, [objProps]);
 
   function editMe(props: IObjProps, editMode: boolean){
-    dispatch(EditStore.actionCreators.setFigureEditMode(editMode));
+    dispatch<any>(EditStore.actionCreators.setFigureEditMode(editMode));
 
     if (!editMode) {
-      dispatch(ObjPropsStore.actionCreators.getObjProps(selected_id));
+      dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
     }
   };
 
   const deleteMe = useCallback(
-    (props: IObjProps, e) => {
+    (props: IObjProps, e: any) => {
 
       var marker: Marker = {
         name: props.name,
@@ -125,12 +125,12 @@ export function ObjectProperties() {
         parent_id: props.parent_id
       }
       let idsToDelete: string[] = [marker.id];
-      dispatch(MarkersStore.actionCreators.deleteMarker(idsToDelete));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
+      dispatch<any>(MarkersStore.actionCreators.deleteMarker(idsToDelete));
+      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
   const searchMeOnMap = useCallback(
-    (props: IObjProps, e) => {
+    (props: IObjProps, e: any) => {
 
       var geo = JSON.parse(getExtraProp(props, "geometry"));
       var myFigure = null;
@@ -163,7 +163,7 @@ export function ObjectProperties() {
         zoom: props.zoom_min
       };
 
-      dispatch(GuiStore.actionCreators.setMapOption(viewOption));
+      dispatch<any>(GuiStore.actionCreators.setMapOption(viewOption));
 
     }, [objProps])
 
@@ -187,7 +187,7 @@ export function ObjectProperties() {
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
             </IconButton>
-            <IconButton aria-label="edit" size="medium" onClick={(e) => editMe(objProps, !selectedEditMode.edit_mode)} >
+            <IconButton aria-label="edit" size="medium" onClick={(e: any) => editMe(objProps, !selectedEditMode.edit_mode)} >
               {
                 selectedEditMode.edit_mode ?
                   <NotInterestedSharpIcon fontSize="inherit" /> :
@@ -195,13 +195,13 @@ export function ObjectProperties() {
               }
 
             </IconButton>
-            <IconButton aria-label="delete" size="medium" onClick={(e) => deleteMe(objProps, e)}>
+            <IconButton aria-label="delete" size="medium" onClick={(e: any) => deleteMe(objProps, e)}>
               <DeleteIcon fontSize="inherit" />
             </IconButton>
           </ButtonGroup>
 
           <ButtonGroup variant="contained" aria-label="search button group">
-            <IconButton aria-label="search" size="medium" onClick={(e) => searchMeOnMap(objProps, e)}>
+            <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap(objProps, e)}>
               <SearchIcon fontSize="inherit" />
             </IconButton>
           </ButtonGroup>

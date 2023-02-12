@@ -70,7 +70,7 @@ export function PropertyFilter(props:any) {
             <IconButton
               aria-label="close"
               size="small"
-              onClick={(e) => deleteProperty(e, item)}
+              onClick={(e: any) => deleteProperty(e, item)}
               sx={{
                 position: 'absolute',
                 right: 0,

@@ -31,12 +31,12 @@ export function SearchResult() {
     console.log('ComponentDidMount SearchResult');
   }, []);
 
-  const searchStates = useSelector((state) => state?.searchResultStates);
+  const searchStates = useSelector((state: ApplicationState) => state?.searchResultStates);
 
   const markers = searchStates.list;
 
   // Selected.
-  const reduxSelectedId = useSelector((state) => state?.guiStates?.selected_id);
+  const reduxSelectedId = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   function selectItem(selected_marker: TreeMarker | null) {
 
@@ -46,7 +46,7 @@ export function SearchResult() {
       selected_id = null;
     }
 
-    dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+    dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
   }
 
   const handleSelect = useCallback((selected: TreeMarker) => () => {
@@ -54,7 +54,7 @@ export function SearchResult() {
   }, [reduxSelectedId]);
 
   const OnNavigate = useCallback(
-    (next: boolean, e) => {
+    (next: boolean, e: any) => {
 
       let filter = Object.assign({}, searchStates.filter);
       filter.forward = next;
@@ -65,7 +65,7 @@ export function SearchResult() {
           filter.start_id = searchStates.list[searchStates.list.length - 1].id;
         }
         
-        dispatch(          
+        dispatch<any>(          
           SearchResultStore.actionCreators.getByFilter(filter)
         );
       }
@@ -74,7 +74,7 @@ export function SearchResult() {
           filter.start_id = searchStates.list[0].id;
         }
         
-        dispatch(
+        dispatch<any>(
           SearchResultStore.actionCreators.getByFilter(filter)
         );
       }
@@ -92,8 +92,8 @@ export function SearchResult() {
       <List>
         <ListItem>
           <ButtonGroup variant="contained" aria-label="navigation button group">
-            <Button onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
-            <Button onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
+            <Button onClick={(e: any) => OnNavigate(false, e)}>{'<'}</Button>
+            <Button onClick={(e: any) => OnNavigate(true, e)}>{'>'}</Button>
           </ButtonGroup>
         </ListItem>
         {

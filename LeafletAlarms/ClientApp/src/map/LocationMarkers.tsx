@@ -35,7 +35,7 @@ function MyPolygon(props: any) {
     () => ({
       click(event: LeafletMouseEvent) {
         var selected_id = props.marker.id;
-        dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+        dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
       }
     }),
     [],
@@ -62,7 +62,7 @@ function MyPolyline(props: any) {
     () => ({
       click(event: LeafletMouseEvent) {
         var selected_id = props.marker.id;
-        dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+        dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
       }
     }),
     [],
@@ -90,7 +90,7 @@ function MyCircle(props: any) {
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        dispatch(GuiStore.actionCreators.selectTreeItem(props.marker.id));
+        dispatch<any>(GuiStore.actionCreators.selectTreeItem(props.marker.id));
       }
     }),
     [],
@@ -170,18 +170,18 @@ export function LocationMarkers() {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const checked_ids = useSelector((state) => state?.guiStates?.checked);
-  const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+  const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked);
+  const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
 
-  const selectedEditMode = useSelector((state) => state.editState);
+  const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
 
-  const markers = useSelector((state) => state?.markersStates?.markers);
-  const markersStates = useSelector((state) => state?.markersStates);
-  const isChanging = useSelector((state) => state?.markersStates?.isChanging);
-  const visualStates = useSelector((state) => state?.markersVisualStates?.visualStates);
-  const alarmedObjects = useSelector((state) => state?.markersVisualStates?.alarmed_objects);
-  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
+  const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
+  const markersStates = useSelector((state: ApplicationState) => state?.markersStates);
+  const isChanging = useSelector((state: ApplicationState) => state?.markersStates?.isChanging);
+  const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
+  const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.alarmed_objects);
+  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
 
   function RequestMarkersByBox(bounds: L.LatLngBounds) {
     if (bounds == null) {
@@ -199,7 +199,7 @@ export function LocationMarkers() {
       boundBox.property_filter = null;
     }
 
-    dispatch(MarkersStore.actionCreators.requestMarkers(boundBox));
+    dispatch<any>(MarkersStore.actionCreators.requestMarkers(boundBox));
   }
 
   useEffect(() => {
@@ -216,11 +216,11 @@ export function LocationMarkers() {
       }
       var objArray2: string[] = [];
       markers.figs?.forEach(arr => objArray2.push(arr.id));
-      dispatch(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
+      dispatch<any>(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
     }, [markers]);
 
    const mapEvents = useMapEvents({
-      click(e) {
+      click(e: any) {
        var ll: L.LatLng = e.latlng as L.LatLng;
        //dispatch(GuiStore.actionCreators.selectTreeItem(null));
       },
@@ -239,15 +239,15 @@ export function LocationMarkers() {
 
   
   const selectMe = useCallback(
-    (marker, e) => {
+    (marker: any, e: any) => {
       parentMap.closePopup();
       var selected_id = marker.id;
-      dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+      dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
     }, [])
 
   useEffect(
     () => {
-      dispatch(GuiStore.actionCreators.requestTreeUpdate());
+      dispatch<any>(GuiStore.actionCreators.requestTreeUpdate());
     }, [isChanging]);
   
   useEffect(

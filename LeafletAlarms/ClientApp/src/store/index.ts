@@ -41,6 +41,7 @@ export interface AppThunkAction<TAction> {
     (dispatch: (action: TAction) => void, getState: () => ApplicationState): void;
 }
 
+
 export const ApiRootString = 'api/map';
 export const ApiTracksRootString = 'api/tracks';
 export const ApiRouterRootString = 'api/router';

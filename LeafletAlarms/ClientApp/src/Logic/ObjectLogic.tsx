@@ -22,8 +22,8 @@ export function ObjectLogic() {
 
   const dispatch = useDispatch();
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const logic = useSelector((state) => state?.objLogicStates?.logic);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+  const logic = useSelector((state: ApplicationState) => state?.objLogicStates?.logic);
 
   const [searchName, setSearchName] = React.useState<string>("");
 
@@ -33,20 +33,20 @@ export function ObjectLogic() {
 
   const handleSave = useCallback(() => {
     if (logic != null && logic.length > 0) {
-      dispatch(ObjLogicStore.actionCreators.updateObjLogic(logic));
+      dispatch<any>(ObjLogicStore.actionCreators.updateObjLogic(logic));
     }    
   }, [logic]);
 
   const handleSearch = useCallback(() => {
     if (selected_id == null && searchName == "") {
-      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally([]));
+      dispatch<any>(ObjLogicStore.actionCreators.setObjLogicLocally([]));
     }
     else {
       if (searchName != "") {
-        dispatch(ObjLogicStore.actionCreators.getObjLogicByName(searchName));
+        dispatch<any>(ObjLogicStore.actionCreators.getObjLogicByName(searchName));
       }
       else {
-        dispatch(ObjLogicStore.actionCreators.getObjLogic(selected_id));
+        dispatch<any>(ObjLogicStore.actionCreators.getObjLogic(selected_id));
       }      
     } 
   }, [selected_id, searchName]);
@@ -73,7 +73,7 @@ export function ObjectLogic() {
         copy = [...logic, newLogic];
       }
 
-      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(copy));
+    dispatch<any>(ObjLogicStore.actionCreators.setObjLogicLocally(copy));
 
   }, [logic]);
 
@@ -87,18 +87,18 @@ export function ObjectLogic() {
       var index2Replace = logic.findIndex(i => i == logicObj);
       copyLogic[index2Replace] = copy;
 
-      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
+      dispatch<any>(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
     }, [logic]);
 
   const deleteLogic = useCallback(
     (logicObj: IStaticLogicDTO) => {
 
       if (logicObj.id != null && logicObj.id != "") {
-        dispatch(ObjLogicStore.actionCreators.delObjLogic(logicObj.id));
+        dispatch<any>(ObjLogicStore.actionCreators.delObjLogic(logicObj.id));
       }
       else {
         var newLogic = logic.filter(i => i != logicObj);
-        dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(newLogic));
+        dispatch<any>(ObjLogicStore.actionCreators.setObjLogicLocally(newLogic));
       }      
     }, [logic]);
 
@@ -118,7 +118,7 @@ export function ObjectLogic() {
       var index2Replace = logic.findIndex(i => i == logicObj);
       copyLogic[index2Replace] = copy;
 
-      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
+      dispatch<any>(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
     }, [logic]);
 
   const updateLogic = useCallback(
@@ -128,7 +128,7 @@ export function ObjectLogic() {
       var index2Replace = logic.findIndex(i => i == oldLogic);
       copyLogic[index2Replace] = newLogic;
 
-      dispatch(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
+      dispatch<any>(ObjLogicStore.actionCreators.setObjLogicLocally(copyLogic));
     }, [logic]);
 
   return (

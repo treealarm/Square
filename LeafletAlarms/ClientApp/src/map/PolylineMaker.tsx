@@ -28,16 +28,16 @@ function CirclePopup(props: any) {
         <table>
           <tbody>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.DeleteVertex(props?.index, e)}>Delete vertex</span>
+              <span className="menu_item" onClick={(e: any) => props.DeleteVertex(props?.index, e)}>Delete vertex</span>
             </td></tr>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.MoveVertex(props?.index, e)}>Move vertex</span>
+              <span className="menu_item" onClick={(e: any) => props.MoveVertex(props?.index, e)}>Move vertex</span>
             </td></tr>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.AddVertex(props?.index,false, e)}>Insert vertex</span>
+              <span className="menu_item" onClick={(e: any) => props.AddVertex(props?.index,false, e)}>Insert vertex</span>
             </td></tr>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.AddVertex(props?.index,true, e)}>Add vertex</span>
+              <span className="menu_item" onClick={(e: any) => props.AddVertex(props?.index,true, e)}>Add vertex</span>
             </td></tr>
           </tbody>
         </table>
@@ -56,7 +56,7 @@ function FigurePopup(props: any) {
         <table>
           <tbody>
             <tr><td>
-              <span className="menu_item" onClick={(e) => props.FigureChanged(e)}>Save</span>
+              <span className="menu_item" onClick={(e: any) => props.FigureChanged(e)}>Save</span>
             </td></tr>
           </tbody>
         </table>
@@ -75,7 +75,7 @@ export function PolylineMaker(props: any) {
 
   }, []);
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
 
@@ -102,7 +102,7 @@ export function PolylineMaker(props: any) {
 
   const [figure, setFigure] = React.useState<IPolyline>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<IPolyline>(initFigure);
-  const objProps = useSelector((state) => state?.objPropsStates?.objProps);
+  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
 
   useEffect(() => {
     var copy = Object.assign({}, objProps);
@@ -112,11 +112,11 @@ export function PolylineMaker(props: any) {
     }
 
     setExtraProp(copy, "geometry", JSON.stringify(figure.geometry), null);
-    dispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   }, [figure]);
     
   const mapEvents = useMapEvents({
-    click(e) {
+    click(e: any) {
       
       var ll: L.LatLng = e.latlng as L.LatLng;
 
@@ -183,7 +183,7 @@ export function PolylineMaker(props: any) {
   )
 
   const moveVertex = useCallback(
-    (index, e) => {
+    (index: any, e: any) => {
       console.log(e.target.value);
       parentMap.closePopup();
       
@@ -191,7 +191,7 @@ export function PolylineMaker(props: any) {
     }, [])
 
   const addVertex = useCallback(
-    (index, toEnd, e) => {
+    (index: any, toEnd: any, e: any) => {
       parentMap.closePopup();
       setOldFigure(figure);
 
@@ -215,7 +215,7 @@ export function PolylineMaker(props: any) {
     }, [figure])
 
   const deleteVertex = useCallback(
-    (index, e) => {      
+    (index: any, e: any) => {      
       parentMap.closePopup();
 
       var geometry_upd: IPolylineCoord = {
@@ -235,7 +235,7 @@ export function PolylineMaker(props: any) {
   const colorOptions = { color: 'green' }
 
   const figureChanged = useCallback(
-    (e) => {
+    (e: any) => {
       props.figureChanged(figure, e);
       setFigure(initFigure);
     }, [figure])

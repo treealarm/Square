@@ -1,5 +1,4 @@
 import Keycloak from "keycloak-js";
-import axios from "axios";
 
 const _kc = new Keycloak('keycloak.json');
 

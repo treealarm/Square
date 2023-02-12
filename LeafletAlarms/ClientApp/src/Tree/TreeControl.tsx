@@ -29,7 +29,7 @@ export function TreeControl() {
 
   function getTreeItemsByParent(parent_marker_id: string | null)
   {
-    dispatch(
+    dispatch<any>(
       TreeStore.actionCreators.getByParent(parent_marker_id, null, null)
     );
   }
@@ -39,13 +39,13 @@ export function TreeControl() {
     getTreeItemsByParent(null);
   }, []);
 
-  const treeStates = useSelector((state) => state?.treeStates);
+  const treeStates = useSelector((state: ApplicationState) => state?.treeStates);
 
-  const markers = useSelector((state) => state?.treeStates?.children);
-  const parent_marker_id = useSelector((state) => state?.treeStates?.parent_id);
+  const markers = useSelector((state: ApplicationState) => state?.treeStates?.children);
+  const parent_marker_id = useSelector((state: ApplicationState) => state?.treeStates?.parent_id);
 
   // Selected.
-  const reduxSelectedId = useSelector((state) => state?.guiStates?.selected_id);
+  const reduxSelectedId = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   function selectItem(selected_marker: TreeMarker | null) {
 
@@ -55,7 +55,7 @@ export function TreeControl() {
       selected_id = null;
     }
     
-    dispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+    dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
   }
 
   const handleSelect = useCallback((selected: TreeMarker) => () => {
@@ -86,24 +86,24 @@ export function TreeControl() {
 
     setChecked(newChecked);
 
-    dispatch(GuiStore.actionCreators.checkTreeItem(newChecked));
+    dispatch<any>(GuiStore.actionCreators.checkTreeItem(newChecked));
   }, [checked]);
 
-  const requestTreeUpdate = useSelector((state) => state?.guiStates?.requestedTreeUpdate);
+  const requestTreeUpdate = useSelector((state: ApplicationState) => state?.guiStates?.requestedTreeUpdate);
 
   useEffect(() => {
     getTreeItemsByParent(parent_marker_id);
   }, [requestTreeUpdate, parent_marker_id]);
 
   const OnNavigate = useCallback(
-    (next: boolean, e) => {
+    (next: boolean, e: any) => {
       if (next) {
-        dispatch(
+        dispatch<any>(
           TreeStore.actionCreators.getByParent(parent_marker_id, treeStates.end_id, null)
         );
       }
       else {
-        dispatch(
+        dispatch<any>(
           TreeStore.actionCreators.getByParent(parent_marker_id, null, treeStates.start_id)
         );
       }
@@ -120,8 +120,8 @@ export function TreeControl() {
         <List>
           <ListItem>
             <ButtonGroup variant="contained" aria-label="navigation button group">
-              <Button onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
-              <Button onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
+              <Button onClick={(e: any) => OnNavigate(false, e)}>{'<'}</Button>
+              <Button onClick={(e: any) => OnNavigate(true, e)}>{'>'}</Button>
             </ButtonGroup>
           </ListItem>
         {

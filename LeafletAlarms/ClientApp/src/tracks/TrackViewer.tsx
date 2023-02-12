@@ -96,12 +96,12 @@ export function TrackViewer() {
   const dispatch = useDispatch();
   const parentMap = useMap();
 
-  const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
+  const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const checked_ids = useSelector((state) => state?.guiStates?.checked);
-  const routs = useSelector((state) => state?.tracksStates?.routs);
-  const tracks = useSelector((state) => state?.tracksStates?.tracks);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+  const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked);
+  const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
+  const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
 
   function UpdateTracks() {
     var bounds: L.LatLngBounds;
@@ -132,8 +132,8 @@ export function TrackViewer() {
         boundBox.ids.push(selected_id);
       }
     }
-    dispatch(TracksStore.actionCreators.requestRouts(boundBox));
-    dispatch(TracksStore.actionCreators.requestTracks(boundBox));
+    dispatch<any>(TracksStore.actionCreators.requestRouts(boundBox));
+    dispatch<any>(TracksStore.actionCreators.requestTracks(boundBox));
   }
 
   useEffect(() => {

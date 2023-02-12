@@ -23,8 +23,8 @@ export function LogicEditor(props: any) {
   const logicObj: IStaticLogicDTO = props.logicObj;
   const dispatch = useDispatch();
 
-  const selected_id = useSelector((state) => state?.guiStates?.selected_id);
-  const logic = useSelector((state) => state?.objLogicStates?.logic);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+  const logic = useSelector((state: ApplicationState) => state?.objLogicStates?.logic);
 
   const [figureIdMode, setFigureIdMode] = React.useState<ILogicFigureLinkDTO>(null);
 
@@ -138,7 +138,7 @@ export function LogicEditor(props: any) {
     }, [logicObj]);
 
   const addProperty = useCallback(
-    (e) => {
+    (e: any) => {
       let copyLogic = Object.assign({}, logicObj);
       if (copyLogic.property_filter == null) {
         copyLogic.property_filter = {
@@ -187,7 +187,7 @@ export function LogicEditor(props: any) {
           <IconButton color="primary"
             aria-label="addProp"
             size="medium"
-            onClick={(e) => deleteLogic(e)}          >
+            onClick={(e: any) => deleteLogic(e)}          >
 
             <DeleteIcon fontSize="inherit"
               
@@ -222,7 +222,7 @@ export function LogicEditor(props: any) {
           <IconButton color="primary"
             aria-label="addProp"
             size="medium"
-            onClick={(e) => addFigureLink(e)}>
+            onClick={(e: any) => addFigureLink(e)}>
             <LibraryAddIcon fontSize="inherit" />
           </IconButton>
 
@@ -249,7 +249,7 @@ export function LogicEditor(props: any) {
                 <IconButton
                   aria-label="close"
                   size="small"
-                  onClick={(e) => deleteFigureLink(e, item)}
+                  onClick={(e: any) => deleteFigureLink(e, item)}
                 >
                   <CloseIcon />
                 </IconButton>
@@ -286,7 +286,7 @@ export function LogicEditor(props: any) {
         <Box display="flex"
           justifyContent="flex-start"
         >
-          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e) => addProperty(e)}>
+          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
             <LibraryAddIcon fontSize="inherit" />
           </IconButton>
         </Box>

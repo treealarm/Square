@@ -25,9 +25,9 @@ export function RetroSearch() {
 
   const dispatch = useDispatch();
 
-  const searchFilter = useSelector((state) => state?.guiStates?.searchFilter);
-  const tracks = useSelector((state) => state?.tracksStates?.tracks);
-  const routs = useSelector((state) => state?.tracksStates?.routs);
+  const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
+  const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
+  const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = Object.assign({}, searchFilter);
@@ -45,16 +45,16 @@ export function RetroSearch() {
         },
         search_id: ""
       };
-      dispatch(GuiStore.actionCreators.applyFilter(filter));
+      dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
     }
   }, []);
 
   function UpdateFilterInRedux(filter: SearchFilterGUI, applyFilter: boolean) {
     filter.applied = applyFilter;
-    dispatch(GuiStore.actionCreators.applyFilter(filter));
+    dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
 
     if (filter.applied != true) {
-      dispatch(SearchResultStore.actionCreators.setEmptyResult());
+      dispatch<any>(SearchResultStore.actionCreators.setEmptyResult());
     }
   }
 
@@ -98,10 +98,10 @@ export function RetroSearch() {
 
     if (filterIn.applied != true) {
       
-      dispatch(SearchResultStore.actionCreators.setEmptyResult());
+      dispatch<any>(SearchResultStore.actionCreators.setEmptyResult());
     }
     else {
-      dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
+      dispatch<any>(SearchResultStore.actionCreators.getByFilter(filterDto));
     }
     
   }
@@ -115,7 +115,7 @@ export function RetroSearch() {
     }, [searchFilter]);
 
   const addProperty = useCallback(
-    (e) => {
+    (e: any) => {
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
       UpdateFilterInRedux(filter, false);
@@ -129,7 +129,7 @@ export function RetroSearch() {
     }, [searchFilter]);
 
   const OnNavigate = useCallback(
-    (next: boolean, e) => {
+    (next: boolean, e: any) => {
 
       if (tracks == null  && routs == null) {
         return;
@@ -143,7 +143,7 @@ export function RetroSearch() {
 
         if (tracks != null && tracks.length > 0) {         
 
-          tracks.forEach(function (e) {
+          tracks.forEach(function (e: any) {
             var curTs = new Date(e.timestamp);
 
             if (curTs < minDate) {
@@ -153,7 +153,7 @@ export function RetroSearch() {
         }
 
         if (routs != null && routs.length > 0) {
-          routs.forEach(function (e) {
+          routs.forEach(function (e: any) {
             var curTs = new Date(e.ts_start);
 
             if (curTs < minDate) {
@@ -177,7 +177,7 @@ export function RetroSearch() {
         var maxDate = MAX_DATE;
 
         if (tracks != null && tracks.length > 0) {
-          tracks.forEach(function (e) {
+          tracks.forEach(function (e: any) {
             var curTs = new Date(e.timestamp);
 
             if (curTs > maxDate) {
@@ -187,7 +187,7 @@ export function RetroSearch() {
         }
 
         if (routs != null && routs.length > 0) {
-          routs.forEach(function (e) {
+          routs.forEach(function (e: any) {
             var curTs = new Date(e.ts_end);
 
             if (curTs > maxDate) {
@@ -242,7 +242,7 @@ export function RetroSearch() {
                   } 
                 }/>}
           />
-          <Button color="secondary" onClick={(e) => OnNavigate(true, e)}>{'>'}</Button>
+          <Button color="secondary" onClick={(e: any) => OnNavigate(true, e)}>{'>'}</Button>
           </ListItem>
           <ListItem>
           <DateTimePicker
@@ -259,13 +259,13 @@ export function RetroSearch() {
                   }
                 } />}
           />
-          <Button color="secondary" onClick={(e) => OnNavigate(false, e)}>{'<'}</Button>
+          <Button color="secondary" onClick={(e: any) => OnNavigate(false, e)}>{'<'}</Button>
         </ListItem>
 
           <Box display="flex"
             justifyContent="flex-start"
         >
-          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e) => addProperty(e)}>
+          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
                 <LibraryAddIcon fontSize="inherit" />
               </IconButton>            
           </Box>

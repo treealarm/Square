@@ -2,7 +2,8 @@
 import { LocationMarkers } from "./LocationMarkers";
 import {
   MapContainer,
-  TileLayer
+  TileLayer,
+  useMap
 } from "react-leaflet";
 
 import { EditableFigure } from "./EditableFigure";
@@ -42,7 +43,6 @@ export function MapComponent(props: any) {
       zoom={13}
       scrollWheelZoom={true}
       id='map-container'
-      whenCreated={setMap}
     >
 
       <TrackViewer />

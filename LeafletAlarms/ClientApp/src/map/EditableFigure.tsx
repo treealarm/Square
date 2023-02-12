@@ -7,42 +7,43 @@ import { PolygonMaker } from "./PolygonMaker";
 import { PolylineMaker } from "./PolylineMaker";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
+import { ApplicationState } from '../store';
 
 export function EditableFigure() {
 
   const dispatch = useDispatch();
 
-  const obj2Edit = useSelector((state) => state?.objPropsStates?.objProps);
-  const selectedEditMode = useSelector((state) => state.editState);
+  const obj2Edit = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
 
   const polygonChanged = useCallback(
-    (polygon: IPolygon, e) => {
+    (polygon: IPolygon, e: any) => {
       var figures: IFigures = {
 
       };
       figures.figs = [polygon];
-      dispatch(MarkersStore.actionCreators.addTracks(figures));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
+      dispatch<any>(MarkersStore.actionCreators.addTracks(figures));
+      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
   const polylineChanged = useCallback(
-    (figure: IPolyline, e) => {
+    (figure: IPolyline, e:any) => {
       var figures: IFigures = {
 
       };
       figures.figs = [figure];
-      dispatch(MarkersStore.actionCreators.addTracks(figures));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
+      dispatch<any>(MarkersStore.actionCreators.addTracks(figures));
+      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
   const circleChanged = useCallback(
-    (figure: ICircle, e) => {
+    (figure: ICircle, e: any) => {
       var figures: IFigures = {
 
       };
       figures.figs = [figure];
-      dispatch(MarkersStore.actionCreators.addTracks(figures));
-      dispatch(GuiStore.actionCreators.selectTreeItem(null));
+      dispatch<any>(MarkersStore.actionCreators.addTracks(figures));
+      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
 

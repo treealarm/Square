@@ -5,13 +5,14 @@ import {
 } from "react-leaflet";
 
 import { useEffect } from "react";
+import { ApplicationState } from "../store";
 
 
 export function MapPositionChange() {
 
   const parentMap = useMap();
 
-  const guiStates = useSelector((state) => state.guiStates);
+  const guiStates = useSelector((state: ApplicationState) => state.guiStates);
 
   useEffect(() => {
     let map_center = guiStates.map_option?.map_center;
