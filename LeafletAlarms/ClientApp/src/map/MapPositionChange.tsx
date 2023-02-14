@@ -6,11 +6,24 @@ import {
 
 import { useEffect } from "react";
 import { ApplicationState } from "../store";
-
+import { Map as LeafletMap } from 'leaflet';
 
 export function MapPositionChange() {
 
   const parentMap = useMap();
+
+  const setMap = (map: LeafletMap) => {
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+
+    var container = document.getElementById('map-container')
+    resizeObserver.observe(container)
+  }
+
+  useEffect(() => {
+    setMap(parentMap);
+  }, [parentMap]);
 
   const guiStates = useSelector((state: ApplicationState) => state.guiStates);
 

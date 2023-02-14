@@ -2,25 +2,14 @@
 import { LocationMarkers } from "./LocationMarkers";
 import {
   MapContainer,
-  TileLayer,
-  useMap
+  TileLayer
 } from "react-leaflet";
 
 import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
 import { TrackViewer } from "../tracks/TrackViewer";
-import { Map as LeafletMap } from 'leaflet';
 
 export function MapComponent(props: any) {
-
-  const setMap = (map: LeafletMap) => {
-    const resizeObserver = new ResizeObserver(() => {
-      map.invalidateSize();
-    });
-
-    var container = document.getElementById('map-container')
-    resizeObserver.observe(container)
-  }
 
   var url = 'http://';
 
