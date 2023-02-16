@@ -169,8 +169,6 @@ namespace DbLayer.Services
         return null;
       }
 
-      var newObjs = new DBObjectState();
-
       var dbo = new DBObjectState()
       {
         id = dto.id,

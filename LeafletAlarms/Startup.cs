@@ -62,7 +62,8 @@ namespace LeafletAlarms
       services.AddSingleton<ILogicProcessorService, FAKE_Service>();
 
       services.AddSingleton<ITrackConsumer, ConsumerService>();
-      
+
+      services.AddSingleton<IRightService, RightService>(); 
 
       services.AddSingleton<IIdsQueue, StateQueueForUpdate>();
       services.AddHostedService<HierarhyStateService>();
