@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using OsmSharp.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,8 +35,17 @@ namespace LeafletAlarms.Authentication
         claimsIdentity.HasClaim((claim) => claim.Type == "realm_access"))
       {
         var userRole = claimsIdentity.FindFirst((claim) => claim.Type == "realm_access");
+        var userName = claimsIdentity
+          .FindFirst((claim) => claim.Type == "preferred_username")
+          ?.Value;
 
         var content = JsonSerializer.Deserialize<RootRoles>(userRole.Value);
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, "anon"));
+
+        if (!string.IsNullOrEmpty(userName))
+        {
+          claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, userName));
+        }
 
         foreach (var role in content.roles)
         {

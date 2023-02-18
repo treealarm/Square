@@ -1,29 +1,26 @@
 ﻿using Domain;
-using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Itinero;
+using LeafletAlarms.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using SharpCompress.Compressors.Xz;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace LeafletAlarms.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
+  [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin,anon")]
   public class MapController : ControllerBase
   {
     private readonly IMapService _mapService;
@@ -31,12 +28,14 @@ namespace LeafletAlarms.Controllers
     private ITrackConsumer _stateService;
     private readonly ITrackService _tracksService;
     private readonly ILevelService _levelService;
+    private readonly RightsCheckerService _rightChecker;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
       ITrackConsumer stateService,
       ITrackService tracksService,
-      ILevelService levelService
+      ILevelService levelService,
+      RightsCheckerService rightChecker
     )
     {
       _mapService = mapsService;
@@ -44,6 +43,7 @@ namespace LeafletAlarms.Controllers
       _geoService = geoService;
       _tracksService = tracksService;
       _levelService = levelService;
+      _rightChecker = rightChecker;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -59,6 +59,7 @@ namespace LeafletAlarms.Controllers
       return marker;
     }
 
+    [AllowAnonymous]
     [HttpGet("GetTiles/{z}/{x}/{y}.png")]
     public async Task<FileResult> GetTiles(string z, string x, string y)
     {
@@ -277,10 +278,7 @@ namespace LeafletAlarms.Controllers
 
       foreach (var item in tree.Values)
       {
-        GeoObjectDTO geoPart = null;
-        geo.TryGetValue(item.id, out geoPart);
-
-        if (geoPart != null)
+        if (geo.TryGetValue(item.id, out var geoPart))
         {
           FigureZoomedDTO retItem = null;
 
@@ -379,6 +377,14 @@ namespace LeafletAlarms.Controllers
       await AddIdsByProperties(box);
 
       var geo = await _geoService.GetGeoAsync(box);
+
+      if (!User.IsInRole("admin"))
+      {
+        var toView = await _rightChecker.CheckForView(geo.Keys.ToList());
+        geo = geo.Where(kvp => toView.Contains(kvp.Key))
+          .ToDictionary(ent => ent.Key, ent => ent.Value);
+      }
+
       var figures =  await GetFigures(geo);
 
       if (figures.figs.Count < 1000)

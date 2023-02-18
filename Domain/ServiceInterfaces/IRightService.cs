@@ -8,6 +8,6 @@ namespace Domain.ServiceInterfaces
   {
     public Task UpdateListAsync(List<ObjectRightsDTO> obj2UpdateIn);
     public Task DeleteAsync(string id);
-    public Task<List<ObjectRightsDTO>> GetListByIdsAsync(List<string> ids);
+    public Task<Dictionary<string, ObjectRightsDTO>> GetListByIdsAsync(List<string> ids);
   }
 }

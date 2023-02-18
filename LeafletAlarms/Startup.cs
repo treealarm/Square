@@ -8,6 +8,7 @@ using LeafletAlarmsRouter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,7 @@ namespace LeafletAlarms
 
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
+      
 
       services.AddHostedService<InitHostedService>();
 
@@ -62,8 +64,9 @@ namespace LeafletAlarms
       services.AddSingleton<ILogicProcessorService, FAKE_Service>();
 
       services.AddSingleton<ITrackConsumer, ConsumerService>();
-
-      services.AddSingleton<IRightService, RightService>(); 
+      
+      services.AddSingleton<IRightService, RightService>();
+      services.AddSingleton<RightsCheckerService>();
 
       services.AddSingleton<IIdsQueue, StateQueueForUpdate>();
       services.AddHostedService<HierarhyStateService>();
@@ -73,6 +76,7 @@ namespace LeafletAlarms
       services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
 
+      services.AddHttpContextAccessor();
       services.AddControllersWithViews();
 
       // In production, the React files will be served from this directory

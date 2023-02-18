@@ -23,7 +23,7 @@ namespace DbLayer.Services
 
     private readonly MongoClient _mongoClient;
     private readonly IMongoDatabase _mongoDB;
-    private readonly IOptions<MapDatabaseSettings> _geoStoreDBSettings;
+    private readonly IOptions<MapDatabaseSettings> _geoStoreDBSettings;   
 
     public MapService(
         IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)

@@ -68,15 +68,15 @@ namespace LeafletAlarms.Controllers
         return NotFound();
       }
 
-      return obj.FirstOrDefault();
+      return obj.Values.FirstOrDefault();
     }
 
     [HttpPost()]
     [Route("GetRights")]
-    public async Task<List<ObjectRightsDTO>> GetStates(List<string> ids)
+    public async Task<List<ObjectRightsDTO>> GetRights(List<string> ids)
     {
       var data = await _rightsService.GetListByIdsAsync(ids);
-      return data;
+      return data.Values.ToList();
     }
   }
 }

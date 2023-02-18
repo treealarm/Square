@@ -8,7 +8,16 @@ namespace Domain.Rights
 {
   public class ObjectRightValueDTO
   {
+    [Flags]
+    public enum ERightValue: int
+    {
+      None,
+      View,
+      Update,
+      Delete,
+      Add
+    }
     public string role { get; set; }
-    public int value { get; set; }
+    public ERightValue value { get; set; }
   }
 }

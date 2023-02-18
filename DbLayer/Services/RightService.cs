@@ -57,7 +57,9 @@ namespace DbLayer.Services
           x => x.id == id);
     }
 
-    async Task<List<ObjectRightsDTO>> IRightService.GetListByIdsAsync(List<string> ids)
+    async Task<Dictionary<string, ObjectRightsDTO>> IRightService.GetListByIdsAsync(
+      List<string> ids
+    )
     {
       List<DBObjectRights> obj = null;
 
@@ -123,21 +125,21 @@ namespace DbLayer.Services
         dbo.rights.Add(new DBObjectRightValue()
         {
           role = item.role,
-          value = item.value
+          value = (int)item.value
         });
       }
 
       return dbo;
     }
 
-    List<ObjectRightsDTO> ConvertListStateDB2DTO(List<DBObjectRights> dbo)
+    Dictionary<string, ObjectRightsDTO> ConvertListStateDB2DTO(List<DBObjectRights> dbo)
     {
       if (dbo == null)
       {
         return null;
       }
 
-      var newObjs = new List<ObjectRightsDTO>();
+      var newObjs = new Dictionary<string, ObjectRightsDTO>();
 
       foreach (var dbObj in dbo)
       {
@@ -152,11 +154,11 @@ namespace DbLayer.Services
           dto.rights.Add(new ObjectRightValueDTO()
           {
             role = item.role,
-            value = item.value
+            value = (ObjectRightValueDTO.ERightValue)item.value
           });
         }
 
-        newObjs.Add(dto);
+        newObjs.Add(dto.id, dto);
       }
       return newObjs;
     }
