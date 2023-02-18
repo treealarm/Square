@@ -35,7 +35,7 @@ namespace LeafletAlarms.Services
       foreach (var item in _httpContextAccessor.HttpContext.User.Identities)
       {
         var temp = item.Claims
-          .Where(c => c.Value == ClaimTypes.Role || c.Value == ClaimTypes.Name)
+          .Where(c => c.Type == ClaimTypes.Role || c.Type == ClaimTypes.Name)
           .Select(c => c.Value)
           .ToHashSet();
 
