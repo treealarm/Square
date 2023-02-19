@@ -7,6 +7,7 @@ import configureMyStore from './store/configureStore';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import UserService from "./auth/UserService";
+import * as RightsStore from './store/RightsStates';
 
 // Create browser history to use in the Redux store
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') as string;
@@ -21,16 +22,12 @@ const renderApp = () =>
 ReactDOM.render(
     <Provider store={store}>
     <ConnectedRouter history={history}>
-    <App />       
+      <App />       
     </ConnectedRouter>
     </Provider>,
     document.getElementById('root'));
 
 registerServiceWorker();
-
-if (!UserService.isLoggedIn()) {
-  UserService.initKeycloak(renderApp);
-}
 
 renderApp();
 

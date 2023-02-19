@@ -36,7 +36,9 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
     .catch(console.error);
 };
 
-const doLogin = _kc.login;
+const doLogin = () => {
+  _kc.login();
+}
 
 const doLogout = () =>
 {

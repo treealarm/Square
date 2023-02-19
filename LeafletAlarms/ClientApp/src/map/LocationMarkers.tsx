@@ -182,6 +182,7 @@ export function LocationMarkers() {
   const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
   const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.alarmed_objects);
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
   function RequestMarkersByBox(bounds: L.LatLngBounds) {
     if (bounds == null) {
@@ -203,9 +204,8 @@ export function LocationMarkers() {
   }
 
   useEffect(() => {
-    console.log('ComponentDidMount LocationMarkers');
     RequestMarkersByBox(null);
-  }, []);
+  }, [user]);
 
 
 

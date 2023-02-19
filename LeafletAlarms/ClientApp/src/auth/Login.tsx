@@ -3,6 +3,7 @@ import { Box, Button, IconButton, Paper, styled, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import UserService from "./UserService";
+import { ApplicationState } from "../store";
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -13,17 +14,14 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export function Login() {
+  const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
-  const dispatch = useDispatch();
-  
+  const [loggedIn, setLoggedIn] = React.useState(UserService.isLoggedIn());
+
   useEffect(
     () => {
-
-    }, []);
-
-  React.useMemo(() => {
-    
-  }, []);
+      setLoggedIn(UserService.isLoggedIn());
+    }, [user]);
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement>) => {  
 
@@ -43,12 +41,10 @@ export function Login() {
             onClick={onButtonClick}
             style={{ textTransform: 'none' }}
             size="small"
-          >{!UserService.isLoggedIn() ? "Login" : "Logout " + UserService.getUsername()}
+          >{!loggedIn ? "Login" : "Logout " + user}
           </Button>
         </Tooltip>
-
       </Box>
-
     </React.Fragment>
   );
 }

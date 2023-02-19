@@ -7,11 +7,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 export interface ObjectRights {
   rights: IObjectRightsDTO[];
   updated: boolean;
+  user: string;
 }
 
 const unloadedState: ObjectRights = {
   rights: null,
-  updated: false
+  updated: false,
+  user: null
 };
 
 export const fetchRightsByIds = createAsyncThunk<IObjectRightsDTO[], any>(
@@ -36,8 +38,12 @@ const rightsSlice = createSlice({
   initialState: unloadedState,
   reducers: {
     // Give case reducers meaningful past-tense "event"-style names
-    set_rights(state: any, action: PayloadAction<IObjectRightsDTO[]>) {
+    set_rights(state: ObjectRights, action: PayloadAction<IObjectRightsDTO[]>) {
       state.rights = action.payload;
+    }
+    ,
+    set_user(state: ObjectRights, action: PayloadAction<string>) {
+      state.user = action.payload;
     }
   }
   ,
@@ -57,7 +63,7 @@ const rightsSlice = createSlice({
   },
 })
 
-export const { set_rights } = rightsSlice.actions
+export const { set_rights, set_user } = rightsSlice.actions
 export const reducer = rightsSlice.reducer
 
 

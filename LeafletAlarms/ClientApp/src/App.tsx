@@ -4,6 +4,11 @@ import { Layout } from "./components/Layout";
 import { Home } from "./components/Home";
 import "./custom.css";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
+import { useAppDispatch } from ".";
+import * as RightsStore from './store/RightsStates';
+import UserService from "./auth/UserService";
+import { useSelector } from "react-redux";
+import { ApplicationState } from "./store";
 
 const theme = createTheme({
   spacing: 4,
@@ -15,6 +20,18 @@ const theme = createTheme({
 });
 
 export default () => {
+  const appDispatch = useAppDispatch();
+
+  function setToken() {
+    appDispatch(RightsStore.set_user(UserService.getUsername()));
+  }
+
+  React.useEffect(() => {
+    if (!UserService.isLoggedIn()) {
+      UserService.initKeycloak(setToken);
+    }
+  }, []);
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -33,4 +50,3 @@ export default () => {
   );
 
 }
-
