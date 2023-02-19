@@ -60,10 +60,10 @@ export const actionCreators = {
   ) => {
 
     console.log("fetching by parent_id=", parent_id);
-    var request = ApiRootString + "/GetByParent?count=100&parent_id=";
+    var request = ApiRootString + "/GetByParent?count=100";
 
     if (parent_id != null) {
-      request += parent_id;
+      request += "&parent_id=" + parent_id;
     }
 
     if (start_id != null) {

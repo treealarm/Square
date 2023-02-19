@@ -7,6 +7,8 @@ import * as MarkersVisualStates from './MarkersVisualStates';
 import * as TracksStates from './TracksStates';
 import * as SearchResultStates from './SearchResultStates';
 import * as ObjLogicStates from './ObjLogicStates';
+import * as RightsStates from './RightsStates';
+
 // The top-level state object
 export interface ApplicationState {
   editState: EditStates.EditState | undefined;
@@ -18,6 +20,7 @@ export interface ApplicationState {
   tracksStates: TracksStates.TracksState | undefined;
   searchResultStates: SearchResultStates.SearchResultState | undefined
   objLogicStates: ObjLogicStates.ObjLogicState | undefined;
+  rightsStates: RightsStates.ObjectRights | undefined;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -32,7 +35,8 @@ export const reducers = {
   markersVisualStates: MarkersVisualStates.reducer,
   tracksStates: TracksStates.reducer,
   searchResultStates: SearchResultStates.reducer,
-  objLogicStates: ObjLogicStates.reducer
+  objLogicStates: ObjLogicStates.reducer,
+  rightsStates: RightsStates.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are

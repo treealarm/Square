@@ -1,6 +1,6 @@
 ﻿import UserService from '../auth/UserService';
 
-export  function DoFetch(input: RequestInfo, init?: RequestInit): Promise<Response>
+export  async function DoFetch(input: RequestInfo, init?: RequestInit): Promise<Response>
 {
   if (UserService.isLoggedIn()) {
     const requestHeaders: HeadersInit = new Headers();
@@ -26,7 +26,7 @@ export  function DoFetch(input: RequestInfo, init?: RequestInit): Promise<Respon
     }
   }
 
-  var fetched = fetch(input, init);
+  var fetched = await fetch(input, init);
 
   return fetched;
 }

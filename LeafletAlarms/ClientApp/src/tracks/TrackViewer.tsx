@@ -111,8 +111,8 @@ export function TrackViewer() {
       wn: [bounds.getWest(), bounds.getNorth()],
       es: [bounds.getEast(), bounds.getSouth()],
       zoom: parentMap.getZoom(),
-      time_start: searchFilter?.time_start,
-      time_end: searchFilter?.time_end,
+      time_start: new Date(searchFilter?.time_start),
+      time_end: new Date(searchFilter?.time_end),
       property_filter: searchFilter?.property_filter,
       sort: searchFilter?.sort
     };

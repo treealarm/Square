@@ -5,7 +5,6 @@ import { Home } from "./components/Home";
 import "./custom.css";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 
-
 const theme = createTheme({
   spacing: 4,
   typography: {    
@@ -15,18 +14,23 @@ const theme = createTheme({
   }
 });
 
-export default () => (
-  <ThemeProvider theme={theme}>
-  <Box
-    sx={{
-      height: "95vh",
-      border: 1,
-      borderColor: 'primary.main'
-    }}
-  >
-      <Layout>
-      <Route exact path="/" component={Home} />
-    </Layout>
-    </Box>
-  </ThemeProvider>
-);
+export default () => {
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Box
+        sx={{
+          height: "95vh",
+          border: 1,
+          borderColor: 'primary.main'
+        }}
+      >
+        <Layout>
+          <Route exact path="/" component={Home} />
+        </Layout>
+      </Box>
+    </ThemeProvider>
+  );
+
+}
+

@@ -38,8 +38,8 @@ export function RetroSearch() {
     if (searchFilter == null) {
       var filter: SearchFilterGUI =
       {
-        time_start: new Date(dayjs().subtract(1,"day").toISOString()),
-        time_end: new Date(dayjs().toISOString()),
+        time_start: dayjs().subtract(1,"day").toISOString(),
+        time_end: dayjs().toISOString(),
         property_filter: {
           props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
         },
@@ -61,7 +61,7 @@ export function RetroSearch() {
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
       var filter = GetCopyOfSearchFilter();
-      filter.time_start = new Date(newValue.toISOString());
+      filter.time_start = newValue.toISOString();
       UpdateFilterInRedux(filter, false);
     }
     catch (err)
@@ -73,7 +73,7 @@ export function RetroSearch() {
   const handleChange2 = (newValue: Dayjs | null) => {
     try {
       var filter = GetCopyOfSearchFilter();
-      filter.time_end = new Date(newValue.toISOString());
+      filter.time_end = newValue.toISOString();
       UpdateFilterInRedux(filter, false);
     }
     catch (err) {
@@ -90,8 +90,8 @@ export function RetroSearch() {
     var filterDto: SearchFilterDTO = {
       search_id: (new Date()).toISOString(),
       property_filter: filter.property_filter,
-      time_start: filter.time_start,
-      time_end: filter.time_end,
+      time_start: new Date(filter.time_start),
+      time_end: new Date(filter.time_end),
       forward: true,
       count: ApiDefaultPagingNum
     }
@@ -163,12 +163,12 @@ export function RetroSearch() {
         }
 
         if (minDate == MIN_DATE) {
-          minDate = new Date(filter.time_start.toISOString());//
+          minDate = new Date(filter.time_start);//
         }
 
         var t1 = dayjs(minDate).add(1, 's');
           
-        filter.time_start = new Date(t1.toISOString());          
+        filter.time_start = t1.toISOString();          
         
       }
       else {
@@ -197,11 +197,11 @@ export function RetroSearch() {
         }
 
         if (maxDate == MAX_DATE) {
-          maxDate = new Date(filter.time_end.toISOString());//
+          maxDate = new Date(filter.time_end);//
         }
 
         var t1 = dayjs(maxDate).subtract(1, 's');
-        filter.time_end = new Date(t1.toISOString());
+        filter.time_end = t1.toISOString();
         filter.sort = -1;
       }
 

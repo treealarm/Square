@@ -139,8 +139,8 @@ export interface ObjPropsSearchDTO {
 }
 
 export interface SearchFilterGUI {
-  time_start: Date;
-  time_end: Date;  
+  time_start: string;
+  time_end: string;  
   property_filter?: ObjPropsSearchDTO;
   search_id: string;
   sort?: number;
