@@ -74,7 +74,12 @@ namespace LeafletAlarms.Authentication
       return IssuerSigningKey;
     }
 
-    public static void ConfigureJWT(this IServiceCollection services, bool IsDevelopment, string publicKeyJWT)
+    public static void ConfigureJWT(
+      this IServiceCollection services,
+      bool IsDevelopment,
+      string publicKeyJWT,
+      string ValidIssuer
+    )
     {
       services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
 
@@ -94,7 +99,7 @@ namespace LeafletAlarms.Authentication
         {
           ValidateAudience = false,
           ValidateIssuer = true,
-          ValidIssuers = new[] { "http://localhost:8080/realms/myrealm" },
+          ValidIssuers = new[] { ValidIssuer },
           ValidateIssuerSigningKey = true,
           IssuerSigningKey = BuildRSAKey(publicKeyJWT),
           ValidateLifetime = true

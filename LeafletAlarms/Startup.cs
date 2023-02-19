@@ -37,8 +37,13 @@ namespace LeafletAlarms
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.ConfigureJWT(_currentEnvironment.IsDevelopment(),             
-      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Z2BPcUdfDSJc8PiypOobTzdL75hciMJyaEti7tvLnd3Nq1VgnrlXr/4NHp9Nw5b3SbxaoxMHOq1Xk/2RbA0EmgCT8Gr/JJUDQHHKm/dDxsGiDJaK1Zqu+ofVi/PdHSTDfja3O68890teCLh8BOZJ+rt2SmpRUiQf8aXw7nbQ+4GdOvT9AE5c+tcOD4LdxrVo0gplJUx6fOrgr0E/LGZuKOZd80NCF2qjW/Jt2HTpHfgmQZpfl4eRCQ2Q5wDcNWe/dRNeu2RmQePrIJKuJ8AScjaV5ZmQ5Zob/FZpB2VlAavSdhmbwaIDMBJeQCUVVaUgsjrXwcM4So/ShHb6yagzQIDAQAB"
+      var keyCloackConf = Configuration.GetSection("KeyCloack");
+      var PublicKeyJWT = keyCloackConf.GetValue<string>("PublicKeyJWT");
+      var ValidIssuer = keyCloackConf.GetValue<string>("ValidIssuer");
+
+      services.ConfigureJWT(_currentEnvironment.IsDevelopment(),
+        PublicKeyJWT,
+        ValidIssuer
       );
 
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
