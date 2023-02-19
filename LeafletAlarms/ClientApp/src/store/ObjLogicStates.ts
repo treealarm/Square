@@ -1,6 +1,5 @@
 ﻿import { Action, Reducer } from 'redux';
 import { ApiLogicRootString, AppThunkAction } from '.';
-import UserService from '../auth/UserService';
 import { IStaticLogicDTO } from './Marker';
 import { DoFetch } from './Fetcher';
 // -----------------

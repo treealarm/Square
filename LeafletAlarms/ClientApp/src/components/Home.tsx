@@ -18,6 +18,7 @@ import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ObjectLogic } from "../Logic/ObjectLogic";
 import { Login } from "../auth/Login";
+import { ObjectRights } from "../Rights/ObjectRights";
 
 
 export function Home() {
@@ -131,6 +132,19 @@ export function Home() {
             </AccordionSummary>
             <AccordionDetails>
               <ObjectLogic/>
+            </AccordionDetails>
+          </Accordion>
+
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon color="action" />}
+              aria-controls="panel-logic"
+              id="panel-logic"
+            >
+              <Typography color="warning">Rights</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <ObjectRights />
             </AccordionDetails>
           </Accordion>
 

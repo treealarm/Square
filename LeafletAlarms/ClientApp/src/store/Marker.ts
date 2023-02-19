@@ -240,3 +240,13 @@ export interface IStaticLogicDTO {
   figs?: ILogicFigureLinkDTO[];
   property_filter?: ObjPropsSearchDTO;
 }
+
+export interface IObjectRightValueDTO{
+  role: string;
+  value: number;
+}
+
+export interface IObjectRightsDTO {
+  id?: string;
+  rights?: IObjectRightValueDTO[];
+}

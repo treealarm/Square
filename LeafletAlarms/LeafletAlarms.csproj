@@ -52,12 +52,14 @@
     <None Remove="ClientApp\src\map\MapPositionChange.tsx" />
     <None Remove="ClientApp\src\map\PolygonMaker.tsx" />
     <None Remove="ClientApp\src\map\PolylineMaker.tsx" />
+    <None Remove="ClientApp\src\Rights\ObjectRights.tsx" />
     <None Remove="ClientApp\src\store\Fetcher.ts" />
     <None Remove="ClientApp\src\store\GUIStates.ts" />
     <None Remove="ClientApp\src\store\Marker.ts" />
     <None Remove="ClientApp\src\store\MarkersVisualStates.ts" />
     <None Remove="ClientApp\src\store\ObjLogicStates.ts" />
     <None Remove="ClientApp\src\store\ObjPropsStates.ts" />
+    <None Remove="ClientApp\src\store\RightsStates.ts" />
     <None Remove="ClientApp\src\store\TreeStates.ts" />
     <None Remove="ClientApp\src\tracks\TrackViewer.tsx" />
     <None Remove="ClientApp\src\Tree\EditOptions.tsx" />
