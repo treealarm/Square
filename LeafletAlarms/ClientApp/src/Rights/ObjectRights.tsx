@@ -1,15 +1,11 @@
 ﻿import * as React from 'react';
 
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import * as RightsStore from '../store/RightsStates';
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, ButtonGroup, IconButton, TextField } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import SearchIcon from '@mui/icons-material/Search';
-import AddIcon from '@mui/icons-material/Add';
+import { Box} from '@mui/material';
 import { IObjectRightsDTO} from '../store/Marker';
 import { useAppDispatch } from '..';
 

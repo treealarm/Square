@@ -49,10 +49,16 @@ export function LogicEditor(props: any) {
     props.addFigureLink(logicObj, item);
   };
 
+  function DeepCopy<T>(a: T): T {
+    return JSON.parse(JSON.stringify(a));
+  }
+
   function replaceFigureLink(oldFig: ILogicFigureLinkDTO, newFig: ILogicFigureLinkDTO) {
 
-    let copyLogic = Object.assign({}, logicObj);
-    var index = copyLogic.figs.findIndex(i => i == oldFig);
+    let copyLogic = DeepCopy(logicObj);
+    //let copyLogic: IStaticLogicDTO = (JSON.parse(JSON.stringify(logicObj)));
+
+    var index = logicObj.figs.findIndex(i => i == oldFig);
 
     copyLogic.figs[index] = newFig;
 
