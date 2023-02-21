@@ -1,7 +1,7 @@
 ﻿using DbLayer.Models;
-using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
@@ -18,7 +18,7 @@ using static Domain.StateWebSock.RoutLineDTO;
 
 namespace DbLayer.Services
 {
-  public class RoutService : IRoutService
+    public class RoutService : IRoutService
   {
     private readonly IMongoCollection<DBRoutLine> _collRouts;
     private readonly MongoClient _mongoClient;

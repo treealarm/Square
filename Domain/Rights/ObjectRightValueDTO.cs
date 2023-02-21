@@ -11,11 +11,11 @@ namespace Domain.Rights
     [Flags]
     public enum ERightValue: int
     {
-      None,
-      View,
-      Update,
-      Delete,
-      Add
+      None = 0,
+      View = 1,
+      Update = 2,
+      Delete = 4,
+      Add = 8
     }
     public string role { get; set; }
     public ERightValue value { get; set; }

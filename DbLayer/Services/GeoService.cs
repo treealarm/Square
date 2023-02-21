@@ -2,6 +2,7 @@
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class GeoService : IGeoService
+    public class GeoService : IGeoService
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;

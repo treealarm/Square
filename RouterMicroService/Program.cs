@@ -1,5 +1,6 @@
 using DbLayer.Services;
 using Domain;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using LeafletAlarmsRouter;
 using RouterMicroService;

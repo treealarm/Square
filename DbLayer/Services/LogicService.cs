@@ -1,6 +1,7 @@
 ﻿using DbLayer.Models;
 using Domain;
 using Domain.ObjectInterfaces;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class LogicService: ILogicService
+    public class LogicService: ILogicService
   {
     private readonly IMongoCollection<DBStaticLogic> _coll;
     private readonly MongoClient _mongoClient;

@@ -1,5 +1,5 @@
-﻿using Domain;
-using Domain.GeoDTO;
+﻿using Domain.GeoDTO;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class TrackService : ITrackService
+    public class TrackService : ITrackService
   {
     private readonly IMongoCollection<DBTrackPoint> _collFigures;
     private readonly MongoClient _mongoClient;

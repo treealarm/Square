@@ -1,5 +1,6 @@
 using DbLayer.Services;
 using Domain;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using LeafletAlarms.Authentication;
@@ -13,6 +14,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
@@ -24,7 +26,7 @@ using System.Reflection;
 
 namespace LeafletAlarms
 {
-  public class Startup
+    public class Startup
   {
     public Startup(IConfiguration configuration, IWebHostEnvironment env)
     {
@@ -38,12 +40,27 @@ namespace LeafletAlarms
     public void ConfigureServices(IServiceCollection services)
     {
       var keyCloackConf = Configuration.GetSection("KeyCloack");
+
+      services.Configure<KeycloakSettings>(keyCloackConf);
+
+      var realmName = keyCloackConf.GetValue<string>("RealmName");
       var PublicKeyJWT = keyCloackConf.GetValue<string>("PublicKeyJWT");
-      var ValidIssuer = keyCloackConf.GetValue<string>("ValidIssuer");
+      var BaseAddr = keyCloackConf.GetValue<string>("BaseAddr");
+
+      //"http://localhost:8080/realms/myrealm"
+      Uri? validIssuer;
+      if (Uri.TryCreate(
+        new Uri(BaseAddr, UriKind.Absolute),
+        new Uri($"realms/{realmName}", UriKind.Relative),
+        out validIssuer)
+      )
+      {
+
+      }
 
       services.ConfigureJWT(_currentEnvironment.IsDevelopment(),
         PublicKeyJWT,
-        ValidIssuer
+        validIssuer.ToString()
       );
 
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));

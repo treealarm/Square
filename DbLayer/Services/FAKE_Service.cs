@@ -1,6 +1,6 @@
 ﻿using DbLayer.Models;
-using Domain;
 using Domain.GeoDTO;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class FAKE_Service: ILogicProcessorService
+    public class FAKE_Service: ILogicProcessorService
   {
     private IMongoCollection<DB__FAKE> _collection;
     private readonly MongoClient _mongoClient;

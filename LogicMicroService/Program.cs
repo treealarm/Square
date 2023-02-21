@@ -1,5 +1,5 @@
 using DbLayer.Services;
-using Domain;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using LogicMicroService;
 using Microsoft.Extensions.Configuration;

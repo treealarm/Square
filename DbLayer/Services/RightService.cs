@@ -1,5 +1,5 @@
 ﻿using DbLayer.Models;
-using Domain;
+using Domain.OptionsModels;
 using Domain.Rights;
 using Domain.ServiceInterfaces;
 using Domain.States;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class RightService: IRightService
+    public class RightService: IRightService
   {
     private readonly IMongoCollection<DBObjectRights> _coll;
     private readonly MongoClient _mongoClient;

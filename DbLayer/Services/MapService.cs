@@ -3,6 +3,7 @@ using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ObjectInterfaces;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class MapService : IMapService
+    public class MapService : IMapService
   {
     private readonly IMongoCollection<DBMarker> _markerCollection;
 

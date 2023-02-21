@@ -1,5 +1,5 @@
 ﻿using DbLayer.Models;
-using Domain;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Microsoft.Extensions.Options;
@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class StateService: IStateService
+    public class StateService: IStateService
   {
     private readonly IMongoCollection<DBObjectState> _collState;
     private readonly IMongoCollection<DBObjectStateDescription> _collStateDescr;
