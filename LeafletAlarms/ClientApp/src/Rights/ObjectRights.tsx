@@ -6,8 +6,9 @@ import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Box} from '@mui/material';
-import { IObjectRightsDTO} from '../store/Marker';
+import { IObjectRightsDTO, IObjectRightValueDTO} from '../store/Marker';
 import { useAppDispatch } from '..';
+import RoleRightSelector from './RoleRightSelector';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -19,6 +20,16 @@ export function ObjectRights() {
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const rights = useSelector((state: ApplicationState) => state?.rightsStates?.rights);
+
+  var myRight = rights?.find(r => r.id == selected_id);
+
+  if (myRight == null) {
+    myRight =
+    {
+      id: selected_id,
+      rights: []
+    };
+  }
 
   React.useEffect(() => {
     appDispatch(RightsStore.fetchRightsByIds([selected_id]));
@@ -35,10 +46,13 @@ export function ObjectRights() {
     }}>
 
       <List>
+        <ListItem key="FirstItemOfRightList">
+          {selected_id}
+        </ListItem>
         {
-          rights?.map((item: IObjectRightsDTO, index: any) =>
+          myRight?.rights?.map((item: IObjectRightValueDTO, index: any) =>
             <ListItem key={index}>
-              {item.id}
+              <RoleRightSelector/>
             </ListItem>
           )
         }

@@ -10,9 +10,9 @@ import { Box, ButtonGroup, IconButton, TextField } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import { ILogicFigureLinkDTO, IStaticLogicDTO, ObjPropsSearchDTO } from '../store/Marker';
+import { ILogicFigureLinkDTO, IStaticLogicDTO } from '../store/Marker';
 import { LogicEditor } from './LogicEditor';
-import { PropertyFilter } from '../Tree/PropertyFilter';
+
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }

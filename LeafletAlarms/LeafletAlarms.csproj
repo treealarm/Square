@@ -53,6 +53,7 @@
     <None Remove="ClientApp\src\map\PolygonMaker.tsx" />
     <None Remove="ClientApp\src\map\PolylineMaker.tsx" />
     <None Remove="ClientApp\src\Rights\ObjectRights.tsx" />
+    <None Remove="ClientApp\src\Rights\RoleRightSelector.tsx" />
     <None Remove="ClientApp\src\store\Fetcher.ts" />
     <None Remove="ClientApp\src\store\GUIStates.ts" />
     <None Remove="ClientApp\src\store\Marker.ts" />
