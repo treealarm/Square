@@ -20,6 +20,7 @@ export function ObjectRights() {
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const rights = useSelector((state: ApplicationState) => state?.rightsStates?.rights);
+  const rightValues = useSelector((state: ApplicationState) => state?.rightsStates?.all_rights);
 
   var myRight = rights?.find(r => r.id == selected_id);
 
@@ -30,6 +31,11 @@ export function ObjectRights() {
       rights: []
     };
   }
+
+  React.useEffect(() => {
+    appDispatch(RightsStore.fetchAllRoles());
+    appDispatch(RightsStore.fetchAllRightValues());
+  }, []);
 
   React.useEffect(() => {
     appDispatch(RightsStore.fetchRightsByIds([selected_id]));
@@ -52,7 +58,7 @@ export function ObjectRights() {
         {
           myRight?.rights?.map((item: IObjectRightValueDTO, index: any) =>
             <ListItem key={index}>
-              <RoleRightSelector/>
+              <RoleRightSelector right_values={rightValues} />
             </ListItem>
           )
         }

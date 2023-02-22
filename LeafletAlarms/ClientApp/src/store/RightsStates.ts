@@ -1,5 +1,5 @@
 ﻿import { ApiRightsRootString} from '.';
-import { IObjectRightsDTO } from './Marker';
+import { IObjectRightsDTO, IRightValuesDTO } from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
@@ -8,15 +8,19 @@ export interface ObjectRights {
   rights: IObjectRightsDTO[];
   updated: boolean;
   user: string;
+  all_roles: string[];
+  all_rights: IRightValuesDTO[]
 }
 
 const unloadedState: ObjectRights = {
   rights: null,
   updated: false,
-  user: null
+  user: null,
+  all_roles: [],
+  all_rights: []
 };
 
-export const fetchRightsByIds = createAsyncThunk<IObjectRightsDTO[], any>(
+export const fetchRightsByIds = createAsyncThunk<IObjectRightsDTO[], string[]>(
   'rights/GetRights',
   async (object_ids: string[], thunkAPI) => {
 
@@ -28,6 +32,34 @@ export const fetchRightsByIds = createAsyncThunk<IObjectRightsDTO[], any>(
     });
 
     var json = await fetched.json() as Promise<IObjectRightsDTO[]>;
+
+    return json;
+  }
+)
+
+export const fetchAllRightValues = createAsyncThunk<IRightValuesDTO[]>(
+  'rights/GetRightValues',
+  async (thunkAPI) => {
+    var fetched = await DoFetch(ApiRightsRootString + "/GetRightValues", {
+      method: "GET",
+      headers: { "Content-type": "application/json" }
+    });
+
+    var json = await fetched.json() as Promise<IRightValuesDTO[]>;
+
+    return json;
+  }
+)
+
+export const fetchAllRoles = createAsyncThunk<string[]>(
+  'rights/GetRoles',
+  async (thunkAPI) => {
+    var fetched = await DoFetch(ApiRightsRootString + "/GetRoles", {
+      method: "GET",
+      headers: { "Content-type": "application/json" }
+    });
+
+    var json = await fetched.json() as Promise<string[]>;
 
     return json;
   }
@@ -59,6 +91,14 @@ const rightsSlice = createSlice({
       .addCase(fetchRightsByIds.rejected, (state, action) => {
         const { requestId } = action.meta
         state.rights = null;
+      })
+      // AllRights.
+      .addCase(fetchAllRightValues.fulfilled, (state, action) => {
+        state.all_rights = action.payload;
+      })
+      // AllRoles.
+      .addCase(fetchAllRoles.fulfilled, (state, action) => {
+        state.all_roles = action.payload;
       })
   },
 })

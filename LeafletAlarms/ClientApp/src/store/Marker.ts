@@ -250,3 +250,9 @@ export interface IObjectRightsDTO {
   id?: string;
   rights?: IObjectRightValueDTO[];
 }
+
+
+export interface IRightValuesDTO {
+  rightName: string;
+  rightValue: number;
+}

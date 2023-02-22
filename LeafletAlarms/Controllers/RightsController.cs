@@ -190,13 +190,18 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetRightValues")]
-    public Dictionary<string, int> GetRightValues()
+    public List<RightValuesDTO> GetRightValues()
     {
-      var ret = new Dictionary<string, int>();
+      var ret = new List<RightValuesDTO>();
 
       foreach (var right in Enum.GetValues<ObjectRightValueDTO.ERightValue>())
       {
-        ret[right.ToString()] = (int)right;
+        var element = new RightValuesDTO()
+        {
+          RightName = right.ToString(),
+          RightValue = (int)right
+        };
+        ret.Add(element);
       }
       return ret;
     }
