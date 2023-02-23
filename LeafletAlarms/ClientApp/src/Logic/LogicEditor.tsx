@@ -7,7 +7,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Box, ButtonGroup, IconButton, TextField, ToggleButton } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import { ILogicFigureLinkDTO, IStaticLogicDTO, ObjPropsSearchDTO } from '../store/Marker';
+import { DeepCopy, ILogicFigureLinkDTO, IStaticLogicDTO, ObjPropsSearchDTO } from '../store/Marker';
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
@@ -49,9 +49,6 @@ export function LogicEditor(props: any) {
     props.addFigureLink(logicObj, item);
   };
 
-  function DeepCopy<T>(a: T): T {
-    return JSON.parse(JSON.stringify(a));
-  }
 
   function replaceFigureLink(oldFig: ILogicFigureLinkDTO, newFig: ILogicFigureLinkDTO) {
 

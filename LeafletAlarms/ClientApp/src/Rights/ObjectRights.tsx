@@ -5,8 +5,9 @@ import * as RightsStore from '../store/RightsStates';
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box} from '@mui/material';
-import { IObjectRightsDTO, IObjectRightValueDTO} from '../store/Marker';
+import { Box, ButtonGroup, IconButton } from '@mui/material';
+import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
+import { DeepCopy, IObjectRightsDTO, IObjectRightValueDTO} from '../store/Marker';
 import { useAppDispatch } from '..';
 import RoleRightSelector from './RoleRightSelector';
 
@@ -41,6 +42,18 @@ export function ObjectRights() {
     appDispatch(RightsStore.fetchRightsByIds([selected_id]));
   }, [selected_id]);
 
+  function addRoleRight
+    (e: any) {
+    var copy_right = DeepCopy(myRight);
+    var newRightValue: IObjectRightValueDTO =
+    {
+      role: '',
+      value: 0
+    }
+    copy_right.rights = [...copy_right.rights, newRightValue];
+    appDispatch(RightsStore.set_rights([copy_right]));
+  };
+
   return (
     <Box sx={{
       width: '100%',
@@ -55,6 +68,14 @@ export function ObjectRights() {
         <ListItem key="FirstItemOfRightList">
           {selected_id}
         </ListItem>
+        <ButtonGroup variant="contained" aria-label="logic pannel">
+          <IconButton color="primary"
+            aria-label="addProp"
+            size="medium"
+            onClick={(e: any) => addRoleRight(e)}>
+            <LibraryAddIcon fontSize="inherit" />
+          </IconButton>
+        </ButtonGroup>
         {
           myRight?.rights?.map((item: IObjectRightValueDTO, index: any) =>
             <ListItem key={index}>

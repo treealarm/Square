@@ -1,4 +1,6 @@
-﻿
+﻿export function DeepCopy<T>(a: T): T {
+  return JSON.parse(JSON.stringify(a));
+}
 
 export type LatLngPair = [number, number];
 
@@ -95,6 +97,7 @@ export function getExtraProp(
   var g = obj?.extra_props?.find(p => p.prop_name == propName);
   return g?.str_val;
 }
+
 
 export interface IFigures {
   figs?: ICommonFig[];
