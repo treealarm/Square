@@ -5,11 +5,13 @@ import * as RightsStore from '../store/RightsStates';
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, ButtonGroup, IconButton } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { DeepCopy, IObjectRightsDTO, IObjectRightValueDTO} from '../store/Marker';
 import { useAppDispatch } from '..';
 import RoleRightSelector from './RoleRightSelector';
+import SaveIcon from '@mui/icons-material/Save';
+import { useCallback } from 'react';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -22,6 +24,7 @@ export function ObjectRights() {
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const rights = useSelector((state: ApplicationState) => state?.rightsStates?.rights);
   const rightValues = useSelector((state: ApplicationState) => state?.rightsStates?.all_rights);
+  const roleValues = useSelector((state: ApplicationState) => state?.rightsStates?.all_roles);
 
   var myRight = rights?.find(r => r.id == selected_id);
 
@@ -42,6 +45,13 @@ export function ObjectRights() {
     appDispatch(RightsStore.fetchRightsByIds([selected_id]));
   }, [selected_id]);
 
+  const handleSave = useCallback(() => {
+    if (rights != null && rights.length > 0) {
+      var copy_rights = DeepCopy(rights);
+      appDispatch(RightsStore.updateRights(copy_rights));
+    }
+  }, [rights]);
+
   function addRoleRight
     (e: any) {
     var copy_right = DeepCopy(myRight);
@@ -54,6 +64,19 @@ export function ObjectRights() {
     appDispatch(RightsStore.set_rights([copy_right]));
   };
 
+  function onChangeRoleValue(roleRight: IObjectRightValueDTO, index: number) {
+    var copy_right = DeepCopy(myRight);
+    if (roleRight == null) {
+      copy_right.rights.splice(index, 1);
+    }
+    else {
+      copy_right.rights[index] = roleRight;
+    }
+    
+    appDispatch(RightsStore.set_rights([copy_right]));
+  }
+  var rolesAvailable = roleValues.filter(v => myRight?.rights.findIndex(t => t.role == v) < 0);
+
   return (
     <Box sx={{
       width: '100%',
@@ -65,21 +88,30 @@ export function ObjectRights() {
     }}>
 
       <List>
-        <ListItem key="FirstItemOfRightList">
-          {selected_id}
-        </ListItem>
-        <ButtonGroup variant="contained" aria-label="logic pannel">
+        <ButtonGroup variant="contained" aria-label="right pannel">
+          <IconButton aria-label="save" size="medium" onClick={handleSave}>
+            <SaveIcon fontSize="inherit"></SaveIcon>
+          </IconButton> 
+
           <IconButton color="primary"
             aria-label="addProp"
             size="medium"
             onClick={(e: any) => addRoleRight(e)}>
             <LibraryAddIcon fontSize="inherit" />
           </IconButton>
-        </ButtonGroup>
+          <Button>id:{selected_id}</Button>
+        </ButtonGroup>        
+
         {
           myRight?.rights?.map((item: IObjectRightValueDTO, index: any) =>
             <ListItem key={index}>
-              <RoleRightSelector right_values={rightValues} />
+              <RoleRightSelector
+                right_values={rightValues}
+                role_values={rolesAvailable}
+                cur_value={item}
+                index={index}
+                onChangeRoleValue={onChangeRoleValue}
+              />
             </ListItem>
           )
         }

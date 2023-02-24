@@ -20,6 +20,23 @@ const unloadedState: ObjectRights = {
   all_rights: []
 };
 
+export const updateRights = createAsyncThunk<IObjectRightsDTO[], IObjectRightsDTO[]>(
+  'rights/UpdateRights',
+  async (object_ids: IObjectRightsDTO[], thunkAPI) => {
+
+    let body = JSON.stringify(object_ids);
+    var fetched = await DoFetch(ApiRightsRootString + "/UpdateRights", {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: body
+    });
+
+    var json = await fetched.json() as Promise<IObjectRightsDTO[]>;
+
+    return json;
+  }
+)
+
 export const fetchRightsByIds = createAsyncThunk<IObjectRightsDTO[], string[]>(
   'rights/GetRights',
   async (object_ids: string[], thunkAPI) => {
@@ -99,6 +116,11 @@ const rightsSlice = createSlice({
       // AllRoles.
       .addCase(fetchAllRoles.fulfilled, (state, action) => {
         state.all_roles = action.payload;
+      })
+      // updateRights
+      .addCase(updateRights.fulfilled, (state, action) => {
+        const { requestId } = action.meta
+        state.rights = action.payload;
       })
   },
 })

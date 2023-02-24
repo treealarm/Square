@@ -12,7 +12,7 @@ export function GroupSelector(props: any) {
   return (
 
     <FormControl fullWidth>
-      <InputLabel id="demo-simple-select-label">{props.label}</InputLabel>
+      <InputLabel id="group-select-label">{props.label}</InputLabel>
       <Select
         labelId="select_group"
         id={props.id}
