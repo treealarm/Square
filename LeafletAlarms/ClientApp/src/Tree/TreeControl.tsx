@@ -34,18 +34,20 @@ export function TreeControl() {
     );
   }
 
-  useEffect(() => {
-    console.log('ComponentDidMount TreeControl');
-    getTreeItemsByParent(null);
-  }, []);
-
   const treeStates = useSelector((state: ApplicationState) => state?.treeStates);
 
   const markers = useSelector((state: ApplicationState) => state?.treeStates?.children);
   const parent_marker_id = useSelector((state: ApplicationState) => state?.treeStates?.parent_id);
+  const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
   // Selected.
   const reduxSelectedId = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+
+  useEffect(() => {
+    console.log('ComponentDidMount TreeControl');
+    getTreeItemsByParent(null);
+  }, [user]);
+
 
   function selectItem(selected_marker: TreeMarker | null) {
 
