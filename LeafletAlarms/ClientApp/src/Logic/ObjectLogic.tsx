@@ -10,7 +10,7 @@ import { Box, ButtonGroup, IconButton, TextField } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import { ILogicFigureLinkDTO, IStaticLogicDTO } from '../store/Marker';
+import { DeepCopy, ILogicFigureLinkDTO, IStaticLogicDTO } from '../store/Marker';
 import { LogicEditor } from './LogicEditor';
 
 
@@ -78,10 +78,10 @@ export function ObjectLogic() {
   }, [logic]);
 
   const deleteFigureLink = useCallback(
-    (logicObj: IStaticLogicDTO, item: ILogicFigureLinkDTO) => {
+    (logicObj: IStaticLogicDTO, index: number) => {
 
-    let copy = Object.assign({}, logicObj);
-    copy.figs = copy.figs.filter(i => i != item);
+      let copy = DeepCopy(logicObj);
+      copy.figs.splice(index, 1);
 
       var copyLogic = [...logic];
       var index2Replace = logic.findIndex(i => i == logicObj);
@@ -105,7 +105,7 @@ export function ObjectLogic() {
   const addFigureLink = useCallback(
     (logicObj: IStaticLogicDTO, item: ILogicFigureLinkDTO) => {
 
-      let copy = Object.assign({}, logicObj);
+      let copy = DeepCopy(logicObj);
 
       if (copy.figs == null) {
         copy.figs = [item];

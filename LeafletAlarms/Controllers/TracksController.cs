@@ -201,15 +201,18 @@ namespace LeafletAlarms.Controllers
       var track_0 = trackPointsInserted.FirstOrDefault();
       var track_n = trackPointsInserted.LastOrDefault();
 
-      TracksUpdatedEvent ev = new TracksUpdatedEvent()
+      if (track_0 != null && track_n != null)
       {
-        id_start = track_0.id,
-        id_end = track_n.id,
-        ts_start = track_0.timestamp,
-        ts_end = track_n.timestamp
-      };
+        TracksUpdatedEvent ev = new TracksUpdatedEvent()
+        {
+          id_start = track_0.id,
+          id_end = track_n.id,
+          ts_start = track_0.timestamp,
+          ts_end = track_n.timestamp
+        };
 
-      _pubsub.PublishNoWait("UpdateTrackPosition", JsonSerializer.Serialize(ev));
+        _pubsub.PublishNoWait("UpdateTrackPosition", JsonSerializer.Serialize(ev));
+      }      
 
       return timing;
     }

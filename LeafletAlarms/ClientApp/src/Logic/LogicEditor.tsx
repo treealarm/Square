@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, ButtonGroup, IconButton, TextField, ToggleButton } from '@mui/material';
+import { Box, ButtonGroup, IconButton, TextField, ToggleButton, Tooltip } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { DeepCopy, ILogicFigureLinkDTO, IStaticLogicDTO, ObjPropsSearchDTO } from '../store/Marker';
 import CloseIcon from "@mui/icons-material/Close";
@@ -31,7 +31,7 @@ export function LogicEditor(props: any) {
   const [groupArray, setGroupArray] = React.useState([]);
 
   function deleteFigureLink
-    (e: any, item: ILogicFigureLinkDTO) {
+    (e: any, item: number) {
     props.deleteFigureLink(logicObj, item);
   };
 
@@ -69,7 +69,7 @@ export function LogicEditor(props: any) {
     if (fig == null) {
       return;
     }
-    let copy = Object.assign({}, fig);
+    let copy = DeepCopy(fig);
     copy.group_id = newValue;
 
     replaceFigureLink(fig, copy);
@@ -83,14 +83,14 @@ export function LogicEditor(props: any) {
     if (fig == null) {
       return;
     }
-    let copy = Object.assign({}, fig);
+    let copy = DeepCopy(fig);
     copy.id = value;
 
     replaceFigureLink(fig, copy);
   };
 
   function handleChangeLogicType(id: any, value: any) {
-    let copyLogic = Object.assign({}, logicObj);
+    let copyLogic = DeepCopy(logicObj);
     copyLogic.logic = value;
 
     props.updateLogic(logicObj, copyLogic);
@@ -99,7 +99,7 @@ export function LogicEditor(props: any) {
   function handleChangeLogicName(e: any) {
     const { target: { id, value } } = e;
 
-    let copyLogic = Object.assign({}, logicObj);
+    let copyLogic = DeepCopy(logicObj);
     copyLogic.name = value;
 
     props.updateLogic(logicObj, copyLogic);
@@ -112,7 +112,7 @@ export function LogicEditor(props: any) {
     )
     {
 
-      let copy = Object.assign({}, figureIdMode);
+      let copy = DeepCopy(figureIdMode);
       copy.id = selected_id;
 
       replaceFigureLink(figureIdMode, copy);
@@ -135,14 +135,14 @@ export function LogicEditor(props: any) {
   const setPropsFilter = useCallback(
     (propsFilter: ObjPropsSearchDTO) => {
 
-      let copyLogic = Object.assign({}, logicObj);
+      let copyLogic = DeepCopy(logicObj);
       copyLogic.property_filter = propsFilter;
       props.updateLogic(logicObj, copyLogic);
     }, [logicObj]);
 
   const addProperty = useCallback(
     (e: any) => {
-      let copyLogic = Object.assign({}, logicObj);
+      let copyLogic = DeepCopy(logicObj);
       if (copyLogic.property_filter == null) {
         copyLogic.property_filter = {
           props: []
@@ -187,6 +187,8 @@ export function LogicEditor(props: any) {
             value={logicObj?.id}
             disabled
           />
+          <Tooltip title="Delete this logic">
+
           <IconButton color="primary"
             aria-label="addProp"
             size="medium"
@@ -196,7 +198,8 @@ export function LogicEditor(props: any) {
               
             />
 
-          </IconButton>
+            </IconButton>
+          </Tooltip>
         </ListItem>
 
         <ListItem key={"logic_name"}>
@@ -248,14 +251,15 @@ export function LogicEditor(props: any) {
                   options={groupArray}
                   onChange={handleChangeFigGroupId}
                 />
-
+                <Tooltip title="Delete this group">
                 <IconButton
                   aria-label="close"
                   size="small"
-                  onClick={(e: any) => deleteFigureLink(e, item)}
+                    onClick={(e: any) => deleteFigureLink(e, index)}
                 >
                   <CloseIcon />
-                </IconButton>
+                  </IconButton>
+                </Tooltip>
               </ListItem>
 
               <ListItem key={index}>
@@ -267,7 +271,7 @@ export function LogicEditor(props: any) {
                   value={item.id}
                   onChange={handleChangeFigId}
                 />
-
+                <Tooltip title="Find figure of the logic">
                 <ToggleButton
                   color="success"
                   value="check"
@@ -281,7 +285,7 @@ export function LogicEditor(props: any) {
                   }>
                   <LocationSearchingIcon fontSize="small" />
                 </ToggleButton>
-                
+                </Tooltip>
               </ListItem>
             </List>
           )
@@ -289,9 +293,11 @@ export function LogicEditor(props: any) {
         <Box display="flex"
           justifyContent="flex-start"
         >
+          <Tooltip title="Add property filter">
           <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
             <LibraryAddIcon fontSize="inherit" />
-          </IconButton>
+            </IconButton>
+          </Tooltip>
         </Box>
 
         <ListItem>

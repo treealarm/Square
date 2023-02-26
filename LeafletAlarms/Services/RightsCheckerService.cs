@@ -1,7 +1,5 @@
 ﻿using Domain.ServiceInterfaces;
 using Microsoft.AspNetCore.Http;
-using OsmSharp.API;
-using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;

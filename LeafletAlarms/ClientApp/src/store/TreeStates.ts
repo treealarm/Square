@@ -59,27 +59,32 @@ export const actionCreators = {
     getState
   ) => {
 
-    console.log("fetching by parent_id=", parent_id);
-    var request = ApiRootString + "/GetByParent?count=100";
+      console.log("fetching by parent_id=", parent_id);
+      var request = ApiRootString + "/GetByParent?count=100";
 
-    if (parent_id != null) {
-      request += "&parent_id=" + parent_id;
-    }
+      if (parent_id != null) {
+        request += "&parent_id=" + parent_id;
+      }
 
-    if (start_id != null) {
-      request += "&start_id=" + start_id;
-    }
+      if (start_id != null) {
+        request += "&start_id=" + start_id;
+      }
 
-    if (end_id != null) {
-      request += "&end_id=" + end_id;
-    }
+      if (end_id != null) {
+        request += "&end_id=" + end_id;
+      }
 
-    var fetched = DoFetch(request);
+      var fetched = DoFetch(request);
 
-    console.log("fetched:", fetched);
+      console.log("fetched:", fetched);
 
-    fetched
-      .then(response => response.json() as Promise<GetByParentDTO>)
+      fetched
+        .then(response => {
+          if (!response.ok)
+            throw response.statusText;
+          var json = response.json() as Promise<GetByParentDTO>;
+          return json;
+       })
       .then(data => {
         dispatch({
           type: "RECEIVE_TREE_STATE",

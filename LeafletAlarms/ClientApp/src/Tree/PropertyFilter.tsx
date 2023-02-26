@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import { ApplicationState } from '../store';
 import CloseIcon from "@mui/icons-material/Close";
 import { KeyValueDTO } from '../store/Marker';
-import { Box, IconButton, List, ListItem } from '@mui/material';
+import { Box, IconButton, List, ListItem, Tooltip } from '@mui/material';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -67,6 +67,7 @@ export function PropertyFilter(props:any) {
         props.propsFilter?.props?.map((item: KeyValueDTO, index: { toString: () => string; }) =>
 
           <ListItem key={index.toString()}>
+            <Tooltip title="Delete property filter">
             <IconButton
               aria-label="close"
               size="small"
@@ -78,7 +79,8 @@ export function PropertyFilter(props:any) {
               }}
             >
               <CloseIcon />
-            </IconButton>
+              </IconButton>
+            </Tooltip>
             <Stack spacing={2}
               
               sx={{

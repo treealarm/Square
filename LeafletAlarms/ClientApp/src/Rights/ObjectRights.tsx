@@ -109,7 +109,7 @@ export function ObjectRights() {
             fullWidth
             label='Id'
             size="small"
-            value={selected_id}
+            value={selected_id ? selected_id:''}
             inputProps={{ readOnly: true }}>
           </TextField>
         </ListItem>
