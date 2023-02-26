@@ -355,7 +355,7 @@ namespace TrackSender
       }
     }
 
-    public async Task TestLogicAsync(CancellationToken token, List<Task> tasks)
+    public void TestLogicAsync(CancellationToken token, List<Task> tasks)
     {
       var task1 = GetOrBuildFiguresOnRoadAsync("SAD", token, 10, "");
       tasks.Add(task1);

@@ -10,7 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import * as SearchResultStore from '../store/SearchResultStates';
-import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO } from '../store/Marker';
+import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO, DeepCopy } from '../store/Marker';
 import { PropertyFilter } from './PropertyFilter';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import * as GuiStore from '../store/GUIStates';
@@ -30,7 +30,7 @@ export function RetroSearch() {
   const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
-    let filter = Object.assign({}, searchFilter);
+    let filter = DeepCopy(searchFilter);
     return filter;
   }
 
@@ -85,7 +85,7 @@ export function RetroSearch() {
     filterIn.search_id = (new Date()).toISOString();
     UpdateFilterInRedux(filterIn, filterIn.applied == true);
 
-    let filter = Object.assign({}, searchFilter);
+    let filter = DeepCopy(searchFilter);
 
     var filterDto: SearchFilterDTO = {
       search_id: (new Date()).toISOString(),

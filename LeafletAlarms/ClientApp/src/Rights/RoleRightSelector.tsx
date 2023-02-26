@@ -29,14 +29,25 @@ export default function RoleRightSelector(properties: any) {
 
 
 
-  function handleChangeRole(event: SelectChangeEvent) {
-    const { target: { value } } = event;
+  function handleChangeRole(event: any, newValue: any) {
 
     var cur_value_copy = DeepCopy(cur_value);
 
-    cur_value_copy.role = value;
+    cur_value_copy.role = newValue;
     properties.onChangeRoleValue(cur_value_copy, properties.index);
   };
+
+  //function handleInputChangeRole(event: React.SyntheticEvent, newValue: string, reason: string) {
+
+  //  if (newValue == cur_value.role) {
+  //    return;
+  //  }
+
+  //  var cur_value_copy = DeepCopy(cur_value);
+
+  //  cur_value_copy.role = newValue;
+  //  properties.onChangeRoleValue(cur_value_copy, properties.index);
+  //};
 
   function handleChangeRights(
     event: React.SyntheticEvent,
@@ -69,21 +80,16 @@ export default function RoleRightSelector(properties: any) {
     }}>
       <List key="ListRightSelector">
         <ListItem key={cur_value.role}>
-          <Select
+          <Autocomplete
+            id="free-solo-select_role"
             style={{ width: '100%' }}
-            labelId="select_role"
-            id={cur_value.role}
+            freeSolo
+            options={role_values.map((option) => option)}
             value={cur_value.role}
-            label="group id"
             onChange={handleChangeRole}
-            size="small"
-          >
-            {
-              role_values.map((item: string) =>
-                <MenuItem value={item}>{item}</MenuItem>
-              )
-            }
-          </Select>
+            renderInput={(params) => <TextField {...params} label="Enter role/user" />}
+          />
+
           <IconButton color="primary"
             aria-label="addProp"
             size="medium"

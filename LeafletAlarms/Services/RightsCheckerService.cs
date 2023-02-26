@@ -1,4 +1,5 @@
 ﻿using Domain.ServiceInterfaces;
+using LeafletAlarms.Authentication;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,18 @@ namespace LeafletAlarms.Services
       _httpContextAccessor = httpContextAccessor;
     }
 
+    public async Task<HashSet<string>> CheckForControl(List<string> ids)
+    {
+      return await CheckForRight(ids, ERightValue.Control);
+    }
+
     public async Task<HashSet<string>> CheckForView(List<string> ids)
     {
-      if (_httpContextAccessor.HttpContext.User.IsInRole("admin"))
+      return await CheckForRight(ids, ERightValue.View);
+    }
+    private async Task<HashSet<string>> CheckForRight(List<string> ids, ERightValue rightToCheck)
+    {
+      if (_httpContextAccessor.HttpContext.User.IsInRole(RoleConstants.admin))
       {
         return ids.ToHashSet();
       }
@@ -52,7 +62,16 @@ namespace LeafletAlarms.Services
 
           foreach (var r in myRights)
           {
-            if (r.value != ERightValue.None)
+            if (rightToCheck == ERightValue.View)
+            {
+              if (r.value != ERightValue.None)
+              {
+                ret.Add(id);
+                break;
+              }
+            }
+            
+            if (r.value.HasFlag(rightToCheck))
             {
               ret.Add(id);
               break;

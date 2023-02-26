@@ -34,7 +34,7 @@ namespace TrackSender
     public async Task RunAsync(
       CancellationToken token,
       List<Task> tasks,
-      [CallerFilePath] string? callerFilePath = null
+      [CallerFilePath] string callerFilePath = null
     )
     {
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");

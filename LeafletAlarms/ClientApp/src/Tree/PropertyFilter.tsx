@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { ApplicationState } from '../store';
 import CloseIcon from "@mui/icons-material/Close";
-import { KeyValueDTO } from '../store/Marker';
+import { DeepCopy, KeyValueDTO } from '../store/Marker';
 import { Box, IconButton, List, ListItem, Tooltip } from '@mui/material';
 
 declare module 'react-redux' {
@@ -15,7 +15,7 @@ export function PropertyFilter(props:any) {
   function handleChangePropName(e: any) {
     const { target: { id, value } } = e;
 
-    let copy = Object.assign({}, props.propsFilter);
+    let copy = DeepCopy(props.propsFilter);
 
     if (copy == null) {
       return;
@@ -32,7 +32,7 @@ export function PropertyFilter(props:any) {
   function handleChangePropVal(e: any) {
     const { target: { id, value } } = e;
 
-    let copy = Object.assign({}, props.propsFilter);
+    let copy = DeepCopy(props.propsFilter);
     if (copy == null) {
       return;
     }
@@ -48,7 +48,7 @@ export function PropertyFilter(props:any) {
 
   function deleteProperty
     (e: any, item: KeyValueDTO){
-      let copy = Object.assign({}, props.propsFilter);
+    let copy = DeepCopy(props.propsFilter);
       copy.props = copy.props.filter((obj: KeyValueDTO) => { return obj !== item; });
       props.setPropsFilter(copy);
     };

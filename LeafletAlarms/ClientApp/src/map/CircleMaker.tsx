@@ -3,7 +3,7 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ApplicationState } from '../store';
-import { getExtraProp, ICircle, IObjProps, PointType, setExtraProp } from '../store/Marker';
+import { DeepCopy, getExtraProp, ICircle, IObjProps, PointType, setExtraProp } from '../store/Marker';
 
 import { useCallback, useEffect } from 'react'
 import {
@@ -95,7 +95,7 @@ export function CircleMaker(props: any) {
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
 
   useEffect(() => {
-    var copy = Object.assign({}, objProps);
+    var copy = DeepCopy(objProps);
 
     if (copy == null) {
       return;

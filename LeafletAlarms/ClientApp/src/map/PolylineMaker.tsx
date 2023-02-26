@@ -2,7 +2,7 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { getExtraProp, IObjProps, IPolyline, IPolylineCoord, LineStringType, setExtraProp } from '../store/Marker';
+import { DeepCopy, getExtraProp, IObjProps, IPolyline, IPolylineCoord, LineStringType, setExtraProp } from '../store/Marker';
 
 import { useCallback, useMemo, useEffect } from 'react'
 import {
@@ -105,7 +105,7 @@ export function PolylineMaker(props: any) {
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
 
   useEffect(() => {
-    var copy = Object.assign({}, objProps);
+    var copy = DeepCopy(objProps);
 
     if (copy == null) {
       return;

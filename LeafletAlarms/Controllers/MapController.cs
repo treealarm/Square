@@ -3,6 +3,7 @@ using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Itinero;
+using LeafletAlarms.Authentication;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -378,7 +379,7 @@ namespace LeafletAlarms.Controllers
 
       var geo = await _geoService.GetGeoAsync(box);
 
-      if (!User.IsInRole("admin"))
+      if (!User.IsInRole(RoleConstants.admin))
       {
         var toView = await _rightChecker.CheckForView(geo.Keys.ToList());
         geo = geo.Where(kvp => toView.Contains(kvp.Key))
@@ -474,6 +475,7 @@ namespace LeafletAlarms.Controllers
     
     [HttpPost]
     [Route("UpdateProperties")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.updater)]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
     {
       if (string.IsNullOrEmpty(updatedMarker.id))
@@ -519,28 +521,7 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }
 
-    
-
-    [HttpDelete("{id:length(24)}")]
-    public async Task<IActionResult> Delete(string id)
-    {
-      var marker = await _mapService.GetAsync(id);
-
-      if (marker is null)
-      {
-        return NotFound();
-      }
-
-      var markers = await _mapService.GetAllChildren(id);
-      var ids = markers.Select(m => m.id).ToList();
-      ids.Add(marker.id);
-      await _geoService.RemoveAsync(ids);
-      await _mapService.RemoveAsync(ids);
-      var ret = CreatedAtAction(nameof(Delete), new { id = marker.id }, ids);
-
-      return ret;
-    }
-
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.deleter)]
     [HttpDelete]
     public async Task<IActionResult> Delete(List<string> ids)
     {
@@ -558,11 +539,15 @@ namespace LeafletAlarms.Controllers
         var markers = await _mapService.GetAllChildren(id);
         var bunchIds = markers.Select(m => m.id).ToHashSet();
         idsToDelete.Add(marker.id);
-        idsToDelete.UnionWith(bunchIds);
-        await _geoService.RemoveAsync(idsToDelete.ToList());
-        await _mapService.RemoveAsync(idsToDelete.ToList());
+        idsToDelete.UnionWith(bunchIds);        
       }
-      
+
+      var listToDelete = idsToDelete.ToList();
+
+      await _geoService.RemoveAsync(listToDelete);
+      await _mapService.RemoveAsync(listToDelete);
+
+
       var ret = CreatedAtAction(nameof(Delete), null, idsToDelete);
       return ret;
     }

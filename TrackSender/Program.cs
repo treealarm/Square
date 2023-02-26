@@ -56,8 +56,7 @@ namespace TrackSender
         var taskMove = testMove.RunAsync(token, tasks);
         tasks.Add(taskMove);
 
-        var taskLogic = testMove.TestLogicAsync(token, tasks);
-        tasks.Add(taskLogic);
+        testMove.TestLogicAsync(token, tasks);
 
         Console.WriteLine("Press any key to stop emulation\n");
         ConsoleKeyInfo key = Console.ReadKey();

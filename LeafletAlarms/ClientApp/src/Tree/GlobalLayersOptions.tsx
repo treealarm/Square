@@ -4,7 +4,7 @@ import {
   Box, Checkbox, FormControlLabel, FormGroup
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { SearchFilterGUI } from '../store/Marker';
+import { DeepCopy, SearchFilterGUI } from '../store/Marker';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
 
@@ -14,7 +14,7 @@ export default function GlobalLayersOptions() {
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
-    let filter = Object.assign({}, searchFilter);
+    let filter = DeepCopy(searchFilter);
     return filter;
   }
 

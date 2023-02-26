@@ -22,7 +22,7 @@ namespace LeafletAlarms.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
+  [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin)]
   
   public class RightsController: ControllerBase
   {
@@ -126,9 +126,9 @@ namespace LeafletAlarms.Controllers
       var dic = new Dictionary<string, string>
       {
           { "grant_type", "password" },
-          { "client_id", "admin-cli" },
-          { "username", "admin" },
-          { "password", "admin" }
+          { "client_id", _keyCloakSettings.Value.admin_client_id },
+          { "username", _keyCloakSettings.Value.admin_name },
+          { "password", _keyCloakSettings.Value.admin_password }
       };
 
       if (_token != null &&
@@ -136,14 +136,8 @@ namespace LeafletAlarms.Controllers
         _tokenExpiration > DateTime.Now
       )
       {
-        dic = new Dictionary<string, string>
-        {
-            { "grant_type", "refresh_token" },
-            { "refresh_token", _token.refresh_token },
-            { "client_id", "admin-cli" },
-            { "username", "admin" },
-            { "password", "admin" }
-        };
+        dic["grant_type"] = "refresh_token";
+        dic["refresh_token"] = _token.refresh_token;
       }
 
       _token = null;
@@ -184,7 +178,7 @@ namespace LeafletAlarms.Controllers
             await resp.Content.ReadAsStringAsync()
           );
         return modelRoles.Select(m => m.name)
-          .Where(m => m != "admin")
+          .Where(m => m != RoleConstants.admin)
           .ToList();
       }
 

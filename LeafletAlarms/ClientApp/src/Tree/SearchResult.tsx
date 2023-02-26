@@ -6,7 +6,7 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import * as SearchResultStore from '../store/SearchResultStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { TreeMarker, ViewOption } from '../store/Marker';
+import { DeepCopy, TreeMarker, ViewOption } from '../store/Marker';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -56,7 +56,7 @@ export function SearchResult() {
   const OnNavigate = useCallback(
     (next: boolean, e: any) => {
 
-      let filter = Object.assign({}, searchStates.filter);
+      let filter = DeepCopy(searchStates.filter);
       filter.forward = next;
       filter.start_id = null;
 

@@ -54,7 +54,7 @@ export function ObjectProperties() {
 
   function handleChangeName (e: any){
     const { target: { id, value } } = e;
-    var copy = Object.assign({}, objProps);
+    var copy = DeepCopy(objProps);
     if (copy == null) {
       return;
     }
@@ -90,7 +90,7 @@ export function ObjectProperties() {
   }, [propsUpdated]);
 
   const handleSave = useCallback(() => {
-    var copy = Object.assign({}, objProps);
+    var copy = DeepCopy(objProps);
     if (copy == null) {
       return;
     }
