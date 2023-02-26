@@ -5,7 +5,7 @@ import * as RightsStore from '../store/RightsStates';
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, ButtonGroup, IconButton } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton, TextField } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { DeepCopy, IObjectRightsDTO, IObjectRightValueDTO} from '../store/Marker';
 import { useAppDispatch } from '..';
@@ -25,6 +25,7 @@ export function ObjectRights() {
   const rights = useSelector((state: ApplicationState) => state?.rightsStates?.rights);
   const rightValues = useSelector((state: ApplicationState) => state?.rightsStates?.all_rights);
   const roleValues = useSelector((state: ApplicationState) => state?.rightsStates?.all_roles);
+  const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
   var myRight = rights?.find(r => r.id == selected_id);
 
@@ -39,7 +40,7 @@ export function ObjectRights() {
   React.useEffect(() => {
     appDispatch(RightsStore.fetchAllRoles());
     appDispatch(RightsStore.fetchAllRightValues());
-  }, []);
+  }, [user]);
 
   React.useEffect(() => {
     appDispatch(RightsStore.fetchRightsByIds([selected_id]));
@@ -88,6 +89,7 @@ export function ObjectRights() {
     }}>
 
       <List>
+        <ListItem>
         <ButtonGroup variant="contained" aria-label="right pannel">
           <IconButton aria-label="save" size="medium" onClick={handleSave}>
             <SaveIcon fontSize="inherit"></SaveIcon>
@@ -99,9 +101,18 @@ export function ObjectRights() {
             onClick={(e: any) => addRoleRight(e)}>
             <LibraryAddIcon fontSize="inherit" />
           </IconButton>
-          <Button>id:{selected_id}</Button>
-        </ButtonGroup>        
+        </ButtonGroup> 
+        </ListItem>
 
+        <ListItem>
+          <TextField
+            fullWidth
+            label='Id'
+            size="small"
+            value={selected_id}
+            inputProps={{ readOnly: true }}>
+          </TextField>
+        </ListItem>
         {
           myRight?.rights?.map((item: IObjectRightValueDTO, index: any) =>
             <ListItem key={index}>

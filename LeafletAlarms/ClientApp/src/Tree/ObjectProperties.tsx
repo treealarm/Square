@@ -7,12 +7,12 @@ import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, ButtonGroup, IconButton, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, IPointCoord, IPolygonCoord, LatLngPair, getExtraProp, setExtraProp } from '../store/Marker';
+import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, IPointCoord, IPolygonCoord, LatLngPair, getExtraProp, setExtraProp, DeepCopy } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
@@ -64,7 +64,8 @@ export function ObjectProperties() {
 
   function handleChangeProp(e: any) {
     const { target: { id, value } } = e;
-    let copy = Object.assign({}, objProps);
+    let copy = DeepCopy(objProps);
+
     if (copy == null) {
       return;
     }
@@ -204,18 +205,19 @@ export function ObjectProperties() {
             <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap(objProps, e)}>
               <SearchIcon fontSize="inherit" />
             </IconButton>
-          </ButtonGroup>
+          </ButtonGroup>          
 
-        </ListItem>
+        </ListItem>        
         <ListItem>
           <TextField
             fullWidth
-          label='Id'
-          size="small"
-            value={objProps.id ? objProps.id: ''}
-          inputProps={{ readOnly: true}}>
+            label='Id'
+            size="small"
+            value={objProps.id ? objProps.id : ''}
+            inputProps={{ readOnly: true }}>
           </TextField>
         </ListItem>
+
         <ListItem>
           <TextField
             fullWidth

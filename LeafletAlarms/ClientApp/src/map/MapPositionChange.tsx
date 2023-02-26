@@ -30,8 +30,14 @@ export function MapPositionChange() {
   useEffect(() => {
     let map_center = guiStates.map_option?.map_center;
     let zoom = guiStates.map_option?.zoom;
+
     if (map_center != null) {
-      parentMap.setView(map_center, zoom);
+      if (zoom != null) {
+        parentMap.setView(map_center, zoom);
+      } else {
+        parentMap.setView(map_center);
+      }
+      
     }
    
   }, [guiStates.map_option]);

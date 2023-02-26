@@ -3,6 +3,7 @@ using Domain.Rights;
 using Domain.ServiceInterfaces;
 using Itinero;
 using LeafletAlarms.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,7 +22,7 @@ namespace LeafletAlarms.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  //[Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
+  [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin")]
   
   public class RightsController: ControllerBase
   {
@@ -182,7 +183,9 @@ namespace LeafletAlarms.Controllers
           JsonSerializer.Deserialize<List<RoleModel>>(
             await resp.Content.ReadAsStringAsync()
           );
-        return modelRoles.Select(m => m.name).ToList();
+        return modelRoles.Select(m => m.name)
+          .Where(m => m != "admin")
+          .ToList();
       }
 
       return null;
@@ -196,6 +199,11 @@ namespace LeafletAlarms.Controllers
 
       foreach (var right in Enum.GetValues<ObjectRightValueDTO.ERightValue>())
       {
+        if (right == ObjectRightValueDTO.ERightValue.None)
+        {
+          continue;
+        }
+
         var element = new RightValuesDTO()
         {
           RightName = right.ToString(),
