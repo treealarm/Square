@@ -30,8 +30,8 @@ namespace TrackSender
 
       //var settings = new RoutingSettings()
       //{
-      //  RoutingFilePath = "D:\\TESTS\\OSM_DATA\\",
-      //  RoutingFilePathWin = "D:\\TESTS\\OSM_DATA\\"
+      //  RoutingFilePath = "D:\\TESTS\\LEAFLET_DATA\\OSM_DATA\\",
+      //  RoutingFilePathWin = "D:\\TESTSLEAFLET_DATA\\\\OSM_DATA\\"
       //};
       //var appSettingsOptions = Options.Create(settings);
 

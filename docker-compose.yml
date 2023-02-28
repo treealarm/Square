@@ -1,61 +1,79 @@
-version: '3.4'
-networks:
-    netBackEnd:
-        ipam:
-            driver: default
-            config:
-                 - subnet: 192.168.0.0/24
+version: '3.8'
+
+x-common-variables: &common-variables
+   - LEAFLET_VOLUME_PATH=//d/tests/leaflet_data
+
+
+   
 services:
   leafletalarms:
     image: ${DOCKER_REGISTRY-}leafletalarms
+    depends_on:
+     - mongoservice
     build:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
-     - //d/tests/osm_data/:/osm_data
-    extra_hosts:
-     - "mongoservice:192.168.0.10"
-    networks:
-      netBackEnd:
-        ipv4_address: 192.168.0.2
-
-  leafletalarms-dapr:
-    image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "80" ]
-    depends_on:
-      - leafletalarms
-    network_mode: "service:leafletalarms"
+      - ${LEAFLET_VOLUME_PATH}/osm_data:/osm_data
 
   routermicroservice:
     image: ${DOCKER_REGISTRY-}routermicroservice
+    depends_on:
+     - mongoservice
     build:
       context: .
       dockerfile: RouterMicroService/Dockerfile
     volumes:
-     - //d/tests/osm_data/:/osm_data
-    extra_hosts:
-     - "mongoservice:192.168.0.10"
-    networks:
-      netBackEnd:
-        ipv4_address: 192.168.0.3
+     - ${LEAFLET_VOLUME_PATH}/osm_data:/osm_data
+      
 
-  routermicroservice-dapr:
-    image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "routermicroservice", "-app-port", "80" ]
-    depends_on:
-      - routermicroservice
-    network_mode: "service:routermicroservice"
-
-  mongodbservice:
+  mongoservice:
     image : mongo
     container_name: mongodb
     restart: always
     volumes: 
-      - //d/tests/mongo_data/:/data/db
+      - //d/tests/leaflet_data/mongo_data/:/data/db
+      #- ${LEAFLET_VOLUME_PATH}/mongo_data:/data/db
     ports:
      - "27018:27017"
     expose:
      - "27017"
-    networks:
-      netBackEnd:
-        ipv4_address: 192.168.0.10
+
+  redisservice:
+    image: redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+# START keycloack
+  #postgres:
+  #  image: postgres
+  #  volumes:
+  #    - leaflet_data:/postgres/var/lib/postgresql/data
+  #  environment:
+  #    POSTGRES_DB: keycl0ak
+  #    POSTGRES_USER: keycl0ak
+  #    POSTGRES_PASSWORD: password
+  #  ports:
+  #    - 5431:5431
+
+  #keycloak:
+  #  build:
+  #    context: services/keycloak
+  #  volumes:
+  #    - leaflet_data:/keycloak/opt/jboss/keycloak/imports
+  #  environment:
+  #    DB_VENDOR: POSTGRES
+  #    DB_ADDR: postgres
+  #    DB_DATABASE: keycl0ak
+  #    DB_USER: keycl0ak
+  #    DB_PASSWORD: password
+  #    KEYCLOAK_USER: administrat0r
+  #    KEYCLOAK_PASSWORD: asc88a8c0ssssqs
+  #    KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
+  #  ports:
+  #    - 8080:8080
+  #  depends_on:
+  #    - postgres
+
+# END keycloak
+

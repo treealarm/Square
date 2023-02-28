@@ -21,7 +21,7 @@ namespace LeafletAlarms.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  [Authorize(AuthenticationSchemes = "Bearer", Roles = "admin,anon")]
+  //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.user)]
   public class MapController : ControllerBase
   {
     private readonly IMapService _mapService;
@@ -475,7 +475,7 @@ namespace LeafletAlarms.Controllers
     
     [HttpPost]
     [Route("UpdateProperties")]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.updater)]
+    //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.updater)]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
     {
       if (string.IsNullOrEmpty(updatedMarker.id))
@@ -521,7 +521,7 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }
 
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.deleter)]
+    //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.deleter)]
     [HttpDelete]
     public async Task<IActionResult> Delete(List<string> ids)
     {

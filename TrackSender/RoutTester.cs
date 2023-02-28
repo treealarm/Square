@@ -23,8 +23,8 @@ namespace TrackSender
 
       try
       {
-        var file2load = @"D:\TESTS\OSM_DATA\great-britain.routerdb";
-        //var file2load = @"D:\TESTS\OSM_DATA\great-britain-latest.osm.pbf";
+        var file2load = @"D:\TESTS\LEAFLET_DATA\OSM_DATA\great-britain.routerdb";
+        //var file2load = @"D:\TESTS\LEAFLET_DATA\OSM_DATA\great-britain-latest.osm.pbf";
 
         using (var stream = new FileInfo(file2load).OpenRead())
         {
@@ -33,7 +33,7 @@ namespace TrackSender
           //routerDb.LoadOsmData(stream, Vehicle.Car); // create the network for cars only.
         }
 
-        //using (var stream = new FileInfo(@"D:\TESTS\OSM_DATA\file.routerdb").Open(FileMode.Create))
+        //using (var stream = new FileInfo(@"D:\TESTS\LEAFLET_DATA\OSM_DATA\file.routerdb").Open(FileMode.Create))
         //{
         //routerDb.AddContracted(routerDb.GetSupportedProfile("car"));
         //  routerDb.Serialize(stream);

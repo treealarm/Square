@@ -8,9 +8,9 @@
       "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}",
       "serviceActions": {
         "leafletalarms": "StartDebugging",
-        "leafletalarms-dapr": "StartWithoutDebugging",
         "routermicroservice": "StartDebugging",
-        "routermicroservice-dapr": "StartWithoutDebugging"
+        "redisservice": "StartWithoutDebugging",
+        "mongoservice": "StartWithoutDebugging"
       }
     }
   }
