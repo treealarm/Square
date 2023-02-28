@@ -1,4 +1,6 @@
-﻿using Domain.ServiceInterfaces;
+﻿using Domain.OptionsModels;
+using Domain.ServiceInterfaces;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -8,7 +10,7 @@ namespace PubSubLib
 {
   public class PubSubService: IPubSubService
   {
-    string redisConnectionString = "localhost:6379";
+    private string redisConnectionString = "localhost:6379";
 
     private object _locker = new object();
     private ConnectionMultiplexer redis;
@@ -16,8 +18,10 @@ namespace PubSubLib
     Dictionary<string, HashSet<Action<string, string>>> _topics =
       new Dictionary<string, HashSet<Action<string, string>>>();
 
-    public PubSubService()
+    public PubSubService(IOptions<DaprSettings> daprSettings)
     {
+      redisConnectionString = daprSettings.Value.reddis_endpoint;
+
       ConfigurationOptions configuration = new ConfigurationOptions();
       configuration.AbortOnConnectFail = false;
       configuration.EndPoints.Add(redisConnectionString);

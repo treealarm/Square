@@ -65,7 +65,8 @@ namespace LeafletAlarms
 
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
-      
+      services.Configure<DaprSettings>(Configuration.GetSection("DaprSettings"));
+
 
       services.AddHostedService<InitHostedService>();
 
