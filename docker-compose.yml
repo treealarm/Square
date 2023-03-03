@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
-      - ${LEAFLET_VOLUME_PATH}/osm_data:/osm_data
+      - //d/tests/leaflet_data/osm_data:/osm_data
 
   routermicroservice:
     image: ${DOCKER_REGISTRY-}routermicroservice
@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: RouterMicroService/Dockerfile
     volumes:
-     - ${LEAFLET_VOLUME_PATH}/osm_data:/osm_data
+     - //d/tests/leaflet_data/osm_data:/osm_data
       
 
   mongoservice:
@@ -32,8 +32,8 @@ services:
     container_name: mongodb
     restart: always
     volumes: 
+      #- ./mongo_data/:/data/db #this option put all into yml folder
       - //d/tests/leaflet_data/mongo_data/:/data/db
-      #- ${LEAFLET_VOLUME_PATH}/mongo_data:/data/db
     ports:
      - "27018:27017"
     expose:
@@ -45,35 +45,42 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
 
 # START keycloack
-  #postgres:
-  #  image: postgres
-  #  volumes:
-  #    - leaflet_data:/postgres/var/lib/postgresql/data
-  #  environment:
-  #    POSTGRES_DB: keycl0ak
-  #    POSTGRES_USER: keycl0ak
-  #    POSTGRES_PASSWORD: password
-  #  ports:
-  #    - 5431:5431
+  postgres:
+    image: postgres
+    volumes:
+      - //d/tests/leaflet_data/postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
 
-  #keycloak:
-  #  build:
-  #    context: services/keycloak
-  #  volumes:
-  #    - leaflet_data:/keycloak/opt/jboss/keycloak/imports
-  #  environment:
-  #    DB_VENDOR: POSTGRES
-  #    DB_ADDR: postgres
-  #    DB_DATABASE: keycl0ak
-  #    DB_USER: keycl0ak
-  #    DB_PASSWORD: password
-  #    KEYCLOAK_USER: administrat0r
-  #    KEYCLOAK_PASSWORD: asc88a8c0ssssqs
-  #    KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
-  #  ports:
-  #    - 8080:8080
-  #  depends_on:
-  #    - postgres
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.0.1
+    #volumes:
+     # - //d/tests/leaflet_data/keycloak_imports:/opt/jboss/keycloak/imports
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+
+      #KC_HOSTNAME_STRICT: false
+
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      #KEYCLOAK_LOGLEVEL: ALL
+      #ROOT_LOGLEVEL: ALL
+      #KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json -Dkeycloak.profile.feature.upload_scripts=enabled
+    command: 
+      - start-dev
+  
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres
 
 # END keycloak
 
