@@ -23,19 +23,25 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace LeafletAlarms
 {
-    public class Startup
+  public class Startup
   {
-    public Startup(IConfiguration configuration, IWebHostEnvironment env)
+    public IConfiguration Configuration { get; }
+    private readonly IWebHostEnvironment _currentEnvironment;
+
+    public Startup(
+      IConfiguration configuration,
+      IWebHostEnvironment env
+    )
     {
       Configuration = configuration;
       _currentEnvironment = env;
     }
 
-    public IConfiguration Configuration { get; }
-    private readonly IWebHostEnvironment _currentEnvironment;
+
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
@@ -55,10 +61,29 @@ namespace LeafletAlarms
       services.Configure<KeycloakSettings>(keyCloackConf);
 
       var kcConfiguration = keyCloackConf.Get<KeycloakSettings>();
+      services.AddSingleton<KeyCloakConnectorService>();
+      string PublicKeyJWT = string.Empty;
 
-      var realmName = kcConfiguration.RealmName;// keyCloackConf.GetValue<string>("RealmName");
-      var PublicKeyJWT = kcConfiguration.PublicKeyJWT;// keyCloackConf.GetValue<string>("PublicKeyJWT");
-      var BaseAddr = kcConfiguration.BaseAddr;// keyCloackConf.GetValue<string>("BaseAddr");
+      using (var sp = services.BuildServiceProvider())
+      {
+        var kcService = sp.GetService<KeyCloakConnectorService>();
+        var realmInfo = kcService.GetRealmInfo().Result;
+
+        if (realmInfo != null)
+        {
+          PublicKeyJWT = realmInfo.public_key;
+        }
+      }
+
+      var realmName = kcConfiguration.RealmName;
+
+      if (string.IsNullOrEmpty(PublicKeyJWT))
+      {
+        PublicKeyJWT = kcConfiguration.PublicKeyJWT;
+      }
+
+      
+      var BaseAddr = kcConfiguration.BaseAddr;
 
       //"http://localhost:8080/realms/myrealm"
       Uri? validIssuer;
@@ -76,6 +101,7 @@ namespace LeafletAlarms
         validIssuer.ToString()
       );
 
+      
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
       services.Configure<DaprSettings>(Configuration.GetSection("DaprSettings"));
