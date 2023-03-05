@@ -14,7 +14,7 @@ services:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
-      - //d/tests/leaflet_data/osm_data:/osm_data
+      - ./leaflet_data/osm_data:/osm_data
 
   routermicroservice:
     image: ${DOCKER_REGISTRY-}routermicroservice
@@ -24,7 +24,7 @@ services:
       context: .
       dockerfile: RouterMicroService/Dockerfile
     volumes:
-     - //d/tests/leaflet_data/osm_data:/osm_data
+     - ./leaflet_data/osm_data:/osm_data
       
 
   mongoservice:
@@ -33,7 +33,7 @@ services:
     restart: always
     volumes: 
       #- ./mongo_data/:/data/db #this option put all into yml folder
-      - //d/tests/leaflet_data/mongo_data/:/data/db
+      - ./leaflet_data/mongo_data/:/data/db
     ports:
      - "27018:27017"
     expose:
@@ -48,7 +48,7 @@ services:
   postgres:
     image: postgres
     volumes:
-      - //d/tests/leaflet_data/postgres_data:/var/lib/postgresql/data
+      - ./leaflet_data/postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
@@ -59,7 +59,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:21.0.1
     volumes:
-      - //d/tests/leaflet_data/keycloak_imports:/opt/keycloak/data/import
+      - ./keycloak_imports:/opt/keycloak/data/import
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak

@@ -24,6 +24,9 @@ Bin/
 obj/
 Obj/
 
+#docker data
+leaflet_data/
+
 # Visual Studio 2015 cache/options directory
 .vs/
 /wwwroot/dist/
