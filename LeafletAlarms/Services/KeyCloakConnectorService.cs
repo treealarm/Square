@@ -20,6 +20,15 @@ namespace LeafletAlarms.Authentication
     private DateTime _tokenExpiration = new DateTime();
     private DateTime _refreshTokenExpiration = new DateTime();
     private readonly IOptions<KeycloakSettings> _keyCloakSettings;
+    public string GetRealmName()
+    {
+      return _keyCloakSettings.Value.RealmName;
+    }
+
+    public string GetBaseAddr()
+    {
+      return _keyCloakSettings.Value.BaseAddr;
+    }
 
     public KeyCloakConnectorService(IOptions<KeycloakSettings> keyCloakSettings)
     {

@@ -63,44 +63,7 @@ namespace LeafletAlarms
       var kcConfiguration = keyCloackConf.Get<KeycloakSettings>();
       services.AddSingleton<KeyCloakConnectorService>();
 
-      string PublicKeyJWT = string.Empty;
-
-      using (var sp = services.BuildServiceProvider())
-      {
-        var kcService = sp.GetService<KeyCloakConnectorService>();
-        var realmInfo = kcService.GetRealmInfo().Result;
-
-        if (realmInfo != null)
-        {
-          PublicKeyJWT = realmInfo.public_key;
-        }
-      }
-
-      var realmName = kcConfiguration.RealmName;
-
-      if (string.IsNullOrEmpty(PublicKeyJWT))
-      {
-        Console.WriteLine("Wrong PublicKeyJWT");
-      }
-
-      
-      var BaseAddr = kcConfiguration.BaseAddr;
-
-      //"http://localhost:8080/realms/myrealm"
-      Uri? validIssuer;
-      if (Uri.TryCreate(
-        new Uri(BaseAddr, UriKind.Absolute),
-        new Uri($"realms/{realmName}", UriKind.Relative),
-        out validIssuer)
-      )
-      {
-
-      }
-
-      services.ConfigureJWT(_currentEnvironment.IsDevelopment(),
-        PublicKeyJWT,//Realm settings/Keys/RS256(public)
-        validIssuer.ToString()
-      );
+      services.ConfigureJWT();
 
       
       services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
