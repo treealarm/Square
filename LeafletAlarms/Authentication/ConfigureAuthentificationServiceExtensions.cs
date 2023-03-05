@@ -98,7 +98,7 @@ namespace LeafletAlarms.Authentication
         o.TokenValidationParameters = new TokenValidationParameters
         {
           ValidateAudience = false,
-          ValidateIssuer = true,
+          ValidateIssuer = false,
           ValidIssuers = new[] { ValidIssuer },
           ValidateIssuerSigningKey = true,
           IssuerSigningKey = BuildRSAKey(publicKeyJWT),

@@ -54,9 +54,11 @@ namespace LeafletAlarms
 
       services.Configure<KeycloakSettings>(keyCloackConf);
 
-      var realmName = keyCloackConf.GetValue<string>("RealmName");
-      var PublicKeyJWT = keyCloackConf.GetValue<string>("PublicKeyJWT");
-      var BaseAddr = keyCloackConf.GetValue<string>("BaseAddr");
+      var kcConfiguration = keyCloackConf.Get<KeycloakSettings>();
+
+      var realmName = kcConfiguration.RealmName;// keyCloackConf.GetValue<string>("RealmName");
+      var PublicKeyJWT = kcConfiguration.PublicKeyJWT;// keyCloackConf.GetValue<string>("PublicKeyJWT");
+      var BaseAddr = kcConfiguration.BaseAddr;// keyCloackConf.GetValue<string>("BaseAddr");
 
       //"http://localhost:8080/realms/myrealm"
       Uri? validIssuer;
@@ -70,7 +72,7 @@ namespace LeafletAlarms
       }
 
       services.ConfigureJWT(_currentEnvironment.IsDevelopment(),
-        PublicKeyJWT,
+        PublicKeyJWT,//Realm settings/Keys/RS256(public)
         validIssuer.ToString()
       );
 

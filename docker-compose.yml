@@ -78,6 +78,6 @@ services:
       - 8080:8080
     depends_on:
       - postgres
-
+# command2export realm:docker exec -ti leaflet-keycloak-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
 # END keycloak
 

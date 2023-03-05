@@ -29,7 +29,7 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
       else {
         localStorage.setItem('kc_token', _kc.token);
         localStorage.setItem('kc_refreshToken', _kc.refreshToken);
-        console.log('roles',_kc.realmAccess.roles);
+        console.log('roles', _kc.realmAccess.roles);        
       }
 
       onAuthenticatedCallback();

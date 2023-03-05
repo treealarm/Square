@@ -98,32 +98,34 @@ namespace LeafletAlarms.Controllers
         return;
       }
 
-      var client = new HttpClient();
-
-      Uri url;
-
-      if (!Uri.TryCreate(
-        new Uri(_keyCloakSettings.Value.BaseAddr, UriKind.Absolute),
-        new Uri($"realms/master/protocol/openid-connect/token", UriKind.Relative),
-        out url)
-      )
+      try
       {
-        return;
-      }
+        var client = new HttpClient();
 
-      var request = new HttpRequestMessage(HttpMethod.Post,
-        url.ToString()
-      );
+        Uri url;
 
-      request.Headers.Add("cache-control", "no-cache");
-      request.Headers.Add(
-         HttpRequestHeader.ContentType.ToString(), //useless
-         "application/x-www-form-urlencoded"
-      );
+        if (!Uri.TryCreate(
+          new Uri(_keyCloakSettings.Value.BaseAddr, UriKind.Absolute),
+          new Uri($"realms/master/protocol/openid-connect/token", UriKind.Relative),
+          out url)
+        )
+        {
+          return;
+        }
 
-      client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        var request = new HttpRequestMessage(HttpMethod.Post,
+          url.ToString()
+        );
 
-      var dic = new Dictionary<string, string>
+        request.Headers.Add("cache-control", "no-cache");
+        request.Headers.Add(
+           HttpRequestHeader.ContentType.ToString(), //useless
+           "application/x-www-form-urlencoded"
+        );
+
+        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+        var dic = new Dictionary<string, string>
       {
           { "grant_type", "password" },
           { "client_id", _keyCloakSettings.Value.admin_client_id },
@@ -131,26 +133,31 @@ namespace LeafletAlarms.Controllers
           { "password", _keyCloakSettings.Value.admin_password }
       };
 
-      if (_token != null &&
-        !string.IsNullOrEmpty(_token.refresh_token) &&
-        _tokenExpiration > DateTime.Now
-      )
-      {
-        dic["grant_type"] = "refresh_token";
-        dic["refresh_token"] = _token.refresh_token;
+        if (_token != null &&
+          !string.IsNullOrEmpty(_token.refresh_token) &&
+          _tokenExpiration > DateTime.Now
+        )
+        {
+          dic["grant_type"] = "refresh_token";
+          dic["refresh_token"] = _token.refresh_token;
+        }
+
+        _token = null;
+        request.Content = new FormUrlEncodedContent(dic);
+
+
+        HttpResponseMessage resp = await client.SendAsync(request);
+        var str = await resp.Content.ReadAsStringAsync();
+
+        _token = JsonSerializer.Deserialize<Oath2TokenModel>(str);
+
+        _refreshTokenExpiration = DateTime.Now.AddSeconds(_token.refresh_expires_in);
+        _tokenExpiration = DateTime.Now.AddSeconds(_token.expires_in);
       }
-
-      _token = null;
-      request.Content = new FormUrlEncodedContent(dic);
-      
-
-      HttpResponseMessage resp = await client.SendAsync(request);
-      var str = await resp.Content.ReadAsStringAsync();
-
-      _token = JsonSerializer.Deserialize<Oath2TokenModel>(str);
-
-      _refreshTokenExpiration = DateTime.Now.AddSeconds(_token.refresh_expires_in);
-      _tokenExpiration = DateTime.Now.AddSeconds(_token.expires_in);
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
     }
 
     [HttpGet()]
