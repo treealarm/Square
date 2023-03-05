@@ -10,6 +10,7 @@ services:
     image: ${DOCKER_REGISTRY-}leafletalarms
     depends_on:
      - mongoservice
+     - keycloak
     build:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
