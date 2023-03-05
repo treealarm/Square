@@ -62,6 +62,7 @@ namespace LeafletAlarms
 
       var kcConfiguration = keyCloackConf.Get<KeycloakSettings>();
       services.AddSingleton<KeyCloakConnectorService>();
+
       string PublicKeyJWT = string.Empty;
 
       using (var sp = services.BuildServiceProvider())
@@ -79,7 +80,7 @@ namespace LeafletAlarms
 
       if (string.IsNullOrEmpty(PublicKeyJWT))
       {
-        PublicKeyJWT = kcConfiguration.PublicKeyJWT;
+        Console.WriteLine("Wrong PublicKeyJWT");
       }
 
       

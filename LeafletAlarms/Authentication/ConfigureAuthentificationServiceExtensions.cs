@@ -92,9 +92,6 @@ namespace LeafletAlarms.Authentication
 
       AuthenticationBuilder.AddJwtBearer(o =>
       {
-
-        #region == JWT Token Validation ===
-
         o.TokenValidationParameters = new TokenValidationParameters
         {
           ValidateAudience = false,
@@ -104,10 +101,6 @@ namespace LeafletAlarms.Authentication
           IssuerSigningKey = BuildRSAKey(publicKeyJWT),
           ValidateLifetime = true
         };
-
-        #endregion
-
-        #region === Event Authentification Handlers ===
 
         o.Events = new JwtBearerEvents()
         {
@@ -130,8 +123,6 @@ namespace LeafletAlarms.Authentication
             return c.Response.WriteAsync("An error occured processing your authentication.");
           }
         };
-
-        #endregion
 
       });
     }
