@@ -24,7 +24,20 @@ namespace LeafletAlarms.Authentication
       if (name == JwtBearerDefaults.AuthenticationScheme)
       {
         //Realm settings/Keys/RS256(public)
-        var publicKeyJWT = _myService.GetRealmInfo().Result.public_key;
+        string publicKeyJWT = string.Empty;
+        for (int i = 0; i < 10; i++)
+        {
+          publicKeyJWT = _myService.GetRealmInfo().Result?.public_key;
+
+          if (!string.IsNullOrEmpty(publicKeyJWT))
+          {
+            Console.WriteLine($"publicKeyJWT:{publicKeyJWT}");
+            break;
+          }
+
+          Console.WriteLine($"get publicKeyJWT: FAILED");
+        }
+          
 
         var realmName = _myService.GetRealmName();
 

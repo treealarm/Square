@@ -11,6 +11,7 @@ services:
     depends_on:
      - mongoservice
      - keycloak
+     - redis
     build:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
@@ -40,7 +41,7 @@ services:
     expose:
      - "27017"
 
-  redisservice:
+  redis:
     image: redis
     environment:
       - ALLOW_EMPTY_PASSWORD=yes

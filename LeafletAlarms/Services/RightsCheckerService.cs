@@ -1,6 +1,8 @@
 ﻿using Domain.ServiceInterfaces;
 using LeafletAlarms.Authentication;
 using Microsoft.AspNetCore.Http;
+using OsmSharp.API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -41,7 +43,7 @@ namespace LeafletAlarms.Services
       HashSet<string> roles = new HashSet<string>();
 
       foreach (var item in _httpContextAccessor.HttpContext.User.Identities)
-      {
+      { 
         var temp = item.Claims
           .Where(c => c.Type == ClaimTypes.Role || c.Type == ClaimTypes.Name)
           .Select(c => c.Value)
@@ -49,6 +51,8 @@ namespace LeafletAlarms.Services
 
         roles.UnionWith(temp);
       }
+
+      Console.WriteLine($"CheckForRight: {string.Join(",", roles)}");
 
       var ret = new HashSet<string>();
 

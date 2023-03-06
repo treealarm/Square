@@ -21,7 +21,7 @@ namespace LeafletAlarms.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.user)]
+  [Authorize(AuthenticationSchemes = "Bearer")]
   public class MapController : ControllerBase
   {
     private readonly IMapService _mapService;
@@ -380,7 +380,7 @@ namespace LeafletAlarms.Controllers
       var geo = await _geoService.GetGeoAsync(box);
 
       if (!User.IsInRole(RoleConstants.admin))
-      {
+      {        
         var toView = await _rightChecker.CheckForView(geo.Keys.ToList());
         geo = geo.Where(kvp => toView.Contains(kvp.Key))
           .ToDictionary(ent => ent.Key, ent => ent.Value);
@@ -475,7 +475,7 @@ namespace LeafletAlarms.Controllers
     
     [HttpPost]
     [Route("UpdateProperties")]
-    //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.updater)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.power_user)]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
     {
       if (string.IsNullOrEmpty(updatedMarker.id))
@@ -521,7 +521,7 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }
 
-    //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.deleter)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.power_user)]
     [HttpDelete]
     public async Task<IActionResult> Delete(List<string> ids)
     {
