@@ -10,28 +10,24 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using TrackSender.Authentication;
 
 namespace TrackSender
 {
   internal class TestClient
   {
-    HttpClient client = new HttpClient();
+    HttpClient _client = new HttpClient();
 
-    public TestClient()
+    public TestClient(HttpClient client)
     {
-      // Update port # in the following line.
-      
-      client.BaseAddress = new Uri(App.Default.ServerAddress);
-      client.DefaultRequestHeaders.Accept.Clear();
-      client.DefaultRequestHeaders.Accept.Add(
-          new MediaTypeWithQualityHeaderValue("application/json"));
+      _client = client;
     }
     public async Task<FiguresDTO> UpdateTracksAsync(FiguresDTO figure, string action)
     {
       try
       {
         HttpResponseMessage response =
-        await client.PostAsJsonAsync(
+        await _client.PostAsJsonAsync(
           $"api/Tracks/{action}", figure);
 
       response.EnsureSuccessStatusCode();
@@ -67,7 +63,7 @@ namespace TrackSender
     public async Task<FiguresDTO> UpdateFiguresAsync(FiguresDTO figure)
     {
       HttpResponseMessage response =
-        await client.PostAsJsonAsync($"api/map/UpdateFigures", figure);
+        await _client.PostAsJsonAsync($"api/map/UpdateFigures", figure);
 
       response.EnsureSuccessStatusCode();
 
@@ -90,7 +86,7 @@ namespace TrackSender
     public async Task<BaseMarkerDTO> UpdateBase(BaseMarkerDTO updatedMarker)
     {
       HttpResponseMessage response =
-        await client.PostAsJsonAsync($"api/map/UpdateBase", updatedMarker);
+        await _client.PostAsJsonAsync($"api/map/UpdateBase", updatedMarker);
 
       response.EnsureSuccessStatusCode();
 
@@ -112,17 +108,24 @@ namespace TrackSender
 
     public async Task<List<BaseMarkerDTO>> GetByName(string name)
     {
-      HttpResponseMessage response =
-        await client.PostAsJsonAsync(
+      try
+      {
+        HttpResponseMessage response =
+        await _client.PostAsJsonAsync(
           $"api/Map/GetByName", name);
 
-      response.EnsureSuccessStatusCode();
+        response.EnsureSuccessStatusCode();
 
-      // Deserialize the updated product from the response body.
-      var s = await response.Content.ReadAsStringAsync();
+        // Deserialize the updated product from the response body.
+        var s = await response.Content.ReadAsStringAsync();
 
-      var json = JsonSerializer.Deserialize<List<BaseMarkerDTO>>(s);
-      return json;
+        var json = JsonSerializer.Deserialize<List<BaseMarkerDTO>>(s);
+        return json;
+      }
+      catch(Exception ex)
+      {
+        return null;
+      }
     }
 
     public async Task<FiguresDTO> GetByParams(
@@ -146,7 +149,7 @@ namespace TrackSender
         });
 
         HttpResponseMessage response =
-          await client.PostAsJsonAsync(
+          await _client.PostAsJsonAsync(
             $"api/Map/GetByParams", filter);
 
         response.EnsureSuccessStatusCode();
@@ -167,7 +170,7 @@ namespace TrackSender
     public async Task<FiguresDTO> GetByIds(List<string> ids)
     {
       HttpResponseMessage response =
-        await client.PostAsJsonAsync(
+        await _client.PostAsJsonAsync(
           $"api/Map/GetByIds", ids);
 
       response.EnsureSuccessStatusCode();
@@ -182,7 +185,7 @@ namespace TrackSender
     public async Task<string> Empty(string ids)
     {
       HttpResponseMessage response =
-        await client.PostAsJsonAsync(
+        await _client.PostAsJsonAsync(
           $"api/Tracks/Empty", ids);
 
       response.EnsureSuccessStatusCode();
@@ -198,7 +201,7 @@ namespace TrackSender
       try
       {
         HttpResponseMessage response =
-                await client.PostAsJsonAsync(
+                await _client.PostAsJsonAsync(
                   $"api/States/UpdateStates", newObjs);
 
         response.EnsureSuccessStatusCode();

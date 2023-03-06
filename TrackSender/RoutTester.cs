@@ -11,6 +11,7 @@ using Domain.GeoDTO;
 using Domain;
 using Domain.ServiceInterfaces;
 using Itinero.LocalGeo;
+using System.Net.Http;
 
 namespace TrackSender
 {
@@ -65,10 +66,10 @@ namespace TrackSender
       return route.Shape;
     }
 
-    static async Task RunAsync()
+    static async Task RunAsync(HttpClient client)
     {
       var root_coords = await RunRouteAsync();
-      var TestClient = new TestClient();
+      var TestClient = new TestClient(client);
 
       if (root_coords != null)
       {

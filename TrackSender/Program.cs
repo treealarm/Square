@@ -13,6 +13,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using TrackSender.Authentication;
 
 namespace TrackSender
 {
@@ -30,8 +31,21 @@ namespace TrackSender
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         CancellationToken token = tokenSource.Token;
 
-        var testMove = new TestMovements();
-        var testStates = new TestStates();
+        HttpClient _client = new HttpClient();
+        _client.BaseAddress = new Uri(App.Default.ServerAddress);
+        _client.DefaultRequestHeaders.Accept.Clear();
+        _client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+
+        KeyCloakConnectorService kcService = new KeyCloakConnectorService();
+        kcService.GetOath2Token().Wait();
+
+        _client.DefaultRequestHeaders.Add("authorization", "Bearer " + kcService.GetToken());
+        _client.DefaultRequestHeaders.Add("cache-control", "no-cache");
+
+
+        var testMove = new TestMovements(_client);
+        var testStates = new TestStates(_client);
         var moscowBuilder = new NominatimProcessor();
         List<Task> tasks = new List<Task>();
 

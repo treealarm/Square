@@ -12,7 +12,7 @@ namespace TrackSender {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.5.0.0")]
     internal sealed partial class App : global::System.Configuration.ApplicationSettingsBase {
         
         private static App defaultInstance = ((App)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new App())));
@@ -25,7 +25,7 @@ namespace TrackSender {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://localhost:44307/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:8000/")]
         public string ServerAddress {
             get {
                 return ((string)(this["ServerAddress"]));

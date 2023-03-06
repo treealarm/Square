@@ -1,8 +1,8 @@
 ﻿using Domain.GeoDBDTO;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Xml.Linq;
 
 namespace TrackSender.Models
 {
@@ -50,24 +50,6 @@ namespace TrackSender.Models
   public class Names
   {
     public string name { get; set; }
-
-    [JsonPropertyName("name:be")]
-    public string NameBe { get; set; }
-
-    [JsonPropertyName("name:ca")]
-    public string NameCa { get; set; }
-
-    [JsonPropertyName("name:de")]
-    public string NameDe { get; set; }
-
-    [JsonPropertyName("name:en")]
-    public string NameEn { get; set; }
-
-    [JsonPropertyName("name:es")]
-    public string NameEs { get; set; }
-
-    [JsonPropertyName("name:ru")]
-    public string NameRu { get; set; }
     public string @ref { get; set; }
   }
 
@@ -87,25 +69,31 @@ namespace TrackSender.Models
     { 
       get
       {
+        var names_temp = new Names();
+
         try
-        {
-          var names_temp = _names as Names;
-
-          if (names_temp == null)
+        {          
+          try
           {
-            return new Names();
+            var s = JsonSerializer.Serialize(_names);
+            var d = JsonSerializer.Deserialize<Names>(s);
+            names_temp.name = d.name;
           }
+          catch { }
 
-          return names_temp;
+          if (string.IsNullOrEmpty(names_temp.name))
+          {
+            names_temp.name = localname;
+          }          
         }
         catch (Exception) { }
 
-        return new Names();
+        return names_temp;
       }
     }
 
     [JsonPropertyName("names")]
-    public object _names { get; set; }
+    public dynamic _names { get; set; }
     public object addresstags { get; set; }
     public object housenumber { get; set; }
     public object calculated_postcode { get; set; }

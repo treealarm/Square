@@ -20,11 +20,15 @@ namespace TrackSender
 {
   internal class TestStates
   {   
-    TestClient _testClient = new TestClient();
+    TestClient _testClient;
     FiguresDTO m_figures = new FiguresDTO();
     
     private Random _random = new Random();
     private string _main_id = null;
+    public TestStates(HttpClient client) 
+    { 
+      _testClient = new TestClient(client);
+    }
     public async Task RunAsync(CancellationToken token, List<Task> tasks)
     {
       await BuildMoscow();
@@ -395,6 +399,7 @@ namespace TrackSender
         var t2 = DateTime.Now;
         var delay = (t2 - t1).TotalSeconds;
         Console.WriteLine($"UpdateStates {count}: ->{delay}<-");
+        await Task.Delay(1000);
       }
       
     }

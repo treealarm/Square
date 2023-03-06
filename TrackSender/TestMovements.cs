@@ -14,18 +14,20 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics.Metrics;
 using System.Threading;
 using Domain.GeoDTO;
+using System.Net.Http;
 
 namespace TrackSender
 {
   internal class TestMovements
   {
-    TestClient _testClient = new TestClient();
+    TestClient _testClient;
     //TrackRouter _router;
     FiguresDTO _figures = new FiguresDTO();
     Random _random = new Random();
 
-    public TestMovements()
+    public TestMovements(HttpClient client)
     {
+      _testClient = new TestClient(client);
       _figures.figs = new List<FigureGeoDTO>();
 
       //var settings = new RoutingSettings()
@@ -339,6 +341,7 @@ namespace TrackSender
         }
 
         Console.WriteLine($"UpdateTracks:{resFolder}");
+        await Task.Delay(1000);
         await _testClient.UpdateTracksAsync(figures, "UpdateTracks");
       }
     }
