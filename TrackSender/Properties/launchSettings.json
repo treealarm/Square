@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TrackSender": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
