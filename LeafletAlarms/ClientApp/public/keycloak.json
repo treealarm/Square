@@ -1,6 +1,6 @@
 {
   "realm": "myrealm",
-  "auth-server-url": "http://localhost:8080/",
+  "auth-server-url": "http://keycloakservice:8080/",
   "ssl-required": "external",
   "resource": "pubclient",
   "public-client": true,

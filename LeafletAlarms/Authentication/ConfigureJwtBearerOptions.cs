@@ -67,12 +67,13 @@ namespace LeafletAlarms.Authentication
         o.Events = new JwtBearerEvents()
         {
           OnTokenValidated = c =>
-          {
-            Console.WriteLine("User successfully authenticated");
+          {            
+            Console.WriteLine($"User successfully authenticated,{c.Request.Path}");
             return Task.CompletedTask;
           },
           OnAuthenticationFailed = c =>
           {
+            Console.WriteLine($"User authentication failed,{c.Request.Path}");
             c.NoResult();
 
             c.Response.StatusCode = 500;

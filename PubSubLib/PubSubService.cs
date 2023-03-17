@@ -2,9 +2,6 @@
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace PubSubLib
 {
@@ -35,9 +32,9 @@ namespace PubSubLib
         ISubscriber sub = redis.GetSubscriber();
         sub.PublishAsync(channel, message);
       }
-      catch (Exception)
-      { }
+      catch (Exception ex) { Console.WriteLine(ex.ToString()); }
     }
+
     public async Task<long> Publish(string channel, string message)
     {
       try
@@ -45,8 +42,10 @@ namespace PubSubLib
         ISubscriber sub = redis.GetSubscriber();
         return await sub.PublishAsync(channel, message);
       }
-      catch(Exception)
-      { }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
       return 0;
     }
 
@@ -75,8 +74,10 @@ namespace PubSubLib
             {
               action(sChan, sMsg);
             }
-            catch(Exception)
-            { }
+            catch(Exception ex)
+            {
+              Console.WriteLine(ex.Message);
+            }
           }
         });
       }
@@ -107,8 +108,10 @@ namespace PubSubLib
           ISubscriber subScriber = redis.GetSubscriber();
           await subScriber.SubscribeAsync(channel, RedisHandler);
         }
-        catch(Exception)
-        { }
+        catch(Exception ex)
+        { 
+          Console.WriteLine(ex.ToString());
+        }
       }      
     }
 

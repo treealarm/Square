@@ -74,6 +74,12 @@ namespace LeafletAlarmsRouter
         try
         {
           var route = instance.Calculate(profile.FullName, list_native.ToArray());
+
+          if (route.IsError)
+          {
+            Console.WriteLine($"Route error:{route.ErrorMessage}");
+            return null;
+          }
           return ConvertNativeToCoords(route.Value.Shape.ToList());
         }
         catch(Exception ex)

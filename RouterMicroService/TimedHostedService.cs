@@ -66,6 +66,8 @@ namespace RouterMicroService
 
       while (!_cancellationTokenSource.IsCancellationRequested)
       {
+        await Task.Delay(1);
+
         if (!_router.IsMapExist(_routeInstanse))
         {
           await Task.Delay(1000);

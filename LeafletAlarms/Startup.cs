@@ -45,17 +45,6 @@ namespace LeafletAlarms
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddCors(options =>
-      {
-        options.AddDefaultPolicy(
-            builder =>
-            {
-              builder.WithOrigins("https://localhost", "http://localhost")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod(); //THIS LINE RIGHT HERE IS WHAT YOU NEED
-            });
-      });
-
       var keyCloackConf = Configuration.GetSection("KeyCloack");
 
       services.Configure<KeycloakSettings>(keyCloackConf);
@@ -217,7 +206,14 @@ namespace LeafletAlarms
         }
         else
         {
-          await next();
+          try
+          {
+            await next();
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine(ex.ToString());
+          }          
         }
       });
 

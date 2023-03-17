@@ -5,7 +5,7 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>6f63558d-5042-4cb6-ac13-b2df43c50d42</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceName>leafletalarms</DockerServiceName>
+    <DockerServiceName>leafletalarmsservice</DockerServiceName>
   </PropertyGroup>
   <PropertyGroup>
     <DockerServiceUrl>{Scheme}://{ServiceHost}:{ServicePort}</DockerServiceUrl>

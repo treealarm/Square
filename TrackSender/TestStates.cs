@@ -332,6 +332,13 @@ namespace TrackSender
       {
         var figures = await _testClient.GetByParams("moscow_state", "true", start_id, 10000);
 
+        if (figures == null)
+        {
+          Console.WriteLine("GetByParams returned null");
+          await Task.Delay(1000);
+          continue;
+        }
+
         var count = figures.figs.Count;
         total_count += count;
 

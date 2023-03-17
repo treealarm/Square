@@ -44,7 +44,7 @@ namespace TrackSender.Authentication
 
     public string GetBaseAddr()
     {
-      return "http://keycloak:8080";
+      return "http://keycloakservice:8080";
     }
 
     public KeyCloakConnectorService()

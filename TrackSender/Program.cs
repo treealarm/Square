@@ -72,7 +72,7 @@ namespace TrackSender
 
         testMove.TestLogicAsync(token, tasks);
 
-        Console.WriteLine("Press any key to stop emulation\n");
+        Console.WriteLine("Press ESC to stop emulation\n");
         ConsoleKeyInfo key = Console.ReadKey();
 
         while (key.Key != ConsoleKey.Escape)
