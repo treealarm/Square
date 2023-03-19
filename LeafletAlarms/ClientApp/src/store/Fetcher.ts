@@ -22,7 +22,6 @@ export  async function DoFetch(input: RequestInfo, init?: RequestInit): Promise<
           Authorization: 'Bearer ' + UserService.getToken()
         }
       }
-      init.headers
     }
   }
 

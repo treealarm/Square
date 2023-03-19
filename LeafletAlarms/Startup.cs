@@ -30,15 +30,12 @@ namespace LeafletAlarms
   public class Startup
   {
     public IConfiguration Configuration { get; }
-    private readonly IWebHostEnvironment _currentEnvironment;
 
     public Startup(
-      IConfiguration configuration,
-      IWebHostEnvironment env
+      IConfiguration configuration
     )
     {
       Configuration = configuration;
-      _currentEnvironment = env;
     }
 
 
@@ -165,7 +162,12 @@ namespace LeafletAlarms
         app.UseHsts();
       }
 
-      app.UseHttpsRedirection();
+      app.UseCors(builder => builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader());
+
+      //app.UseHttpsRedirection();
       app.UseStaticFiles();
       app.UseSpaStaticFiles();
 

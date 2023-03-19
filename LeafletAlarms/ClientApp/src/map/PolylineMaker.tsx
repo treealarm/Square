@@ -15,7 +15,7 @@ import {
 
 import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
 import * as ObjPropsStore from '../store/ObjPropsStates';
-import { isExtraneousPopstateEvent } from 'history/DOMUtils';
+
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
