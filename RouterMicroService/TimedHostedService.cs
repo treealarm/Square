@@ -4,19 +4,22 @@ using DbLayer.Models;
 using DbLayer.Services;
 using Domain;
 using Domain.GeoDBDTO;
+using Domain.GeoDTO;
+using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
+using PubSubLib;
+using System.Text.Json;
 using System.Threading;
 using static DbLayer.Models.DBRoutLine;
 
 namespace RouterMicroService
 {
-  public class TimedHostedService : IHostedService, IDisposable
+  public class TimedHostedService : BackgroundService
   {
     private int executionCount = 0;
     private readonly ILogger<TimedHostedService> _logger;
-    private Task? _timer;
     private CancellationTokenSource _cancellationTokenSource
       = new CancellationTokenSource();
     private IRoutService _routService;
@@ -24,6 +27,7 @@ namespace RouterMicroService
     private readonly DaprClient _daprClient;
     private string _routeInstanse;
     private readonly ITrackService _tracksService;
+    private IPubSubService _pubsub;
 
     public TimedHostedService(
       ILogger<TimedHostedService> logger,
@@ -31,7 +35,8 @@ namespace RouterMicroService
       IRoutService routService,
       DaprClient daprClient,
       IOptions<RoutingSettings> routingSettings,
-      ITrackService tracksService
+      ITrackService tracksService,
+      IPubSubService pubsub
      )
     {
       _routService = routService;
@@ -40,20 +45,17 @@ namespace RouterMicroService
       _logger = logger;
       _daprClient = daprClient;
       _routeInstanse = routingSettings.Value.RouteInstanse;
-    }
+      _pubsub = pubsub;
+  }
 
     // 
-    public Task StartAsync(CancellationToken stoppingToken)
+    public async override Task StartAsync(CancellationToken cancellationToken)
     {
       _logger.LogInformation("Timed Hosted Service running.");
-
-      _timer = new Task(() => DoWork(), _cancellationTokenSource.Token);
-      _timer.Start();
-
-      return Task.CompletedTask;
+      await _pubsub.Subscribe(Topics.OnRequestRoutes, OnRequestRoutes);
     }
 
-    private async void DoWork()
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
       //using (StreamWriter sr = new StreamWriter(@"/osm_data/tmp1234.txt"))
       //{
@@ -72,9 +74,9 @@ namespace RouterMicroService
         {
           await Task.Delay(1000);
           continue;
-        }        
+        }
 
-        var notProcessed = await _routService.GetNotProcessedAsync(100);
+        List<RoutLineDTO> notProcessed = new List<RoutLineDTO>();
 
         if (notProcessed.Count == 0)
         {
@@ -87,13 +89,12 @@ namespace RouterMicroService
         foreach (var routLine in notProcessed)
         {
           var res = await ProcessSingleRout(routLine);
+
           if (res)
           {
             routes.Add(routLine);
           }          
         }
-
-        await _routService.DeleteManyAsync(notProcessed.Select(t => t.id).ToList());
 
         if (routes.Count > 0)
         {
@@ -146,7 +147,6 @@ namespace RouterMicroService
 
           routLine.ts_start = track1.timestamp;
           routLine.id_start = track1.id;
-          routLine.processed = RoutLineDTO.EntityType.processsed;
         }
         else
         {
@@ -162,18 +162,53 @@ namespace RouterMicroService
       return true;
     }
 
-    public Task StopAsync(CancellationToken stoppingToken)
+    public async override Task StopAsync(CancellationToken cancellationToken)
     {
+      await _pubsub.Unsubscribe(Topics.OnRequestRoutes, OnRequestRoutes);
       _logger.LogInformation("Timed Hosted Service is stopping.");
       _cancellationTokenSource.Cancel();
-      _timer?.Wait();
-
-      return Task.CompletedTask;
     }
 
-    public void Dispose()
+    private void OnRequestRoutes(string channel, string message)
     {
-      _timer?.Dispose();
+      var ev = JsonSerializer.Deserialize<List<string>>(message);
+
+      if (ev == null)
+      {
+        return;
+      }
+    }
+
+    private async Task BuildRoutes(List<TrackPointDTO> trackPointsInserted)
+    {
+      var routs = new List<RoutLineDTO>();
+
+      foreach (var trackPoint in trackPointsInserted)
+      {
+        if (trackPoint.figure.location is not GeometryCircleDTO)
+        {
+          continue;
+        }
+
+        {
+          var newPoint = trackPoint;
+          var newRout = new RoutLineDTO();
+
+          newRout.id = newPoint.id;
+          newRout.figure = new GeoObjectDTO();
+          newRout.figure.id = newPoint.figure.id;
+          newRout.figure.zoom_level = newPoint.figure.zoom_level;
+
+          newRout.id_end = newPoint.id;
+          newRout.ts_end = newPoint.timestamp;
+          routs.Add(newRout);
+        }
+      }
+
+      if (routs.Count > 0)
+      {
+        await _routService.InsertManyAsync(routs);
+      }
     }
   }
 }

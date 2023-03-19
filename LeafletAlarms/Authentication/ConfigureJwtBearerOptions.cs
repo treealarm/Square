@@ -25,6 +25,7 @@ namespace LeafletAlarms.Authentication
       {
         //Realm settings/Keys/RS256(public)
         string publicKeyJWT = string.Empty;
+
         for (int i = 0; i < 10; i++)
         {
           publicKeyJWT = _myService.GetRealmInfo().Result?.public_key;

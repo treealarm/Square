@@ -12,8 +12,8 @@ import {
   useMapEvents,
   Circle
 } from 'react-leaflet'
-
-
+import { LeafletMouseEvent } from 'leaflet';
+import { useAppDispatch } from '..';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -36,9 +36,22 @@ function TrackPolyline(props: any) {
   );
 }
 
-function TrackCircle(props: any) {  
+function TrackCircle(props: any) { 
+
+  const appDispatch = useAppDispatch();
+
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord as any;
+  let track_id = props.track_id;
+
+  const eventHandlers = React.useMemo(
+    () => ({
+      click(event: LeafletMouseEvent) {
+        appDispatch<any>(TracksStore.actionCreators.selectRouts([track_id]));
+      }
+    }),
+    [track_id],
+  )
 
   return (
     <React.Fragment>
@@ -46,6 +59,7 @@ function TrackCircle(props: any) {
         pathOptions={props.pathOptions}
         center={positions}
         radius={figure.radius}
+        eventHandlers={eventHandlers}
       >
       </Circle>
     </React.Fragment>
@@ -82,6 +96,8 @@ function CommonTrack(props: any) {
         <TrackCircle
           figure={figure}
           pathOptions={props.pathOptions}
+          key={props.key}
+          track_id={props.track_id}
         >
         </TrackCircle>
       </React.Fragment>
@@ -111,8 +127,8 @@ export function TrackViewer() {
       wn: [bounds.getWest(), bounds.getNorth()],
       es: [bounds.getEast(), bounds.getSouth()],
       zoom: parentMap.getZoom(),
-      time_start: new Date(searchFilter?.time_start),
-      time_end: new Date(searchFilter?.time_end),
+      time_start: searchFilter?.time_start,
+      time_end: searchFilter?.time_end,
       property_filter: searchFilter?.property_filter,
       sort: searchFilter?.sort
     };
@@ -132,7 +148,8 @@ export function TrackViewer() {
         boundBox.ids.push(selected_id);
       }
     }
-    dispatch<any>(TracksStore.actionCreators.requestRouts(boundBox));
+    // We request routs by selection for now.
+    //dispatch<any>(TracksStore.actionCreators.requestRouts(boundBox));
     dispatch<any>(TracksStore.actionCreators.requestTracks(boundBox));
   }
 
@@ -169,6 +186,7 @@ export function TrackViewer() {
         tracks?.map((track, index) =>          
           <CommonTrack
             key={track?.id}
+            track_id={track?.id}
             hidden={false}
             marker={track?.figure}
             pathOptions={pathOptionsTracks}

@@ -26,11 +26,6 @@ namespace RouterMicroService.Controllers
       _daprClient = daprClient;
     }
 
-    [HttpGet(Name = "GetRouts")]
-    public async Task<IEnumerable<RoutLineDTO>> GetRouts()
-    {
-      return await _routService.GetAsync(10);
-    }
 
     [HttpGet()]
     [Route("GetHello")]

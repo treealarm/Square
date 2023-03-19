@@ -90,8 +90,8 @@ export function RetroSearch() {
     var filterDto: SearchFilterDTO = {
       search_id: (new Date()).toISOString(),
       property_filter: filter.property_filter,
-      time_start: new Date(filter.time_start),
-      time_end: new Date(filter.time_end),
+      time_start: filter.time_start,
+      time_end: filter.time_end,
       forward: true,
       count: ApiDefaultPagingNum
     }

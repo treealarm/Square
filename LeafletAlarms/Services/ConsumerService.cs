@@ -2,6 +2,7 @@
 using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
+using PubSubLib;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -35,12 +36,12 @@ namespace LeafletAlarms.Services
       _mapService = mapService;
       _stateIdsQueueService = stateIdsQueueService;
       _pubsub = pubsub;
-      _pubsub.Subscribe("LogicTriggered", LogicTriggered);
+      _pubsub.Subscribe(Topics.LogicTriggered, LogicTriggered);
     }
 
     ~ConsumerService()
     {
-      _pubsub.Unsubscribe("LogicTriggered", LogicTriggered);
+      _pubsub.Unsubscribe(Topics.LogicTriggered, LogicTriggered);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();

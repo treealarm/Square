@@ -6,8 +6,6 @@ import { createBrowserHistory } from 'history';
 import configureMyStore from './store/configureStore';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
-import UserService from "./auth/UserService";
-import * as RightsStore from './store/RightsStates';
 
 // Create browser history to use in the Redux store
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') as string;

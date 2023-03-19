@@ -6,7 +6,7 @@ using StackExchange.Redis;
 namespace PubSubLib
 {
   public class PubSubService: IPubSubService
-  {
+  {    
     private string redisConnectionString = "localhost:6379";
 
     private object _locker = new object();

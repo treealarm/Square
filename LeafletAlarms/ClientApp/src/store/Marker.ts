@@ -156,8 +156,8 @@ export interface SearchFilterGUI {
 }
 
 export interface SearchFilterDTO{
-  time_start?: Date;
-  time_end?: Date;
+  time_start?: string;
+  time_end?: string;
   property_filter?: ObjPropsSearchDTO;
   search_id: string;
   start_id?: string;
@@ -168,8 +168,8 @@ export interface SearchFilterDTO{
 
 export interface BoxTrackDTO extends BoundBox
 {
-  time_start?: Date;
-  time_end?: Date;  
+  time_start?: string;
+  time_end?: string;  
   sort?: number;
 }
 
@@ -221,13 +221,13 @@ export interface IRoutLineDTO {
   id_start: string;
   id_end: string;
   figure: IGeoObjectDTO;
-  ts_start: Date;
-  ts_end: Date;
+  ts_start: string;
+  ts_end: string;
 }
 
 export interface ITrackPointDTO {
   id: string;
-  timestamp: Date;
+  timestamp: string;
   figure: IGeoObjectDTO;
 }
 

@@ -8,7 +8,8 @@ import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } from "./Ma
 export interface TracksState {
   routs: IRoutLineDTO[];
   tracks: ITrackPointDTO[]
-  box: BoxTrackDTO;  
+  box: BoxTrackDTO; 
+  selected_tracks: string[];
 }
 
 // -----------------
@@ -26,6 +27,11 @@ interface ReceiveRoutsAction {
   routs: IRoutLineDTO[];
 }
 
+interface ReceiveRoutsByIdAction {
+  type: "RECEIVE_ROUTS_BY_ID";
+  routs: IRoutLineDTO[];
+}
+
 interface RequestTracksAction {
   type: "REQUEST_TRACKS";
   box: BoxTrackDTO;
@@ -37,6 +43,10 @@ interface ReceiveTracksAction {
   tracks: ITrackPointDTO[];
 }
 
+interface SelectTracksAction {
+  type: "SELECT_TRACKS";
+  selected_tracks: string[];
+}
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
@@ -45,6 +55,8 @@ type KnownAction =
   | ReceiveRoutsAction
   | RequestTracksAction
   | ReceiveTracksAction  
+  | SelectTracksAction
+  | ReceiveRoutsByIdAction
   ;
 
 // ----------------
@@ -52,6 +64,36 @@ type KnownAction =
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
+
+  selectRouts: (selected_tracks: string[]): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {    
+    let body = JSON.stringify(selected_tracks);
+    var request = ApiRouterRootString + "/GetRoutsByTracksIds";
+
+    var fetched = DoFetch(request, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: body
+    });
+
+    fetched
+      .then(response => {
+        if (!response.ok) throw response.statusText;
+        var json = response.json();
+        return json as Promise<IRoutLineDTO[]>;
+      })
+      .then(data => {
+        dispatch({ type: "RECEIVE_ROUTS_BY_ID", routs: data });
+      })
+      .catch((error) => {
+
+      });
+
+    dispatch({ type: "SELECT_TRACKS", selected_tracks: selected_tracks });
+  },
+
   requestRouts: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (
     dispatch,
     getState
@@ -142,7 +184,8 @@ export const actionCreators = {
 const unloadedState: TracksState = {
   routs: null,
   tracks: null,
-  box: null
+  box: null,
+  selected_tracks: []
 };
 
 export const reducer: Reducer<TracksState> = (
@@ -155,12 +198,24 @@ export const reducer: Reducer<TracksState> = (
 
   const action = incomingAction as KnownAction;
 
-  switch (action.type) {
+  switch (action.type) {    
+
+    case "RECEIVE_ROUTS_BY_ID":
+    return {
+      ...state,
+      routs: action.routs
+    };
+
+    case "SELECT_TRACKS":
+      return {
+        ...state,
+        selected_tracks: action.selected_tracks
+      };
+
     case "REQUEST_ROUTS":
       return {
         ...state,
-        box: action.box,
-        routs : state.routs
+        box: action.box
       };
     case "RECEIVE_ROUTS":
       if (action.box === state.box) {
@@ -175,8 +230,7 @@ export const reducer: Reducer<TracksState> = (
     case "REQUEST_TRACKS":
       return {
         ...state,
-        box: action.box,
-        tracks: state.tracks
+        box: action.box
       };
     case "RECEIVE_TRACKS":
       if (action.box === state.box) {

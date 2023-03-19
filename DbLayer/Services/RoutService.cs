@@ -139,7 +139,6 @@ namespace DbLayer.Services
         id_end = track.id_end,
         ts_start = track.ts_start,
         ts_end = track.ts_end,
-        processed = (int)track.processed
       };
 
       dbTrack.meta.id = track.id;
@@ -158,22 +157,16 @@ namespace DbLayer.Services
       var result = await _collRouts.DeleteManyAsync(x => ids.Contains(x.meta.id));
     }
 
-    public async Task<List<RoutLineDTO>> GetAsync(int nLimit)
+    public async Task<List<RoutLineDTO>> GetByIdsAsync(List<string> ids)
     {
       var dbTracks =
-        await _collRouts.Find(t => t.meta.id != null).Limit(nLimit).ToListAsync();
-
-      return ConvertListDB2DTO(dbTracks);
-    }
-    public async Task<List<RoutLineDTO>> GetNotProcessedAsync(int limit)
-    {
-      var dbTracks =
-        await _collRouts.Find(t => t.processed == (int)RoutLineDTO.EntityType.not_processed)
-        .Limit(limit)
+        await _collRouts
+        .Find(t => ids.Contains(t.id_start) || ids.Contains(t.id_end))
         .ToListAsync();
 
       return ConvertListDB2DTO(dbTracks);
     }
+
     private List<RoutLineDTO> ConvertListDB2DTO(List<DBRoutLine> dbTracks)
     {
       var list = new List<RoutLineDTO>();
@@ -230,7 +223,7 @@ namespace DbLayer.Services
 
 
       filter = filter & builder.Where(t => t.ts_end >= box.time_start
-        && t.ts_end <= box.time_end && t.processed == (int)EntityType.processsed);
+        && t.ts_end <= box.time_end);
 
 
       var dbObjects = new List<DBRoutLine>();

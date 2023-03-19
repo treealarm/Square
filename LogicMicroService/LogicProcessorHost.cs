@@ -3,6 +3,7 @@ using Domain.GeoDTO;
 using Domain.Logic;
 using Domain.NonDto;
 using Domain.ServiceInterfaces;
+using PubSubLib;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
@@ -124,7 +125,7 @@ namespace LogicMicroService
           await _mapService.UpdatePropNotDeleteAsync(updatedProps);
         }
 
-        _pubsub.PublishNoWait("LogicTriggered", JsonSerializer.Serialize(triggeredVal));
+        _pubsub.PublishNoWait(Topics.LogicTriggered, JsonSerializer.Serialize(triggeredVal));
       }
     }
 

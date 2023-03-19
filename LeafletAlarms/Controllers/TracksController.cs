@@ -122,7 +122,8 @@ namespace LeafletAlarms.Controllers
 
         var newPoint =
           new TrackPointDTO() {
-            figure = circle
+            figure = circle,
+            timestamp = DateTime.UtcNow
           };
 
         if (figure.extra_props != null)
@@ -156,41 +157,6 @@ namespace LeafletAlarms.Controllers
 
       timing["tracksInsert"] = t2 - t1;
 
-      // Add Routs.
-      t1 = DateTime.Now;
-      var routs = new List<RoutLineDTO>();
-
-      foreach (var trackPoint in trackPointsInserted)
-      {
-        if (trackPoint.figure.location is not GeometryCircleDTO)
-        {
-          continue;
-        }
-              
-        {
-          var newPoint = trackPoint;
-          var newRout = new RoutLineDTO();
-
-          newRout.id = newPoint.id;
-          newRout.figure = new GeoObjectDTO();
-          newRout.figure.id = newPoint.figure.id;
-          newRout.figure.zoom_level = newPoint.figure.zoom_level;
-
-          newRout.id_end = newPoint.id;
-          newRout.ts_end = newPoint.timestamp;
-          routs.Add(newRout);
-        }
-      }
-      t2 = DateTime.Now;
-      timing["routsBuild"] = t2 - t1;
-
-      if (routs.Count > 0)
-      {
-        t1 = DateTime.Now;
-        await _routService.InsertManyAsync(routs);
-        t2 = DateTime.Now;
-        timing["routsInsert"] = t2 - t1;
-      }
       t1 = DateTime.Now;
       _stateService.OnUpdateTrackPosition(trackPoints);
 

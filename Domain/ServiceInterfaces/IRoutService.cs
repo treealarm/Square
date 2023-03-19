@@ -11,9 +11,8 @@ namespace Domain.ServiceInterfaces
   public interface IRoutService
   {
     Task InsertManyAsync(List<RoutLineDTO> newObjs);
-    Task<List<RoutLineDTO>> GetAsync(int nLimit);
+    Task<List<RoutLineDTO>> GetByIdsAsync(List<string> ids);
     Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box);
-    Task<List<RoutLineDTO>> GetNotProcessedAsync(int limit);
     Task DeleteManyAsync(List<string> ids);
   }
 }

@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { ApplicationState } from '../store';
 import CloseIcon from "@mui/icons-material/Close";
-import { DeepCopy, KeyValueDTO } from '../store/Marker';
+import { DeepCopy, KeyValueDTO, ObjPropsSearchDTO } from '../store/Marker';
 import { Box, IconButton, List, ListItem, Tooltip } from '@mui/material';
 
 declare module 'react-redux' {
@@ -47,9 +47,9 @@ export function PropertyFilter(props:any) {
   };
 
   function deleteProperty
-    (e: any, item: KeyValueDTO){
-    let copy = DeepCopy(props.propsFilter);
-      copy.props = copy.props.filter((obj: KeyValueDTO) => { return obj !== item; });
+    (e: any, index: any){
+      let copy = DeepCopy(props.propsFilter) as ObjPropsSearchDTO;
+      copy.props.splice(index, 1);
       props.setPropsFilter(copy);
     };
 
@@ -71,7 +71,7 @@ export function PropertyFilter(props:any) {
             <IconButton
               aria-label="close"
               size="small"
-              onClick={(e: any) => deleteProperty(e, item)}
+              onClick={(e: any) => deleteProperty(e, index)}
               sx={{
                 position: 'absolute',
                 right: 0,
