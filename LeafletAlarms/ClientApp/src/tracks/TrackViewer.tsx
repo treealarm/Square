@@ -13,7 +13,7 @@ import {
   Circle
 } from 'react-leaflet'
 import { LeafletMouseEvent } from 'leaflet';
-import { useAppDispatch } from '..';
+import { useAppDispatch } from '../store/configureStore';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -47,7 +47,7 @@ function TrackCircle(props: any) {
   const eventHandlers = React.useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        appDispatch<any>(TracksStore.actionCreators.selectRouts([track_id]));
+        appDispatch<any>(TracksStore.actionCreators.GetRoutsByTracksIds([track_id]));
       }
     }),
     [track_id],

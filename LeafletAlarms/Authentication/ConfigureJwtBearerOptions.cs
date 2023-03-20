@@ -36,7 +36,7 @@ namespace LeafletAlarms.Authentication
             break;
           }
 
-          Console.WriteLine($"get publicKeyJWT: FAILED");
+          Console.WriteLine($"get publicKeyJWT ({i}): FAILED");
           Task.Delay(3000).Wait();
         }
           

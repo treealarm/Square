@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
+using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,18 +94,6 @@ namespace DbLayer.Services
       }
 
       {
-        IndexKeysDefinition<DBRoutLine> keys =
-              new IndexKeysDefinitionBuilder<DBRoutLine>()
-              .Ascending(d => d.processed);
-
-        var indexModel = new CreateIndexModel<DBRoutLine>(
-          keys, new CreateIndexOptions()
-          { Name = "processed" }
-        );
-
-        _collRouts.Indexes.CreateOneAsync(indexModel);
-      }
-      {
         // Index for faste del.
         IndexKeysDefinition<DBRoutLine> keys =
               new IndexKeysDefinitionBuilder<DBRoutLine>()
@@ -165,6 +154,19 @@ namespace DbLayer.Services
         .ToListAsync();
 
       return ConvertListDB2DTO(dbTracks);
+    }
+
+    public async Task<List<string>> GetProcessedIdsAsync(List<string> ids)
+    {
+      var dbTracks =
+        await _collRouts
+        .AsQueryable<DBRoutLine>()
+        .Where<DBRoutLine>(t => ids.Contains(t.id_end))
+        
+        .Select(t => t.id_end)
+        .ToListAsync()
+        ;
+      return dbTracks;
     }
 
     private List<RoutLineDTO> ConvertListDB2DTO(List<DBRoutLine> dbTracks)

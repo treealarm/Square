@@ -142,7 +142,7 @@ namespace LeafletAlarms
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(WebApplication app, IWebHostEnvironment env)
     {
       if (env.IsDevelopment())
       {
@@ -175,12 +175,9 @@ namespace LeafletAlarms
 
       app.UseAuthorization();
 
-      app.UseEndpoints(endpoints =>
-      {
-        endpoints.MapControllerRoute(
-                  name: "default",
-                  pattern: "{controller}/{action=Index}/{id?}");
-      });
+      app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller}/{action=Index}/{id?}");
 
       var webSocketOptions = new WebSocketOptions
       {
@@ -197,7 +194,7 @@ namespace LeafletAlarms
           {
             using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
             {
-              var handler = app.ApplicationServices.GetRequiredService<IWebSockList>();
+              var handler = app.Services.GetRequiredService<IWebSockList>();
               await handler.PushAsync(context, webSocket);
             }
           }
@@ -219,16 +216,17 @@ namespace LeafletAlarms
         }
       });
 
-      app.UseSpa(spa =>
-      {
-        spa.Options.SourcePath = "ClientApp";
+      //app.UseSpa(spa =>
+      //{
+      //  spa.Options.SourcePath = "ClientApp";
 
-        if (env.IsDevelopment()/* && !InDocker*/)
-        {
-          spa.UseReactDevelopmentServer(npmScript: "start");
-        }
-      });
+      //  if (env.IsDevelopment()/* && !InDocker*/)
+      //  {
+      //    spa.UseReactDevelopmentServer(npmScript: "start");
+      //  }
+      //});
 
+      app.MapFallbackToFile("index.html");
     }
     //End
   }

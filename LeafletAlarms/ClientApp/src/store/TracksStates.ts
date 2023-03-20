@@ -65,7 +65,7 @@ type KnownAction =
 
 export const actionCreators = {
 
-  selectRouts: (selected_tracks: string[]): AppThunkAction<KnownAction> => (
+  GetRoutsByTracksIds: (selected_tracks: string[]): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {    

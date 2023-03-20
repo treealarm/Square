@@ -64,11 +64,13 @@ namespace LeafletAlarms.Authentication
     {
       RSA rsa = RSA.Create();
 
-      rsa.ImportSubjectPublicKeyInfo(
-
-          source: Convert.FromBase64String(publicKeyJWT),
-          bytesRead: out _
-      );
+      if (!string.IsNullOrEmpty(publicKeyJWT))
+      {
+        rsa.ImportSubjectPublicKeyInfo(
+            source: Convert.FromBase64String(publicKeyJWT),
+            bytesRead: out _
+        );
+      }      
 
       var IssuerSigningKey = new RsaSecurityKey(rsa);
 

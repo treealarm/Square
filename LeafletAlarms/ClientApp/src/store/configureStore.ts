@@ -1,5 +1,6 @@
-import { ApplicationState, reducers } from './';
+import { reducers } from './';
 import { configureStore } from '@reduxjs/toolkit'
+import { useDispatch } from 'react-redux';
 
 export default function configureTheStore() {
 
@@ -11,3 +12,6 @@ export default function configureTheStore() {
 
   return store;
 }
+
+export var theStore = configureTheStore();
+export const useAppDispatch = () => useDispatch<typeof theStore.dispatch>();

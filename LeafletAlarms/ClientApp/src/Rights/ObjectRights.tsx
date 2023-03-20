@@ -8,7 +8,7 @@ import ListItem from '@mui/material/ListItem';
 import { Box, Button, ButtonGroup, IconButton, TextField } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import { DeepCopy, IObjectRightsDTO, IObjectRightValueDTO} from '../store/Marker';
-import { useAppDispatch } from '..';
+import { useAppDispatch } from '../store/configureStore';
 import RoleRightSelector from './RoleRightSelector';
 import SaveIcon from '@mui/icons-material/Save';
 import { useCallback } from 'react';

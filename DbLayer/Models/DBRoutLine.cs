@@ -16,6 +16,5 @@ namespace DbLayer.Models
 
     public DateTime? ts_start { get; set; }
     public DateTime? ts_end { get; set; }
-    public int processed { get; set; } = 0;
   }
 }

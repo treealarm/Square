@@ -167,7 +167,8 @@ namespace DbLayer.Services
       var builder = Builders<DBTrackPoint>.Filter;
 
       FilterDefinition<DBTrackPoint> filter =
-        builder.Where(t => t.meta.figure.id == figure_id && t.timestamp < beforeTime);
+        builder
+        .Where(t => t.meta.figure.id == figure_id && t.timestamp < beforeTime);
 
       Log(filter);
 

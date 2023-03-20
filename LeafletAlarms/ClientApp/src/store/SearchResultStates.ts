@@ -110,7 +110,10 @@ export const reducer: Reducer<SearchResultState> = (
       };
 
     case "RECEIVE_SEARCH_STATE":
-      if (action.data.search_id == state.filter.search_id ||
+
+      if (
+        state.filter == null ||
+        action.data.search_id == state.filter.search_id ||
         action.data.search_id == "") {
         return {
           ...state,
