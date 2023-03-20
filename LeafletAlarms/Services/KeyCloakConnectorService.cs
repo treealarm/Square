@@ -136,6 +136,11 @@ namespace LeafletAlarms.Authentication
     {
       await GetOath2Token();
 
+      if (_token == null)
+      {
+        return null;
+      }
+
       if (Uri.TryCreate(
         new Uri(_keyCloakSettings.Value.BaseAddr, UriKind.Absolute),
         new Uri($"realms/{_keyCloakSettings.Value.RealmName}", UriKind.Relative),

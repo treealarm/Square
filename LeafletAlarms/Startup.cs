@@ -208,13 +208,13 @@ namespace LeafletAlarms
         }
         else
         {
-          try
+          //try
           {
             await next();
           }
-          catch (Exception ex)
+          //catch (Exception ex)
           {
-            Console.WriteLine(ex.ToString());
+            //Console.WriteLine(ex.ToString());
           }          
         }
       });
@@ -223,7 +223,7 @@ namespace LeafletAlarms
       {
         spa.Options.SourcePath = "ClientApp";
 
-        if (env.IsDevelopment() && !InDocker)
+        if (env.IsDevelopment()/* && !InDocker*/)
         {
           spa.UseReactDevelopmentServer(npmScript: "start");
         }

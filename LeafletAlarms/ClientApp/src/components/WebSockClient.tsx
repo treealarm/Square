@@ -22,6 +22,7 @@ if (window.location.protocol == "https:") {
   url = 'wss://';
 }
 url = url + window.location.hostname + ':' + window.location.port + '/state';
+
 var socket: WebSocket;
 
 export function WebSockClient() {
@@ -78,9 +79,23 @@ export function WebSockClient() {
     socket.onclose = socket_onclose;
     socket.onmessage = socket_onmessage;
   }
+
+  function disconnect() {
+
+    if (socket == null) {
+      return;
+    }
+    socket.close();
+    socket = null;
+  }
+
   useEffect(
     () => {
       connect();
+
+      return function cleanup() {
+        disconnect();
+      };
     }, []);
 
   useEffect(() => {

@@ -1,9 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.css';
+import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import * as React from 'react';
+
 import { Provider, useDispatch } from 'react-redux';
 import configureTheStore from './store/configureStore';
 

@@ -90,6 +90,9 @@ export const actionCreators = {
           type: "RECEIVE_TREE_STATE",
           data: data
         });
+      })
+        .catch((error) => {
+          console.log("getByParent:", error);
       });
 
     dispatch({ type: "REQUEST_TREE_STATE", parent_marker_id: parent_id });

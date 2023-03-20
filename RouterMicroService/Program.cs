@@ -2,19 +2,21 @@ using DbLayer.Services;
 using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
+using Google.Api;
 using LeafletAlarmsRouter;
+using PubSubLib;
 using RouterMicroService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var Configuration = builder.Configuration;
 builder.Services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
-
-
+builder.Services.Configure<DaprSettings>(Configuration.GetSection("DaprSettings"));
 builder.Services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
 
 // Add services to the container.
 builder.Services.AddDaprClient();
+builder.Services.AddSingleton<IPubSubService, PubSubService>();
 builder.Services.AddSingleton<ILevelService, LevelService>();
 builder.Services.AddSingleton<IRoutService, RoutService>();
 builder.Services.AddSingleton<ITrackRouter, TrackRouter>();
