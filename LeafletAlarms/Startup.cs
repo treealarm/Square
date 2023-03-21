@@ -7,23 +7,12 @@ using LeafletAlarms.Authentication;
 using LeafletAlarms.Services;
 using LeafletAlarmsRouter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace LeafletAlarms
 {
@@ -91,12 +80,6 @@ namespace LeafletAlarms
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();
 
-      // In production, the React files will be served from this directory
-      services.AddSpaStaticFiles(configuration =>
-      {
-        configuration.RootPath = "ClientApp/build";
-      });
-
       services.AddSwaggerGen(setUpAction =>
       {
         setUpAction.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -107,8 +90,6 @@ namespace LeafletAlarms
         setUpAction.ExampleFilters();
 
         var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        //setUpAction.IncludeXmlComments(xmlCommentsFile);
-        //setUpAction.AddFluentValidationRules();
 
         //First we define the security scheme
         setUpAction.AddSecurityDefinition("Bearer", //Name the security scheme
@@ -166,10 +147,7 @@ namespace LeafletAlarms
         .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader());
-
-      //app.UseHttpsRedirection();
       app.UseStaticFiles();
-      app.UseSpaStaticFiles();
 
       app.UseRouting();
 

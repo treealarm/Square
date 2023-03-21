@@ -17,6 +17,7 @@ services:
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
       - ./leaflet_data/osm_data:/osm_data
+      - ./leaflet_data:/leaflet_data
 
   routermicroservice:
     image: ${DOCKER_REGISTRY-}routermicroservice

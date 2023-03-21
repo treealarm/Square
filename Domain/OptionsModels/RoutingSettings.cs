@@ -25,7 +25,8 @@ namespace Domain
     }
     public string RoutingFilePathWin { get; set; }
     public string RouteInstanse { get; set; }
-  bool InDocker()
+    public string root_folder { get; set; }
+    bool InDocker()
     {
       return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
     }

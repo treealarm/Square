@@ -7,6 +7,7 @@ using LeafletAlarms.Authentication;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -30,13 +31,15 @@ namespace LeafletAlarms.Controllers
     private readonly ITrackService _tracksService;
     private readonly ILevelService _levelService;
     private readonly RightsCheckerService _rightChecker;
+    private readonly IOptions<RoutingSettings> _routingSettings;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
       ITrackConsumer stateService,
       ITrackService tracksService,
       ILevelService levelService,
-      RightsCheckerService rightChecker
+      RightsCheckerService rightChecker,
+      IOptions<RoutingSettings> routingSettings
     )
     {
       _mapService = mapsService;
@@ -45,6 +48,7 @@ namespace LeafletAlarms.Controllers
       _tracksService = tracksService;
       _levelService = levelService;
       _rightChecker = rightChecker;
+      _routingSettings = routingSettings;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -67,9 +71,27 @@ namespace LeafletAlarms.Controllers
       byte[] data = null;
       var tile_server = new Uri($"https://tile.openstreetmap.org/{z}/{x}/{y}.png");
 
+      var dataDirectory = new DirectoryInfo(_routingSettings.Value.root_folder);
+
       string path = AppDomain.CurrentDomain.BaseDirectory.ToString();
 
-      string localName = Path.Combine(path, "map_cash", tile_server.LocalPath.TrimStart('/'));
+      if (dataDirectory.Exists)
+      {
+        path = dataDirectory.FullName;        
+      }
+
+      path = Path.Combine(path, "map_cash");
+
+      try
+      {
+        Directory.CreateDirectory(path);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+
+      string localName = Path.Combine(path, tile_server.LocalPath.TrimStart('/'));
 
       if (System.IO.File.Exists(localName))
       {
@@ -78,8 +100,9 @@ namespace LeafletAlarms.Controllers
           data = await System.IO.File.ReadAllBytesAsync(localName);
           return File(data, "image/png");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+          Console.WriteLine(ex.Message);
         }
       }      
 
@@ -88,7 +111,7 @@ namespace LeafletAlarms.Controllers
         using (HttpClient httpClient = new HttpClient())
         {
           var productValue = new ProductInfoHeaderValue("Mozilla", "1.0");
-          var commentValue = new ProductInfoHeaderValue("(+http://www.itv.ru)");
+          var commentValue = new ProductInfoHeaderValue("(+http://www.leftfront.ru)");
 
           httpClient.DefaultRequestHeaders.Add(
               HeaderNames.UserAgent, productValue.ToString());
