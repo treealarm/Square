@@ -1,20 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
+    <TypeScriptTarget>ES6</TypeScriptTarget>
     <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <SpaProxyServerUrl>http://localhost:5000</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <AssemblyName>LeafletAlarms</AssemblyName>
-    <UserSecretsId>1c0ce372-fc2b-49f6-995e-c784e8431fd0</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
+
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TypeScriptTarget>ES6</TypeScriptTarget>
+  </PropertyGroup>
+  
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.2" />
@@ -39,129 +42,37 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="JSCompiled\**" />
-    <EmbeddedResource Remove="JSCompiled\**" />
-    <TypeScriptCompile Remove="JSCompiled\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="ClientApp\src\auth\Login.tsx" />
-    <None Remove="ClientApp\src\components\GlobalLayersOptions.tsx" />
-    <None Remove="ClientApp\src\components\TreeControl.tsx" />
-    <None Remove="ClientApp\src\components\WebSockClient.tsx" />
-    <None Remove="ClientApp\src\Logic\GroupSelector.tsx" />
-    <None Remove="ClientApp\src\Logic\LogicEditor.tsx" />
-    <None Remove="ClientApp\src\map\CircleMaker.tsx" />
-    <None Remove="ClientApp\src\map\EditableFigure.tsx" />
-    <None Remove="ClientApp\src\map\MapPositionChange.tsx" />
-    <None Remove="ClientApp\src\map\PolygonMaker.tsx" />
-    <None Remove="ClientApp\src\map\PolylineMaker.tsx" />
-    <None Remove="ClientApp\src\Rights\ObjectRights.tsx" />
-    <None Remove="ClientApp\src\Rights\RoleRightSelector.tsx" />
-    <None Remove="ClientApp\src\store\Fetcher.ts" />
-    <None Remove="ClientApp\src\store\GUIStates.ts" />
-    <None Remove="ClientApp\src\store\Marker.ts" />
-    <None Remove="ClientApp\src\store\MarkersVisualStates.ts" />
-    <None Remove="ClientApp\src\store\ObjLogicStates.ts" />
-    <None Remove="ClientApp\src\store\ObjPropsStates.ts" />
-    <None Remove="ClientApp\src\store\RightsStates.ts" />
-    <None Remove="ClientApp\src\store\TreeStates.ts" />
-    <None Remove="ClientApp\src\tracks\TrackViewer.tsx" />
-    <None Remove="ClientApp\src\Tree\EditOptions.tsx" />
-    <None Remove="ClientApp\src\Tree\ObjectLogic.tsx" />
-    <None Remove="ClientApp\src\Tree\ObjectProperties.tsx" />
-    <None Remove="ClientApp\src\Tree\PropertyFilter.tsx" />
-    <None Remove="ClientApp\src\Tree\RetroSearch.tsx" />
-    <None Remove="ClientApp\src\Tree\TabControl.tsx" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Remove="ClientApp\src\auth\UserService.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\map\LocationMarkers.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\map\MapComponent.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\store\SearchResultStates.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\store\TracksStates.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\Tree\SearchResult.tsx" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
     <ProjectReference Include="..\Router\Router.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\App.test.js" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+    <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+      <!-- Ensure Node.js is installed -->
+      <Exec Command="node --version" ContinueOnError="true">
+        <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+      </Exec>
+      <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+      <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+      <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+    </Target>
 
-  <ItemGroup>
-    <TypeScriptCompile Update="ClientApp\src\map\PolylineMaker.tsx">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Update="ClientApp\src\store\ObjLogicStates.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Update="ClientApp\src\Tree\RetroSearch.tsx">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-  </ItemGroup>
+    <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+      <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+      <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+      <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
 
-  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
-    <!-- Ensure Node.js is installed -->
-    <Exec Command="node --version" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-  </Target>
-
-  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
-
-    <!-- Include the newly-built files in the publish output -->
-    <ItemGroup>
-      <DistFiles Include="$(SpaRoot)build\**; $(SpaRoot)build-ssr\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>%(DistFiles.Identity)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <TypeScriptTarget>ES5</TypeScriptTarget>
-    <TypeScriptJSXEmit>React</TypeScriptJSXEmit>
-    <TypeScriptModuleKind />
-    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
-    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
-    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
-    <TypeScriptOutFile />
-    <TypeScriptOutDir>C:\WORK\tests\Leaflet\JSCompiled</TypeScriptOutDir>
-    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
-    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
-    <TypeScriptSourceMap>True</TypeScriptSourceMap>
-    <TypeScriptMapRoot />
-    <TypeScriptSourceRoot />
-  </PropertyGroup>
-
+      <!-- Include the newly-built files in the publish output -->
+      <ItemGroup>
+        <DistFiles Include="$(SpaRoot)build\**; $(SpaRoot)build-ssr\**" />
+        <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+          <RelativePath>%(DistFiles.Identity)</RelativePath>
+          <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+          <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        </ResolvedFileToPublish>
+      </ItemGroup>
+    </Target>
 </Project>

@@ -1,4 +1,3 @@
-const { Console } = require('console');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const { env } = require('process');
 

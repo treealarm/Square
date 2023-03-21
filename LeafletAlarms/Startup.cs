@@ -216,16 +216,6 @@ namespace LeafletAlarms
         }
       });
 
-      //app.UseSpa(spa =>
-      //{
-      //  spa.Options.SourcePath = "ClientApp";
-
-      //  if (env.IsDevelopment()/* && !InDocker*/)
-      //  {
-      //    spa.UseReactDevelopmentServer(npmScript: "start");
-      //  }
-      //});
-
       app.MapFallbackToFile("index.html");
     }
     //End

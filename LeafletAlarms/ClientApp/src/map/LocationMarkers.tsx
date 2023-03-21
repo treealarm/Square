@@ -62,7 +62,7 @@ function MyPolyline(props: any) {
     () => ({
       click(event: LeafletMouseEvent) {
         var selected_id = props.marker.id;
-        dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
+        dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));        
       }
     }),
     [],

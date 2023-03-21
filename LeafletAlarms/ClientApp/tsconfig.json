@@ -1,13 +1,16 @@
 {
+  "compileOnSave": true,
+
   "compilerOptions": {
     "target": "ES6",
     "allowJs": true,
     "sourceMap": true,
+    "outDir": "ts_out",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
+    "module": "ES6",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -24,6 +27,7 @@
     ],
     "skipLibCheck": false
   },
+
   "include": [
     "src"
   ]

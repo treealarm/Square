@@ -58,6 +58,7 @@ type KnownAction = TreeSelectionAction
 
 export const actionCreators = {
   selectTreeItem: (selected_id: string | null): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    console.log("selected_id:", selected_id);
     dispatch({
       type: 'SELECT_TREE_ITEM',
       selected_id: selected_id
