@@ -7,39 +7,48 @@ using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Configuration;
+using System.Text;
 
 namespace LeafletAlarms.Authentication
 {
   public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions>
   {
     private readonly KeyCloakConnectorService _myService;
+    private RsaSecurityKey _securityKey;
 
     public ConfigureJwtBearerOptions(KeyCloakConnectorService myService)
     {
       _myService = myService;
     }
+
+    private RsaSecurityKey GetKey()
+    {
+      if (_securityKey != null)
+      {
+        return _securityKey;
+      }
+
+      //Realm settings/Keys/RS256(public)
+      string publicKeyJWT = string.Empty;
+
+      publicKeyJWT = _myService.GetRealmInfo().Result?.public_key;
+
+      if (string.IsNullOrEmpty(publicKeyJWT))
+      {
+        Console.WriteLine($"get publicKeyJWT: FAILED");
+        return null;
+      }
+      _securityKey = ConfigureAuthentificationServiceExtensions.BuildRSAKey(publicKeyJWT);
+      return _securityKey;
+    }
+
     public void Configure(string name, JwtBearerOptions o)
     {
       // check that we are currently configuring the options for the correct scheme
       if (name == JwtBearerDefaults.AuthenticationScheme)
       {
-        //Realm settings/Keys/RS256(public)
-        string publicKeyJWT = string.Empty;
-
-        for (int i = 0; i < 10; i++)
-        {
-          publicKeyJWT = _myService.GetRealmInfo().Result?.public_key;
-
-          if (!string.IsNullOrEmpty(publicKeyJWT))
-          {
-            Console.WriteLine($"publicKeyJWT:{publicKeyJWT}");
-            break;
-          }
-
-          Console.WriteLine($"get publicKeyJWT ({i}): FAILED");
-          Task.Delay(3000).Wait();
-        }
-          
+        
+         
 
         var realmName = _myService.GetRealmName();
 
@@ -56,14 +65,24 @@ namespace LeafletAlarms.Authentication
 
         }
 
+
+
         o.TokenValidationParameters = new TokenValidationParameters
         {
           ValidateAudience = false,
           ValidateIssuer = false,
           ValidIssuers = new[] { validIssuer.ToString() },
           ValidateIssuerSigningKey = true,
-          IssuerSigningKey = ConfigureAuthentificationServiceExtensions.BuildRSAKey(publicKeyJWT),
-          ValidateLifetime = true
+          IssuerSigningKey = GetKey(),
+          ValidateLifetime = true          
+        };
+
+        o.TokenValidationParameters.IssuerSigningKeyResolver = (string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters) =>
+        {
+          return new List<SecurityKey>()
+          {
+            GetKey()
+          };
         };
 
         o.Events = new JwtBearerEvents()
@@ -82,7 +101,6 @@ namespace LeafletAlarms.Authentication
             c.Response.ContentType = "text/plain";
 
             return c.Response.WriteAsync(c.Exception.ToString());
-
           }
         };
       }
