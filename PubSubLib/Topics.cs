@@ -10,5 +10,6 @@ namespace PubSubLib
   {
     public static string OnRequestRoutes = "OnRequestRoutes";
     public static string LogicTriggered = "LogicTriggered";
+    public static string NewRoutBuilt = "NewRoutBuilt";
   }
 }

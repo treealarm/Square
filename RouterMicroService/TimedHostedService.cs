@@ -11,6 +11,7 @@ using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
 using PubSubLib;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using static DbLayer.Models.DBRoutLine;
 
@@ -105,6 +106,8 @@ namespace RouterMicroService
           if (routes.Count > 0)
           {
             await _routService.InsertManyAsync(routes);
+            var ids = routes.Select(r => r.id_end);
+            _pubsub.PublishNoWait(Topics.NewRoutBuilt, JsonSerializer.Serialize(ids));
           }
         }
         catch (Exception ex)
@@ -203,38 +206,6 @@ namespace RouterMicroService
         return;
       }
       _idsToProcess.AddIds(ids);
-    }
-
-    private async Task BuildRoutes(List<TrackPointDTO> trackPointsInserted)
-    {
-      var routs = new List<RoutLineDTO>();
-
-      foreach (var trackPoint in trackPointsInserted)
-      {
-        if (trackPoint.figure.location is not GeometryCircleDTO)
-        {
-          continue;
-        }
-
-        {
-          var newPoint = trackPoint;
-          var newRout = new RoutLineDTO();
-
-          newRout.id = newPoint.id;
-          newRout.figure = new GeoObjectDTO();
-          newRout.figure.id = newPoint.figure.id;
-          newRout.figure.zoom_level = newPoint.figure.zoom_level;
-
-          newRout.id_end = newPoint.id;
-          newRout.ts_end = newPoint.timestamp;
-          routs.Add(newRout);
-        }
-      }
-
-      if (routs.Count > 0)
-      {
-        await _routService.InsertManyAsync(routs);
-      }
     }
   }
 }

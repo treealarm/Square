@@ -36,6 +36,7 @@ namespace LeafletAlarms.Services
       new Dictionary<string, TrackPointDTO>();
     private object _lockerTracks = new object();
 
+    private HashSet<string> _setTrackUpdate = new HashSet<string>();
     private HashSet<string> _setIdsToUpdate = new HashSet<string>();
     private HashSet<string> _dicIds = new HashSet<string>();
     private object _locker = new object();
@@ -86,7 +87,8 @@ namespace LeafletAlarms.Services
           await Task.Delay(1000);
 
           List<TrackPointDTO> movedMarkers;
-          HashSet<string> idsToUpdate = null;
+          HashSet<string> idsToUpdate;
+          HashSet<string> setTrackUpdate;
 
           lock (_lockerTracks)
           {
@@ -97,6 +99,10 @@ namespace LeafletAlarms.Services
           lock (_locker)
           {
             idsToUpdate = _setIdsToUpdate.ToHashSet();
+            _setIdsToUpdate.Clear();
+
+            setTrackUpdate = _setTrackUpdate.ToHashSet();
+            _setTrackUpdate.Clear();
           }
 
           if (idsToUpdate.Any())
@@ -108,6 +114,11 @@ namespace LeafletAlarms.Services
           {
             await DoUpdateTrackPosition(movedMarkers);
           }
+
+          if (setTrackUpdate.Any())
+          {
+            await UpdateRoutesByTrackId(setTrackUpdate);
+          }          
         }
         catch(Exception ex)
         {
@@ -244,6 +255,17 @@ namespace LeafletAlarms.Services
       }      
     }
 
+    public void OnUpdateTracks(List<string> routEnds)
+    {
+      lock (_locker)
+      {
+        foreach (var track_end_id in routEnds)
+        {
+          _setTrackUpdate.Add(track_end_id);
+        }
+      }
+    }    
+
     private async Task UpdateIds(HashSet<string> toUpdate)
     {
       StateBaseDTO packet = new StateBaseDTO()
@@ -257,6 +279,17 @@ namespace LeafletAlarms.Services
         packet.action = "update_viewbox";
         packet.data = null;
       }
+
+      await SendPacket(packet);
+    }
+
+    private async Task UpdateRoutesByTrackId(HashSet<string> toUpdate)
+    {
+      StateBaseDTO packet = new StateBaseDTO()
+      {
+        action = "update_routes_by_tracks",
+        data = toUpdate
+      };
 
       await SendPacket(packet);
     }

@@ -96,7 +96,6 @@ function CommonTrack(props: any) {
         <TrackCircle
           figure={figure}
           pathOptions={props.pathOptions}
-          key={props.key}
           track_id={props.track_id}
         >
         </TrackCircle>
@@ -185,7 +184,7 @@ export function TrackViewer() {
         searchFilter?.show_tracks != false &&
         tracks?.map((track, index) =>          
           <CommonTrack
-            key={track?.id}
+            key={track?.id }
             track_id={track?.id}
             hidden={false}
             marker={track?.figure}

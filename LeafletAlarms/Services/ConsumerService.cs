@@ -1,4 +1,5 @@
-﻿using Domain.ServiceInterfaces;
+﻿using Domain.Logic;
+using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.WebSockets;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,11 +39,13 @@ namespace LeafletAlarms.Services
       _stateIdsQueueService = stateIdsQueueService;
       _pubsub = pubsub;
       _pubsub.Subscribe(Topics.LogicTriggered, LogicTriggered);
+      _pubsub.Subscribe(Topics.NewRoutBuilt, NewRoutBuilt);
     }
 
     ~ConsumerService()
     {
       _pubsub.Unsubscribe(Topics.LogicTriggered, LogicTriggered);
+      _pubsub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
@@ -90,6 +94,14 @@ namespace LeafletAlarms.Services
       }
     }
 
+    public void OnUpdateTracks(List<string> movedMarkers)
+    {
+      foreach (var sock in StateSockets)
+      {
+        sock.Value.OnUpdateTracks(movedMarkers);
+      }
+    }    
+
     public async Task OnStateChanged(List<ObjectStateDTO> state)
     {
       foreach (var sock in StateSockets)
@@ -111,6 +123,21 @@ namespace LeafletAlarms.Services
       foreach (var sock in StateSockets)
       {
         sock.Value.LogicTriggered(message);
+      }
+    }
+
+    void NewRoutBuilt(string channel, string message)
+    {
+      var routEnds = JsonSerializer.Deserialize<List<string>>(message);
+
+      if (routEnds == null)
+      {
+        return;
+      }
+
+      foreach (var sock in StateSockets)
+      {
+        sock.Value.OnUpdateTracks(routEnds);
       }
     }
   }

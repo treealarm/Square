@@ -2,10 +2,12 @@
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import * as MarkersStore from '../store/MarkersStates';
 import { Box, IconButton, Paper, styled, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from "../store";
+import { useAppDispatch } from '../store/configureStore';
+import * as TracksStore from '../store/TracksStates';
 
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
@@ -27,11 +29,21 @@ var socket: WebSocket;
 
 export function WebSockClient() {
 
-  const dispatch = useDispatch();
+  //const dispatch = useDispatch();
+  const appDispatch = useAppDispatch();
 
   const box = useSelector((state: ApplicationState) => state?.markersStates?.box);
+  const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
+  const selected_tracks = useSelector((state: ApplicationState) => state?.tracksStates?.selected_tracks);
 
   const [isConnected, setIsConnected] = useState(false);
+
+  const [updatedTracks, setUpdatedTracks] = useState([]);
+
+
+  useEffect(() => {
+    onTracksUpdated(updatedTracks);
+  }, [updatedTracks])
 
   function socket_onopen(event: any){
     setIsConnected(true);
@@ -44,7 +56,20 @@ export function WebSockClient() {
     }, 1000);
   };
 
-  const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
+  const onTracksUpdated = useCallback(
+    (track_ids: string[]) => {
+      console.log("selected tracks:", track_ids, " ", selected_tracks);
+
+      if (track_ids != null && selected_tracks != null) {
+        const filteredArray = selected_tracks.filter(value => track_ids.includes(value));
+
+        console.log("filteredArray:", filteredArray);
+
+        if (filteredArray.length > 0) {
+          appDispatch<any>(TracksStore.actionCreators.GetRoutsByTracksIds(selected_tracks));
+        }
+      } 
+    }, [selected_tracks]);
 
   function socket_onmessage(event: any) {
     try {
@@ -52,20 +77,25 @@ export function WebSockClient() {
       var received = JSON.parse(event.data);
 
       if (received.action == "set_visual_states") {
-        dispatch<any>(MarkersVisualStore.actionCreators.updateMarkersVisualStates(received.data));
+        appDispatch<any>(MarkersVisualStore.actionCreators.updateMarkersVisualStates(received.data));
       }
 
       if (received.action == "set_ids2update") {
-        dispatch<any>(MarkersStore.actionCreators.requestMarkersByIds(received.data));
+        appDispatch<any>(MarkersStore.actionCreators.requestMarkersByIds(received.data));
       }
       if (received.action == "set_ids2delete") {
-        dispatch<any>(MarkersStore.actionCreators.deleteMarkersLocally(received.data));
+        appDispatch<any>(MarkersStore.actionCreators.deleteMarkersLocally(received.data));
       }
       if (received.action == "set_alarm_states") {
-        dispatch<any>(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
+        appDispatch<any>(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
       }
       if (received.action == "update_viewbox") {
-        dispatch<any>(MarkersStore.actionCreators.initiateUpdateAll());
+        appDispatch<any>(MarkersStore.actionCreators.initiateUpdateAll());
+      }
+      if (received.action == "update_routes_by_tracks") {        
+        var track_ids = received.data as Array<string>;
+
+        setUpdatedTracks(track_ids)               
       }      
       
     } catch (err) {
@@ -98,6 +128,16 @@ export function WebSockClient() {
       };
     }, []);
 
+  const SafeSend = (data: any) => {
+    try {
+      socket.send(JSON.stringify(data));
+    }
+    catch (err) {
+      console.log(err);
+    }
+    
+  }
+
   useEffect(() => {
     if (box != null && isConnected) {
 
@@ -106,7 +146,7 @@ export function WebSockClient() {
         action: "set_box",
         data: box        
       };
-      socket.send(JSON.stringify(Message));
+      SafeSend(Message);
     }
   }, [box, isConnected]);
 
@@ -116,7 +156,7 @@ export function WebSockClient() {
       action: "ping",
       data: 'ping ' + new Date().toISOString(),      
     };
-    socket.send(JSON.stringify(Message));
+    SafeSend(Message);
   }
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -126,7 +166,7 @@ export function WebSockClient() {
   return (
       <React.Fragment key={"WebSock1"}>
       <Box sx={{ border: 1 }}>
-        <Tooltip title={url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
+        <Tooltip title={selected_tracks + '\n'+url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
         <IconButton
           onClick = {sendPing}
             style = {{ textTransform: 'none' }}
