@@ -73,6 +73,8 @@ export function PolygonMaker(props: any) {
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
+  const [click, setClick] = React.useState(0);
+
   const [movedIndex, setMovedIndex] = React.useState(-1);
   const [isMoveAll, setIsMoveAll] = React.useState(false);
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
@@ -83,6 +85,10 @@ export function PolygonMaker(props: any) {
     parent_id: selected_id,
     geometry: { coord: [], type: PolygonType }
   };
+
+  function DoSetMovedIndex(index: number, place: any) {
+    setMovedIndex(index);
+  }
 
   useEffect(() => {
     if (props.obj2Edit != null) {
@@ -112,11 +118,15 @@ export function PolygonMaker(props: any) {
     
   const mapEvents = useMapEvents({
     click(e: any) {
-      
+
+      if (click == 1) {
+        setClick(0);
+        return;
+      }
       var ll: L.LatLng = e.latlng as L.LatLng;
 
       if (movedIndex >= 0) {
-        setMovedIndex(-1);
+        DoSetMovedIndex(-1, "click");
         return;
       }
 
@@ -142,7 +152,6 @@ export function PolygonMaker(props: any) {
 
     mousemove(e: L.LeafletMouseEvent) {
       if (isMoveAll) {
-
         var shift_y = e.latlng.lat - oldPolygon.geometry.coord[0][0];
         var shift_x = e.latlng.lng - oldPolygon.geometry.coord[0][1];
 
@@ -167,7 +176,7 @@ export function PolygonMaker(props: any) {
       }
 
       if (movedIndex >= 0) {
-        var updated_geometry: IPolygonCoord =
+         var updated_geometry: IPolygonCoord =
         {
           coord: [...curPolygon.geometry.coord],
           type: PolygonType
@@ -186,7 +195,7 @@ export function PolygonMaker(props: any) {
     keydown(e: LeafletKeyboardEvent) {
       if (e.originalEvent.code == 'Escape') {
         if (movedIndex >= 0 || isMoveAll) {
-          setMovedIndex(-1);
+          DoSetMovedIndex(-1, "keydown");
           setIsMoveAll(false);
           setPolygon(oldPolygon);
           setOldPolygon(initPolygon);
@@ -200,7 +209,8 @@ export function PolygonMaker(props: any) {
     (index: any, e: any) => {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
-      setMovedIndex(index);
+      DoSetMovedIndex(index, "moveVertex");
+      setClick(1);
     }, [curPolygon])
 
   const addVertex = useCallback(
@@ -221,7 +231,7 @@ export function PolygonMaker(props: any) {
         geometry: geometry_upd
       }));
 
-      setMovedIndex(index);
+      DoSetMovedIndex(index, "AddVertex");
     }, [curPolygon])
 
   const deleteVertex = useCallback(
@@ -256,7 +266,8 @@ export function PolygonMaker(props: any) {
   {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
-      setIsMoveAll(true);
+    setIsMoveAll(true);
+    setClick(1);
   }
   
 

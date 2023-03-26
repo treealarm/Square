@@ -222,9 +222,10 @@ export function LocationMarkers() {
 
    const mapEvents = useMapEvents({
      preclick(e: LeafletMouseEvent) {
-       var ll: L.LatLng = e.latlng as L.LatLng;
-       console.log("MAP_PRECLICK:", e, selected_id);
-       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+
+       if (!selectedEditMode.edit_mode) {
+         dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+       }       
       },
 
        moveend(e: LeafletEvent) {
