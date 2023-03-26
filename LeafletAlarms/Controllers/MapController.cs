@@ -141,10 +141,10 @@ namespace LeafletAlarms.Controllers
     [HttpGet()]
     [Route("GetByParent")]
     public async Task<GetByParentDTO> GetByParent(
-      string parent_id,
-      string start_id,
-      string end_id,
-      int count
+      string parent_id = null,
+      string start_id = null,
+      string end_id = null,
+      int count = 0
     )
     {
       GetByParentDTO retVal = new GetByParentDTO();
