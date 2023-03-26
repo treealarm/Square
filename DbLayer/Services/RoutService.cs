@@ -38,20 +38,28 @@ namespace DbLayer.Services
       var filter = new BsonDocument("name", geoStoreDatabaseSettings.Value.RoutsCollectionName);
       var options = new ListCollectionNamesOptions { Filter = filter };
 
-      if (!mongoDatabase.ListCollectionNames(options).Any())
+      try
       {
-        var createOptions = new CreateCollectionOptions();
+        if (!mongoDatabase.ListCollectionNames(options).Any())
+        {
+          var createOptions = new CreateCollectionOptions();
 
-        var timeField = nameof(DBRoutLine.ts_end);
-        var metaField = nameof(DBRoutLine.meta);
-        createOptions.TimeSeriesOptions =
-          new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
+          var timeField = nameof(DBRoutLine.ts_end);
+          var metaField = nameof(DBRoutLine.meta);
+          createOptions.TimeSeriesOptions =
+            new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
 
 
-        mongoDatabase.CreateCollection(
-          geoStoreDatabaseSettings.Value.RoutsCollectionName,
-          createOptions);
+          mongoDatabase.CreateCollection(
+            geoStoreDatabaseSettings.Value.RoutsCollectionName,
+            createOptions);
+        }
       }
+      catch ( Exception ex )
+      {
+        Console.WriteLine( ex.ToString() );
+      }
+      
 
       _collRouts =
         mongoDatabase.GetCollection<DBRoutLine>(

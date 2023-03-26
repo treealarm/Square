@@ -37,19 +37,26 @@ namespace DbLayer.Services
       var filter = new BsonDocument("name", geoStoreDatabaseSettings.Value.TracksCollectionName);
       var options = new ListCollectionNamesOptions { Filter = filter };
 
-      if (!mongoDatabase.ListCollectionNames(options).Any())
+      try
       {
-        var createOptions = new CreateCollectionOptions();
+        if (!mongoDatabase.ListCollectionNames(options).Any())
+        {
+          var createOptions = new CreateCollectionOptions();
 
-        var timeField = nameof(DBTrackPoint.timestamp);
-        var metaField = nameof(DBTrackPoint.meta);
+          var timeField = nameof(DBTrackPoint.timestamp);
+          var metaField = nameof(DBTrackPoint.meta);
 
-        createOptions.TimeSeriesOptions =
-          new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
+          createOptions.TimeSeriesOptions =
+            new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
 
-        mongoDatabase.CreateCollection(
-        geoStoreDatabaseSettings.Value.TracksCollectionName,
-        createOptions);        
+          mongoDatabase.CreateCollection(
+          geoStoreDatabaseSettings.Value.TracksCollectionName,
+          createOptions);
+        }
+      }
+      catch ( Exception ex )
+      {
+        Console.WriteLine( ex.ToString() );
       }
 
       _collFigures =
