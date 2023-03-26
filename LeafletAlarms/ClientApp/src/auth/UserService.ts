@@ -35,6 +35,19 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
       onAuthenticatedCallback();
     })
     .catch(console.error);
+
+  _kc.onTokenExpired = () => {
+    console.log('expired ' + new Date());
+    _kc.updateToken(0).then((refreshed) => {
+      if (refreshed) {
+        console.log('refreshed ' + new Date());
+      } else {
+        console.log('not refreshed ' + new Date());
+      }
+    }).catch(() => {
+      console.error('Failed to refresh token ' + new Date());
+    });
+  }
 };
 
 const doLogin = () => {

@@ -35,6 +35,7 @@ function MyPolygon(props: any) {
     () => ({
       click(event: LeafletMouseEvent) {
         var selected_id = props.marker.id;
+        console.log("MY_POLYYGON_CLICK:", event);
         dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
       }
     }),
@@ -220,9 +221,10 @@ export function LocationMarkers() {
     }, [markers]);
 
    const mapEvents = useMapEvents({
-      click(e: any) {
+     preclick(e: LeafletMouseEvent) {
        var ll: L.LatLng = e.latlng as L.LatLng;
-       //dispatch(GuiStore.actionCreators.selectTreeItem(null));
+       console.log("MAP_PRECLICK:", e, selected_id);
+       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
       },
 
        moveend(e: LeafletEvent) {

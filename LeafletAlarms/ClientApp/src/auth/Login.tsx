@@ -41,7 +41,7 @@ export function Login() {
             onClick={onButtonClick}
             style={{ textTransform: 'none' }}
             size="small"
-          >{!loggedIn ? "Login" : "Logout " + user}
+          >{!loggedIn ? "login" : "logout " + user}
           </Button>
         </Tooltip>
       </Box>
