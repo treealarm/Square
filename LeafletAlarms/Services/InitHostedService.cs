@@ -44,10 +44,20 @@ namespace LeafletAlarms.Services
 
       await _levelService.Init();
       await _stateService.Init();
+      var curDate = DateTime.Now;
 
       while (!_cancellationToken.IsCancellationRequested)
       {
         await Task.Delay(1000);
+
+        if (DateTime.Now - curDate > TimeSpan.FromMinutes(1))
+        {
+          curDate = DateTime.Now;
+          Console.WriteLine($"GC Collect");
+          GC.Collect();
+        }
+
+
         continue;
       }
     }

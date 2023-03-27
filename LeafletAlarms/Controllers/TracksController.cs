@@ -178,8 +178,7 @@ namespace LeafletAlarms.Controllers
         };
 
         _pubsub.PublishNoWait("UpdateTrackPosition", JsonSerializer.Serialize(ev));
-      }      
-
+      }
       return timing;
     }
 

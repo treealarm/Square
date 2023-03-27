@@ -25,7 +25,7 @@ namespace TrackSender {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:8000/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://leafletalarmsservice:8000/")]
         public string ServerAddress {
             get {
                 return ((string)(this["ServerAddress"]));

@@ -29,10 +29,8 @@ namespace TrackSender
     { 
       _testClient = new TestClient(client);
     }
-    public async Task RunAsync(CancellationToken token, List<Task> tasks)
+    public void RunAsync(CancellationToken token, List<Task> tasks)
     {
-      await BuildMoscow();
-
       tasks.Add(EmulateState(token));      
     }
 

@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="ServerAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://localhost:8000/</Value>
+      <Value Profile="(Default)">http://leafletalarmsservice:8000/</Value>
     </Setting>
     <Setting Name="LocalPathPolygonMoscow" Type="System.String" Scope="User">
       <Value Profile="(Default)">D:\TESTS\Leaflet\TrackSender\PolygonJson\</Value>

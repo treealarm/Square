@@ -49,38 +49,34 @@ namespace TrackSender
         var moscowBuilder = new NominatimProcessor();
         List<Task> tasks = new List<Task>();
 
-        //TestClient testClient = new TestClient();
-
-        //var t1 = DateTime.Now;
-
-        //for (int i = 0; i < 10000; i++)
-        //{
-        //  testClient.Empty("test").Wait();
-        //}
-
-        //Console.WriteLine($"10K calls:{(DateTime.Now - t1).TotalSeconds}");
-        //return;
-
         var taskMoscowBuild = moscowBuilder.RunAsync(token, tasks);
         Task.WaitAll(taskMoscowBuild);
 
-        var taskStates = testStates.RunAsync(token, tasks);        
-        tasks.Add(taskStates);
+        Task.WaitAll(testStates.BuildMoscow());
+
+        testStates.RunAsync(token, tasks);        
+        
 
         var taskMove = testMove.RunAsync(token, tasks);
         tasks.Add(taskMove);
 
         testMove.TestLogicAsync(token, tasks);
 
-        Console.WriteLine("Press ESC to stop emulation\n");
-        ConsoleKeyInfo key = Console.ReadKey();
-
-        while (key.Key != ConsoleKey.Escape)
+        if (!Console.IsInputRedirected && Console.KeyAvailable)
         {
-          key = Console.ReadKey();
+          Console.WriteLine("Press ESC to stop emulation\n");
+          ConsoleKeyInfo key = Console.ReadKey();
+
+
+
+          while (key.Key != ConsoleKey.Escape)
+          {
+            key = Console.ReadKey();
+          }
+
+          tokenSource.Cancel();
         }
-        
-        tokenSource.Cancel();
+          
 
         Task.WaitAll(tasks.ToArray());
       }

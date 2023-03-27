@@ -2,7 +2,6 @@ using DbLayer.Services;
 using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
-using Google.Api;
 using LeafletAlarmsRouter;
 using PubSubLib;
 using RouterMicroService;

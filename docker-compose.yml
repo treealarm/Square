@@ -19,6 +19,13 @@ services:
       - ./leaflet_data/osm_data:/osm_data
       - ./leaflet_data:/leaflet_data
 
+  leafletalarms-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "8000" ]
+    depends_on:
+      - leafletalarmsservice
+    network_mode: "service:leafletalarmsservice"
+
   routermicroservice:
     image: ${DOCKER_REGISTRY-}routermicroservice
     restart: "no"
@@ -29,6 +36,24 @@ services:
       dockerfile: RouterMicroService/Dockerfile
     volumes:
      - ./leaflet_data/osm_data:/osm_data
+
+  tracksenderservice:
+    image: ${DOCKER_REGISTRY-}tracksenderservice
+    restart: "no"
+    depends_on:
+     - leafletalarmsservice
+    build:
+      context: .
+      dockerfile: TrackSender/Dockerfile
+    volumes:
+     - ./leaflet_data/osm_data:/osm_data
+
+  tracksender-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "tracksender", "-app-port", "8000" ]
+    depends_on:
+      - tracksenderservice
+    network_mode: "service:tracksenderservice"
       
 
   mongoservice:
