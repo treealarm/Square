@@ -95,7 +95,7 @@ namespace LeafletAlarms.Controllers
     {
       if (User.IsInRole(RoleConstants.admin))
       {
-        int test = 0;
+        
       }
       var obj = await _logicService.GetByName(name);
       return obj;

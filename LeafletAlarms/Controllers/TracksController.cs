@@ -90,6 +90,7 @@ namespace LeafletAlarms.Controllers
 
     private async Task<Dictionary<string, TimeSpan>> DoUpdateTracks(FiguresDTO movedMarkers)
     {
+      //var text = JsonSerializer.Serialize(movedMarkers);
       var trackPoints = new List<TrackPointDTO>();
       Dictionary<string, TimeSpan> timing = new Dictionary<string, TimeSpan>(); 
 

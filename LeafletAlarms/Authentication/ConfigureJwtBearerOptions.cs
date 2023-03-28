@@ -55,7 +55,7 @@ namespace LeafletAlarms.Authentication
         var BaseAddr = _myService.GetBaseAddr();
 
         //"http://localhost:8080/realms/myrealm"
-        Uri? validIssuer;
+        Uri validIssuer;
         if (Uri.TryCreate(
           new Uri(BaseAddr, UriKind.Absolute),
           new Uri($"realms/{realmName}", UriKind.Relative),
