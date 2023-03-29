@@ -20,6 +20,7 @@ var figs = new ProtoFigures();
 var fig = new ProtoFig();
 figs.Figs.Add(fig);
 
+fig.Id = "6423e54d513bfe83e9d59793";
 fig.Name = "Test";
 fig.Geometry = new ProtoGeometry();
 fig.Geometry.Type = "Polygon";
@@ -57,10 +58,26 @@ fig.Geometry.Coord.Add(new ProtoCoord()
   //  Console.WriteLine(ex);
   //}
 
-  var newFigs = await client.AddTracksAsync(figs);
+  double step = 0.001;
+
+  for (int i = 0; i < 100; i++)
+  {
+    await Task.Delay(1000);
+    if (i > 50)
+    {
+      step = -0.001;
+    }
+    foreach(var f in fig.Geometry.Coord)
+    {
+      f.Lat += step;
+      f.Lon += step;
+    }
+    var newFigs = await client.AddTracksAsync(figs);
+  }
+  
 
   
-  Console.WriteLine("Greeting: " + newFigs.ToString());
+  //Console.WriteLine("Greeting: " + newFigs.ToString());
 }
 
 Console.WriteLine("Press any key to exit...");

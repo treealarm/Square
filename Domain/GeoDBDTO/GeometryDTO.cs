@@ -46,6 +46,21 @@ namespace Domain.GeoDBDTO
       }
     }
 
+    public virtual List<Geo2DCoordDTO> GetCoordArray()
+    {
+      var retval = coord as List<Geo2DCoordDTO>;
+
+      if (retval == null)
+      {
+        retval = new List<Geo2DCoordDTO>()
+        {
+          coord as Geo2DCoordDTO
+        };
+      }
+
+      return retval;
+    }
+
     public virtual Geo2DCoordDTO GetCentroid()
     {
       return null;

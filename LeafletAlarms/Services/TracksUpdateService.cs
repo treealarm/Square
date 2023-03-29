@@ -95,10 +95,6 @@ namespace LeafletAlarms.Services
 
       foreach (var figure in movedMarkers.figs)
       {
-        if (figure.geometry.type != "Point")
-        {
-          continue;
-        }
         GeoObjectDTO circle;
 
         circles.TryGetValue(figure.id, out circle);

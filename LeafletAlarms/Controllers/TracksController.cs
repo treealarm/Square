@@ -19,14 +19,6 @@ namespace LeafletAlarms.Controllers
   [ApiController]
   public class TracksController : ControllerBase
   {
-    private readonly IMapService _mapService;
-    private readonly ITrackService _tracksService;
-    private ITrackConsumer _stateService;
-    private readonly IGeoService _geoService;
-    private BaseMarkerDTO _tracksRootFolder;
-    private IRoutService _routService;
-    private const string TRACKS_ROOT_NAME = "__tracks";
-
     private TracksUpdateService _trackUpdateService;
 
     public TracksController(

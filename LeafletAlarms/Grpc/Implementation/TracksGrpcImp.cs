@@ -32,6 +32,8 @@ namespace LeafletAlarms.Grpc.Implementation
 
     public override async Task<ProtoFigures> AddTracks(ProtoFigures request, ServerCallContext context)
     {
+      ProtoFigures response = new ProtoFigures();
+
       Console.WriteLine($"Received from:{request.ToString()}");
       var figs = new FiguresDTO();
       figs.figs = new List<FigureGeoDTO>();
@@ -80,9 +82,44 @@ namespace LeafletAlarms.Grpc.Implementation
         }        
       }
 
-      await _trackUpdateService.AddTracks(figs);
+      var result = await _trackUpdateService.AddTracks(figs);
+
+      foreach (var resFig in result.figs)
+      {
+        var pFig = new ProtoFig()
+        {
+          Id = resFig.id,
+          ParentId = resFig.parent_id,
+          ExternalType = resFig.external_type,
+          Name = resFig.name,
+          Radius = resFig.radius.Value,
+          ZoomLevel = resFig.zoom_level
+        };
+
+        foreach (var e in resFig.extra_props)
+        {
+          pFig.ExtraProps.Add(new ProtoObjExtraProperty()
+          {
+            PropName = e.prop_name,
+            StrVal = e.str_val,
+            VisualType = e.visual_type
+          });
+        }
+
+        pFig.Geometry = new ProtoGeometry();
+
+        foreach (var f in resFig.geometry.GetCoordArray())
+        {
+          pFig.Geometry.Coord.Add(new ProtoCoord()
+          {
+            Lat = f.Lat,
+            Lon = f.Lon
+          });
+        }
+        response.Figs.Add(pFig);
+      }
       
-      return request;
+      return response;
     }
   }
 }
