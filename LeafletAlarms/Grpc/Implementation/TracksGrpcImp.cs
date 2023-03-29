@@ -1,16 +1,23 @@
-﻿using Grpc.Core;
+﻿using Domain;
+using Domain.GeoDBDTO;
+using Grpc.Core;
+using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
+using System.Text.Json;
 using static LeafletAlarmsGrpc.TracksGrpcService;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
   public class TracksGrpcImp: TracksGrpcServiceBase
   {
-    private static int _counter = 1;
     private readonly ILogger<TracksGrpcImp> _logger;
-    public TracksGrpcImp(ILogger<TracksGrpcImp> logger)
+    private readonly TracksUpdateService _trackUpdateService;
+    public TracksGrpcImp(
+      ILogger<TracksGrpcImp> logger,
+      TracksUpdateService trackUpdateService)
     {
       _logger = logger;
+      _trackUpdateService = trackUpdateService;
     }
 
 
@@ -20,7 +27,62 @@ namespace LeafletAlarms.Grpc.Implementation
       return Task.FromResult(new HelloReply
       {
         Message = "Hello " + request.Name + $"[{DateTime.Now}]"
-      }); ;
+      });
+    }
+
+    public override async Task<ProtoFigures> AddTracks(ProtoFigures request, ServerCallContext context)
+    {
+      Console.WriteLine($"Received from:{request.ToString()}");
+      var figs = new FiguresDTO();
+      figs.figs = new List<FigureGeoDTO>();
+
+      foreach (var fig in request.Figs)
+      {
+        var newFigDto = new FigureGeoDTO();
+        newFigDto.id = fig.Id;
+        newFigDto.name = fig.Name;
+        newFigDto.external_type = fig.ExternalType;
+        newFigDto.parent_id = fig.ParentId;
+        newFigDto.radius = fig.Radius;
+        newFigDto.zoom_level = fig.ZoomLevel;
+
+        if (fig.ExtraProps != null)
+        {
+          newFigDto.extra_props = new List<ObjExtraPropertyDTO>();
+
+          foreach (var e in fig.ExtraProps)
+          {
+            newFigDto.extra_props.Add(new ObjExtraPropertyDTO()
+            {
+              prop_name = e.PropName,
+              str_val = e.StrVal,
+              visual_type = e.VisualType
+            });
+          }
+        }        
+        
+        figs.figs.Add(newFigDto);
+
+        if (fig.Geometry.Type == "Polygon")
+        {          
+          var polygonCoord = new GeometryPolygonDTO();
+          newFigDto.geometry = polygonCoord;
+          polygonCoord.coord = new List<Geo2DCoordDTO>();
+
+          foreach (var c in fig.Geometry.Coord)
+          {
+            polygonCoord.coord.Add(new Geo2DCoordDTO()
+            {
+              Lon = c.Lon,
+              Lat = c.Lat
+            });
+          }
+        }        
+      }
+
+      await _trackUpdateService.AddTracks(figs);
+      
+      return request;
     }
   }
 }

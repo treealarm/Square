@@ -27,59 +27,15 @@ namespace LeafletAlarms.Controllers
     private IRoutService _routService;
     private const string TRACKS_ROOT_NAME = "__tracks";
 
-    private IPubSubService _pubsub;
+    private TracksUpdateService _trackUpdateService;
 
     public TracksController(
-      IMapService mapsService,
-      ITrackService tracksService,
-      IRoutService routService,
-      IGeoService geoService,
-      ITrackConsumer stateService,
-      IPubSubService pubsub
+      TracksUpdateService trackUpdateService
     )
     {
-      _mapService = mapsService;
-      _tracksService = tracksService;
-      _routService = routService;
-      _stateService = stateService;
-      _geoService = geoService;
-      _pubsub = pubsub;
+      _trackUpdateService = trackUpdateService;
     }
 
-    private async Task<BaseMarkerDTO> GetTracksRoot()
-    {
-      if (_tracksRootFolder == null)
-      {
-        var list_of_roots = await _mapService.GetByNameAsync(TRACKS_ROOT_NAME);
-
-        if (list_of_roots.Count == 0)
-        {
-          _tracksRootFolder = new BaseMarkerDTO()
-          {
-            name = TRACKS_ROOT_NAME
-          };
-
-          await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { _tracksRootFolder });
-        }
-        else
-        {
-          _tracksRootFolder = list_of_roots.First().Value;
-        }
-
-        return _tracksRootFolder;
-      }
-
-      return _tracksRootFolder;
-    }
-
-    private async Task EnsureTracksRoot(BaseMarkerDTO marker)
-    {
-      if (string.IsNullOrEmpty(marker.parent_id))
-      {
-        var root = await GetTracksRoot();
-        marker.parent_id = root.id;
-      }
-    }
 
     [HttpGet()]
     [Route("GetHello")]
@@ -88,161 +44,28 @@ namespace LeafletAlarms.Controllers
       return new List<string>() { "Hello world" };
     }
 
-    private async Task<Dictionary<string, TimeSpan>> DoUpdateTracks(FiguresDTO movedMarkers)
-    {
-      //var text = JsonSerializer.Serialize(movedMarkers);
-      var trackPoints = new List<TrackPointDTO>();
-      Dictionary<string, TimeSpan> timing = new Dictionary<string, TimeSpan>(); 
-
-      foreach (var figure in movedMarkers.figs)
-      {
-        await EnsureTracksRoot(figure);
-      }
-
-
-      DateTime t1 = DateTime.Now;
-      await _mapService.UpdateHierarchyAsync(movedMarkers.figs);
-      DateTime t2 = DateTime.Now;
-      timing["UpdateHierarchyAsync"] = t2 - t1;
-      
-
-      t1 = DateTime.Now;
-      var circles = await _geoService.CreateGeo(movedMarkers.figs);
-      t2 = DateTime.Now;
-      timing["CreateGeo"] = t2 - t1;
-
-      foreach (var figure in movedMarkers.figs)
-      {
-        if (figure.geometry.type != "Point")
-        {
-          continue;
-        }
-        GeoObjectDTO circle;
-
-        circles.TryGetValue(figure.id, out circle);
-
-        var newPoint =
-          new TrackPointDTO() {
-            figure = circle,
-            timestamp = DateTime.UtcNow
-          };
-
-        if (figure.extra_props != null)
-        {
-          var propTimeStamp = figure.extra_props
-          .Where(p => p.prop_name == "timestamp")
-          .FirstOrDefault();
-
-          if (propTimeStamp != null)
-          {
-            newPoint.timestamp = DateTime
-              .Parse(
-                propTimeStamp.str_val
-              ).ToUniversalTime();
-            figure.extra_props.Remove(propTimeStamp);
-          }
-        }        
-
-        trackPoints.Add(newPoint);
-      }
-      //---------Updating properties here not to insert timestamp
-      t1 = DateTime.Now;
-      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.figs);
-      t2 = DateTime.Now;
-      timing["UpdatePropNotDeleteAsync"] = t2 - t1;
-      //----------------------------------------------------------------------------
-
-      t1 = DateTime.Now;
-      var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
-      t2 = DateTime.Now;
-
-      timing["tracksInsert"] = t2 - t1;
-
-      t1 = DateTime.Now;
-      _stateService.OnUpdateTrackPosition(trackPoints);
-
-
-      timing["UpdateTracksCall"] = t2 - t1;
-      t2 = DateTime.Now;
-
-      var track_0 = trackPointsInserted.FirstOrDefault();
-      var track_n = trackPointsInserted.LastOrDefault();
-
-      if (track_0 != null && track_n != null)
-      {
-        TracksUpdatedEvent ev = new TracksUpdatedEvent()
-        {
-          id_start = track_0.id,
-          id_end = track_n.id,
-          ts_start = track_0.timestamp,
-          ts_end = track_n.timestamp
-        };
-
-        _pubsub.PublishNoWait("UpdateTrackPosition", JsonSerializer.Serialize(ev));
-      }
-      return timing;
-    }
-
     [HttpPost]
     [Route("AddTracks")]
     public async Task<ActionResult<FiguresDTO>> AddTracks(FiguresDTO movedMarkers)
     {
-      await DoUpdateTracks(movedMarkers);
-      return CreatedAtAction(nameof(AddTracks), movedMarkers);
+      var retVal = await _trackUpdateService.AddTracks(movedMarkers);
+      return CreatedAtAction(nameof(AddTracks), retVal);
     }
 
     [HttpPost]
     [Route("UpdateTracks")]
     public async Task<ActionResult<Dictionary<string, TimeSpan>>> UpdateTracks(FiguresDTO movedMarkers)
-    {
-      DateTime t1 = DateTime.Now;      
-      var dic = await DoUpdateTracks(movedMarkers);
-      DateTime t2 = DateTime.Now;
-
-      dic["All"] =  t2 - t1;
+    {   
+      var dic = await _trackUpdateService.UpdateTracks(movedMarkers);
       return CreatedAtAction(nameof(UpdateTracks), dic);
     }
 
-    private async Task AddIdsByProperties(BoxDTO box)
-    {
-      List<string> ids = null;
-
-      if (box.property_filter != null && box.property_filter.props.Count > 0)
-      {
-        var props = await _mapService.GetPropByValuesAsync(
-          box.property_filter,
-          null,
-          true,
-          1000
-        );
-        ids = props.Select(i => i.id).ToList();
-
-        if (box.ids == null)
-        {
-          box.ids = new List<string>();
-        }
-        box.ids.AddRange(ids);
-      }
-    }
 
     [HttpPost]
     [Route("GetTracksByBox")]
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
-      if (
-        box.time_start == null &&
-        box.time_end == null
-      )
-      {
-        // We do not search without time diapason.
-        return  new List<TrackPointDTO>();
-      }
-
-      await AddIdsByProperties(box);
-
-      var trackPoints = await _tracksService.GetTracksByBox(box);
-
-      return trackPoints;
+      return await _trackUpdateService.GetTracksByBox(box);
     }
   }
 }

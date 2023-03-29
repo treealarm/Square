@@ -8,6 +8,7 @@ package tracks;
 service TracksGrpcService {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply);
+	rpc AddTracks (ProtoFigures) returns (ProtoFigures);
 }
 
 // The request message containing the user's name.
@@ -18,4 +19,36 @@ message HelloRequest {
 // The response message containing the greetings.
 message HelloReply {
   string message = 1;
+}
+
+
+message ProtoObjExtraProperty {
+  string str_val = 1;
+	string prop_name = 2;
+	string visual_type = 3;
+}
+
+message ProtoCoord {
+	double lat = 1;
+	double lon = 2;
+}
+
+message ProtoGeometry {			
+	repeated ProtoCoord coord = 1;
+	string type = 2;
+}
+
+message ProtoFig {
+	ProtoGeometry geometry = 1;
+	optional double radius = 2;
+	optional string zoom_level = 3;
+	repeated ProtoObjExtraProperty extra_props = 4;
+	string id = 5;
+	optional string parent_id = 6;
+	string name = 7;
+	optional string external_type = 8;
+}
+
+message ProtoFigures {
+	repeated ProtoFig figs = 1;
 }
