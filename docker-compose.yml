@@ -1,9 +1,5 @@
 version: '3.8'
 
-x-common-variables: &common-variables
-   - LEAFLET_VOLUME_PATH=//d/tests/leaflet_data
-
-
    
 services:
   leafletalarmsservice:
@@ -21,7 +17,7 @@ services:
 
   leafletalarms-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "8000" ]
+    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "5000", "-app-protocol", "grpc" ]
     depends_on:
       - leafletalarmsservice
     network_mode: "service:leafletalarmsservice"
@@ -37,25 +33,17 @@ services:
     volumes:
      - ./leaflet_data/osm_data:/osm_data
 
-  tracksenderservice:
-    image: ${DOCKER_REGISTRY-}tracksenderservice
-    restart: "no"
-    depends_on:
-     - leafletalarmsservice
-    build:
-      context: .
-      dockerfile: TrackSender/Dockerfile
-    volumes:
-     - ./leaflet_data/osm_data:/osm_data
-
-  tracksender-dapr:
-    image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "tracksender", "-app-port", "8000" ]
-    depends_on:
-      - tracksenderservice
-    network_mode: "service:tracksenderservice"
-      
-
+  #tracksenderservice:
+  #  image: ${DOCKER_REGISTRY-}tracksenderservice
+  #  restart: "no"
+  #  depends_on:
+  #   - leafletalarmsservice
+  #  build:
+  #    context: .
+  #    dockerfile: TrackSender/Dockerfile
+  #  volumes:
+  #   - ./leaflet_data/osm_data:/osm_data
+  
   mongoservice:
     image : mongo
     container_name: mongodb

@@ -9,12 +9,12 @@ using static LeafletAlarmsGrpc.TracksGrpcService;
 using var channel = GrpcChannel.ForAddress("http://localhost:5000");
 var client = new TracksGrpcServiceClient(channel);
 
-//var daprClient = new DaprClientBuilder().Build();
+var daprClient = new DaprClientBuilder().Build();
 
-HelloReply reply = new HelloReply();
-reply = await client.SayHelloAsync(
-                  new HelloRequest { Name = "GreeterClient" });
-Console.WriteLine("Greeting: " + reply.Message);
+//HelloReply reply = new HelloReply();
+//reply = await client.SayHelloAsync(
+//                  new HelloRequest { Name = "GreeterClient" });
+//Console.WriteLine("Greeting: " + reply.Message);
 
 var figs = new ProtoFigures();
 var fig = new ProtoFig();
@@ -42,43 +42,58 @@ fig.Geometry.Coord.Add(new ProtoCoord()
   Lon = 37.618727730916895
 });
 
-//for (int i = 0; i < 100; i++)
+double step = 0.001;
+
+for (int i = 0; i < 100; i++)
 {
-  //try
-  //{
-  //  reply =
-  //    await daprClient.InvokeMethodGrpcAsync<HelloRequest, HelloReply>(
-  //      "server",
-  //      "SayHello",
-  //      new HelloRequest { Name = "GreeterClient" }
-  //    );
-  //}
-  //catch (Exception ex)
-  //{
-  //  Console.WriteLine(ex);
-  //}
-
-  double step = 0.001;
-
-  for (int i = 0; i < 100; i++)
+  break;
+  try
   {
-    await Task.Delay(1000);
     if (i > 50)
     {
       step = -0.001;
     }
-    foreach(var f in fig.Geometry.Coord)
+    foreach (var f in fig.Geometry.Coord)
     {
       f.Lat += step;
       f.Lon += step;
     }
-    var newFigs = await client.AddTracksAsync(figs);
+    var reply =
+      await daprClient.InvokeMethodGrpcAsync<ProtoFigures, ProtoFigures>(
+        "leafletalarms",
+        "AddTracks",
+        figs
+      );
   }
+  catch (Exception ex)
+  {
+    Console.WriteLine(ex);
+  }
+}
+
+step = 0.001;
+
+for (int i = 0; i < 100; i++)
+{
+  await Task.Delay(1000);
+
+  if (i > 50)
+  {
+    step = -0.001;
+  }
+  foreach(var f in fig.Geometry.Coord)
+  {
+    f.Lat += step;
+    f.Lon += step;
+  }
+  var newFigs = await client.AddTracksAsync(figs);
+  Console.WriteLine("Greeting: " + newFigs.ToString());
+}
   
 
   
   //Console.WriteLine("Greeting: " + newFigs.ToString());
-}
+
 
 Console.WriteLine("Press any key to exit...");
 Console.ReadKey();

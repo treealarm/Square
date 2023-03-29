@@ -4,9 +4,13 @@ services:
   leafletalarmsservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8000
+      - ASPNETCORE_URLS=http://+:8000;http://+:5000
+      - Kestrel__Endpoints__gRPC__Url=http://*:5000
+      - Kestrel__Endpoints__gRPC__Protocols=Http2
+      - Kestrel__Endpoints__Http__Url=http://*:8000
     ports:
       - "8000:8000"
+      - "5000:5000"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -17,7 +21,6 @@ services:
       - ASPNETCORE_URLS=http://+:8888
     ports:
       - "7000:8888"
-      #- "51000:50001"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
