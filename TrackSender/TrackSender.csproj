@@ -1838,6 +1838,7 @@
     <None Remove="SAD\91708982.json" />
     <None Remove="SAD\91708984.json" />
     <None Remove="SAD\SAD.xml" />
+    <None Remove="StatesBD\states.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -3672,6 +3673,7 @@
     <EmbeddedResource Include="SAD\91708982.json" />
     <EmbeddedResource Include="SAD\91708984.json" />
     <EmbeddedResource Include="SAD\SAD.xml" />
+    <EmbeddedResource Include="StatesBD\states.json" />
   </ItemGroup>
 
   <ItemGroup>

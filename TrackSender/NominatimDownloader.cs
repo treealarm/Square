@@ -378,12 +378,10 @@ namespace TrackSender
 
       return retVal;
     }
-    public static async Task<Root> GetOsmFigureFromDisk(int osmid, string folder)
-    {
-      //string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";
 
+    static public async Task<string> GetResource(string resourceName)
+    {
       var assembly = Assembly.GetExecutingAssembly();
-      var resourceName = $"TrackSender.{folder}.{osmid}.json";
 
       string s = string.Empty;
       using (Stream stream = assembly.GetManifestResourceStream(resourceName))
@@ -391,6 +389,16 @@ namespace TrackSender
       {
         s = await reader.ReadToEndAsync();
       }
+      return s;
+    }
+    public static async Task<Root> GetOsmFigureFromDisk(int osmid, string folder)
+    {
+      //string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";
+
+      var resourceName = $"TrackSender.{folder}.{osmid}.json";
+
+      string s = string.Empty;
+      s = await GetResource(resourceName);
 
       // Deserialize the updated product from the response body.
       //var s = await File.ReadAllTextAsync(filename);

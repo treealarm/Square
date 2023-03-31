@@ -11,7 +11,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
 using System.Threading;
 using System.Threading.Tasks;
 using TrackSender.Models;
@@ -22,9 +25,9 @@ namespace TrackSender
   {   
     TestClient _testClient;
     FiguresDTO m_figures = new FiguresDTO();
+    private int _nameCounter = 0;
     
     private Random _random = new Random();
-    private string _main_id = null;
     public TestStates(HttpClient client) 
     { 
       _testClient = new TestClient(client);
@@ -34,7 +37,10 @@ namespace TrackSender
       tasks.Add(EmulateState(token));      
     }
 
-    private void AddStateObjectLowLevel(FigureGeoDTO parentCircle)
+    private void AddStateObjectLowLevel(
+      FigureGeoDTO parentCircle,
+      int kCounter
+    )
     {
       var start = parentCircle.geometry as GeometryCircleDTO;
 
@@ -49,18 +55,18 @@ namespace TrackSender
 
       var figure = new FigureGeoDTO()
       {
-        name = parentCircle.name + _random.Next(0, 300),
+        name = parentCircle.name + kCounter.ToString(),
         radius = _random.Next(50, 100),
-        zoom_level = "14",
+        zoom_level = "14-17",
         geometry = start
       };
 
       figure.parent_id = parentCircle.id;
 
-      if (string.IsNullOrEmpty(figure.id))
-      {
-        figure.id = Program.GenerateBsonId();
-      }
+      figure.id = Program.GenerateBsonId();
+
+      Console.WriteLine($"mem create lowlevel obj:{figure.name}");
+
 
       figure.extra_props = new List<ObjExtraPropertyDTO>()
           {
@@ -79,8 +85,7 @@ namespace TrackSender
       Random random = new Random();
 
       if (geoObj.centroid.type == "Point")
-      {
-        Console.WriteLine($"added state obj:{geoObj.names.name}");
+      {        
         var start =
             new GeometryCircleDTO(
               new Geo2DCoordDTO() {
@@ -98,58 +103,36 @@ namespace TrackSender
         
         figure.parent_id = parentPolygon.id;
 
-        if (string.IsNullOrEmpty(figure.id))
-        {
-          figure.id = Program.GenerateBsonId();
-        }
+        figure.id = Program.GenerateBsonId();
+
+        Console.WriteLine($"mem create state obj:{figure.name}");
 
         figure.extra_props = new List<ObjExtraPropertyDTO>()
-            {
-              new ObjExtraPropertyDTO()
-              {
-                prop_name = "moscow_state",
-                str_val = "true"
-              }
-            };
-        for (int k = 0; k < 10000; k++)
         {
-          AddStateObjectLowLevel(figure);
+          new ObjExtraPropertyDTO()
+          {
+            prop_name = "moscow_state",
+            str_val = "true"
+          }
+        };
+
+        for (int k = 0; k < 1000; k++)
+        {
+          AddStateObjectLowLevel(figure, k);
         }
         m_figures.figs.Add(figure);
       }
     }
 
-    private async Task<FiguresDTO> CreateOrGetDistrict(int osmid)
+    private async Task<FiguresDTO> CreateOrGetDistrict(int osmid, string parent_id)
     {
       Console.WriteLine(osmid);
 
       var color = 
         $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(256).ToString("X2")}";
 
-      FiguresDTO figures = await _testClient.GetByParams("osmid", osmid.ToString(), string.Empty, 1000);
-      
-      if (figures != null && !figures.IsEmpty())
-      {
-        foreach (var figure in figures.figs)
-        {
-          figure.extra_props = new List<ObjExtraPropertyDTO>()
-            {
-              new ObjExtraPropertyDTO()
-              {
-                prop_name = "osmid",
-                str_val = osmid.ToString()
-              },
-              new ObjExtraPropertyDTO()
-              {
-                prop_name = "color",
-                str_val = color
-              }
-            };
-        }
-        return figures;        
-      }
 
-      figures = new FiguresDTO();
+      var figures = new FiguresDTO();
       figures.figs = new List<FigureGeoDTO>();
 
       var geoObj = await NominatimProcessor.GetOsmFigureFromDisk(osmid, "PolygonJson");
@@ -232,10 +215,9 @@ namespace TrackSender
               }
             };
 
-            if (string.IsNullOrEmpty(figure.id))
-            {
-              figure.id = Program.GenerateBsonId();
-            }
+            figure.id = Program.GenerateBsonId();
+
+            Console.WriteLine($"mem create district obj:{figure.name}");
 
             if (parentPolygon != null)
             {
@@ -253,7 +235,7 @@ namespace TrackSender
             else
             {
               figure.zoom_level = "9";
-              figure.parent_id = _main_id;
+              figure.parent_id = parent_id;
             }        
 
             figures.figs.Add(figure);
@@ -269,44 +251,83 @@ namespace TrackSender
     }
     public async Task BuildMoscow()
     {
+      const string RussiaName = "Russia";
+      string RussiaId = "6426a9f30032fcaa5eabcd88";
+
       try
       {
-        var parents = await _testClient.GetByName("Russia");
+        var parents = await _testClient.GetByName(RussiaName);
 
         if (parents == null || parents.Count == 0)
         {
           BaseMarkerDTO marker = new BaseMarkerDTO()
           {
-            name = "Russia"
+            name = RussiaName,
+            id = RussiaId
           };
           marker = await _testClient.UpdateBase(marker);
-          _main_id = marker.id;
+          RussiaId = marker.id;
         }
         else
         {
-          _main_id = parents.FirstOrDefault().id;
+          RussiaId = parents.FirstOrDefault().id;
         }
       }
       catch(Exception ex)
       {
         Console.WriteLine(ex.Message);
       }
-      
 
-      foreach (var osmid in MoscowOsm.osmids)
+      var resourceName = $"TrackSender.StatesBD.states.json";
+      var s = await NominatimProcessor.GetResource(resourceName);
+
+      FiguresDTO json = null;
+
+      try
       {
-        var figure = await CreateOrGetDistrict(osmid[0]);
+        json = JsonSerializer.Deserialize<FiguresDTO>(s);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
 
-        if (figure != null && !figure.IsEmpty())
+      if (json == null)
+      {
+        foreach (var osmid in MoscowOsm.osmids)
         {
-          m_figures?.figs.AddRange(figure?.figs);
+          var figure = await CreateOrGetDistrict(osmid[0], RussiaId);
+
+          if (figure != null && !figure.IsEmpty())
+          {
+            m_figures?.figs.AddRange(figure?.figs);
+          }
         }
-        else
+
+        var sToSave = JsonSerializer.Serialize(
+          m_figures,
+          new JsonSerializerOptions()
+          {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull
+          }
+        );
+
+        try
         {
-          figure = await CreateOrGetDistrict(osmid[0]);
-          // Empty figure?
+          File.WriteAllText(@"D:\TESTS\Leaflet\leaflet_data\states.json", sToSave.ToString());
         }
-      }      
+        catch (Exception e)
+        {
+          Console.WriteLine(e.Message);
+        }
+      }
+      else
+      {
+        m_figures = json;
+      }
+      
 
       for (int f = 0; f < m_figures.figs.Count; f+= 10000)
       {

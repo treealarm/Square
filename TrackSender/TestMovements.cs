@@ -60,80 +60,13 @@ namespace TrackSender
       tasks.Add(task1);
     }
 
-    private async Task GetOrBuildFiguresAsync()
-    {
-      var figures = new FiguresDTO();
-      figures.figs = new List<FigureGeoDTO>();
-
-      List<string> existedIds = new List<string>();
-      for (int i = 0; i < 100; i++)
-      {
-        var obj_name = $"test_track{i}";
-        Console.WriteLine("Getting:" + obj_name);
-        var marker = await _testClient.GetByName(obj_name);
-
-        if (marker != null && marker.Count > 0)
-        {
-          existedIds.AddRange(marker.Select(m => m.id));
-        }
-        else
-        {
-          var extra_props = new List<ObjExtraPropertyDTO>()
-          {
-            new ObjExtraPropertyDTO()
-            {
-              prop_name = "track_name",
-              str_val = $"lisa_alert"
-            },
-            new ObjExtraPropertyDTO()
-            {
-              prop_name = "timestamp",
-              str_val = DateTime.UtcNow
-                .ToString("o", System.Globalization.CultureInfo.InvariantCulture)
-            }
-          };
-
-          //55.872425, 37.456428 -> 55.621026, 37.786127
-
-          var y = GetRandomDouble(55.872425, 55.621026);
-          var x = GetRandomDouble(37.456428, 37.786127);
-          var start =
-              new GeometryCircleDTO(
-                new Geo2DCoordDTO() { y, x }
-                );
-
-          var figure = new FigureGeoDTO()
-          {
-            name = obj_name,
-            radius = 222,
-            zoom_level = "13",
-            geometry = start,
-            extra_props = extra_props
-          };
-          figures.figs.Add(figure);
-        }
-      }
-
-      if (figures != null && figures.figs.Count > 0)
-      {
-        figures = await _testClient.UpdateTracksAsync(figures, "AddTracks");
-        _figures.figs.AddRange(figures.figs);
-      }
-
-      if (existedIds.Count > 0)
-      {
-        figures = await _testClient.GetByIds(existedIds);
-        _figures.figs.AddRange(figures.figs);
-      }
-    }
-
     private async Task BuildMachines(string resFolder,
-      GeometryPolylineDTO geometry_mkad,
+      GeometryPolylineDTO geometry_road,
       int maxMachines,
       string zoom_level
-      )
+    )
     {
-      int maxPoint = geometry_mkad.coord.Count;
+      int maxPoint = geometry_road.coord.Count;
 
       var max_circles = 10000;
 
@@ -184,8 +117,8 @@ namespace TrackSender
                 }
             };
 
-            var y = geometry_mkad.coord[rnd].Y;
-            var x = geometry_mkad.coord[rnd].X;
+            var y = geometry_road.coord[rnd].Y;
+            var x = geometry_road.coord[rnd].X;
 
             var start =
                   new GeometryCircleDTO(

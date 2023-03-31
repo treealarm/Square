@@ -58,10 +58,10 @@ namespace TrackSender
         testStates.RunAsync(token, tasks);        
         
 
-        var taskMove = testMove.RunAsync(token, tasks);
-        tasks.Add(taskMove);
+        //var taskMove = testMove.RunAsync(token, tasks);
+        //tasks.Add(taskMove);
 
-        testMove.TestLogicAsync(token, tasks);
+        //testMove.TestLogicAsync(token, tasks);
 
         if (!Console.IsInputRedirected && Console.KeyAvailable)
         {

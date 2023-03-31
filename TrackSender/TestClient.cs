@@ -129,6 +129,29 @@ namespace TrackSender
       }
     }
 
+    public async Task<GetByParentDTO> GetByParentId(string parent_id)
+    {
+      try
+      {
+        HttpResponseMessage response =
+        await _client.GetAsync(
+          $"api/Map/GetByParent?parent_id={parent_id}");
+
+        response.EnsureSuccessStatusCode();
+
+        // Deserialize the updated product from the response body.
+        var s = await response.Content.ReadAsStringAsync();
+
+        var json = JsonSerializer.Deserialize<GetByParentDTO>(s);
+        return json;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"{ex.Message}");
+        return null;
+      }
+    }
+
     public async Task<FiguresDTO> GetByParams(
       string paramName,
       string paramValue,

@@ -81,6 +81,14 @@ namespace DbLayer.Services
         };
         levels.Add(level);
 
+        level = new DBLevel()
+        {
+          zoom_level = "14-17",
+          zoom_min = 14,
+          zoom_max = 17
+        };
+        levels.Add(level);
+
         for (int i = 0; i < 20; i++)
         {
           level = new DBLevel()
