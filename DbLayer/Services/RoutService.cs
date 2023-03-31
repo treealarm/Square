@@ -228,7 +228,7 @@ namespace DbLayer.Services
 
         filter = filter &
           builder.Where(p => levels.Contains(p.meta.figure.zoom_level)
-          || p.meta.figure.zoom_level == null);
+          || string.IsNullOrEmpty(p.meta.figure.zoom_level));
       }
 
 

@@ -81,7 +81,6 @@ namespace LeafletAlarms.Services
         await EnsureTracksRoot(figure);
       }
 
-
       DateTime t1 = DateTime.Now;
       await _mapService.UpdateHierarchyAsync(movedMarkers.figs);
       DateTime t2 = DateTime.Now;
@@ -214,6 +213,11 @@ namespace LeafletAlarms.Services
       await AddIdsByProperties(box);
 
       var trackPoints = await _tracksService.GetTracksByBox(box);
+
+      if (box.sort < 0)
+      {
+        trackPoints = trackPoints.OrderByDescending(f => f.timestamp).ToList();
+      }
 
       return trackPoints;
     }

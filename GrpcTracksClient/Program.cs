@@ -42,11 +42,16 @@ fig.Geometry.Coord.Add(new ProtoCoord()
   Lon = 37.618727730916895
 });
 
+fig.ExtraProps.Add(new ProtoObjExtraProperty()
+{
+  PropName = "track_name",
+  StrVal = "lisa_alert"
+});
+
 double step = 0.001;
 
 for (int i = 0; i < 100; i++)
 {
-  break;
   try
   {
     if (i > 50)
@@ -64,19 +69,20 @@ for (int i = 0; i < 100; i++)
         "AddTracks",
         figs
       );
+    Console.WriteLine("Fig DAPR: " + reply?.ToString());
   }
   catch (Exception ex)
   {
     Console.WriteLine(ex);
+    break;
   }
+  await Task.Delay(1000);
 }
 
 step = 0.001;
 
 for (int i = 0; i < 100; i++)
 {
-  await Task.Delay(1000);
-
   if (i > 50)
   {
     step = -0.001;
@@ -87,9 +93,9 @@ for (int i = 0; i < 100; i++)
     f.Lon += step;
   }
   var newFigs = await client.AddTracksAsync(figs);
-  Console.WriteLine("Greeting: " + newFigs.ToString());
-}
-  
+  Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
+  await Task.Delay(1000);
+} 
 
   
   //Console.WriteLine("Greeting: " + newFigs.ToString());

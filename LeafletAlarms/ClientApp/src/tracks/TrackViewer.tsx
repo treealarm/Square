@@ -3,14 +3,21 @@ import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
 import { ApplicationState } from '../store';
-import { BoxTrackDTO, IGeoObjectDTO, LineStringType, PointType } from '../store/Marker';
+import {
+  BoxTrackDTO,
+  IGeoObjectDTO,
+  LineStringType,
+  PointType,
+  PolygonType
+} from '../store/Marker';
 
 import { useEffect } from 'react'
 import {
   useMap,
   Polyline,
   useMapEvents,
-  Circle
+  Circle,
+  Polygon
 } from 'react-leaflet'
 import { LeafletMouseEvent } from 'leaflet';
 import { useAppDispatch } from '../store/configureStore';
@@ -19,8 +26,28 @@ declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
-var pathOptionsTracks = { color: "white" };
+const pathOptionsTracks = {
+  fillColor: 'white',
+  fillOpacity: 0.2,
+  color: 'purple',
+  opacity: 1
+}
+
 var pathOptionsRouts = { color: "blue" };
+
+function TrackPolygon(props: any) {
+  let figure = props.figure as IGeoObjectDTO;
+  var positions = figure.location.coord;
+  return (
+    <React.Fragment>
+      <Polygon
+        pathOptions={props.pathOptions}
+        positions={positions}
+      >
+      </Polygon>
+    </React.Fragment>
+  );
+}
 
 function TrackPolyline(props: any) {
   let figure = props.figure as IGeoObjectDTO;
@@ -77,6 +104,18 @@ function CommonTrack(props: any) {
   if (figure.location == null) {
     // Can be not built rout.
     return null;
+  }
+
+  if (figure.location.type == PolygonType) {
+    return (
+      <React.Fragment>
+        <TrackPolygon
+          figure={figure}
+          pathOptions={props.pathOptions}
+        >
+        </TrackPolygon>
+      </React.Fragment>
+    );
   }
 
   if (figure.location.type == LineStringType) {
