@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.States;
+using Domain.StateWebSock;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,43 +22,6 @@ namespace TrackSender
     public TestClient(HttpClient client)
     {
       _client = client;
-    }
-    public async Task<FiguresDTO> UpdateTracksAsync(FiguresDTO figure, string action)
-    {
-      try
-      {
-        HttpResponseMessage response =
-        await _client.PostAsJsonAsync(
-          $"api/Tracks/{action}", figure);
-
-      response.EnsureSuccessStatusCode();
-
-      // Deserialize the updated product from the response body.
-      var s = await response.Content.ReadAsStringAsync();
-
-      
-        if (action == "AddTracks")
-        {
-          FiguresDTO json = JsonSerializer.Deserialize<FiguresDTO>(s);
-          return json;
-        }
-        else
-        {
-          Dictionary<string, TimeSpan> json = JsonSerializer.Deserialize<Dictionary<string, TimeSpan>>(s);
-          Console.WriteLine($"---------------------------------->");
-          foreach (var pair in json)
-          {
-            Console.WriteLine($"{pair.Key}-> {(int)pair.Value.TotalMilliseconds} [ms]");
-          }
-          Console.WriteLine($"<----------------------------------");
-        }
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.Message);
-      }
-
-      return figure;
     }
 
     public async Task<FiguresDTO> UpdateFiguresAsync(FiguresDTO figure)
@@ -81,6 +45,29 @@ namespace TrackSender
       }
 
       return figure;
+    }
+
+    public async Task<List<string>> AddTracks(List<TrackPointDTO> figure)
+    {
+      HttpResponseMessage response =
+        await _client.PostAsJsonAsync($"api/tracks/AddTracks", figure);
+
+      response.EnsureSuccessStatusCode();
+
+      // Deserialize the updated product from the response body.
+      var s = await response.Content.ReadAsStringAsync();
+
+      try
+      {
+        var json = JsonSerializer.Deserialize<List<string>>(s);
+        return json;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
+
+      return new List<string>();
     }
 
     public async Task<BaseMarkerDTO> UpdateBase(BaseMarkerDTO updatedMarker)

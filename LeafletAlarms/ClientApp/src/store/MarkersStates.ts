@@ -118,16 +118,17 @@ export const actionCreators = {
     }
   },
 
-  addTracks: (markers: IFigures): AppThunkAction<KnownAction> => (
+  updateFigures: (markers: IFigures): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
     //let marker: Marker = {} as Marker;
 
     // Send data to the backend via POST
+    markers.add_tracks = true;
     let body = JSON.stringify(markers);
 
-    var request = ApiTracksRootString + "/AddTracks";
+    var request = ApiRootString + "/UpdateFigures";
 
     var fetched = DoFetch(request, {
       method: "POST",

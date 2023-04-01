@@ -38,20 +38,11 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("AddTracks")]
-    public async Task<ActionResult<FiguresDTO>> AddTracks(FiguresDTO movedMarkers)
+    public async Task<ActionResult<List<string>>> AddTracks(List<TrackPointDTO> movedMarkers)
     {
       var retVal = await _trackUpdateService.AddTracks(movedMarkers);
       return CreatedAtAction(nameof(AddTracks), retVal);
     }
-
-    [HttpPost]
-    [Route("UpdateTracks")]
-    public async Task<ActionResult<Dictionary<string, TimeSpan>>> UpdateTracks(FiguresDTO movedMarkers)
-    {   
-      var dic = await _trackUpdateService.UpdateTracks(movedMarkers);
-      return CreatedAtAction(nameof(UpdateTracks), dic);
-    }
-
 
     [HttpPost]
     [Route("GetTracksByBox")]

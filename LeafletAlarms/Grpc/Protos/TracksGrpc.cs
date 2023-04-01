@@ -64,10 +64,10 @@ namespace LeafletAlarmsGrpc {
         __Marshaller_tracks_HelloReply);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures> __Method_AddTracks = new grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(
+    static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures> __Method_UpdateFigures = new grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(
         grpc::MethodType.Unary,
         __ServiceName,
-        "AddTracks",
+        "UpdateFigures",
         __Marshaller_tracks_ProtoFigures,
         __Marshaller_tracks_ProtoFigures);
 
@@ -94,7 +94,7 @@ namespace LeafletAlarmsGrpc {
       }
 
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::LeafletAlarmsGrpc.ProtoFigures> AddTracks(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::LeafletAlarmsGrpc.ProtoFigures> UpdateFigures(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -108,7 +108,7 @@ namespace LeafletAlarmsGrpc {
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_SayHello, serviceImpl.SayHello)
-          .AddMethod(__Method_AddTracks, serviceImpl.AddTracks).Build();
+          .AddMethod(__Method_UpdateFigures, serviceImpl.UpdateFigures).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -119,7 +119,7 @@ namespace LeafletAlarmsGrpc {
     public static void BindService(grpc::ServiceBinderBase serviceBinder, TracksGrpcServiceBase serviceImpl)
     {
       serviceBinder.AddMethod(__Method_SayHello, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::LeafletAlarmsGrpc.HelloRequest, global::LeafletAlarmsGrpc.HelloReply>(serviceImpl.SayHello));
-      serviceBinder.AddMethod(__Method_AddTracks, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(serviceImpl.AddTracks));
+      serviceBinder.AddMethod(__Method_UpdateFigures, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(serviceImpl.UpdateFigures));
     }
 
   }

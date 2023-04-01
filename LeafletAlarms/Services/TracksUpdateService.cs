@@ -5,6 +5,8 @@ using Domain.StateWebSock;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Rewrite;
 
 namespace LeafletAlarms.Services
 {
@@ -63,85 +65,22 @@ namespace LeafletAlarms.Services
 
     private async Task EnsureTracksRoot(BaseMarkerDTO marker)
     {
-      if (string.IsNullOrEmpty(marker.parent_id))
+      // Set parents for moving objects, not for "tracks only".
+
+      if (string.IsNullOrEmpty(marker.parent_id) && 
+        !string.IsNullOrEmpty(marker.id)
+      )
       {
         var root = await GetTracksRoot();
         marker.parent_id = root.id;
       }
     }
 
-    private async Task<Dictionary<string, TimeSpan>> DoUpdateTracks(FiguresDTO movedMarkers)
+    private async Task<List<string>> DoUpdateTracks(List<TrackPointDTO> trackPoints)
     {
-      //var text = JsonSerializer.Serialize(movedMarkers);
-      var trackPoints = new List<TrackPointDTO>();
-      Dictionary<string, TimeSpan> timing = new Dictionary<string, TimeSpan>();
-
-      foreach (var figure in movedMarkers.figs)
-      {
-        await EnsureTracksRoot(figure);
-      }
-
-      DateTime t1 = DateTime.Now;
-      await _mapService.UpdateHierarchyAsync(movedMarkers.figs);
-      DateTime t2 = DateTime.Now;
-      timing["UpdateHierarchyAsync"] = t2 - t1;
-
-
-      t1 = DateTime.Now;
-      var circles = await _geoService.CreateGeo(movedMarkers.figs);
-      t2 = DateTime.Now;
-      timing["CreateGeo"] = t2 - t1;
-
-      foreach (var figure in movedMarkers.figs)
-      {
-        GeoObjectDTO circle;
-
-        circles.TryGetValue(figure.id, out circle);
-
-        var newPoint =
-          new TrackPointDTO()
-          {
-            figure = circle,
-            timestamp = DateTime.UtcNow
-          };
-
-        if (figure.extra_props != null)
-        {
-          var propTimeStamp = figure.extra_props
-          .Where(p => p.prop_name == "timestamp")
-          .FirstOrDefault();
-
-          if (propTimeStamp != null)
-          {
-            newPoint.timestamp = DateTime
-              .Parse(
-                propTimeStamp.str_val
-              ).ToUniversalTime();
-            figure.extra_props.Remove(propTimeStamp);
-          }
-        }
-
-        trackPoints.Add(newPoint);
-      }
-      //---------Updating properties here not to insert timestamp
-      t1 = DateTime.Now;
-      await _mapService.UpdatePropNotDeleteAsync(movedMarkers.figs);
-      t2 = DateTime.Now;
-      timing["UpdatePropNotDeleteAsync"] = t2 - t1;
-      //----------------------------------------------------------------------------
-
-      t1 = DateTime.Now;
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
-      t2 = DateTime.Now;
 
-      timing["tracksInsert"] = t2 - t1;
-
-      t1 = DateTime.Now;
       _stateService.OnUpdateTrackPosition(trackPoints);
-
-
-      timing["UpdateTracksCall"] = t2 - t1;
-      t2 = DateTime.Now;
 
       var track_0 = trackPointsInserted.FirstOrDefault();
       var track_n = trackPointsInserted.LastOrDefault();
@@ -158,23 +97,12 @@ namespace LeafletAlarms.Services
 
         _pubsub.PublishNoWait("UpdateTrackPosition", JsonSerializer.Serialize(ev));
       }
-      return timing;
+      return trackPointsInserted.Select (t => t.id).ToList();
     }
 
-    public async Task<FiguresDTO> AddTracks(FiguresDTO movedMarkers)
-    {
-      await DoUpdateTracks(movedMarkers);
-      return movedMarkers;
-    }
-
-    public async Task<Dictionary<string, TimeSpan>> UpdateTracks(FiguresDTO movedMarkers)
-    {
-      DateTime t1 = DateTime.Now;
-      var dic = await DoUpdateTracks(movedMarkers);
-      DateTime t2 = DateTime.Now;
-
-      dic["All"] = t2 - t1;
-      return dic;
+    public async Task<List<string>> AddTracks(List<TrackPointDTO> movedMarkers)
+    {      
+      return await DoUpdateTracks(movedMarkers);
     }
 
     private async Task AddIdsByProperties(BoxDTO box)
@@ -210,7 +138,7 @@ namespace LeafletAlarms.Services
         return new List<TrackPointDTO>();
       }
 
-      await AddIdsByProperties(box);
+      //await AddIdsByProperties(box);
 
       var trackPoints = await _tracksService.GetTracksByBox(box);
 
@@ -220,6 +148,39 @@ namespace LeafletAlarms.Services
       }
 
       return trackPoints;
+    }
+
+    public async Task<FiguresDTO> UpdateFigures(FiguresDTO statMarkers)
+    {
+      await _mapService.UpdateHierarchyAsync(statMarkers.figs);
+      await _mapService.UpdatePropNotDeleteAsync(statMarkers.figs);
+      var updatedFigs = await _geoService.CreateGeo(statMarkers.figs);
+
+      if (statMarkers.add_tracks)
+      {
+        var trackPoints = new List<TrackPointDTO>();
+
+        foreach (var figure in statMarkers.figs)
+        {
+          GeoObjectDTO circle;
+
+          updatedFigs.TryGetValue(figure.id, out circle);
+
+          var newPoint =
+            new TrackPointDTO()
+            {
+              figure = circle,
+              timestamp = DateTime.UtcNow,
+              extra_props = figure.extra_props
+            };
+
+          trackPoints.Add(newPoint);
+        }
+
+        await AddTracks(trackPoints);
+      }
+
+      return statMarkers;
     }
   }
 }

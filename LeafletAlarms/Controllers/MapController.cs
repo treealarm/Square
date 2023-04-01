@@ -9,14 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
+using OsmSharp.API;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
 {
@@ -32,6 +27,8 @@ namespace LeafletAlarms.Controllers
     private readonly ILevelService _levelService;
     private readonly RightsCheckerService _rightChecker;
     private readonly IOptions<RoutingSettings> _routingSettings;
+    private readonly TracksUpdateService _trackUpdateService;
+    
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
@@ -39,7 +36,8 @@ namespace LeafletAlarms.Controllers
       ITrackService tracksService,
       ILevelService levelService,
       RightsCheckerService rightChecker,
-      IOptions<RoutingSettings> routingSettings
+      IOptions<RoutingSettings> routingSettings,
+      TracksUpdateService trackUpdateService
     )
     {
       _mapService = mapsService;
@@ -49,6 +47,7 @@ namespace LeafletAlarms.Controllers
       _levelService = levelService;
       _rightChecker = rightChecker;
       _routingSettings = routingSettings;
+      _trackUpdateService = trackUpdateService;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -587,9 +586,7 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateFigures")]
     public async Task<ActionResult<FiguresDTO>> UpdateFigures(FiguresDTO statMarkers)
     {
-      await _mapService.UpdateHierarchyAsync(statMarkers.figs);
-      await _mapService.UpdatePropNotDeleteAsync(statMarkers.figs);
-      await _geoService.CreateGeo(statMarkers.figs);
+      await _trackUpdateService.UpdateFigures(statMarkers);
 
       return CreatedAtAction(nameof(UpdateFigures), statMarkers);
     }

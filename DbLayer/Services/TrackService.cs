@@ -128,6 +128,21 @@ namespace DbLayer.Services
 
         _collFigures.Indexes.CreateOneAsync(indexModel);
       }
+
+      {
+        var keys = Builders<DBTrackPoint>.IndexKeys.Combine(
+          Builders<DBTrackPoint>.IndexKeys
+          .Ascending($"{nameof(DBTrackPoint.meta.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}"),
+          Builders<DBTrackPoint>.IndexKeys
+          .Ascending($"{nameof(DBTrackPoint.meta.extra_props)}.{nameof(DBObjExtraProperty.str_val)}"));
+
+        var indexModel = new CreateIndexModel<DBTrackPoint>(
+           keys, new CreateIndexOptions()
+           { Name = "ep" }
+         );
+
+        _collFigures.Indexes.CreateOneAsync(indexModel);
+      }
     }
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
@@ -141,6 +156,7 @@ namespace DbLayer.Services
         };
         dbTrack.meta.id = ObjectId.GenerateNewId().ToString();
         dbTrack.meta.figure = ModelGate.ConvertDTO2DB(track.figure);
+        dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB(track.extra_props);
         list.Add(dbTrack);
       }
 
@@ -163,7 +179,8 @@ namespace DbLayer.Services
       {
         id = t.meta.id,
         timestamp = t.timestamp,
-        figure = ModelGate.ConvertDB2DTO(t.meta.figure)
+        figure = ModelGate.ConvertDB2DTO(t.meta.figure),
+        extra_props = ModelGate.ConverDBExtraProp2DTO(t.meta.extra_props)
       };
 
       return dto;
@@ -337,17 +354,47 @@ namespace DbLayer.Services
       } 
 
 
-        filter = filter & builder.Where(t => t.timestamp >= box.time_start
-          && t.timestamp <= box.time_end);
+      filter = filter & builder.Where(t => t.timestamp >= box.time_start
+        && t.timestamp <= box.time_end);
 
 
       List<DBTrackPoint> dbObjects = new List<DBTrackPoint>();
 
       if (box.ids != null &&
-        (box.ids.Count > 0 || (box.property_filter != null && box.property_filter.props.Count > 0))
+        box.ids.Count > 0
       )
       {
         filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
+      }
+
+      if (box.property_filter != null && box.property_filter.props.Count > 0)
+      {
+        foreach (var prop in box.property_filter.props)
+        {
+          var request =
+            string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
+            prop.prop_name,
+            prop.str_val);
+
+          var f1 = Builders<DBTrackPoint>
+            .Filter
+            .ElemMatch(t => t.meta.extra_props, request)
+            ;
+
+          var metaValue = new BsonDocument(
+              "str_val",
+              prop.str_val
+              );
+
+          if (filter == builder.Empty)
+          {
+            filter = f1;
+          }
+          else
+          {
+            filter &= f1;
+          }
+        }
       }
 
       var finder = _collFigures.Find(filter).Limit(limit);

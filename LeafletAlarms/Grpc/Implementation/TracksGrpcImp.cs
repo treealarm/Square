@@ -1,5 +1,7 @@
-﻿using Domain;
+﻿using DbLayer.Services;
+using Domain;
 using Domain.GeoDBDTO;
+using Domain.ServiceInterfaces;
 using Grpc.Core;
 using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
@@ -14,7 +16,8 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly TracksUpdateService _trackUpdateService;
     public TracksGrpcImp(
       ILogger<TracksGrpcImp> logger,
-      TracksUpdateService trackUpdateService)
+      TracksUpdateService trackUpdateService
+    )
     {
       _logger = logger;
       _trackUpdateService = trackUpdateService;
@@ -30,13 +33,14 @@ namespace LeafletAlarms.Grpc.Implementation
       });
     }
 
-    public override async Task<ProtoFigures> AddTracks(ProtoFigures request, ServerCallContext context)
+    public override async Task<ProtoFigures> UpdateFigures(ProtoFigures request, ServerCallContext context)
     {
       ProtoFigures response = new ProtoFigures();
 
       Console.WriteLine($"Received from:{request.ToString()}");
       var figs = new FiguresDTO();
       figs.figs = new List<FigureGeoDTO>();
+      figs.add_tracks = request.AddTracks;
 
       foreach (var fig in request.Figs)
       {
@@ -82,9 +86,9 @@ namespace LeafletAlarms.Grpc.Implementation
         }        
       }
 
-      var result = await _trackUpdateService.AddTracks(figs);
+      await _trackUpdateService.UpdateFigures(figs);
 
-      foreach (var resFig in result.figs)
+      foreach (var resFig in figs.figs)
       {
         var pFig = new ProtoFig()
         {

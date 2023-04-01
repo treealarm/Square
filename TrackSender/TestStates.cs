@@ -406,6 +406,7 @@ namespace TrackSender
 
           if (iAlarm.Contains(figures.figs.IndexOf(figure)))
           {
+            Console.WriteLine($"ALARMED {figure.name}");
             stateNum = 0;
           }
 

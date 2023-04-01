@@ -101,6 +101,7 @@ export function getExtraProp(
 
 export interface IFigures {
   figs?: ICommonFig[];
+  add_tracks?: boolean;
 }
 
 export interface TreeMarker {

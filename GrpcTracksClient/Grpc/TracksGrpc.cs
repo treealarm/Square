@@ -64,10 +64,10 @@ namespace LeafletAlarmsGrpc {
         __Marshaller_tracks_HelloReply);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures> __Method_AddTracks = new grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(
+    static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures> __Method_UpdateFigures = new grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(
         grpc::MethodType.Unary,
         __ServiceName,
-        "AddTracks",
+        "UpdateFigures",
         __Marshaller_tracks_ProtoFigures,
         __Marshaller_tracks_ProtoFigures);
 
@@ -153,24 +153,24 @@ namespace LeafletAlarmsGrpc {
         return CallInvoker.AsyncUnaryCall(__Method_SayHello, null, options, request);
       }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::LeafletAlarmsGrpc.ProtoFigures AddTracks(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual global::LeafletAlarmsGrpc.ProtoFigures UpdateFigures(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return AddTracks(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+        return UpdateFigures(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::LeafletAlarmsGrpc.ProtoFigures AddTracks(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::CallOptions options)
+      public virtual global::LeafletAlarmsGrpc.ProtoFigures UpdateFigures(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::CallOptions options)
       {
-        return CallInvoker.BlockingUnaryCall(__Method_AddTracks, null, options, request);
+        return CallInvoker.BlockingUnaryCall(__Method_UpdateFigures, null, options, request);
       }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncUnaryCall<global::LeafletAlarmsGrpc.ProtoFigures> AddTracksAsync(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncUnaryCall<global::LeafletAlarmsGrpc.ProtoFigures> UpdateFiguresAsync(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return AddTracksAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+        return UpdateFiguresAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncUnaryCall<global::LeafletAlarmsGrpc.ProtoFigures> AddTracksAsync(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::CallOptions options)
+      public virtual grpc::AsyncUnaryCall<global::LeafletAlarmsGrpc.ProtoFigures> UpdateFiguresAsync(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::CallOptions options)
       {
-        return CallInvoker.AsyncUnaryCall(__Method_AddTracks, null, options, request);
+        return CallInvoker.AsyncUnaryCall(__Method_UpdateFigures, null, options, request);
       }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]

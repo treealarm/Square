@@ -8,7 +8,7 @@ package tracks;
 service TracksGrpcService {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply);
-	rpc AddTracks (ProtoFigures) returns (ProtoFigures);
+	rpc UpdateFigures (ProtoFigures) returns (ProtoFigures);
 }
 
 // The request message containing the user's name.
@@ -46,9 +46,10 @@ message ProtoFig {
 	string id = 5;
 	optional string parent_id = 6;
 	string name = 7;
-	optional string external_type = 8;
+	optional string external_type = 8;	
 }
 
 message ProtoFigures {
 	repeated ProtoFig figs = 1;
+	optional bool add_tracks = 2;
 }

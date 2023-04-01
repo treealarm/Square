@@ -237,6 +237,17 @@ namespace DbLayer.Services
       {
         var dbObj = new DBMarker();
         item.CopyAllTo(dbObj);
+
+        if (string.IsNullOrEmpty(dbObj.parent_id))
+        {
+          dbObj.parent_id = null;
+        }
+
+        if (string.IsNullOrEmpty(dbObj.id))
+        {
+          dbObj.id = null;
+        }
+
         dbUpdated.Add(item, dbObj);
         
         var filter = Builders<DBMarker>.Filter.Eq(x => x.id, dbObj.id);
@@ -291,50 +302,6 @@ namespace DbLayer.Services
       return result.DeletedCount;
     }
 
-    private static List<DBObjExtraProperty> ConvertExtraPropsToDB(List<ObjExtraPropertyDTO> extra_props)
-    {
-      var ep_db = new List<DBObjExtraProperty>();
-      var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
-
-      propertieNames.AddRange(
-        typeof(FigureGeoDTO).GetProperties().Select(x => x.Name)
-        );
-
-
-      foreach (var prop in extra_props)
-      {
-        // "radius", "zoom_level"
-        if (propertieNames.Contains(prop.prop_name))
-        {
-          continue;
-        }
-
-        DBObjExtraProperty newProp = new DBObjExtraProperty()
-        {
-          prop_name = prop.prop_name,
-          visual_type = prop.visual_type
-        };
-
-        if (prop.visual_type == BsonType.DateTime.ToString())
-        {
-          newProp.str_val = new BsonDocument(
-            "str_val",
-            DateTime
-              .Parse(prop.str_val)
-              .ToUniversalTime()
-            );
-        }
-        else
-        {
-          newProp.str_val = new BsonDocument(
-            "str_val",
-            prop.str_val
-            );
-        }
-        ep_db.Add(newProp);
-      }
-      return ep_db;
-    }
     private static DBMarkerProperties ConvertDTO2Property(BaseMarkerDTO propsIn)
     {
       var props = propsIn as IObjectProps;
@@ -350,7 +317,7 @@ namespace DbLayer.Services
         return mProps;
       }
 
-      mProps.extra_props = ConvertExtraPropsToDB(props.extra_props);
+      mProps.extra_props = ModelGate.ConvertExtraPropsToDB(props.extra_props);
 
       return mProps;
     }
@@ -418,7 +385,7 @@ namespace DbLayer.Services
     public async Task<ObjPropsDTO> GetPropAsync(string id)
     {
       var obj = await _propCollection.Find(x => x.id == id).FirstOrDefaultAsync();
-      return Conver2Property2DTO(obj);
+      return ModelGate.Conver2Property2DTO(obj);
     }
 
     public async Task<Dictionary<string, ObjPropsDTO>> GetPropsAsync(List<string> ids)
@@ -428,7 +395,7 @@ namespace DbLayer.Services
 
       foreach (var obj in objs)
       {
-        list.Add(obj.id, Conver2Property2DTO(obj));
+        list.Add(obj.id, ModelGate.Conver2Property2DTO(obj));
       }
       return list;
     }
@@ -514,37 +481,10 @@ namespace DbLayer.Services
 
       foreach (var obj in retObjProps)
       {
-        ret.Add(Conver2Property2DTO(obj));
+        ret.Add(ModelGate.Conver2Property2DTO(obj));
       }
 
       return ret;
-    }
-
-    public static ObjPropsDTO Conver2Property2DTO(DBMarkerProperties props)
-    {
-      if (props == null)
-      {
-        return null;
-      }
-
-      ObjPropsDTO mProps = new ObjPropsDTO()
-      {
-        extra_props = new List<ObjExtraPropertyDTO>(),
-        id = props.id
-      };
-
-      foreach (var prop in props.extra_props)
-      {
-        ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
-        {
-          prop_name = prop.prop_name,
-          str_val = prop.str_val.GetValue("str_val", string.Empty).ToString(),
-          visual_type = prop.visual_type
-        };
-        mProps.extra_props.Add(newProp);
-      }
-
-      return mProps;
     }
   }
 }

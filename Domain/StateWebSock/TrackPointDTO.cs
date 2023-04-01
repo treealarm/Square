@@ -12,5 +12,6 @@ namespace Domain.StateWebSock
     public string id { get; set; }
     public GeoObjectDTO figure { get; set; }
     public DateTime timestamp { get; set; }
+    public List<ObjExtraPropertyDTO> extra_props { get; set; }
   }
 }

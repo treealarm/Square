@@ -15,5 +15,7 @@ namespace DbLayer.Models
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
     public DBGeoObject figure { get; set; }
+    [BsonIgnoreIfNull]
+    public List<DBObjExtraProperty> extra_props { get; set; }
   }
 }

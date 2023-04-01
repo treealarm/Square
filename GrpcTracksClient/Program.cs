@@ -24,6 +24,8 @@ fig.Id = "6423e54d513bfe83e9d59793";
 fig.Name = "Test";
 fig.Geometry = new ProtoGeometry();
 fig.Geometry.Type = "Polygon";
+figs.AddTracks = true;
+
 fig.Geometry.Coord.Add(new ProtoCoord()
 {
   Lat = 55.7566737398449,
@@ -92,7 +94,7 @@ for (int i = 0; i < 100; i++)
     f.Lat += step;
     f.Lon += step;
   }
-  var newFigs = await client.AddTracksAsync(figs);
+  var newFigs = await client.UpdateFiguresAsync(figs);
   Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
   await Task.Delay(1000);
 } 

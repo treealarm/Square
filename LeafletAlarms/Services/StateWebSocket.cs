@@ -250,6 +250,10 @@ namespace LeafletAlarms.Services
       {
         foreach(var track in movedMarkers)
         {
+          if (string.IsNullOrEmpty(track.figure.id))
+          {
+            continue;
+          }
           _dicUpdatedTracks[track.figure.id] = track;
         }
       }      

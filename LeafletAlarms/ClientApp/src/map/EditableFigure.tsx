@@ -22,7 +22,7 @@ export function EditableFigure() {
 
       };
       figures.figs = [polygon];
-      dispatch<any>(MarkersStore.actionCreators.addTracks(figures));
+      dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
@@ -32,7 +32,7 @@ export function EditableFigure() {
 
       };
       figures.figs = [figure];
-      dispatch<any>(MarkersStore.actionCreators.addTracks(figures));
+      dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
@@ -42,7 +42,7 @@ export function EditableFigure() {
 
       };
       figures.figs = [figure];
-      dispatch<any>(MarkersStore.actionCreators.addTracks(figures));
+      dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 

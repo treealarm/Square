@@ -1,5 +1,7 @@
-﻿using Domain.GeoDBDTO;
+﻿using Domain;
+using Domain.GeoDBDTO;
 using Domain.GeoDTO;
+using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
@@ -150,6 +152,84 @@ namespace DbLayer
 
       ret.type = location.Type.ToString();
       return ret;
+    }
+
+    public static List<DBObjExtraProperty> ConvertExtraPropsToDB(List<ObjExtraPropertyDTO> extra_props)
+    {
+      var ep_db = new List<DBObjExtraProperty>();
+      var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
+
+      propertieNames.AddRange(
+        typeof(FigureGeoDTO).GetProperties().Select(x => x.Name)
+        );
+
+
+      foreach (var prop in extra_props)
+      {
+        // "radius", "zoom_level"
+        if (propertieNames.Contains(prop.prop_name))
+        {
+          continue;
+        }
+
+        DBObjExtraProperty newProp = new DBObjExtraProperty()
+        {
+          prop_name = prop.prop_name,
+          visual_type = prop.visual_type
+        };
+
+        if (prop.visual_type == BsonType.DateTime.ToString())
+        {
+          newProp.str_val = new BsonDocument(
+            "str_val",
+            DateTime
+              .Parse(prop.str_val)
+              .ToUniversalTime()
+            );
+        }
+        else
+        {
+          newProp.str_val = new BsonDocument(
+            "str_val",
+            prop.str_val
+            );
+        }
+        ep_db.Add(newProp);
+      }
+      return ep_db;
+    }
+
+    public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO(List<DBObjExtraProperty> props)
+    {
+      var retVal = new List<ObjExtraPropertyDTO> ();
+
+      foreach (var prop in props)
+      {
+        ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
+        {
+          prop_name = prop.prop_name,
+          str_val = prop.str_val.GetValue("str_val", string.Empty).ToString(),
+          visual_type = prop.visual_type
+        };
+        retVal.Add(newProp);
+      }
+
+      return retVal;
+    }
+    public static ObjPropsDTO Conver2Property2DTO(DBMarkerProperties props)
+    {
+      if (props == null)
+      {
+        return null;
+      }
+
+      ObjPropsDTO mProps = new ObjPropsDTO()
+      {
+        extra_props = ConverDBExtraProp2DTO(props.extra_props),
+        id = props.id
+      };
+
+      return mProps;
     }
   }
 }

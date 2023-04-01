@@ -22,10 +22,10 @@ namespace LeafletAlarms.Grpc.Implementation
 
       switch (request.Method)
       {
-        case "AddTracks":
+        case "UpdateFigures":
           ProtoFigures input = request.Data.Unpack<ProtoFigures>();
 
-          var output = await _trackGrpcService.AddTracks(input, context);
+          var output = await _trackGrpcService.UpdateFigures(input, context);
           response.Data = Any.Pack(output);
           break;
         default:

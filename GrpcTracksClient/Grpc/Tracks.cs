@@ -36,12 +36,13 @@ namespace LeafletAlarmsGrpc {
             "dG9PYmpFeHRyYVByb3BlcnR5EgoKAmlkGAUgASgJEhYKCXBhcmVudF9pZBgG",
             "IAEoCUgCiAEBEgwKBG5hbWUYByABKAkSGgoNZXh0ZXJuYWxfdHlwZRgIIAEo",
             "CUgDiAEBQgkKB19yYWRpdXNCDQoLX3pvb21fbGV2ZWxCDAoKX3BhcmVudF9p",
-            "ZEIQCg5fZXh0ZXJuYWxfdHlwZSIuCgxQcm90b0ZpZ3VyZXMSHgoEZmlncxgB",
-            "IAMoCzIQLnRyYWNrcy5Qcm90b0ZpZzKCAQoRVHJhY2tzR3JwY1NlcnZpY2US",
-            "NAoIU2F5SGVsbG8SFC50cmFja3MuSGVsbG9SZXF1ZXN0GhIudHJhY2tzLkhl",
-            "bGxvUmVwbHkSNwoJQWRkVHJhY2tzEhQudHJhY2tzLlByb3RvRmlndXJlcxoU",
-            "LnRyYWNrcy5Qcm90b0ZpZ3VyZXNCFKoCEUxlYWZsZXRBbGFybXNHcnBjYgZw",
-            "cm90bzM="));
+            "ZEIQCg5fZXh0ZXJuYWxfdHlwZSJWCgxQcm90b0ZpZ3VyZXMSHgoEZmlncxgB",
+            "IAMoCzIQLnRyYWNrcy5Qcm90b0ZpZxIXCgphZGRfdHJhY2tzGAIgASgISACI",
+            "AQFCDQoLX2FkZF90cmFja3MyhgEKEVRyYWNrc0dycGNTZXJ2aWNlEjQKCFNh",
+            "eUhlbGxvEhQudHJhY2tzLkhlbGxvUmVxdWVzdBoSLnRyYWNrcy5IZWxsb1Jl",
+            "cGx5EjsKDVVwZGF0ZUZpZ3VyZXMSFC50cmFja3MuUHJvdG9GaWd1cmVzGhQu",
+            "dHJhY2tzLlByb3RvRmlndXJlc0IUqgIRTGVhZmxldEFsYXJtc0dycGNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -51,7 +52,7 @@ namespace LeafletAlarmsGrpc {
             new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoCoord), global::LeafletAlarmsGrpc.ProtoCoord.Parser, new[]{ "Lat", "Lon" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoGeometry), global::LeafletAlarmsGrpc.ProtoGeometry.Parser, new[]{ "Coord", "Type" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoFig), global::LeafletAlarmsGrpc.ProtoFig.Parser, new[]{ "Geometry", "Radius", "ZoomLevel", "ExtraProps", "Id", "ParentId", "Name", "ExternalType" }, new[]{ "Radius", "ZoomLevel", "ParentId", "ExternalType" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoFigures), global::LeafletAlarmsGrpc.ProtoFigures.Parser, new[]{ "Figs" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoFigures), global::LeafletAlarmsGrpc.ProtoFigures.Parser, new[]{ "Figs", "AddTracks" }, new[]{ "AddTracks" }, null, null, null)
           }));
     }
     #endregion
@@ -1650,6 +1651,7 @@ namespace LeafletAlarmsGrpc {
   {
     private static readonly pb::MessageParser<ProtoFigures> _parser = new pb::MessageParser<ProtoFigures>(() => new ProtoFigures());
     private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<ProtoFigures> Parser { get { return _parser; } }
@@ -1677,7 +1679,9 @@ namespace LeafletAlarmsGrpc {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ProtoFigures(ProtoFigures other) : this() {
+      _hasBits0 = other._hasBits0;
       figs_ = other.figs_.Clone();
+      addTracks_ = other.addTracks_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1698,6 +1702,31 @@ namespace LeafletAlarmsGrpc {
       get { return figs_; }
     }
 
+    /// <summary>Field number for the "add_tracks" field.</summary>
+    public const int AddTracksFieldNumber = 2;
+    private bool addTracks_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool AddTracks {
+      get { if ((_hasBits0 & 1) != 0) { return addTracks_; } else { return false; } }
+      set {
+        _hasBits0 |= 1;
+        addTracks_ = value;
+      }
+    }
+    /// <summary>Gets whether the "add_tracks" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasAddTracks {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "add_tracks" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearAddTracks() {
+      _hasBits0 &= ~1;
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -1714,6 +1743,7 @@ namespace LeafletAlarmsGrpc {
         return true;
       }
       if(!figs_.Equals(other.figs_)) return false;
+      if (AddTracks != other.AddTracks) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1722,6 +1752,7 @@ namespace LeafletAlarmsGrpc {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= figs_.GetHashCode();
+      if (HasAddTracks) hash ^= AddTracks.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1741,6 +1772,10 @@ namespace LeafletAlarmsGrpc {
       output.WriteRawMessage(this);
     #else
       figs_.WriteTo(output, _repeated_figs_codec);
+      if (HasAddTracks) {
+        output.WriteRawTag(16);
+        output.WriteBool(AddTracks);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1752,6 +1787,10 @@ namespace LeafletAlarmsGrpc {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       figs_.WriteTo(ref output, _repeated_figs_codec);
+      if (HasAddTracks) {
+        output.WriteRawTag(16);
+        output.WriteBool(AddTracks);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1763,6 +1802,9 @@ namespace LeafletAlarmsGrpc {
     public int CalculateSize() {
       int size = 0;
       size += figs_.CalculateSize(_repeated_figs_codec);
+      if (HasAddTracks) {
+        size += 1 + 1;
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -1776,6 +1818,9 @@ namespace LeafletAlarmsGrpc {
         return;
       }
       figs_.Add(other.figs_);
+      if (other.HasAddTracks) {
+        AddTracks = other.AddTracks;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -1795,6 +1840,10 @@ namespace LeafletAlarmsGrpc {
             figs_.AddEntriesFrom(input, _repeated_figs_codec);
             break;
           }
+          case 16: {
+            AddTracks = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -1812,6 +1861,10 @@ namespace LeafletAlarmsGrpc {
             break;
           case 10: {
             figs_.AddEntriesFrom(ref input, _repeated_figs_codec);
+            break;
+          }
+          case 16: {
+            AddTracks = input.ReadBool();
             break;
           }
         }
