@@ -156,6 +156,9 @@ namespace DbLayer
 
     public static List<DBObjExtraProperty> ConvertExtraPropsToDB(List<ObjExtraPropertyDTO> extra_props)
     {
+      if (extra_props == null)
+      { return null; }
+
       var ep_db = new List<DBObjExtraProperty>();
       var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
 
