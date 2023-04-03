@@ -8,6 +8,7 @@ services:
       - Kestrel__Endpoints__gRPC__Url=http://*:5000
       - Kestrel__Endpoints__gRPC__Protocols=Http2
       - Kestrel__Endpoints__Http__Url=http://*:8000
+      #- REACT_APP_AUTH_SERVER_URL=http://localhost1:8080/
     ports:
       - "8000:8000"
       - "5000:5000"

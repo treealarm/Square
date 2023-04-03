@@ -3,10 +3,15 @@ using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using Itinero;
+using Itinero.Algorithms.Weights;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Services;
 using LeafletAlarmsRouter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
@@ -123,6 +128,33 @@ namespace LeafletAlarms
       } 
     }
 
+    public string GetAlternativePublicFolder()
+    {
+      var options = Configuration.GetSection("RoutingSettings").Get<RoutingSettings>();
+
+      var dataDirectory = new DirectoryInfo(options.root_folder);
+
+      Console.WriteLine($"dataDirectory:{options.root_folder}");
+
+      if (!dataDirectory.Exists)
+      {
+        return null;
+      }
+
+      var path = dataDirectory.FullName;
+      path = Path.Combine(path, "wwwpublic");
+
+      try
+      {
+        Directory.CreateDirectory(path);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+
+      return path;
+    }
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(WebApplication app, IWebHostEnvironment env)
     {
@@ -148,7 +180,41 @@ namespace LeafletAlarms
         .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader());
-      app.UseStaticFiles();
+
+      app.UseStaticFiles(); // For default.
+
+      var keycloak_json_folder = GetAlternativePublicFolder();
+      var wwwrootFolder = Path.Combine(env.ContentRootPath, "wwwroot");
+      Console.WriteLine($"keycloak_json_folder: {keycloak_json_folder} -> {wwwrootFolder}");
+
+      if (!string.IsNullOrEmpty(keycloak_json_folder) 
+        && !string.IsNullOrEmpty(wwwrootFolder)
+        && Directory.Exists(wwwrootFolder)
+      )
+      {
+        Console.WriteLine($"Copy files: {keycloak_json_folder} -> {wwwrootFolder}");
+
+        var files = Directory.GetFiles(keycloak_json_folder).ToList();
+
+        foreach( var f in files )
+        {
+          try
+          {
+            Console.WriteLine($"Copy file: {Path.GetFileName(f)}");
+            File.Copy(f, Path.Combine(wwwrootFolder, Path.GetFileName(f)), true);
+          }
+          catch( Exception ex )
+          {
+            Console.WriteLine( ex.ToString() );
+          }
+          
+        }
+
+        //app.UseStaticFiles(new StaticFileOptions
+        //{
+        //  FileProvider = new PhysicalFileProvider(keycloak_json_folder)
+        //});
+      }
 
       app.UseRouting();
 

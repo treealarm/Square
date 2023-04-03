@@ -9,6 +9,8 @@ import { ApplicationState } from "../store";
 import { useAppDispatch } from '../store/configureStore';
 import * as TracksStore from '../store/TracksStates';
 
+const  REACT_APP_AUTH_SERVER_URL  = process.env.REACT_APP_AUTH_SERVER_URL;
+
 const Item = styled(Paper)(({ theme }) => ({
   ...theme.typography.body2,
   textAlign: 'center',
@@ -172,11 +174,12 @@ export function WebSockClient() {
             style = {{ textTransform: 'none' }}
             size = "small"
           >
+            <h1>{REACT_APP_AUTH_SERVER_URL}</h1>
           <CircleIcon color={isConnected ? "success" : "error"} />
             <Item key={'item1'} elevation={1}>
               objs:{markers?.figs?.length}, zoom:{box?.zoom}
             </Item>
-          </IconButton>          
+          </IconButton> 
         </Tooltip>
         
       </Box>
