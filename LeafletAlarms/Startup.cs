@@ -18,6 +18,8 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace LeafletAlarms
 {
@@ -128,15 +130,26 @@ namespace LeafletAlarms
       } 
     }
 
-    public string GetAlternativePublicFolder()
+    public DirectoryInfo GetRootFolder()
     {
       var options = Configuration.GetSection("RoutingSettings").Get<RoutingSettings>();
 
-      var dataDirectory = new DirectoryInfo(options.root_folder);
+      var dataDirectory = new DirectoryInfo(options.RootFolder);
 
-      Console.WriteLine($"dataDirectory:{options.root_folder}");
+      Console.WriteLine($"dataDirectory:{options.RootFolder}");
 
       if (!dataDirectory.Exists)
+      {
+        return null;
+      }
+      return dataDirectory;
+    }
+
+    public string GetAlternativePublicFolder()
+    {
+      var dataDirectory = GetRootFolder();
+
+      if (dataDirectory == null)
       {
         return null;
       }
@@ -154,6 +167,46 @@ namespace LeafletAlarms
       }
 
       return path;
+    }
+
+    private async Task  ImportDataOnStart(WebApplication app)
+    {
+      var rootFolder = GetRootFolder();
+
+      if (rootFolder != null)
+      { 
+        var path = rootFolder.FullName;
+
+        path = Path.Combine(path, "import_data");
+
+        try
+        {
+          Directory.CreateDirectory(path);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.ToString());
+        }
+
+        var file2Import = Path.Combine(path, "states.json");
+
+        if (File.Exists(file2Import))
+        {
+          try
+          {
+            FiguresDTO json = null;
+            var s = File.ReadAllText(file2Import);
+            json = JsonSerializer.Deserialize<FiguresDTO>(s);
+            var trackUpdate = app.Services.GetRequiredService<TracksUpdateService>();
+            await trackUpdate.UpdateFigures(json);
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine(ex.Message);
+            return;
+          }
+        }
+      }
     }
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(WebApplication app, IWebHostEnvironment env)
@@ -187,7 +240,7 @@ namespace LeafletAlarms
       var wwwrootFolder = Path.Combine(env.ContentRootPath, "wwwroot");
       Console.WriteLine($"keycloak_json_folder: {keycloak_json_folder} -> {wwwrootFolder}");
 
-      if (!string.IsNullOrEmpty(keycloak_json_folder) 
+      if (!string.IsNullOrEmpty(keycloak_json_folder)
         && !string.IsNullOrEmpty(wwwrootFolder)
         && Directory.Exists(wwwrootFolder)
       )
@@ -206,15 +259,11 @@ namespace LeafletAlarms
           catch( Exception ex )
           {
             Console.WriteLine( ex.ToString() );
-          }
-          
+          }          
         }
-
-        //app.UseStaticFiles(new StaticFileOptions
-        //{
-        //  FileProvider = new PhysicalFileProvider(keycloak_json_folder)
-        //});
       }
+
+      ImportDataOnStart(app);  
 
       app.UseRouting();
 

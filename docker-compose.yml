@@ -12,7 +12,6 @@ services:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
-      - ./leaflet_data/osm_data:/osm_data
       - ./leaflet_data:/leaflet_data
 
   leafletalarms-dapr:
@@ -31,7 +30,7 @@ services:
       context: .
       dockerfile: RouterMicroService/Dockerfile
     volumes:
-     - ./leaflet_data/osm_data:/osm_data
+     - ./leaflet_data:/leaflet_data
 
   #tracksenderservice:
   #  image: ${DOCKER_REGISTRY-}tracksenderservice
@@ -42,7 +41,7 @@ services:
   #    context: .
   #    dockerfile: TrackSender/Dockerfile
   #  volumes:
-  #   - ./leaflet_data/osm_data:/osm_data
+  #   - ./leaflet_data:/leaflet_data
   
   mongoservice:
     image : mongo

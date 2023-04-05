@@ -8,22 +8,17 @@ namespace Domain
 {
   public class RoutingSettings
   {
-    private string _routingFilePath;
-    public string RoutingFilePath { 
+    public string RootFolder { 
       get
       {
         if (!InDocker())
         {
-          return RoutingFilePathWin;
+          return root_folder_win;
         }
-        return _routingFilePath;
-      }
-      set
-      {
-        _routingFilePath = value;
+        return root_folder;
       }
     }
-    public string RoutingFilePathWin { get; set; }
+    public string root_folder_win { get; set; }
     public string RouteInstanse { get; set; }
     public string root_folder { get; set; }
     bool InDocker()

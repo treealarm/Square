@@ -13,7 +13,7 @@ namespace LeafletAlarmsRouter
   {
     public TrackRouter(IOptions<RoutingSettings> routingSettings)
     {
-      string dataLocation = routingSettings.Value.RoutingFilePath;
+      string dataLocation = Path.Combine(routingSettings.Value.RootFolder, "osm_data");
       Bootstrapper.BootFromConfiguration(dataLocation);
     }
 

@@ -70,7 +70,7 @@ namespace LeafletAlarms.Controllers
       byte[] data = null;
       var tile_server = new Uri($"https://tile.openstreetmap.org/{z}/{x}/{y}.png");
 
-      var dataDirectory = new DirectoryInfo(_routingSettings.Value.root_folder);
+      var dataDirectory = new DirectoryInfo(_routingSettings.Value.RootFolder);
 
       string path = AppDomain.CurrentDomain.BaseDirectory.ToString();
 
