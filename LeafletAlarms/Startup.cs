@@ -84,6 +84,7 @@ namespace LeafletAlarms
       services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
       services.AddSingleton<TracksUpdateService>();
+      services.AddSingleton<StatesUpdateService>();      
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();

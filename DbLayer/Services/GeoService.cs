@@ -225,11 +225,20 @@ namespace DbLayer.Services
 
       Log(filter);
 
-      var list = await _geoCollection.Find(filter)
+      try
+      {
+        var list = await _geoCollection.Find(filter)
         .Limit(limit)
         .ToListAsync();
 
-      return ModelGate.ConvertListDB2DTO(list);
+        return ModelGate.ConvertListDB2DTO(list);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
+
+      return new Dictionary<string, GeoObjectDTO>();
     }
 
     public async Task<Dictionary<string, GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids)

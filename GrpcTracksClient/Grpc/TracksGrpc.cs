@@ -8,9 +8,6 @@
 using grpc = global::Grpc.Core;
 
 namespace LeafletAlarmsGrpc {
-  /// <summary>
-  /// The greeting service definition.
-  /// </summary>
   public static partial class TracksGrpcService
   {
     static readonly string __ServiceName = "tracks.TracksGrpcService";
@@ -49,19 +46,11 @@ namespace LeafletAlarmsGrpc {
     }
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.HelloRequest> __Marshaller_tracks_HelloRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.HelloRequest.Parser));
-    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.HelloReply> __Marshaller_tracks_HelloReply = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.HelloReply.Parser));
-    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.ProtoFigures> __Marshaller_tracks_ProtoFigures = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.ProtoFigures.Parser));
-
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::LeafletAlarmsGrpc.HelloRequest, global::LeafletAlarmsGrpc.HelloReply> __Method_SayHello = new grpc::Method<global::LeafletAlarmsGrpc.HelloRequest, global::LeafletAlarmsGrpc.HelloReply>(
-        grpc::MethodType.Unary,
-        __ServiceName,
-        "SayHello",
-        __Marshaller_tracks_HelloRequest,
-        __Marshaller_tracks_HelloReply);
+    static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.ProtoObjectStates> __Marshaller_tracks_ProtoObjectStates = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.ProtoObjectStates.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::Google.Protobuf.WellKnownTypes.BoolValue> __Marshaller_google_protobuf_BoolValue = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Protobuf.WellKnownTypes.BoolValue.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures> __Method_UpdateFigures = new grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(
@@ -70,6 +59,14 @@ namespace LeafletAlarmsGrpc {
         "UpdateFigures",
         __Marshaller_tracks_ProtoFigures,
         __Marshaller_tracks_ProtoFigures);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoObjectStates, global::Google.Protobuf.WellKnownTypes.BoolValue> __Method_UpdateStates = new grpc::Method<global::LeafletAlarmsGrpc.ProtoObjectStates, global::Google.Protobuf.WellKnownTypes.BoolValue>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "UpdateStates",
+        __Marshaller_tracks_ProtoObjectStates,
+        __Marshaller_google_protobuf_BoolValue);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -104,54 +101,6 @@ namespace LeafletAlarmsGrpc {
       {
       }
 
-      /// <summary>
-      /// Sends a greeting
-      /// </summary>
-      /// <param name="request">The request to send to the server.</param>
-      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
-      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
-      /// <param name="cancellationToken">An optional token for canceling the call.</param>
-      /// <returns>The response received from the server.</returns>
-      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::LeafletAlarmsGrpc.HelloReply SayHello(global::LeafletAlarmsGrpc.HelloRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
-      {
-        return SayHello(request, new grpc::CallOptions(headers, deadline, cancellationToken));
-      }
-      /// <summary>
-      /// Sends a greeting
-      /// </summary>
-      /// <param name="request">The request to send to the server.</param>
-      /// <param name="options">The options for the call.</param>
-      /// <returns>The response received from the server.</returns>
-      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::LeafletAlarmsGrpc.HelloReply SayHello(global::LeafletAlarmsGrpc.HelloRequest request, grpc::CallOptions options)
-      {
-        return CallInvoker.BlockingUnaryCall(__Method_SayHello, null, options, request);
-      }
-      /// <summary>
-      /// Sends a greeting
-      /// </summary>
-      /// <param name="request">The request to send to the server.</param>
-      /// <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
-      /// <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
-      /// <param name="cancellationToken">An optional token for canceling the call.</param>
-      /// <returns>The call object.</returns>
-      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncUnaryCall<global::LeafletAlarmsGrpc.HelloReply> SayHelloAsync(global::LeafletAlarmsGrpc.HelloRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
-      {
-        return SayHelloAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
-      }
-      /// <summary>
-      /// Sends a greeting
-      /// </summary>
-      /// <param name="request">The request to send to the server.</param>
-      /// <param name="options">The options for the call.</param>
-      /// <returns>The call object.</returns>
-      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncUnaryCall<global::LeafletAlarmsGrpc.HelloReply> SayHelloAsync(global::LeafletAlarmsGrpc.HelloRequest request, grpc::CallOptions options)
-      {
-        return CallInvoker.AsyncUnaryCall(__Method_SayHello, null, options, request);
-      }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
       public virtual global::LeafletAlarmsGrpc.ProtoFigures UpdateFigures(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
@@ -171,6 +120,26 @@ namespace LeafletAlarmsGrpc {
       public virtual grpc::AsyncUnaryCall<global::LeafletAlarmsGrpc.ProtoFigures> UpdateFiguresAsync(global::LeafletAlarmsGrpc.ProtoFigures request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncUnaryCall(__Method_UpdateFigures, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::Google.Protobuf.WellKnownTypes.BoolValue UpdateStates(global::LeafletAlarmsGrpc.ProtoObjectStates request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateStates(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::Google.Protobuf.WellKnownTypes.BoolValue UpdateStates(global::LeafletAlarmsGrpc.ProtoObjectStates request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_UpdateStates, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::Google.Protobuf.WellKnownTypes.BoolValue> UpdateStatesAsync(global::LeafletAlarmsGrpc.ProtoObjectStates request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateStatesAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::Google.Protobuf.WellKnownTypes.BoolValue> UpdateStatesAsync(global::LeafletAlarmsGrpc.ProtoObjectStates request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_UpdateStates, null, options, request);
       }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]

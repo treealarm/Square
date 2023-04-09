@@ -3,6 +3,7 @@ using Domain;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
+using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -17,20 +18,17 @@ namespace LeafletAlarms.Controllers
   public class StatesController : ControllerBase
   {
     private readonly IStateService _stateService;
-    private readonly IStateConsumer _stateConsumerService;
     private readonly IMapService _mapService;
-    private readonly IIdsQueue _stateIdsQueueService;
+    private readonly StatesUpdateService _statesUpdateService;
     public StatesController(
       IStateService stateService,
-      IStateConsumer stateConsumerService,
       IMapService mapService,
-      IIdsQueue hierarhyStateService
+      StatesUpdateService statesUpdateService
     )
     {
       _stateService = stateService;
-      _stateConsumerService = stateConsumerService;
       _mapService = mapService;
-      _stateIdsQueueService = hierarhyStateService;
+      _statesUpdateService = statesUpdateService;
     }
 
     [HttpPost()]
@@ -56,9 +54,7 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateStates")]
     public async Task<ActionResult<int>> UpdateStates(List<ObjectStateDTO> newObjs)
     {
-      await _stateConsumerService.OnStateChanged(newObjs);
-      await _stateService.UpdateStatesAsync(newObjs);
-      _stateIdsQueueService.AddIds(newObjs.Select(st => st.id).ToList());
+      await _statesUpdateService.UpdateStates(newObjs);
 
       return CreatedAtAction(nameof(UpdateStates), StatusCodes.Status200OK);
     }

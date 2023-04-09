@@ -23,10 +23,15 @@ namespace LeafletAlarms.Grpc.Implementation
       switch (request.Method)
       {
         case "UpdateFigures":
-          ProtoFigures input = request.Data.Unpack<ProtoFigures>();
-
+          var input = request.Data.Unpack<ProtoFigures>();
           var output = await _trackGrpcService.UpdateFigures(input, context);
           response.Data = Any.Pack(output);
+          break;
+
+        case "UpdateStates":
+          var states = request.Data.Unpack<ProtoObjectStates>();
+          var stateRet = await _trackGrpcService.UpdateStates(states, context);
+          response.Data = Any.Pack(stateRet);
           break;
         default:
           Console.WriteLine("Method not supported");

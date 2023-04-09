@@ -2,6 +2,8 @@
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
+using Domain.States;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
@@ -14,23 +16,16 @@ namespace LeafletAlarms.Grpc.Implementation
   {
     private readonly ILogger<TracksGrpcImp> _logger;
     private readonly TracksUpdateService _trackUpdateService;
+    private readonly StatesUpdateService _statesUpdateService;
     public TracksGrpcImp(
       ILogger<TracksGrpcImp> logger,
-      TracksUpdateService trackUpdateService
+      TracksUpdateService trackUpdateService,
+      StatesUpdateService statesUpdateService
     )
     {
       _logger = logger;
       _trackUpdateService = trackUpdateService;
-    }
-
-
-    public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
-    {
-      Console.WriteLine($"Received from:{request.Name}");
-      return Task.FromResult(new HelloReply
-      {
-        Message = "Hello " + request.Name + $"[{DateTime.Now}]"
-      });
+      _statesUpdateService = statesUpdateService;
     }
 
     public override async Task<ProtoFigures> UpdateFigures(ProtoFigures request, ServerCallContext context)
@@ -124,6 +119,26 @@ namespace LeafletAlarms.Grpc.Implementation
       }
       
       return response;
+    }
+
+    public override async Task<BoolValue> UpdateStates(ProtoObjectStates request, ServerCallContext context)
+    {
+      var objStates = new List<ObjectStateDTO>();
+
+      foreach (var state in request.States)
+      {
+        objStates.Add(new ObjectStateDTO()
+        {
+          id = state.Id,
+          timestamp = state.Timestamp.ToDateTime(),
+          states = state.States.ToList()
+        });
+      }
+
+      var ret = new BoolValue();
+      ret.Value =  await _statesUpdateService.UpdateStates(objStates);
+
+      return ret;
     }
   }
 }

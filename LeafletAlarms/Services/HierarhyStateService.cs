@@ -111,7 +111,12 @@ namespace LeafletAlarms.Services
           BaseMarkerDTO parent = await _mapService.GetAsync(parent_id);
 
           alarmObject = GetAlarmObject(parent);
-        }        
+        }
+
+        if (alarmObject == null)
+        {
+          break;
+        }
 
         // Here is parent.
         if (alarm)
