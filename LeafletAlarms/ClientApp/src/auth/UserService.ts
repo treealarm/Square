@@ -10,13 +10,17 @@ const _kc = new Keycloak('keycloak.json');
 
 const initKeycloak = (onAuthenticatedCallback: any) => {
 
-  const token = localStorage.getItem('kc_token');
-  const refreshToken = localStorage.getItem('kc_refreshToken');
+  var token = localStorage.getItem('kc_token');
+  var refreshToken = localStorage.getItem('kc_refreshToken');
 
   console.log("KC INIT:");
-  _kc.onAuthError = ((error) => {
-    console.log("KC ERROR:", error);
-  });
+
+  if (_kc.isTokenExpired) {
+    console.error("KC ERROR: EXPIRED");
+    _kc.token = null;
+    token = null;
+  }
+
 
   _kc.init({
     onLoad: 'check-sso',
