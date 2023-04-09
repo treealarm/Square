@@ -42,11 +42,21 @@ namespace LeafletAlarmsGrpc {
             "YXRlEgoKAmlkGAEgASgJEg4KBnN0YXRlcxgCIAMoCRItCgl0aW1lc3RhbXAY",
             "AyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIj0KEVByb3RvT2Jq",
             "ZWN0U3RhdGVzEigKBnN0YXRlcxgBIAMoCzIYLnRyYWNrcy5Qcm90b09iamVj",
-            "dFN0YXRlMpcBChFUcmFja3NHcnBjU2VydmljZRI7Cg1VcGRhdGVGaWd1cmVz",
-            "EhQudHJhY2tzLlByb3RvRmlndXJlcxoULnRyYWNrcy5Qcm90b0ZpZ3VyZXMS",
-            "RQoMVXBkYXRlU3RhdGVzEhkudHJhY2tzLlByb3RvT2JqZWN0U3RhdGVzGhou",
-            "Z29vZ2xlLnByb3RvYnVmLkJvb2xWYWx1ZUIUqgIRTGVhZmxldEFsYXJtc0dy",
-            "cGNiBnByb3RvMw=="));
+            "dFN0YXRlIpkBCg5Qcm90b0dlb09iamVjdBIPCgJpZBgBIAEoCUgAiAEBEicK",
+            "CGxvY2F0aW9uGAIgASgLMhUudHJhY2tzLlByb3RvR2VvbWV0cnkSEwoGcmFk",
+            "aXVzGAMgASgBSAGIAQESFwoKem9vbV9sZXZlbBgEIAEoCUgCiAEBQgUKA19p",
+            "ZEIJCgdfcmFkaXVzQg0KC196b29tX2xldmVsIqgBCg9UcmFja1BvaW50UHJv",
+            "dG8SCgoCaWQYASABKAkSJgoGZmlndXJlGAIgASgLMhYudHJhY2tzLlByb3Rv",
+            "R2VvT2JqZWN0Ei0KCXRpbWVzdGFtcBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1",
+            "Zi5UaW1lc3RhbXASMgoLZXh0cmFfcHJvcHMYBCADKAsyHS50cmFja3MuUHJv",
+            "dG9PYmpFeHRyYVByb3BlcnR5IjsKEFRyYWNrUG9pbnRzUHJvdG8SJwoGdHJh",
+            "Y2tzGAEgAygLMhcudHJhY2tzLlRyYWNrUG9pbnRQcm90bzLdAQoRVHJhY2tz",
+            "R3JwY1NlcnZpY2USOwoNVXBkYXRlRmlndXJlcxIULnRyYWNrcy5Qcm90b0Zp",
+            "Z3VyZXMaFC50cmFja3MuUHJvdG9GaWd1cmVzEkUKDFVwZGF0ZVN0YXRlcxIZ",
+            "LnRyYWNrcy5Qcm90b09iamVjdFN0YXRlcxoaLmdvb2dsZS5wcm90b2J1Zi5C",
+            "b29sVmFsdWUSRAoMVXBkYXRlVHJhY2tzEhgudHJhY2tzLlRyYWNrUG9pbnRz",
+            "UHJvdG8aGi5nb29nbGUucHJvdG9idWYuQm9vbFZhbHVlQhSqAhFMZWFmbGV0",
+            "QWxhcm1zR3JwY2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
@@ -56,7 +66,10 @@ namespace LeafletAlarmsGrpc {
             new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoFig), global::LeafletAlarmsGrpc.ProtoFig.Parser, new[]{ "Geometry", "Radius", "ZoomLevel", "ExtraProps", "Id", "ParentId", "Name", "ExternalType" }, new[]{ "Radius", "ZoomLevel", "ParentId", "ExternalType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoFigures), global::LeafletAlarmsGrpc.ProtoFigures.Parser, new[]{ "Figs", "AddTracks" }, new[]{ "AddTracks" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoObjectState), global::LeafletAlarmsGrpc.ProtoObjectState.Parser, new[]{ "Id", "States", "Timestamp" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoObjectStates), global::LeafletAlarmsGrpc.ProtoObjectStates.Parser, new[]{ "States" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoObjectStates), global::LeafletAlarmsGrpc.ProtoObjectStates.Parser, new[]{ "States" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.ProtoGeoObject), global::LeafletAlarmsGrpc.ProtoGeoObject.Parser, new[]{ "Id", "Location", "Radius", "ZoomLevel" }, new[]{ "Id", "Radius", "ZoomLevel" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.TrackPointProto), global::LeafletAlarmsGrpc.TrackPointProto.Parser, new[]{ "Id", "Figure", "Timestamp", "ExtraProps" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LeafletAlarmsGrpc.TrackPointsProto), global::LeafletAlarmsGrpc.TrackPointsProto.Parser, new[]{ "Tracks" }, null, null, null, null)
           }));
     }
     #endregion
@@ -1927,6 +1940,839 @@ namespace LeafletAlarmsGrpc {
             break;
           case 10: {
             states_.AddEntriesFrom(ref input, _repeated_states_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class ProtoGeoObject : pb::IMessage<ProtoGeoObject>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<ProtoGeoObject> _parser = new pb::MessageParser<ProtoGeoObject>(() => new ProtoGeoObject());
+    private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<ProtoGeoObject> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LeafletAlarmsGrpc.TracksReflection.Descriptor.MessageTypes[7]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ProtoGeoObject() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ProtoGeoObject(ProtoGeoObject other) : this() {
+      _hasBits0 = other._hasBits0;
+      id_ = other.id_;
+      location_ = other.location_ != null ? other.location_.Clone() : null;
+      radius_ = other.radius_;
+      zoomLevel_ = other.zoomLevel_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public ProtoGeoObject Clone() {
+      return new ProtoGeoObject(this);
+    }
+
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 1;
+    private string id_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Id {
+      get { return id_ ?? ""; }
+      set {
+        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "id" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasId {
+      get { return id_ != null; }
+    }
+    /// <summary>Clears the value of the "id" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearId() {
+      id_ = null;
+    }
+
+    /// <summary>Field number for the "location" field.</summary>
+    public const int LocationFieldNumber = 2;
+    private global::LeafletAlarmsGrpc.ProtoGeometry location_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::LeafletAlarmsGrpc.ProtoGeometry Location {
+      get { return location_; }
+      set {
+        location_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "radius" field.</summary>
+    public const int RadiusFieldNumber = 3;
+    private double radius_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public double Radius {
+      get { if ((_hasBits0 & 1) != 0) { return radius_; } else { return 0D; } }
+      set {
+        _hasBits0 |= 1;
+        radius_ = value;
+      }
+    }
+    /// <summary>Gets whether the "radius" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasRadius {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "radius" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearRadius() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "zoom_level" field.</summary>
+    public const int ZoomLevelFieldNumber = 4;
+    private string zoomLevel_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string ZoomLevel {
+      get { return zoomLevel_ ?? ""; }
+      set {
+        zoomLevel_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "zoom_level" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasZoomLevel {
+      get { return zoomLevel_ != null; }
+    }
+    /// <summary>Clears the value of the "zoom_level" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearZoomLevel() {
+      zoomLevel_ = null;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as ProtoGeoObject);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(ProtoGeoObject other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Id != other.Id) return false;
+      if (!object.Equals(Location, other.Location)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Radius, other.Radius)) return false;
+      if (ZoomLevel != other.ZoomLevel) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (HasId) hash ^= Id.GetHashCode();
+      if (location_ != null) hash ^= Location.GetHashCode();
+      if (HasRadius) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Radius);
+      if (HasZoomLevel) hash ^= ZoomLevel.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (HasId) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (location_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Location);
+      }
+      if (HasRadius) {
+        output.WriteRawTag(25);
+        output.WriteDouble(Radius);
+      }
+      if (HasZoomLevel) {
+        output.WriteRawTag(34);
+        output.WriteString(ZoomLevel);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasId) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (location_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Location);
+      }
+      if (HasRadius) {
+        output.WriteRawTag(25);
+        output.WriteDouble(Radius);
+      }
+      if (HasZoomLevel) {
+        output.WriteRawTag(34);
+        output.WriteString(ZoomLevel);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (HasId) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+      }
+      if (location_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Location);
+      }
+      if (HasRadius) {
+        size += 1 + 8;
+      }
+      if (HasZoomLevel) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(ZoomLevel);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(ProtoGeoObject other) {
+      if (other == null) {
+        return;
+      }
+      if (other.HasId) {
+        Id = other.Id;
+      }
+      if (other.location_ != null) {
+        if (location_ == null) {
+          Location = new global::LeafletAlarmsGrpc.ProtoGeometry();
+        }
+        Location.MergeFrom(other.Location);
+      }
+      if (other.HasRadius) {
+        Radius = other.Radius;
+      }
+      if (other.HasZoomLevel) {
+        ZoomLevel = other.ZoomLevel;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            if (location_ == null) {
+              Location = new global::LeafletAlarmsGrpc.ProtoGeometry();
+            }
+            input.ReadMessage(Location);
+            break;
+          }
+          case 25: {
+            Radius = input.ReadDouble();
+            break;
+          }
+          case 34: {
+            ZoomLevel = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            if (location_ == null) {
+              Location = new global::LeafletAlarmsGrpc.ProtoGeometry();
+            }
+            input.ReadMessage(Location);
+            break;
+          }
+          case 25: {
+            Radius = input.ReadDouble();
+            break;
+          }
+          case 34: {
+            ZoomLevel = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class TrackPointProto : pb::IMessage<TrackPointProto>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<TrackPointProto> _parser = new pb::MessageParser<TrackPointProto>(() => new TrackPointProto());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<TrackPointProto> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LeafletAlarmsGrpc.TracksReflection.Descriptor.MessageTypes[8]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TrackPointProto() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TrackPointProto(TrackPointProto other) : this() {
+      id_ = other.id_;
+      figure_ = other.figure_ != null ? other.figure_.Clone() : null;
+      timestamp_ = other.timestamp_ != null ? other.timestamp_.Clone() : null;
+      extraProps_ = other.extraProps_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TrackPointProto Clone() {
+      return new TrackPointProto(this);
+    }
+
+    /// <summary>Field number for the "id" field.</summary>
+    public const int IdFieldNumber = 1;
+    private string id_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Id {
+      get { return id_; }
+      set {
+        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "figure" field.</summary>
+    public const int FigureFieldNumber = 2;
+    private global::LeafletAlarmsGrpc.ProtoGeoObject figure_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::LeafletAlarmsGrpc.ProtoGeoObject Figure {
+      get { return figure_; }
+      set {
+        figure_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "timestamp" field.</summary>
+    public const int TimestampFieldNumber = 3;
+    private global::Google.Protobuf.WellKnownTypes.Timestamp timestamp_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Google.Protobuf.WellKnownTypes.Timestamp Timestamp {
+      get { return timestamp_; }
+      set {
+        timestamp_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "extra_props" field.</summary>
+    public const int ExtraPropsFieldNumber = 4;
+    private static readonly pb::FieldCodec<global::LeafletAlarmsGrpc.ProtoObjExtraProperty> _repeated_extraProps_codec
+        = pb::FieldCodec.ForMessage(34, global::LeafletAlarmsGrpc.ProtoObjExtraProperty.Parser);
+    private readonly pbc::RepeatedField<global::LeafletAlarmsGrpc.ProtoObjExtraProperty> extraProps_ = new pbc::RepeatedField<global::LeafletAlarmsGrpc.ProtoObjExtraProperty>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::LeafletAlarmsGrpc.ProtoObjExtraProperty> ExtraProps {
+      get { return extraProps_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as TrackPointProto);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(TrackPointProto other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Id != other.Id) return false;
+      if (!object.Equals(Figure, other.Figure)) return false;
+      if (!object.Equals(Timestamp, other.Timestamp)) return false;
+      if(!extraProps_.Equals(other.extraProps_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Id.Length != 0) hash ^= Id.GetHashCode();
+      if (figure_ != null) hash ^= Figure.GetHashCode();
+      if (timestamp_ != null) hash ^= Timestamp.GetHashCode();
+      hash ^= extraProps_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (figure_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Figure);
+      }
+      if (timestamp_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Timestamp);
+      }
+      extraProps_.WriteTo(output, _repeated_extraProps_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
+      }
+      if (figure_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Figure);
+      }
+      if (timestamp_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Timestamp);
+      }
+      extraProps_.WriteTo(ref output, _repeated_extraProps_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (Id.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+      }
+      if (figure_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Figure);
+      }
+      if (timestamp_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Timestamp);
+      }
+      size += extraProps_.CalculateSize(_repeated_extraProps_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(TrackPointProto other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Id.Length != 0) {
+        Id = other.Id;
+      }
+      if (other.figure_ != null) {
+        if (figure_ == null) {
+          Figure = new global::LeafletAlarmsGrpc.ProtoGeoObject();
+        }
+        Figure.MergeFrom(other.Figure);
+      }
+      if (other.timestamp_ != null) {
+        if (timestamp_ == null) {
+          Timestamp = new global::Google.Protobuf.WellKnownTypes.Timestamp();
+        }
+        Timestamp.MergeFrom(other.Timestamp);
+      }
+      extraProps_.Add(other.extraProps_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            if (figure_ == null) {
+              Figure = new global::LeafletAlarmsGrpc.ProtoGeoObject();
+            }
+            input.ReadMessage(Figure);
+            break;
+          }
+          case 26: {
+            if (timestamp_ == null) {
+              Timestamp = new global::Google.Protobuf.WellKnownTypes.Timestamp();
+            }
+            input.ReadMessage(Timestamp);
+            break;
+          }
+          case 34: {
+            extraProps_.AddEntriesFrom(input, _repeated_extraProps_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            if (figure_ == null) {
+              Figure = new global::LeafletAlarmsGrpc.ProtoGeoObject();
+            }
+            input.ReadMessage(Figure);
+            break;
+          }
+          case 26: {
+            if (timestamp_ == null) {
+              Timestamp = new global::Google.Protobuf.WellKnownTypes.Timestamp();
+            }
+            input.ReadMessage(Timestamp);
+            break;
+          }
+          case 34: {
+            extraProps_.AddEntriesFrom(ref input, _repeated_extraProps_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class TrackPointsProto : pb::IMessage<TrackPointsProto>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<TrackPointsProto> _parser = new pb::MessageParser<TrackPointsProto>(() => new TrackPointsProto());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<TrackPointsProto> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LeafletAlarmsGrpc.TracksReflection.Descriptor.MessageTypes[9]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TrackPointsProto() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TrackPointsProto(TrackPointsProto other) : this() {
+      tracks_ = other.tracks_.Clone();
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public TrackPointsProto Clone() {
+      return new TrackPointsProto(this);
+    }
+
+    /// <summary>Field number for the "tracks" field.</summary>
+    public const int TracksFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::LeafletAlarmsGrpc.TrackPointProto> _repeated_tracks_codec
+        = pb::FieldCodec.ForMessage(10, global::LeafletAlarmsGrpc.TrackPointProto.Parser);
+    private readonly pbc::RepeatedField<global::LeafletAlarmsGrpc.TrackPointProto> tracks_ = new pbc::RepeatedField<global::LeafletAlarmsGrpc.TrackPointProto>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::LeafletAlarmsGrpc.TrackPointProto> Tracks {
+      get { return tracks_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as TrackPointsProto);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(TrackPointsProto other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if(!tracks_.Equals(other.tracks_)) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      hash ^= tracks_.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      tracks_.WriteTo(output, _repeated_tracks_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      tracks_.WriteTo(ref output, _repeated_tracks_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      size += tracks_.CalculateSize(_repeated_tracks_codec);
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(TrackPointsProto other) {
+      if (other == null) {
+        return;
+      }
+      tracks_.Add(other.tracks_);
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            tracks_.AddEntriesFrom(input, _repeated_tracks_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            tracks_.AddEntriesFrom(ref input, _repeated_tracks_codec);
             break;
           }
         }

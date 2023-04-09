@@ -51,6 +51,8 @@ namespace LeafletAlarmsGrpc {
     static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.ProtoObjectStates> __Marshaller_tracks_ProtoObjectStates = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.ProtoObjectStates.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::Google.Protobuf.WellKnownTypes.BoolValue> __Marshaller_google_protobuf_BoolValue = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Protobuf.WellKnownTypes.BoolValue.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.TrackPointsProto> __Marshaller_tracks_TrackPointsProto = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.TrackPointsProto.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures> __Method_UpdateFigures = new grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(
@@ -66,6 +68,14 @@ namespace LeafletAlarmsGrpc {
         __ServiceName,
         "UpdateStates",
         __Marshaller_tracks_ProtoObjectStates,
+        __Marshaller_google_protobuf_BoolValue);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::LeafletAlarmsGrpc.TrackPointsProto, global::Google.Protobuf.WellKnownTypes.BoolValue> __Method_UpdateTracks = new grpc::Method<global::LeafletAlarmsGrpc.TrackPointsProto, global::Google.Protobuf.WellKnownTypes.BoolValue>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "UpdateTracks",
+        __Marshaller_tracks_TrackPointsProto,
         __Marshaller_google_protobuf_BoolValue);
 
     /// <summary>Service descriptor</summary>
@@ -140,6 +150,26 @@ namespace LeafletAlarmsGrpc {
       public virtual grpc::AsyncUnaryCall<global::Google.Protobuf.WellKnownTypes.BoolValue> UpdateStatesAsync(global::LeafletAlarmsGrpc.ProtoObjectStates request, grpc::CallOptions options)
       {
         return CallInvoker.AsyncUnaryCall(__Method_UpdateStates, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::Google.Protobuf.WellKnownTypes.BoolValue UpdateTracks(global::LeafletAlarmsGrpc.TrackPointsProto request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateTracks(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::Google.Protobuf.WellKnownTypes.BoolValue UpdateTracks(global::LeafletAlarmsGrpc.TrackPointsProto request, grpc::CallOptions options)
+      {
+        return CallInvoker.BlockingUnaryCall(__Method_UpdateTracks, null, options, request);
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::Google.Protobuf.WellKnownTypes.BoolValue> UpdateTracksAsync(global::LeafletAlarmsGrpc.TrackPointsProto request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return UpdateTracksAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncUnaryCall<global::Google.Protobuf.WellKnownTypes.BoolValue> UpdateTracksAsync(global::LeafletAlarmsGrpc.TrackPointsProto request, grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncUnaryCall(__Method_UpdateTracks, null, options, request);
       }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]

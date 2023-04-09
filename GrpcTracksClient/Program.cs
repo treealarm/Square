@@ -13,7 +13,8 @@ while(true)
     var tasks = new List<Task>
   {
     MoveObject.Move(),
-    StateObject.Change()
+    StateObject.Change(),
+    UpdateTracks.Move()
   };
 
     Task.WaitAll(tasks.ToArray());

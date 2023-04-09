@@ -51,6 +51,8 @@ namespace LeafletAlarmsGrpc {
     static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.ProtoObjectStates> __Marshaller_tracks_ProtoObjectStates = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.ProtoObjectStates.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::Google.Protobuf.WellKnownTypes.BoolValue> __Marshaller_google_protobuf_BoolValue = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Protobuf.WellKnownTypes.BoolValue.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::LeafletAlarmsGrpc.TrackPointsProto> __Marshaller_tracks_TrackPointsProto = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::LeafletAlarmsGrpc.TrackPointsProto.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures> __Method_UpdateFigures = new grpc::Method<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(
@@ -66,6 +68,14 @@ namespace LeafletAlarmsGrpc {
         __ServiceName,
         "UpdateStates",
         __Marshaller_tracks_ProtoObjectStates,
+        __Marshaller_google_protobuf_BoolValue);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::LeafletAlarmsGrpc.TrackPointsProto, global::Google.Protobuf.WellKnownTypes.BoolValue> __Method_UpdateTracks = new grpc::Method<global::LeafletAlarmsGrpc.TrackPointsProto, global::Google.Protobuf.WellKnownTypes.BoolValue>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "UpdateTracks",
+        __Marshaller_tracks_TrackPointsProto,
         __Marshaller_google_protobuf_BoolValue);
 
     /// <summary>Service descriptor</summary>
@@ -90,6 +100,12 @@ namespace LeafletAlarmsGrpc {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task<global::Google.Protobuf.WellKnownTypes.BoolValue> UpdateTracks(global::LeafletAlarmsGrpc.TrackPointsProto request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
     }
 
     /// <summary>Creates service definition that can be registered with a server</summary>
@@ -99,7 +115,8 @@ namespace LeafletAlarmsGrpc {
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_UpdateFigures, serviceImpl.UpdateFigures)
-          .AddMethod(__Method_UpdateStates, serviceImpl.UpdateStates).Build();
+          .AddMethod(__Method_UpdateStates, serviceImpl.UpdateStates)
+          .AddMethod(__Method_UpdateTracks, serviceImpl.UpdateTracks).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -111,6 +128,7 @@ namespace LeafletAlarmsGrpc {
     {
       serviceBinder.AddMethod(__Method_UpdateFigures, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::LeafletAlarmsGrpc.ProtoFigures, global::LeafletAlarmsGrpc.ProtoFigures>(serviceImpl.UpdateFigures));
       serviceBinder.AddMethod(__Method_UpdateStates, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::LeafletAlarmsGrpc.ProtoObjectStates, global::Google.Protobuf.WellKnownTypes.BoolValue>(serviceImpl.UpdateStates));
+      serviceBinder.AddMethod(__Method_UpdateTracks, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::LeafletAlarmsGrpc.TrackPointsProto, global::Google.Protobuf.WellKnownTypes.BoolValue>(serviceImpl.UpdateTracks));
     }
 
   }

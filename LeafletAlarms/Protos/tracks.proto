@@ -10,6 +10,7 @@ package tracks;
 service TracksGrpcService {
 	rpc UpdateFigures (ProtoFigures) returns (ProtoFigures);
 	rpc UpdateStates (ProtoObjectStates) returns (google.protobuf.BoolValue);
+	rpc UpdateTracks (TrackPointsProto) returns (google.protobuf.BoolValue);	
 }
 
 
@@ -56,4 +57,27 @@ message ProtoObjectState
 message ProtoObjectStates
 {
 	repeated ProtoObjectState states = 1;
+}
+
+// tracks
+
+message ProtoGeoObject
+{
+  optional string id = 1;
+  ProtoGeometry location = 2;
+  optional double radius = 3;
+  optional string zoom_level = 4;
+}
+
+message TrackPointProto
+{
+  string id = 1;
+  ProtoGeoObject figure = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  repeated ProtoObjExtraProperty extra_props = 4;
+}
+
+message TrackPointsProto
+{
+	repeated TrackPointProto tracks = 1;
 }

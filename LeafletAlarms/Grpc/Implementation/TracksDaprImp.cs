@@ -33,6 +33,13 @@ namespace LeafletAlarms.Grpc.Implementation
           var stateRet = await _trackGrpcService.UpdateStates(states, context);
           response.Data = Any.Pack(stateRet);
           break;
+
+        case "UpdateTracks":
+          var tracks = request.Data.Unpack<TrackPointsProto>();
+          var tracksRet = await _trackGrpcService.UpdateTracks(tracks, context);
+          response.Data = Any.Pack(tracksRet);
+          break;
+
         default:
           Console.WriteLine("Method not supported");
           break;

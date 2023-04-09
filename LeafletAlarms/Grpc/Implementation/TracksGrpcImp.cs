@@ -1,8 +1,10 @@
 ﻿using DbLayer.Services;
 using Domain;
 using Domain.GeoDBDTO;
+using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.States;
+using Domain.StateWebSock;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using LeafletAlarms.Services;
@@ -26,6 +28,45 @@ namespace LeafletAlarms.Grpc.Implementation
       _logger = logger;
       _trackUpdateService = trackUpdateService;
       _statesUpdateService = statesUpdateService;
+    }
+
+    private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
+    {
+      var geo = new GeometryDTO();
+
+      if (geometry.Type == "Polygon" || geometry.Type == "LineString")
+      {
+        var polygonCoord = new GeometryPolygonDTO();
+        geo = polygonCoord;
+        polygonCoord.coord = new List<Geo2DCoordDTO>();
+
+        foreach (var c in geometry.Coord)
+        {
+          polygonCoord.coord.Add(new Geo2DCoordDTO()
+          {
+            Lon = c.Lon,
+            Lat = c.Lat
+          });
+        }
+      }
+      else
+      if (geometry.Type == "Point")
+      {
+        var c = geometry.Coord.FirstOrDefault();
+
+        var pointCoord = new GeometryCircleDTO();
+        geo = pointCoord;
+        pointCoord.coord = new Geo2DCoordDTO()
+        {
+          Lon = c.Lon,
+          Lat = c.Lat
+        };            
+      }
+      else
+      {
+        return null;
+      }
+      return geo;
     }
 
     public override async Task<ProtoFigures> UpdateFigures(ProtoFigures request, ServerCallContext context)
@@ -64,21 +105,7 @@ namespace LeafletAlarms.Grpc.Implementation
         
         figs.figs.Add(newFigDto);
 
-        if (fig.Geometry.Type == "Polygon")
-        {          
-          var polygonCoord = new GeometryPolygonDTO();
-          newFigDto.geometry = polygonCoord;
-          polygonCoord.coord = new List<Geo2DCoordDTO>();
-
-          foreach (var c in fig.Geometry.Coord)
-          {
-            polygonCoord.coord.Add(new Geo2DCoordDTO()
-            {
-              Lon = c.Lon,
-              Lat = c.Lat
-            });
-          }
-        }        
+        newFigDto.geometry = CoordsFromProto2DTO(fig.Geometry);           
       }
 
       await _trackUpdateService.UpdateFigures(figs);
@@ -138,6 +165,57 @@ namespace LeafletAlarms.Grpc.Implementation
       var ret = new BoolValue();
       ret.Value =  await _statesUpdateService.UpdateStates(objStates);
 
+      return ret;
+    }
+
+    public override async Task<BoolValue> UpdateTracks(TrackPointsProto request, ServerCallContext context)
+    {
+      var ret = new BoolValue();
+      ret.Value = false;
+
+      var tracks = new List<TrackPointDTO>();
+
+      foreach (var track in request.Tracks)
+      {
+        var newTrack = new TrackPointDTO()
+        {
+          id = track.Id,
+          timestamp = track.Timestamp == null ? DateTime.UtcNow : track.Timestamp.ToDateTime(),
+        };
+
+        newTrack.figure = new GeoObjectDTO()
+        {
+          id = string.IsNullOrEmpty(track.Figure.Id) ? null : track.Figure.Id,
+          radius = track.Figure.Radius,
+          zoom_level = track.Figure.ZoomLevel,
+          location = CoordsFromProto2DTO(track.Figure.Location)
+        }; 
+
+        if (newTrack.figure.location == null)
+        {
+          Console.WriteLine("Location Conversion failed");
+          return ret;
+        }
+
+        if (track.ExtraProps != null)
+        {
+          newTrack.extra_props = new List<ObjExtraPropertyDTO>();
+
+          foreach (var e in track.ExtraProps)
+          {
+            newTrack.extra_props.Add(new ObjExtraPropertyDTO()
+            {
+              prop_name = e.PropName,
+              str_val = e.StrVal,
+              visual_type = e.VisualType
+            });
+          }
+        }
+
+        tracks.Add(newTrack);
+      }
+      await _trackUpdateService.AddTracks(tracks);
+      ret.Value = true;
       return ret;
     }
   }
