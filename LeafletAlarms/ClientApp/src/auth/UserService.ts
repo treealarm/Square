@@ -13,6 +13,11 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
   const token = localStorage.getItem('kc_token');
   const refreshToken = localStorage.getItem('kc_refreshToken');
 
+  console.log("KC INIT:");
+  _kc.onAuthError = ((error) => {
+    console.log("KC ERROR:", error);
+  });
+
   _kc.init({
     onLoad: 'check-sso',
     silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
@@ -29,12 +34,16 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
       else {
         localStorage.setItem('kc_token', _kc.token);
         localStorage.setItem('kc_refreshToken', _kc.refreshToken);
-        console.log('roles', _kc.realmAccess.roles);        
+        console.log('roles', _kc.realmAccess.roles);
+        console.log('KC SEEMS TO BE AUTHENTIFICATED', _kc.authenticated); 
       }
 
       onAuthenticatedCallback();
     })
-    .catch(console.error);
+    .catch((e: any) =>
+    {
+      console.log("KC ERROR:", e);
+    });
 
   _kc.onTokenExpired = () => {
     console.log('expired ' + new Date());

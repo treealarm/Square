@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Configuration;
 using System.Text;
+using System.Net;
 
 namespace LeafletAlarms.Authentication
 {
@@ -46,10 +47,7 @@ namespace LeafletAlarms.Authentication
     {
       // check that we are currently configuring the options for the correct scheme
       if (name == JwtBearerDefaults.AuthenticationScheme)
-      {
-        
-         
-
+      { 
         var realmName = _myService.GetRealmName();
 
         var BaseAddr = _myService.GetBaseAddr();
@@ -77,7 +75,13 @@ namespace LeafletAlarms.Authentication
           ValidateLifetime = true          
         };
 
-        o.TokenValidationParameters.IssuerSigningKeyResolver = (string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters) =>
+        o.TokenValidationParameters.IssuerSigningKeyResolver = 
+          (
+            string token,
+            SecurityToken securityToken,
+            string kid,
+            TokenValidationParameters validationParameters
+        ) =>
         {
           return new List<SecurityKey>()
           {
@@ -92,15 +96,20 @@ namespace LeafletAlarms.Authentication
             Console.WriteLine($"User successfully authenticated,{c.Request.Path}");
             return Task.CompletedTask;
           },
+
           OnAuthenticationFailed = c =>
           {
             Console.WriteLine($"User authentication failed,{c.Request.Path}");
-            c.NoResult();
 
-            c.Response.StatusCode = 500;
-            c.Response.ContentType = "text/plain";
-
-            return c.Response.WriteAsync(c.Exception.ToString());
+            c.Response.OnStarting(() =>
+            {
+              c.NoResult();
+              c.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+              c.Response.ContentType = @"text/plain";
+              return Task.CompletedTask;
+            });
+  
+            return Task.CompletedTask;
           }
         };
       }

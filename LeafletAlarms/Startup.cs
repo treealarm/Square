@@ -283,32 +283,33 @@ namespace LeafletAlarms
 
       app.Use(async (context, next) =>
       {
-        if (context.Request.Path == "/state")
+        try
         {
-          if (context.WebSockets.IsWebSocketRequest)
+          if (context.Request.Path == "/state")
           {
-            using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
+            if (context.WebSockets.IsWebSocketRequest)
             {
-              var handler = app.Services.GetRequiredService<IWebSockList>();
-              await handler.PushAsync(context, webSocket);
+              using (WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync())
+              {
+                var handler = app.Services.GetRequiredService<IWebSockList>();
+                await handler.PushAsync(context, webSocket);
+              }
+            }
+            else
+            {
+              context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
           }
           else
           {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-          }
-        }
-        else
-        {
-          //try
-          {
             await next();
           }
-          //catch (Exception ex)
-          {
-            //Console.WriteLine(ex.ToString());
-          }          
         }
+        catch ( Exception ex )
+        {
+          Console.WriteLine("App USE Error:" + ex.ToString() );
+        }
+        
       });
 
       app.MapFallbackToFile("index.html");

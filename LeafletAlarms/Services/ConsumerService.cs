@@ -77,7 +77,11 @@ namespace LeafletAlarms.Services
         if (!webSocket.CloseStatus.HasValue)
         {
           await webSocket
-            .CloseAsync(WebSocketCloseStatus.InternalServerError, "", CancellationToken.None);
+            .CloseAsync(
+            WebSocketCloseStatus.InternalServerError,
+            "",
+            CancellationToken.None
+          );
         }        
       }
       catch(Exception)
