@@ -4,14 +4,19 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\LeafletAlarms\Protos\tracks.proto" 
-          Link="Protos\tracks.proto"
-          GrpcServices="Client"
-          OutputDir="Grpc" />
+    <None Remove="JSON\SAD.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="JSON\SAD.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\LeafletAlarms\Protos\tracks.proto" Link="Protos\tracks.proto" GrpcServices="Client" OutputDir="Grpc" />
   </ItemGroup>
   
   <ItemGroup>
@@ -22,6 +27,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

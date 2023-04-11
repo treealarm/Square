@@ -1,9 +1,12 @@
-﻿using Grpc.Net.Client;
+﻿using Domain.GeoDBDTO;
+using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static LeafletAlarmsGrpc.TracksGrpcService;
 
@@ -40,22 +43,35 @@ namespace GrpcTracksClient
       await MoveGrpc(figs, fig);
     }
 
+    static public async Task<string> GetResource(string resourceName)
+    {
+      var assembly = Assembly.GetExecutingAssembly();
+
+      string s = string.Empty;
+      using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+      using (StreamReader reader = new StreamReader(stream))
+      {
+        s = await reader.ReadToEndAsync();
+      }
+      return s;
+    }
+
     public static async Task MoveGrpc(TrackPointsProto figs, ProtoGeoObject fig)
     {
+      var resourceName = $"GrpcTracksClient.JSON.SAD.json";
+      var s = await GetResource(resourceName);
+
+      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
+
       using var channel = GrpcChannel.ForAddress("http://localhost:5000");
       var client = new TracksGrpcServiceClient(channel);
-      var step = 0.001;
 
-      for (int i = 0; i < 100; i++)
+      foreach (var c in coords?.coord)
       {
-        if (i > 50)
-        {
-          step = -0.001;
-        }
         foreach (var f in fig.Location.Coord)
         {
-          f.Lat += step;
-          //f.Lon += step;
+          f.Lat = c.Lat;
+          f.Lon = c.Lon;
         }
         var newFigs = await client.UpdateTracksAsync(figs);
         Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());

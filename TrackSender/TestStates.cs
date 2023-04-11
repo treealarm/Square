@@ -327,16 +327,23 @@ namespace TrackSender
       {
         m_figures = json;
       }
-      
 
-      for (int f = 0; f < m_figures.figs.Count; f+= 10000)
+      try
       {
-        FiguresDTO ff = new FiguresDTO()
+        for (int f = 0; f < m_figures.figs.Count; f += 10000)
         {
-          figs = m_figures.figs.Skip(f).Take(10000).ToList()
-        };
-        var updated_figures = await _testClient.UpdateFiguresAsync(ff);
-      }      
+          FiguresDTO ff = new FiguresDTO()
+          {
+            figs = m_figures.figs.Skip(f).Take(10000).ToList()
+          };
+
+          var updated_figures = await _testClient.UpdateFiguresAsync(ff);
+        }
+      }
+      catch(Exception e)
+      {
+        Console.WriteLine(e.Message);
+      }    
     }
 
    

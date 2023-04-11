@@ -1,10 +1,13 @@
 ﻿using Dapr.Client;
+using Domain.GeoDBDTO;
 using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using static Dapr.Client.Autogen.Grpc.v1.Dapr;
 using static LeafletAlarmsGrpc.TracksGrpcService;
@@ -12,7 +15,7 @@ using static LeafletAlarmsGrpc.TracksGrpcService;
 namespace GrpcTracksClient
 {
   internal class MoveObject
-  {
+  { 
     public static async  Task Move()
     {
       var figs = new ProtoFigures();

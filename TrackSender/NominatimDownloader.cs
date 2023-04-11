@@ -391,6 +391,7 @@ namespace TrackSender
       }
       return s;
     }
+
     public static async Task<Root> GetOsmFigureFromDisk(int osmid, string folder)
     {
       //string filename = $"D:\\TESTS\\Leaflet\\TrackSender\\PolygonJson\\{osmid}.json";

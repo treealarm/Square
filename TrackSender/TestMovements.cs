@@ -16,6 +16,10 @@ using System.Threading;
 using Domain.GeoDTO;
 using System.Net.Http;
 using Domain.StateWebSock;
+using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
+using System.Text.Unicode;
+using System.IO;
 
 namespace TrackSender
 {
@@ -153,13 +157,30 @@ namespace TrackSender
         return;
       }
 
-      var geometry_mkad = mkadPolyline.geometry as GeometryPolylineDTO;
-      int maxPoint = geometry_mkad.coord.Count;
-      string start_id = string.Empty;      
+      var geometry_road = mkadPolyline.geometry as GeometryPolylineDTO;
+
+      var sToSave = JsonSerializer.Serialize(
+        geometry_road,
+        new JsonSerializerOptions()
+        {
+          Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic),
+          WriteIndented = true,
+          DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault | JsonIgnoreCondition.WhenWritingNull
+        }
+      );
+
+      try
+      {
+        File.WriteAllText($"D:\\TESTS\\Leaflet\\leaflet_data\\{resFolder}.json", sToSave.ToString());
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e.Message);
+      }
 
       while (!token.IsCancellationRequested)
       {
-        await BuildMachines(resFolder, geometry_mkad, maxMachines, zoom_level);
+        await BuildMachines(resFolder, geometry_road, maxMachines, zoom_level);
         await Task.Delay(1000);
       }
     }
