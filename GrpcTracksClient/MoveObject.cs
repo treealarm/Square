@@ -52,6 +52,12 @@ namespace GrpcTracksClient
         StrVal = "lisa_alert"
       });
 
+      fig.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "track_name",
+        StrVal = "lisa_alert2"
+      });
+
       await MoveGrpc(figs, fig);
       await MoveDapr(figs, fig);
     }
@@ -94,7 +100,7 @@ namespace GrpcTracksClient
 
     public static async Task MoveGrpc(ProtoFigures figs, ProtoFig fig)
     {
-      using var channel = GrpcChannel.ForAddress("http://localhost:5000");
+      using var channel = GrpcChannel.ForAddress(ProgramConstants.GRPC_DST);
       var client = new TracksGrpcServiceClient(channel);
       var step = 0.001;
 

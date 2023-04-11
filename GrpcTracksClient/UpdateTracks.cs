@@ -40,7 +40,23 @@ namespace GrpcTracksClient
         StrVal = "lisa_alert"
       });
 
-      await MoveGrpc(figs, fig);
+      track.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "track_name",
+        StrVal = "lisa_alert1"
+      });
+
+      while (true)
+      {
+        try
+        {
+          await MoveGrpc(figs, fig);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex);
+        }
+      }      
     }
 
     static public async Task<string> GetResource(string resourceName)
@@ -63,7 +79,7 @@ namespace GrpcTracksClient
 
       var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
 
-      using var channel = GrpcChannel.ForAddress("http://localhost:5000");
+      using var channel = GrpcChannel.ForAddress(ProgramConstants.GRPC_DST);
       var client = new TracksGrpcServiceClient(channel);
 
       foreach (var c in coords?.coord)

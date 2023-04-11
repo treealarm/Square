@@ -5,17 +5,21 @@ using GrpcTracksClient;
 using LeafletAlarmsGrpc;
 using static LeafletAlarmsGrpc.TracksGrpcService;
 
-while(true)
+
+
+
+var taskTrack = UpdateTracks.Move();
+
+while (true)
 {
 
   try
   {
     var tasks = new List<Task>
-  {
-    MoveObject.Move(),
-    StateObject.Change(),
-    UpdateTracks.Move()
-  };
+    {
+      MoveObject.Move(),
+      StateObject.Change()      
+    };
 
     Task.WaitAll(tasks.ToArray());
   }
@@ -26,3 +30,4 @@ while(true)
   }
 }
 
+Task.WaitAll(taskTrack);

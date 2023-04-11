@@ -14,7 +14,7 @@ namespace GrpcTracksClient
   {
     public static async Task Change()
     {
-      using var channel = GrpcChannel.ForAddress("http://localhost:5000");
+      using var channel = GrpcChannel.ForAddress(ProgramConstants.GRPC_DST);
       var client = new TracksGrpcServiceClient(channel);
 
       var states = new ProtoObjectStates();

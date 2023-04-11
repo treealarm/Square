@@ -42,6 +42,19 @@ services:
   #    dockerfile: TrackSender/Dockerfile
   #  volumes:
   #   - ./leaflet_data:/leaflet_data
+
+  grpctracksclient:
+    image: ${DOCKER_REGISTRY-}grpctracksclient
+    build:
+      context: .
+      dockerfile: GrpcTracksClient/Dockerfile
+
+  grpctracksclient-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "-app-id", "grpctracksclient"]
+    depends_on:
+      - leafletalarmsservice
+    network_mode: "service:grpctracksclient"
   
   mongoservice:
     image : mongo
@@ -100,4 +113,5 @@ services:
       - postgresservice
 # command2export realm:docker exec -ti leaflet-keycloak-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
 # END keycloak
+
 
