@@ -230,6 +230,7 @@ export interface ITrackPointDTO {
   id: string;
   timestamp: string;
   figure: IGeoObjectDTO;
+  extra_props?: ObjExtraPropertyDTO[];
 }
 
 export interface ILogicFigureLinkDTO {

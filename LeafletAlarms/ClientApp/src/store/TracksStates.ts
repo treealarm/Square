@@ -9,7 +9,8 @@ export interface TracksState {
   routs: IRoutLineDTO[];
   tracks: ITrackPointDTO[]
   box: BoxTrackDTO; 
-  selected_tracks: string[];
+  selected_track_id: string;
+  selected_track: ITrackPointDTO;
 }
 
 // -----------------
@@ -43,9 +44,9 @@ interface ReceiveTracksAction {
   tracks: ITrackPointDTO[];
 }
 
-interface SelectTracksAction {
-  type: "SELECT_TRACKS";
-  selected_tracks: string[];
+interface SelectTrackAction {
+  type: "SELECT_TRACK";
+  selected_track_id: string;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -55,7 +56,7 @@ type KnownAction =
   | ReceiveRoutsAction
   | RequestTracksAction
   | ReceiveTracksAction  
-  | SelectTracksAction
+  | SelectTrackAction
   | ReceiveRoutsByIdAction
   ;
 
@@ -65,11 +66,11 @@ type KnownAction =
 
 export const actionCreators = {
 
-  GetRoutsByTracksIds: (selected_tracks: string[]): AppThunkAction<KnownAction> => (
+  OnSelectTrack: (selected_track_id: string): AppThunkAction<KnownAction> => (
     dispatch,
     getState
-  ) => {    
-    let body = JSON.stringify(selected_tracks);
+  ) => { 
+    let body = JSON.stringify([selected_track_id]);
     var request = ApiRouterRootString + "/GetRoutsByTracksIds";
 
     var fetched = DoFetch(request, {
@@ -91,7 +92,7 @@ export const actionCreators = {
 
       });
 
-    dispatch({ type: "SELECT_TRACKS", selected_tracks: selected_tracks });
+    dispatch({ type: "SELECT_TRACK", selected_track_id: selected_track_id });
   },
 
   requestRouts: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (
@@ -185,7 +186,8 @@ const unloadedState: TracksState = {
   routs: null,
   tracks: null,
   box: null,
-  selected_tracks: []
+  selected_track_id: null,
+  selected_track: null
 };
 
 export const reducer: Reducer<TracksState> = (
@@ -206,11 +208,17 @@ export const reducer: Reducer<TracksState> = (
       routs: action.routs
     };
 
-    case "SELECT_TRACKS":
-      return {
-        ...state,
-        selected_tracks: action.selected_tracks
-      };
+    case "SELECT_TRACK":
+      {
+        const sel_track = state.tracks.find(t => t.id == action.selected_track_id);
+        console.log("OnSelectTrack:", JSON.stringify(sel_track));
+          return {
+            ...state,
+            selected_track_id: action.selected_track_id,
+            selected_track: sel_track
+          };
+      }
+      
 
     case "REQUEST_ROUTS":
       return {

@@ -50,5 +50,12 @@ namespace LeafletAlarms.Controllers
     {
       return await _trackUpdateService.GetTracksByBox(box);
     }
+
+    [HttpGet]
+    [Route("GetTrackById")]
+    public async Task<TrackPointDTO> GetTrackById(string id)
+    {
+      return await _trackUpdateService.GetTrackById(id);
+    }
   }
 }

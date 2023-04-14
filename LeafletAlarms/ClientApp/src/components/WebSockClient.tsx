@@ -36,7 +36,7 @@ export function WebSockClient() {
 
   const box = useSelector((state: ApplicationState) => state?.markersStates?.box);
   const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
-  const selected_tracks = useSelector((state: ApplicationState) => state?.tracksStates?.selected_tracks);
+  const selected_track_id = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track_id);
 
   const [isConnected, setIsConnected] = useState(false);
 
@@ -60,18 +60,19 @@ export function WebSockClient() {
 
   const onTracksUpdated = useCallback(
     (track_ids: string[]) => {
-      console.log("selected tracks:", track_ids, " ", selected_tracks);
+      // This function just to update routs newly created.
+      console.log("selected tracks:", track_ids, " ", selected_track_id);
 
-      if (track_ids != null && selected_tracks != null) {
-        const filteredArray = selected_tracks.filter(value => track_ids.includes(value));
+      if (track_ids != null && selected_track_id != null) {
+        const filteredArray = track_ids.filter(i =>  i == selected_track_id);
 
         console.log("filteredArray:", filteredArray);
 
         if (filteredArray.length > 0) {
-          appDispatch<any>(TracksStore.actionCreators.GetRoutsByTracksIds(selected_tracks));
+          appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(selected_track_id));
         }
       } 
-    }, [selected_tracks]);
+    }, [selected_track_id]);
 
   function socket_onmessage(event: any) {
     try {
@@ -168,7 +169,7 @@ export function WebSockClient() {
   return (
       <React.Fragment key={"WebSock1"}>
       <Box sx={{ border: 1 }}>
-        <Tooltip title={selected_tracks + '\n'+url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
+        <Tooltip title={selected_track_id + '\n'+url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
         <IconButton
           onClick = {sendPing}
             style = {{ textTransform: 'none' }}

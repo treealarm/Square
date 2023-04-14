@@ -24,7 +24,6 @@ namespace LeafletAlarms.Services
     public TracksUpdateService(
       IMapService mapsService,
       ITrackService tracksService,
-      IRoutService routService,
       IGeoService geoService,
       ITrackConsumer stateService,
       IPubSubService pubsub
@@ -148,6 +147,13 @@ namespace LeafletAlarms.Services
       }
 
       return trackPoints;
+    }
+
+    public async Task<TrackPointDTO> GetTrackById(string id)
+    {
+      var trackPoint = await _tracksService.GetByIdAsync(id);
+
+      return trackPoint;
     }
 
     public async Task<FiguresDTO> UpdateFigures(FiguresDTO statMarkers)

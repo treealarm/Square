@@ -134,6 +134,10 @@ namespace LeafletAlarms.Controllers
         Console.WriteLine(ex.ToString());
       }
 
+      if (data == null)
+      {
+        return null;
+      }
       return File(data, "image/png");
     }
 

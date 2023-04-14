@@ -11,7 +11,7 @@ import {
   PolygonType
 } from '../store/Marker';
 
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   useMap,
   Polyline,
@@ -27,22 +27,45 @@ declare module 'react-redux' {
 }
 
 const pathOptionsTracks = {
-  fillColor: 'white',
+  fillColor: 'purple',
   fillOpacity: 0.2,
   color: 'purple',
-  opacity: 1
+  opacity: 0.5,
+  dashArray: ''
+}
+
+const pathOptionsTracksSelected = {
+  fillColor: 'purple',
+  fillOpacity: 0.5,
+  color: 'red',
+  opacity: 0.8,
+  dashArray: '5,10'
 }
 
 var pathOptionsRouts = { color: "blue" };
 
 function TrackPolygon(props: any) {
+  const appDispatch = useAppDispatch();
+
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord;
+  let track_id = props.track_id;
+
+  const eventHandlers = React.useMemo(
+    () => ({
+      click(event: LeafletMouseEvent) {
+        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track_id));
+      }
+    }),
+    [track_id],
+  )
+
   return (
     <React.Fragment>
       <Polygon
         pathOptions={props.pathOptions}
         positions={positions}
+        eventHandlers={eventHandlers}
       >
       </Polygon>
     </React.Fragment>
@@ -50,13 +73,28 @@ function TrackPolygon(props: any) {
 }
 
 function TrackPolyline(props: any) {
+  const appDispatch = useAppDispatch();
+
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord;
+
+  let track_id = props.track_id;
+
+  const eventHandlers = React.useMemo(
+    () => ({
+      click(event: LeafletMouseEvent) {
+        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track_id));
+      }
+    }),
+    [track_id],
+  )
+
   return (
     <React.Fragment>
       <Polyline
         pathOptions={props.pathOptions}
         positions={positions}
+        eventHandlers={eventHandlers}
       >
       </Polyline>
     </React.Fragment>
@@ -74,7 +112,7 @@ function TrackCircle(props: any) {
   const eventHandlers = React.useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        appDispatch<any>(TracksStore.actionCreators.GetRoutsByTracksIds([track_id]));
+        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track_id));
       }
     }),
     [track_id],
@@ -112,6 +150,7 @@ function CommonTrack(props: any) {
         <TrackPolygon
           figure={figure}
           pathOptions={props.pathOptions}
+          track_id={props.track_id}
         >
         </TrackPolygon>
       </React.Fragment>
@@ -123,7 +162,8 @@ function CommonTrack(props: any) {
       <React.Fragment>
         <TrackPolyline
           figure={figure}
-          pathOptions={ props.pathOptions }
+          pathOptions={props.pathOptions}
+          track_id={props.track_id}
         >
         </TrackPolyline>
       </React.Fragment>
@@ -156,6 +196,7 @@ export function TrackViewer() {
   const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked);
   const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
+  const selected_track_id = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track_id);
 
   function UpdateTracks() {
     var bounds: L.LatLngBounds;
@@ -227,7 +268,7 @@ export function TrackViewer() {
             track_id={track?.id}
             hidden={false}
             marker={track?.figure}
-            pathOptions={pathOptionsTracks}
+            pathOptions={selected_track_id == track?.id ? pathOptionsTracksSelected : pathOptionsTracks}
           >
           </CommonTrack>
         )}
