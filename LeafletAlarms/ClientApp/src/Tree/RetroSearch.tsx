@@ -5,29 +5,67 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
-import { Box, Button, IconButton, List, ListItem } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, List, ListItem, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import * as SearchResultStore from '../store/SearchResultStates';
-import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO, DeepCopy } from '../store/Marker';
+import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO, DeepCopy, ITrackPointDTO } from '../store/Marker';
 import { PropertyFilter } from './PropertyFilter';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import * as GuiStore from '../store/GUIStates';
 import ToggleButton from '@mui/material/ToggleButton';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
-export function RetroSearch() {
-  const INPUT_FORMAT = "YYYY-MM-DDTHH:mm:ss";
+const INPUT_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
+export function TrackProperties(props: any) {
+
+  var selected_track: ITrackPointDTO = props.selected_track;
+
+  if (selected_track == null) {
+    return null;
+  }
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <List>
+      <ListItem>{selected_track?.id}</ListItem>
+      <ListItem>
+          <DateTimeField
+          size="small"
+          readOnly
+          label="timestamp"
+            value={dayjs(selected_track?.timestamp)}
+            format={INPUT_FORMAT}
+        />
+        </ListItem>
+        {
+          selected_track?.extra_props.map((prop, index) =>
+            <ListItem>
+              <TextField
+                size="small"
+                label={prop.prop_name} value={prop.str_val}>
+                id={prop?.prop_name + prop?.str_val}
+              </TextField>
+            </ListItem>
+        )}
+      </List>
+    </LocalizationProvider>
+  );
+}
+
+export function RetroSearch() {
   const dispatch = useDispatch();
 
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
   const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
+  const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = DeepCopy(searchFilter);
@@ -224,40 +262,38 @@ export function RetroSearch() {
           onChange={() => searchTracks()}>
           <SearchIcon/>
         </ToggleButton>
+
+        <Accordion hidden={selected_track == null} sx={{ width: "100%", padding: 1, margin: 0 }} >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon color="primary" />}
+            aria-controls="panel-tree"
+            id="panel-track-props">
+            <Typography color="primary">Track properties</Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
+            <TrackProperties selected_track={selected_track}></TrackProperties>
+          </AccordionDetails>
+        </Accordion>
       </Box>
+
 
       <List>
           <ListItem>
           <DateTimePicker
-            label="begin (ISO 8601)"
-            value={searchFilter?.time_start}
+            label="begin"
+            value={dayjs(searchFilter?.time_start)}
             onChange={handleChange1}
-            inputFormat={INPUT_FORMAT}
-            renderInput={(params) =>
-              <TextField {...params}
-                inputProps={
-                  {
-                    ...params.inputProps,
-                    placeholder: INPUT_FORMAT
-                  } 
-                }/>}
+            views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
+            format={INPUT_FORMAT}
           />
           <Button color="secondary" onClick={(e: any) => OnNavigate(true, e)}>{'>'}</Button>
           </ListItem>
           <ListItem>
           <DateTimePicker
-            label="end (ISO 8601)"
-            value={searchFilter?.time_end}
+            label="end"
+            value={dayjs(searchFilter?.time_end)}
             onChange={handleChange2}
-            inputFormat={INPUT_FORMAT}
-            renderInput={(params) =>
-              <TextField {...params}
-                inputProps={
-                  {
-                    ...params.inputProps,
-                    placeholder: INPUT_FORMAT
-                  }
-                } />}
+            format={INPUT_FORMAT}
           />
           <Button color="secondary" onClick={(e: any) => OnNavigate(false, e)}>{'<'}</Button>
         </ListItem>
