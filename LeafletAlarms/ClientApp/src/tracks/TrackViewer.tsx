@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import * as TracksStore from '../store/TracksStates';
 import { ApplicationState } from '../store';
 import {
@@ -187,7 +187,7 @@ function CommonTrack(props: any) {
 
 export function TrackViewer() {
 
-  const dispatch = useDispatch();
+  const appDispatch = useAppDispatch();
   const parentMap = useMap();
 
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
@@ -229,7 +229,7 @@ export function TrackViewer() {
     }
     // We request routs by selection for now.
     //dispatch<any>(TracksStore.actionCreators.requestRouts(boundBox));
-    dispatch<any>(TracksStore.actionCreators.requestTracks(boundBox));
+    appDispatch<any>(TracksStore.actionCreators.requestTracks(boundBox));
   }
 
   useEffect(() => {
@@ -249,6 +249,9 @@ export function TrackViewer() {
   const mapEvents = useMapEvents({
     moveend(e: L.LeafletEvent) {
       UpdateTracks();
+    },
+    preclick(e: LeafletMouseEvent) {
+      appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(null));
     },
     async click(e: L.LeafletMouseEvent) {
       var ll: L.LatLng = e.latlng as L.LatLng;

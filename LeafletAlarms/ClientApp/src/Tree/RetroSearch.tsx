@@ -17,6 +17,9 @@ import * as GuiStore from '../store/GUIStates';
 import ToggleButton from '@mui/material/ToggleButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBack from '@mui/icons-material/ArrowBack';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -250,35 +253,33 @@ export function RetroSearch() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Box display="flex"
-        justifyContent="flex-start"
-      >
-        <ToggleButton
-          color="success"
-          value="check"
-          aria-label="search"
-          selected={searchFilter?.applied == true}
-          size="small"
-          onChange={() => searchTracks()}>
-          <SearchIcon/>
-        </ToggleButton>
-
-        <Accordion hidden={selected_track == null} sx={{ width: "100%", padding: 1, margin: 0 }} >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon color="primary" />}
-            aria-controls="panel-tree"
-            id="panel-track-props">
-            <Typography color="primary">Track properties</Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
-            <TrackProperties selected_track={selected_track}></TrackProperties>
-          </AccordionDetails>
-        </Accordion>
-      </Box>
-
+      <Accordion hidden={selected_track == null} sx={{ width: "100%", padding: 1, margin: 0 }} >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon color="secondary" />}
+          aria-controls="panel-tree"
+          id="panel-track-props">
+          <Typography color="secondary">Track properties</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
+          <TrackProperties selected_track={selected_track}></TrackProperties>
+        </AccordionDetails>
+      </Accordion>
 
       <List>
-          <ListItem>
+        <ListItem>
+          <Box display="flex" justifyContent="flex-start">
+            <ToggleButton
+              color="secondary"
+              value="check"
+              aria-label="search"
+              selected={searchFilter?.applied == true}
+              size="small"
+              onChange={() => searchTracks()}>
+              <SearchIcon />
+            </ToggleButton>
+          </Box>
+        </ListItem>
+        <ListItem>
           <DateTimePicker
             label="begin"
             value={dayjs(searchFilter?.time_start)}
@@ -286,7 +287,9 @@ export function RetroSearch() {
             views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
             format={INPUT_FORMAT}
           />
-          <Button color="secondary" onClick={(e: any) => OnNavigate(true, e)}>{'>'}</Button>
+          <Button color="secondary" onClick={(e: any) => OnNavigate(true, e)}>
+            <ArrowForwardIcon />
+          </Button>
           </ListItem>
           <ListItem>
           <DateTimePicker
@@ -295,13 +298,15 @@ export function RetroSearch() {
             onChange={handleChange2}
             format={INPUT_FORMAT}
           />
-          <Button color="secondary" onClick={(e: any) => OnNavigate(false, e)}>{'<'}</Button>
+          <Button color="secondary" onClick={(e: any) => OnNavigate(false, e)}>
+            <ArrowBack />
+          </Button>
         </ListItem>
 
           <Box display="flex"
             justifyContent="flex-start"
         >
-          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
+          <IconButton color="secondary" aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
                 <LibraryAddIcon fontSize="inherit" />
               </IconButton>            
           </Box>

@@ -8,6 +8,7 @@ import {
 import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
 import { TrackViewer } from "../tracks/TrackViewer";
+import { Browser, Control } from "leaflet";
 
 export function MapComponent(props: any) {
 
@@ -41,6 +42,7 @@ export function MapComponent(props: any) {
       <MapPositionChange />
 
       <TileLayer
+        
         attribution="&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
         url={url}
       />

@@ -185,6 +185,9 @@ export function LocationMarkers() {
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
+  parentMap.attributionControl.options.prefix = 
+    '<a href="https://www.leftfront.org" title="A JavaScript library for interactive maps">' + '<img width="12" height="8" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg"></img>' + 'LeafletAlarms</a>';
+
   function RequestMarkersByBox(bounds: L.LatLngBounds) {
     if (bounds == null) {
       bounds = parentMap.getBounds();
