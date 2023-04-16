@@ -14,8 +14,6 @@ project ("GRPCTracksClient")
 # Include sub-projects.
 add_subdirectory ("GRPCTracksClient")
 
-
-include_directories($ENV{GRPC_ROOT}/inc)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
 

@@ -21,32 +21,6 @@ namespace _pb = ::PROTOBUF_NAMESPACE_ID;
 namespace _pbi = _pb::internal;
 
 namespace tracks {
-PROTOBUF_CONSTEXPR HelloRequest::HelloRequest(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.name_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct HelloRequestDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR HelloRequestDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~HelloRequestDefaultTypeInternal() {}
-  union {
-    HelloRequest _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 HelloRequestDefaultTypeInternal _HelloRequest_default_instance_;
-PROTOBUF_CONSTEXPR HelloReply::HelloReply(
-    ::_pbi::ConstantInitialized): _impl_{
-    /*decltype(_impl_.message_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
-  , /*decltype(_impl_._cached_size_)*/{}} {}
-struct HelloReplyDefaultTypeInternal {
-  PROTOBUF_CONSTEXPR HelloReplyDefaultTypeInternal()
-      : _instance(::_pbi::ConstantInitialized{}) {}
-  ~HelloReplyDefaultTypeInternal() {}
-  union {
-    HelloReply _instance;
-  };
-};
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 HelloReplyDefaultTypeInternal _HelloReply_default_instance_;
 PROTOBUF_CONSTEXPR ProtoObjExtraProperty::ProtoObjExtraProperty(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.str_val_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
@@ -126,26 +100,86 @@ struct ProtoFiguresDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ProtoFiguresDefaultTypeInternal _ProtoFigures_default_instance_;
+PROTOBUF_CONSTEXPR ProtoObjectState::ProtoObjectState(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.states_)*/{}
+  , /*decltype(_impl_.id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.timestamp_)*/nullptr
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct ProtoObjectStateDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ProtoObjectStateDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ProtoObjectStateDefaultTypeInternal() {}
+  union {
+    ProtoObjectState _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ProtoObjectStateDefaultTypeInternal _ProtoObjectState_default_instance_;
+PROTOBUF_CONSTEXPR ProtoObjectStates::ProtoObjectStates(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.states_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct ProtoObjectStatesDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ProtoObjectStatesDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ProtoObjectStatesDefaultTypeInternal() {}
+  union {
+    ProtoObjectStates _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ProtoObjectStatesDefaultTypeInternal _ProtoObjectStates_default_instance_;
+PROTOBUF_CONSTEXPR ProtoGeoObject::ProtoGeoObject(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_._has_bits_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}
+  , /*decltype(_impl_.id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.zoom_level_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.location_)*/nullptr
+  , /*decltype(_impl_.radius_)*/0} {}
+struct ProtoGeoObjectDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ProtoGeoObjectDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ProtoGeoObjectDefaultTypeInternal() {}
+  union {
+    ProtoGeoObject _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ProtoGeoObjectDefaultTypeInternal _ProtoGeoObject_default_instance_;
+PROTOBUF_CONSTEXPR TrackPointProto::TrackPointProto(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.extra_props_)*/{}
+  , /*decltype(_impl_.id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.figure_)*/nullptr
+  , /*decltype(_impl_.timestamp_)*/nullptr
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct TrackPointProtoDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR TrackPointProtoDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~TrackPointProtoDefaultTypeInternal() {}
+  union {
+    TrackPointProto _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TrackPointProtoDefaultTypeInternal _TrackPointProto_default_instance_;
+PROTOBUF_CONSTEXPR TrackPointsProto::TrackPointsProto(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.tracks_)*/{}
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct TrackPointsProtoDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR TrackPointsProtoDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~TrackPointsProtoDefaultTypeInternal() {}
+  union {
+    TrackPointsProto _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 TrackPointsProtoDefaultTypeInternal _TrackPointsProto_default_instance_;
 }  // namespace tracks
-static ::_pb::Metadata file_level_metadata_tracks_2eproto[7];
+static ::_pb::Metadata file_level_metadata_tracks_2eproto[10];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_tracks_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_tracks_2eproto = nullptr;
 
 const uint32_t TableStruct_tracks_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tracks::HelloRequest, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tracks::HelloRequest, _impl_.name_),
-  ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::tracks::HelloReply, _internal_metadata_),
-  ~0u,  // no _extensions_
-  ~0u,  // no _oneof_case_
-  ~0u,  // no _weak_field_map_
-  ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::tracks::HelloReply, _impl_.message_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::tracks::ProtoObjExtraProperty, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -203,55 +237,128 @@ const uint32_t TableStruct_tracks_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(p
   PROTOBUF_FIELD_OFFSET(::tracks::ProtoFigures, _impl_.add_tracks_),
   ~0u,
   0,
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoObjectState, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoObjectState, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoObjectState, _impl_.states_),
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoObjectState, _impl_.timestamp_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoObjectStates, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoObjectStates, _impl_.states_),
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoGeoObject, _impl_._has_bits_),
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoGeoObject, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoGeoObject, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoGeoObject, _impl_.location_),
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoGeoObject, _impl_.radius_),
+  PROTOBUF_FIELD_OFFSET(::tracks::ProtoGeoObject, _impl_.zoom_level_),
+  0,
+  ~0u,
+  2,
+  1,
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::tracks::TrackPointProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::tracks::TrackPointProto, _impl_.id_),
+  PROTOBUF_FIELD_OFFSET(::tracks::TrackPointProto, _impl_.figure_),
+  PROTOBUF_FIELD_OFFSET(::tracks::TrackPointProto, _impl_.timestamp_),
+  PROTOBUF_FIELD_OFFSET(::tracks::TrackPointProto, _impl_.extra_props_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::tracks::TrackPointsProto, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::tracks::TrackPointsProto, _impl_.tracks_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::tracks::HelloRequest)},
-  { 7, -1, -1, sizeof(::tracks::HelloReply)},
-  { 14, -1, -1, sizeof(::tracks::ProtoObjExtraProperty)},
-  { 23, -1, -1, sizeof(::tracks::ProtoCoord)},
-  { 31, -1, -1, sizeof(::tracks::ProtoGeometry)},
-  { 39, 53, -1, sizeof(::tracks::ProtoFig)},
-  { 61, 69, -1, sizeof(::tracks::ProtoFigures)},
+  { 0, -1, -1, sizeof(::tracks::ProtoObjExtraProperty)},
+  { 9, -1, -1, sizeof(::tracks::ProtoCoord)},
+  { 17, -1, -1, sizeof(::tracks::ProtoGeometry)},
+  { 25, 39, -1, sizeof(::tracks::ProtoFig)},
+  { 47, 55, -1, sizeof(::tracks::ProtoFigures)},
+  { 57, -1, -1, sizeof(::tracks::ProtoObjectState)},
+  { 66, -1, -1, sizeof(::tracks::ProtoObjectStates)},
+  { 73, 83, -1, sizeof(::tracks::ProtoGeoObject)},
+  { 87, -1, -1, sizeof(::tracks::TrackPointProto)},
+  { 97, -1, -1, sizeof(::tracks::TrackPointsProto)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::tracks::_HelloRequest_default_instance_._instance,
-  &::tracks::_HelloReply_default_instance_._instance,
   &::tracks::_ProtoObjExtraProperty_default_instance_._instance,
   &::tracks::_ProtoCoord_default_instance_._instance,
   &::tracks::_ProtoGeometry_default_instance_._instance,
   &::tracks::_ProtoFig_default_instance_._instance,
   &::tracks::_ProtoFigures_default_instance_._instance,
+  &::tracks::_ProtoObjectState_default_instance_._instance,
+  &::tracks::_ProtoObjectStates_default_instance_._instance,
+  &::tracks::_ProtoGeoObject_default_instance_._instance,
+  &::tracks::_TrackPointProto_default_instance_._instance,
+  &::tracks::_TrackPointsProto_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_tracks_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\014tracks.proto\022\006tracks\"\034\n\014HelloRequest\022\014"
-  "\n\004name\030\001 \001(\t\"\035\n\nHelloReply\022\017\n\007message\030\001 "
-  "\001(\t\"P\n\025ProtoObjExtraProperty\022\017\n\007str_val\030"
-  "\001 \001(\t\022\021\n\tprop_name\030\002 \001(\t\022\023\n\013visual_type\030"
-  "\003 \001(\t\"&\n\nProtoCoord\022\013\n\003lat\030\001 \001(\001\022\013\n\003lon\030"
-  "\002 \001(\001\"@\n\rProtoGeometry\022!\n\005coord\030\001 \003(\0132\022."
-  "tracks.ProtoCoord\022\014\n\004type\030\002 \001(\t\"\235\002\n\010Prot"
-  "oFig\022\'\n\010geometry\030\001 \001(\0132\025.tracks.ProtoGeo"
-  "metry\022\023\n\006radius\030\002 \001(\001H\000\210\001\001\022\027\n\nzoom_level"
-  "\030\003 \001(\tH\001\210\001\001\0222\n\013extra_props\030\004 \003(\0132\035.track"
-  "s.ProtoObjExtraProperty\022\n\n\002id\030\005 \001(\t\022\026\n\tp"
-  "arent_id\030\006 \001(\tH\002\210\001\001\022\014\n\004name\030\007 \001(\t\022\032\n\rext"
-  "ernal_type\030\010 \001(\tH\003\210\001\001B\t\n\007_radiusB\r\n\013_zoo"
-  "m_levelB\014\n\n_parent_idB\020\n\016_external_type\""
-  "V\n\014ProtoFigures\022\036\n\004figs\030\001 \003(\0132\020.tracks.P"
-  "rotoFig\022\027\n\nadd_tracks\030\002 \001(\010H\000\210\001\001B\r\n\013_add"
-  "_tracks2\206\001\n\021TracksGrpcService\0224\n\010SayHell"
-  "o\022\024.tracks.HelloRequest\032\022.tracks.HelloRe"
-  "ply\022;\n\rUpdateFigures\022\024.tracks.ProtoFigur"
-  "es\032\024.tracks.ProtoFiguresB\024\252\002\021LeafletAlar"
-  "msGrpcb\006proto3"
+  "\n\014tracks.proto\022\006tracks\032\037google/protobuf/"
+  "timestamp.proto\032\036google/protobuf/wrapper"
+  "s.proto\"P\n\025ProtoObjExtraProperty\022\017\n\007str_"
+  "val\030\001 \001(\t\022\021\n\tprop_name\030\002 \001(\t\022\023\n\013visual_t"
+  "ype\030\003 \001(\t\"&\n\nProtoCoord\022\013\n\003lat\030\001 \001(\001\022\013\n\003"
+  "lon\030\002 \001(\001\"@\n\rProtoGeometry\022!\n\005coord\030\001 \003("
+  "\0132\022.tracks.ProtoCoord\022\014\n\004type\030\002 \001(\t\"\235\002\n\010"
+  "ProtoFig\022\'\n\010geometry\030\001 \001(\0132\025.tracks.Prot"
+  "oGeometry\022\023\n\006radius\030\002 \001(\001H\000\210\001\001\022\027\n\nzoom_l"
+  "evel\030\003 \001(\tH\001\210\001\001\0222\n\013extra_props\030\004 \003(\0132\035.t"
+  "racks.ProtoObjExtraProperty\022\n\n\002id\030\005 \001(\t\022"
+  "\026\n\tparent_id\030\006 \001(\tH\002\210\001\001\022\014\n\004name\030\007 \001(\t\022\032\n"
+  "\rexternal_type\030\010 \001(\tH\003\210\001\001B\t\n\007_radiusB\r\n\013"
+  "_zoom_levelB\014\n\n_parent_idB\020\n\016_external_t"
+  "ype\"V\n\014ProtoFigures\022\036\n\004figs\030\001 \003(\0132\020.trac"
+  "ks.ProtoFig\022\027\n\nadd_tracks\030\002 \001(\010H\000\210\001\001B\r\n\013"
+  "_add_tracks\"]\n\020ProtoObjectState\022\n\n\002id\030\001 "
+  "\001(\t\022\016\n\006states\030\002 \003(\t\022-\n\ttimestamp\030\003 \001(\0132\032"
+  ".google.protobuf.Timestamp\"=\n\021ProtoObjec"
+  "tStates\022(\n\006states\030\001 \003(\0132\030.tracks.ProtoOb"
+  "jectState\"\231\001\n\016ProtoGeoObject\022\017\n\002id\030\001 \001(\t"
+  "H\000\210\001\001\022\'\n\010location\030\002 \001(\0132\025.tracks.ProtoGe"
+  "ometry\022\023\n\006radius\030\003 \001(\001H\001\210\001\001\022\027\n\nzoom_leve"
+  "l\030\004 \001(\tH\002\210\001\001B\005\n\003_idB\t\n\007_radiusB\r\n\013_zoom_"
+  "level\"\250\001\n\017TrackPointProto\022\n\n\002id\030\001 \001(\t\022&\n"
+  "\006figure\030\002 \001(\0132\026.tracks.ProtoGeoObject\022-\n"
+  "\ttimestamp\030\003 \001(\0132\032.google.protobuf.Times"
+  "tamp\0222\n\013extra_props\030\004 \003(\0132\035.tracks.Proto"
+  "ObjExtraProperty\";\n\020TrackPointsProto\022\'\n\006"
+  "tracks\030\001 \003(\0132\027.tracks.TrackPointProto2\335\001"
+  "\n\021TracksGrpcService\022;\n\rUpdateFigures\022\024.t"
+  "racks.ProtoFigures\032\024.tracks.ProtoFigures"
+  "\022E\n\014UpdateStates\022\031.tracks.ProtoObjectSta"
+  "tes\032\032.google.protobuf.BoolValue\022D\n\014Updat"
+  "eTracks\022\030.tracks.TrackPointsProto\032\032.goog"
+  "le.protobuf.BoolValueB\024\252\002\021LeafletAlarmsG"
+  "rpcb\006proto3"
   ;
+static const ::_pbi::DescriptorTable* const descriptor_table_tracks_2eproto_deps[2] = {
+  &::descriptor_table_google_2fprotobuf_2ftimestamp_2eproto,
+  &::descriptor_table_google_2fprotobuf_2fwrappers_2eproto,
+};
 static ::_pbi::once_flag descriptor_table_tracks_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_tracks_2eproto = {
-    false, false, 814, descriptor_table_protodef_tracks_2eproto,
+    false, false, 1451, descriptor_table_protodef_tracks_2eproto,
     "tracks.proto",
-    &descriptor_table_tracks_2eproto_once, nullptr, 0, 7,
+    &descriptor_table_tracks_2eproto_once, descriptor_table_tracks_2eproto_deps, 2, 10,
     schemas, file_default_instances, TableStruct_tracks_2eproto::offsets,
     file_level_metadata_tracks_2eproto, file_level_enum_descriptors_tracks_2eproto,
     file_level_service_descriptors_tracks_2eproto,
@@ -263,412 +370,6 @@ PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_tracks_2
 // Force running AddDescriptors() at dynamic initialization time.
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_tracks_2eproto(&descriptor_table_tracks_2eproto);
 namespace tracks {
-
-// ===================================================================
-
-class HelloRequest::_Internal {
- public:
-};
-
-HelloRequest::HelloRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:tracks.HelloRequest)
-}
-HelloRequest::HelloRequest(const HelloRequest& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  HelloRequest* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.name_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
-
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_name().empty()) {
-    _this->_impl_.name_.Set(from._internal_name(), 
-      _this->GetArenaForAllocation());
-  }
-  // @@protoc_insertion_point(copy_constructor:tracks.HelloRequest)
-}
-
-inline void HelloRequest::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.name_){}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.name_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.name_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-}
-
-HelloRequest::~HelloRequest() {
-  // @@protoc_insertion_point(destructor:tracks.HelloRequest)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
-  SharedDtor();
-}
-
-inline void HelloRequest::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.name_.Destroy();
-}
-
-void HelloRequest::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void HelloRequest::Clear() {
-// @@protoc_insertion_point(message_clear_start:tracks.HelloRequest)
-  uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  _impl_.name_.ClearToEmpty();
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
-}
-
-const char* HelloRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string name = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_name();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tracks.HelloRequest.name"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
-  return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
-}
-
-uint8_t* HelloRequest::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:tracks.HelloRequest)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // string name = 1;
-  if (!this->_internal_name().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_name().data(), static_cast<int>(this->_internal_name().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tracks.HelloRequest.name");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_name(), target);
-  }
-
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:tracks.HelloRequest)
-  return target;
-}
-
-size_t HelloRequest::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:tracks.HelloRequest)
-  size_t total_size = 0;
-
-  uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  // string name = 1;
-  if (!this->_internal_name().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_name());
-  }
-
-  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
-}
-
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData HelloRequest::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    HelloRequest::MergeImpl
-};
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*HelloRequest::GetClassData() const { return &_class_data_; }
-
-
-void HelloRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
-  auto* const _this = static_cast<HelloRequest*>(&to_msg);
-  auto& from = static_cast<const HelloRequest&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:tracks.HelloRequest)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  if (!from._internal_name().empty()) {
-    _this->_internal_set_name(from._internal_name());
-  }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-}
-
-void HelloRequest::CopyFrom(const HelloRequest& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:tracks.HelloRequest)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool HelloRequest::IsInitialized() const {
-  return true;
-}
-
-void HelloRequest::InternalSwap(HelloRequest* other) {
-  using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.name_, lhs_arena,
-      &other->_impl_.name_, rhs_arena
-  );
-}
-
-::PROTOBUF_NAMESPACE_ID::Metadata HelloRequest::GetMetadata() const {
-  return ::_pbi::AssignDescriptors(
-      &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
-      file_level_metadata_tracks_2eproto[0]);
-}
-
-// ===================================================================
-
-class HelloReply::_Internal {
- public:
-};
-
-HelloReply::HelloReply(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                         bool is_message_owned)
-  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
-  SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:tracks.HelloReply)
-}
-HelloReply::HelloReply(const HelloReply& from)
-  : ::PROTOBUF_NAMESPACE_ID::Message() {
-  HelloReply* const _this = this; (void)_this;
-  new (&_impl_) Impl_{
-      decltype(_impl_.message_){}
-    , /*decltype(_impl_._cached_size_)*/{}};
-
-  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.message_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.message_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (!from._internal_message().empty()) {
-    _this->_impl_.message_.Set(from._internal_message(), 
-      _this->GetArenaForAllocation());
-  }
-  // @@protoc_insertion_point(copy_constructor:tracks.HelloReply)
-}
-
-inline void HelloReply::SharedCtor(
-    ::_pb::Arena* arena, bool is_message_owned) {
-  (void)arena;
-  (void)is_message_owned;
-  new (&_impl_) Impl_{
-      decltype(_impl_.message_){}
-    , /*decltype(_impl_._cached_size_)*/{}
-  };
-  _impl_.message_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.message_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-}
-
-HelloReply::~HelloReply() {
-  // @@protoc_insertion_point(destructor:tracks.HelloReply)
-  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
-  (void)arena;
-    return;
-  }
-  SharedDtor();
-}
-
-inline void HelloReply::SharedDtor() {
-  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.message_.Destroy();
-}
-
-void HelloReply::SetCachedSize(int size) const {
-  _impl_._cached_size_.Set(size);
-}
-
-void HelloReply::Clear() {
-// @@protoc_insertion_point(message_clear_start:tracks.HelloReply)
-  uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  _impl_.message_.ClearToEmpty();
-  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
-}
-
-const char* HelloReply::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
-#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
-  while (!ctx->Done(&ptr)) {
-    uint32_t tag;
-    ptr = ::_pbi::ReadTag(ptr, &tag);
-    switch (tag >> 3) {
-      // string message = 1;
-      case 1:
-        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
-          auto str = _internal_mutable_message();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
-          CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "tracks.HelloReply.message"));
-        } else
-          goto handle_unusual;
-        continue;
-      default:
-        goto handle_unusual;
-    }  // switch
-  handle_unusual:
-    if ((tag == 0) || ((tag & 7) == 4)) {
-      CHK_(ptr);
-      ctx->SetLastTag(tag);
-      goto message_done;
-    }
-    ptr = UnknownFieldParse(
-        tag,
-        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
-        ptr, ctx);
-    CHK_(ptr != nullptr);
-  }  // while
-message_done:
-  return ptr;
-failure:
-  ptr = nullptr;
-  goto message_done;
-#undef CHK_
-}
-
-uint8_t* HelloReply::_InternalSerialize(
-    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:tracks.HelloReply)
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  // string message = 1;
-  if (!this->_internal_message().empty()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_message().data(), static_cast<int>(this->_internal_message().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "tracks.HelloReply.message");
-    target = stream->WriteStringMaybeAliased(
-        1, this->_internal_message(), target);
-  }
-
-  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
-    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
-        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
-  }
-  // @@protoc_insertion_point(serialize_to_array_end:tracks.HelloReply)
-  return target;
-}
-
-size_t HelloReply::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:tracks.HelloReply)
-  size_t total_size = 0;
-
-  uint32_t cached_has_bits = 0;
-  // Prevent compiler warnings about cached_has_bits being unused
-  (void) cached_has_bits;
-
-  // string message = 1;
-  if (!this->_internal_message().empty()) {
-    total_size += 1 +
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-        this->_internal_message());
-  }
-
-  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
-}
-
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData HelloReply::_class_data_ = {
-    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
-    HelloReply::MergeImpl
-};
-const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*HelloReply::GetClassData() const { return &_class_data_; }
-
-
-void HelloReply::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
-  auto* const _this = static_cast<HelloReply*>(&to_msg);
-  auto& from = static_cast<const HelloReply&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:tracks.HelloReply)
-  GOOGLE_DCHECK_NE(&from, _this);
-  uint32_t cached_has_bits = 0;
-  (void) cached_has_bits;
-
-  if (!from._internal_message().empty()) {
-    _this->_internal_set_message(from._internal_message());
-  }
-  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-}
-
-void HelloReply::CopyFrom(const HelloReply& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:tracks.HelloReply)
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool HelloReply::IsInitialized() const {
-  return true;
-}
-
-void HelloReply::InternalSwap(HelloReply* other) {
-  using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
-  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.message_, lhs_arena,
-      &other->_impl_.message_, rhs_arena
-  );
-}
-
-::PROTOBUF_NAMESPACE_ID::Metadata HelloReply::GetMetadata() const {
-  return ::_pbi::AssignDescriptors(
-      &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
-      file_level_metadata_tracks_2eproto[1]);
-}
 
 // ===================================================================
 
@@ -970,7 +671,7 @@ void ProtoObjExtraProperty::InternalSwap(ProtoObjExtraProperty* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ProtoObjExtraProperty::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
-      file_level_metadata_tracks_2eproto[2]);
+      file_level_metadata_tracks_2eproto[0]);
 }
 
 // ===================================================================
@@ -1205,7 +906,7 @@ void ProtoCoord::InternalSwap(ProtoCoord* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ProtoCoord::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
-      file_level_metadata_tracks_2eproto[3]);
+      file_level_metadata_tracks_2eproto[1]);
 }
 
 // ===================================================================
@@ -1442,7 +1143,7 @@ void ProtoGeometry::InternalSwap(ProtoGeometry* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ProtoGeometry::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
-      file_level_metadata_tracks_2eproto[4]);
+      file_level_metadata_tracks_2eproto[2]);
 }
 
 // ===================================================================
@@ -1980,7 +1681,7 @@ void ProtoFig::InternalSwap(ProtoFig* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ProtoFig::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
-      file_level_metadata_tracks_2eproto[5]);
+      file_level_metadata_tracks_2eproto[3]);
 }
 
 // ===================================================================
@@ -2204,20 +1905,1359 @@ void ProtoFigures::InternalSwap(ProtoFigures* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata ProtoFigures::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
+      file_level_metadata_tracks_2eproto[4]);
+}
+
+// ===================================================================
+
+class ProtoObjectState::_Internal {
+ public:
+  static const ::PROTOBUF_NAMESPACE_ID::Timestamp& timestamp(const ProtoObjectState* msg);
+};
+
+const ::PROTOBUF_NAMESPACE_ID::Timestamp&
+ProtoObjectState::_Internal::timestamp(const ProtoObjectState* msg) {
+  return *msg->_impl_.timestamp_;
+}
+void ProtoObjectState::clear_timestamp() {
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+}
+ProtoObjectState::ProtoObjectState(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:tracks.ProtoObjectState)
+}
+ProtoObjectState::ProtoObjectState(const ProtoObjectState& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ProtoObjectState* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.states_){from._impl_.states_}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.timestamp_){nullptr}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_id().empty()) {
+    _this->_impl_.id_.Set(from._internal_id(), 
+      _this->GetArenaForAllocation());
+  }
+  if (from._internal_has_timestamp()) {
+    _this->_impl_.timestamp_ = new ::PROTOBUF_NAMESPACE_ID::Timestamp(*from._impl_.timestamp_);
+  }
+  // @@protoc_insertion_point(copy_constructor:tracks.ProtoObjectState)
+}
+
+inline void ProtoObjectState::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.states_){arena}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.timestamp_){nullptr}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+ProtoObjectState::~ProtoObjectState() {
+  // @@protoc_insertion_point(destructor:tracks.ProtoObjectState)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ProtoObjectState::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.states_.~RepeatedPtrField();
+  _impl_.id_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.timestamp_;
+}
+
+void ProtoObjectState::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ProtoObjectState::Clear() {
+// @@protoc_insertion_point(message_clear_start:tracks.ProtoObjectState)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.states_.Clear();
+  _impl_.id_.ClearToEmpty();
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ProtoObjectState::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_id();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "tracks.ProtoObjectState.id"));
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated string states = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            auto str = _internal_add_states();
+            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            CHK_(ptr);
+            CHK_(::_pbi::VerifyUTF8(str, "tracks.ProtoObjectState.states"));
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // .google.protobuf.Timestamp timestamp = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          ptr = ctx->ParseMessage(_internal_mutable_timestamp(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ProtoObjectState::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:tracks.ProtoObjectState)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string id = 1;
+  if (!this->_internal_id().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_id().data(), static_cast<int>(this->_internal_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "tracks.ProtoObjectState.id");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_id(), target);
+  }
+
+  // repeated string states = 2;
+  for (int i = 0, n = this->_internal_states_size(); i < n; i++) {
+    const auto& s = this->_internal_states(i);
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      s.data(), static_cast<int>(s.length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "tracks.ProtoObjectState.states");
+    target = stream->WriteString(2, s, target);
+  }
+
+  // .google.protobuf.Timestamp timestamp = 3;
+  if (this->_internal_has_timestamp()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(3, _Internal::timestamp(this),
+        _Internal::timestamp(this).GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:tracks.ProtoObjectState)
+  return target;
+}
+
+size_t ProtoObjectState::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:tracks.ProtoObjectState)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated string states = 2;
+  total_size += 1 *
+      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.states_.size());
+  for (int i = 0, n = _impl_.states_.size(); i < n; i++) {
+    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+      _impl_.states_.Get(i));
+  }
+
+  // string id = 1;
+  if (!this->_internal_id().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_id());
+  }
+
+  // .google.protobuf.Timestamp timestamp = 3;
+  if (this->_internal_has_timestamp()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.timestamp_);
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ProtoObjectState::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ProtoObjectState::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ProtoObjectState::GetClassData() const { return &_class_data_; }
+
+
+void ProtoObjectState::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ProtoObjectState*>(&to_msg);
+  auto& from = static_cast<const ProtoObjectState&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:tracks.ProtoObjectState)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.states_.MergeFrom(from._impl_.states_);
+  if (!from._internal_id().empty()) {
+    _this->_internal_set_id(from._internal_id());
+  }
+  if (from._internal_has_timestamp()) {
+    _this->_internal_mutable_timestamp()->::PROTOBUF_NAMESPACE_ID::Timestamp::MergeFrom(
+        from._internal_timestamp());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ProtoObjectState::CopyFrom(const ProtoObjectState& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:tracks.ProtoObjectState)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ProtoObjectState::IsInitialized() const {
+  return true;
+}
+
+void ProtoObjectState::InternalSwap(ProtoObjectState* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.states_.InternalSwap(&other->_impl_.states_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.id_, lhs_arena,
+      &other->_impl_.id_, rhs_arena
+  );
+  swap(_impl_.timestamp_, other->_impl_.timestamp_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ProtoObjectState::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
+      file_level_metadata_tracks_2eproto[5]);
+}
+
+// ===================================================================
+
+class ProtoObjectStates::_Internal {
+ public:
+};
+
+ProtoObjectStates::ProtoObjectStates(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:tracks.ProtoObjectStates)
+}
+ProtoObjectStates::ProtoObjectStates(const ProtoObjectStates& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ProtoObjectStates* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.states_){from._impl_.states_}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  // @@protoc_insertion_point(copy_constructor:tracks.ProtoObjectStates)
+}
+
+inline void ProtoObjectStates::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.states_){arena}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+}
+
+ProtoObjectStates::~ProtoObjectStates() {
+  // @@protoc_insertion_point(destructor:tracks.ProtoObjectStates)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ProtoObjectStates::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.states_.~RepeatedPtrField();
+}
+
+void ProtoObjectStates::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ProtoObjectStates::Clear() {
+// @@protoc_insertion_point(message_clear_start:tracks.ProtoObjectStates)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.states_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ProtoObjectStates::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // repeated .tracks.ProtoObjectState states = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_states(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<10>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ProtoObjectStates::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:tracks.ProtoObjectStates)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .tracks.ProtoObjectState states = 1;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_states_size()); i < n; i++) {
+    const auto& repfield = this->_internal_states(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(1, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:tracks.ProtoObjectStates)
+  return target;
+}
+
+size_t ProtoObjectStates::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:tracks.ProtoObjectStates)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .tracks.ProtoObjectState states = 1;
+  total_size += 1UL * this->_internal_states_size();
+  for (const auto& msg : this->_impl_.states_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ProtoObjectStates::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ProtoObjectStates::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ProtoObjectStates::GetClassData() const { return &_class_data_; }
+
+
+void ProtoObjectStates::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ProtoObjectStates*>(&to_msg);
+  auto& from = static_cast<const ProtoObjectStates&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:tracks.ProtoObjectStates)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.states_.MergeFrom(from._impl_.states_);
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ProtoObjectStates::CopyFrom(const ProtoObjectStates& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:tracks.ProtoObjectStates)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ProtoObjectStates::IsInitialized() const {
+  return true;
+}
+
+void ProtoObjectStates::InternalSwap(ProtoObjectStates* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.states_.InternalSwap(&other->_impl_.states_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ProtoObjectStates::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
       file_level_metadata_tracks_2eproto[6]);
+}
+
+// ===================================================================
+
+class ProtoGeoObject::_Internal {
+ public:
+  using HasBits = decltype(std::declval<ProtoGeoObject>()._impl_._has_bits_);
+  static void set_has_id(HasBits* has_bits) {
+    (*has_bits)[0] |= 1u;
+  }
+  static const ::tracks::ProtoGeometry& location(const ProtoGeoObject* msg);
+  static void set_has_radius(HasBits* has_bits) {
+    (*has_bits)[0] |= 4u;
+  }
+  static void set_has_zoom_level(HasBits* has_bits) {
+    (*has_bits)[0] |= 2u;
+  }
+};
+
+const ::tracks::ProtoGeometry&
+ProtoGeoObject::_Internal::location(const ProtoGeoObject* msg) {
+  return *msg->_impl_.location_;
+}
+ProtoGeoObject::ProtoGeoObject(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:tracks.ProtoGeoObject)
+}
+ProtoGeoObject::ProtoGeoObject(const ProtoGeoObject& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  ProtoGeoObject* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){from._impl_._has_bits_}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.zoom_level_){}
+    , decltype(_impl_.location_){nullptr}
+    , decltype(_impl_.radius_){}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_id()) {
+    _this->_impl_.id_.Set(from._internal_id(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.zoom_level_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.zoom_level_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (from._internal_has_zoom_level()) {
+    _this->_impl_.zoom_level_.Set(from._internal_zoom_level(), 
+      _this->GetArenaForAllocation());
+  }
+  if (from._internal_has_location()) {
+    _this->_impl_.location_ = new ::tracks::ProtoGeometry(*from._impl_.location_);
+  }
+  _this->_impl_.radius_ = from._impl_.radius_;
+  // @@protoc_insertion_point(copy_constructor:tracks.ProtoGeoObject)
+}
+
+inline void ProtoGeoObject::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_._has_bits_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.zoom_level_){}
+    , decltype(_impl_.location_){nullptr}
+    , decltype(_impl_.radius_){0}
+  };
+  _impl_.id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.zoom_level_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.zoom_level_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+ProtoGeoObject::~ProtoGeoObject() {
+  // @@protoc_insertion_point(destructor:tracks.ProtoGeoObject)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void ProtoGeoObject::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.id_.Destroy();
+  _impl_.zoom_level_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.location_;
+}
+
+void ProtoGeoObject::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void ProtoGeoObject::Clear() {
+// @@protoc_insertion_point(message_clear_start:tracks.ProtoGeoObject)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _impl_.id_.ClearNonDefaultToEmpty();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _impl_.zoom_level_.ClearNonDefaultToEmpty();
+    }
+  }
+  if (GetArenaForAllocation() == nullptr && _impl_.location_ != nullptr) {
+    delete _impl_.location_;
+  }
+  _impl_.location_ = nullptr;
+  _impl_.radius_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* ProtoGeoObject::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  _Internal::HasBits has_bits{};
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // optional string id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_id();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "tracks.ProtoGeoObject.id"));
+        } else
+          goto handle_unusual;
+        continue;
+      // .tracks.ProtoGeometry location = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_location(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional double radius = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 25)) {
+          _Internal::set_has_radius(&has_bits);
+          _impl_.radius_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
+        } else
+          goto handle_unusual;
+        continue;
+      // optional string zoom_level = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          auto str = _internal_mutable_zoom_level();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "tracks.ProtoGeoObject.zoom_level"));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  _impl_._has_bits_.Or(has_bits);
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* ProtoGeoObject::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:tracks.ProtoGeoObject)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // optional string id = 1;
+  if (_internal_has_id()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_id().data(), static_cast<int>(this->_internal_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "tracks.ProtoGeoObject.id");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_id(), target);
+  }
+
+  // .tracks.ProtoGeometry location = 2;
+  if (this->_internal_has_location()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::location(this),
+        _Internal::location(this).GetCachedSize(), target, stream);
+  }
+
+  // optional double radius = 3;
+  if (_internal_has_radius()) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(3, this->_internal_radius(), target);
+  }
+
+  // optional string zoom_level = 4;
+  if (_internal_has_zoom_level()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_zoom_level().data(), static_cast<int>(this->_internal_zoom_level().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "tracks.ProtoGeoObject.zoom_level");
+    target = stream->WriteStringMaybeAliased(
+        4, this->_internal_zoom_level(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:tracks.ProtoGeoObject)
+  return target;
+}
+
+size_t ProtoGeoObject::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:tracks.ProtoGeoObject)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    // optional string id = 1;
+    if (cached_has_bits & 0x00000001u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_id());
+    }
+
+    // optional string zoom_level = 4;
+    if (cached_has_bits & 0x00000002u) {
+      total_size += 1 +
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+          this->_internal_zoom_level());
+    }
+
+  }
+  // .tracks.ProtoGeometry location = 2;
+  if (this->_internal_has_location()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.location_);
+  }
+
+  // optional double radius = 3;
+  if (cached_has_bits & 0x00000004u) {
+    total_size += 1 + 8;
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData ProtoGeoObject::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    ProtoGeoObject::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*ProtoGeoObject::GetClassData() const { return &_class_data_; }
+
+
+void ProtoGeoObject::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<ProtoGeoObject*>(&to_msg);
+  auto& from = static_cast<const ProtoGeoObject&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:tracks.ProtoGeoObject)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (cached_has_bits & 0x00000003u) {
+    if (cached_has_bits & 0x00000001u) {
+      _this->_internal_set_id(from._internal_id());
+    }
+    if (cached_has_bits & 0x00000002u) {
+      _this->_internal_set_zoom_level(from._internal_zoom_level());
+    }
+  }
+  if (from._internal_has_location()) {
+    _this->_internal_mutable_location()->::tracks::ProtoGeometry::MergeFrom(
+        from._internal_location());
+  }
+  if (cached_has_bits & 0x00000004u) {
+    _this->_internal_set_radius(from._internal_radius());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void ProtoGeoObject::CopyFrom(const ProtoGeoObject& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:tracks.ProtoGeoObject)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool ProtoGeoObject::IsInitialized() const {
+  return true;
+}
+
+void ProtoGeoObject::InternalSwap(ProtoGeoObject* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.id_, lhs_arena,
+      &other->_impl_.id_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.zoom_level_, lhs_arena,
+      &other->_impl_.zoom_level_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(ProtoGeoObject, _impl_.radius_)
+      + sizeof(ProtoGeoObject::_impl_.radius_)
+      - PROTOBUF_FIELD_OFFSET(ProtoGeoObject, _impl_.location_)>(
+          reinterpret_cast<char*>(&_impl_.location_),
+          reinterpret_cast<char*>(&other->_impl_.location_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata ProtoGeoObject::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
+      file_level_metadata_tracks_2eproto[7]);
+}
+
+// ===================================================================
+
+class TrackPointProto::_Internal {
+ public:
+  static const ::tracks::ProtoGeoObject& figure(const TrackPointProto* msg);
+  static const ::PROTOBUF_NAMESPACE_ID::Timestamp& timestamp(const TrackPointProto* msg);
+};
+
+const ::tracks::ProtoGeoObject&
+TrackPointProto::_Internal::figure(const TrackPointProto* msg) {
+  return *msg->_impl_.figure_;
+}
+const ::PROTOBUF_NAMESPACE_ID::Timestamp&
+TrackPointProto::_Internal::timestamp(const TrackPointProto* msg) {
+  return *msg->_impl_.timestamp_;
+}
+void TrackPointProto::clear_timestamp() {
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+}
+TrackPointProto::TrackPointProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:tracks.TrackPointProto)
+}
+TrackPointProto::TrackPointProto(const TrackPointProto& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  TrackPointProto* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.extra_props_){from._impl_.extra_props_}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.figure_){nullptr}
+    , decltype(_impl_.timestamp_){nullptr}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_id().empty()) {
+    _this->_impl_.id_.Set(from._internal_id(), 
+      _this->GetArenaForAllocation());
+  }
+  if (from._internal_has_figure()) {
+    _this->_impl_.figure_ = new ::tracks::ProtoGeoObject(*from._impl_.figure_);
+  }
+  if (from._internal_has_timestamp()) {
+    _this->_impl_.timestamp_ = new ::PROTOBUF_NAMESPACE_ID::Timestamp(*from._impl_.timestamp_);
+  }
+  // @@protoc_insertion_point(copy_constructor:tracks.TrackPointProto)
+}
+
+inline void TrackPointProto::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.extra_props_){arena}
+    , decltype(_impl_.id_){}
+    , decltype(_impl_.figure_){nullptr}
+    , decltype(_impl_.timestamp_){nullptr}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+TrackPointProto::~TrackPointProto() {
+  // @@protoc_insertion_point(destructor:tracks.TrackPointProto)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void TrackPointProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.extra_props_.~RepeatedPtrField();
+  _impl_.id_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.figure_;
+  if (this != internal_default_instance()) delete _impl_.timestamp_;
+}
+
+void TrackPointProto::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void TrackPointProto::Clear() {
+// @@protoc_insertion_point(message_clear_start:tracks.TrackPointProto)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.extra_props_.Clear();
+  _impl_.id_.ClearToEmpty();
+  if (GetArenaForAllocation() == nullptr && _impl_.figure_ != nullptr) {
+    delete _impl_.figure_;
+  }
+  _impl_.figure_ = nullptr;
+  if (GetArenaForAllocation() == nullptr && _impl_.timestamp_ != nullptr) {
+    delete _impl_.timestamp_;
+  }
+  _impl_.timestamp_ = nullptr;
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* TrackPointProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_id();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "tracks.TrackPointProto.id"));
+        } else
+          goto handle_unusual;
+        continue;
+      // .tracks.ProtoGeoObject figure = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          ptr = ctx->ParseMessage(_internal_mutable_figure(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // .google.protobuf.Timestamp timestamp = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 26)) {
+          ptr = ctx->ParseMessage(_internal_mutable_timestamp(), ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // repeated .tracks.ProtoObjExtraProperty extra_props = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_extra_props(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* TrackPointProto::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:tracks.TrackPointProto)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string id = 1;
+  if (!this->_internal_id().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_id().data(), static_cast<int>(this->_internal_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "tracks.TrackPointProto.id");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_id(), target);
+  }
+
+  // .tracks.ProtoGeoObject figure = 2;
+  if (this->_internal_has_figure()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::figure(this),
+        _Internal::figure(this).GetCachedSize(), target, stream);
+  }
+
+  // .google.protobuf.Timestamp timestamp = 3;
+  if (this->_internal_has_timestamp()) {
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(3, _Internal::timestamp(this),
+        _Internal::timestamp(this).GetCachedSize(), target, stream);
+  }
+
+  // repeated .tracks.ProtoObjExtraProperty extra_props = 4;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_extra_props_size()); i < n; i++) {
+    const auto& repfield = this->_internal_extra_props(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(4, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:tracks.TrackPointProto)
+  return target;
+}
+
+size_t TrackPointProto::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:tracks.TrackPointProto)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .tracks.ProtoObjExtraProperty extra_props = 4;
+  total_size += 1UL * this->_internal_extra_props_size();
+  for (const auto& msg : this->_impl_.extra_props_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // string id = 1;
+  if (!this->_internal_id().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_id());
+  }
+
+  // .tracks.ProtoGeoObject figure = 2;
+  if (this->_internal_has_figure()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.figure_);
+  }
+
+  // .google.protobuf.Timestamp timestamp = 3;
+  if (this->_internal_has_timestamp()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+        *_impl_.timestamp_);
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData TrackPointProto::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    TrackPointProto::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TrackPointProto::GetClassData() const { return &_class_data_; }
+
+
+void TrackPointProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<TrackPointProto*>(&to_msg);
+  auto& from = static_cast<const TrackPointProto&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:tracks.TrackPointProto)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.extra_props_.MergeFrom(from._impl_.extra_props_);
+  if (!from._internal_id().empty()) {
+    _this->_internal_set_id(from._internal_id());
+  }
+  if (from._internal_has_figure()) {
+    _this->_internal_mutable_figure()->::tracks::ProtoGeoObject::MergeFrom(
+        from._internal_figure());
+  }
+  if (from._internal_has_timestamp()) {
+    _this->_internal_mutable_timestamp()->::PROTOBUF_NAMESPACE_ID::Timestamp::MergeFrom(
+        from._internal_timestamp());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void TrackPointProto::CopyFrom(const TrackPointProto& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:tracks.TrackPointProto)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool TrackPointProto::IsInitialized() const {
+  return true;
+}
+
+void TrackPointProto::InternalSwap(TrackPointProto* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.extra_props_.InternalSwap(&other->_impl_.extra_props_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.id_, lhs_arena,
+      &other->_impl_.id_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(TrackPointProto, _impl_.timestamp_)
+      + sizeof(TrackPointProto::_impl_.timestamp_)
+      - PROTOBUF_FIELD_OFFSET(TrackPointProto, _impl_.figure_)>(
+          reinterpret_cast<char*>(&_impl_.figure_),
+          reinterpret_cast<char*>(&other->_impl_.figure_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata TrackPointProto::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
+      file_level_metadata_tracks_2eproto[8]);
+}
+
+// ===================================================================
+
+class TrackPointsProto::_Internal {
+ public:
+};
+
+TrackPointsProto::TrackPointsProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:tracks.TrackPointsProto)
+}
+TrackPointsProto::TrackPointsProto(const TrackPointsProto& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  TrackPointsProto* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.tracks_){from._impl_.tracks_}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  // @@protoc_insertion_point(copy_constructor:tracks.TrackPointsProto)
+}
+
+inline void TrackPointsProto::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.tracks_){arena}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+}
+
+TrackPointsProto::~TrackPointsProto() {
+  // @@protoc_insertion_point(destructor:tracks.TrackPointsProto)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void TrackPointsProto::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.tracks_.~RepeatedPtrField();
+}
+
+void TrackPointsProto::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void TrackPointsProto::Clear() {
+// @@protoc_insertion_point(message_clear_start:tracks.TrackPointsProto)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.tracks_.Clear();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* TrackPointsProto::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // repeated .tracks.TrackPointProto tracks = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_tracks(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<10>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* TrackPointsProto::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:tracks.TrackPointsProto)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .tracks.TrackPointProto tracks = 1;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_tracks_size()); i < n; i++) {
+    const auto& repfield = this->_internal_tracks(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(1, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:tracks.TrackPointsProto)
+  return target;
+}
+
+size_t TrackPointsProto::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:tracks.TrackPointsProto)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .tracks.TrackPointProto tracks = 1;
+  total_size += 1UL * this->_internal_tracks_size();
+  for (const auto& msg : this->_impl_.tracks_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData TrackPointsProto::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    TrackPointsProto::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*TrackPointsProto::GetClassData() const { return &_class_data_; }
+
+
+void TrackPointsProto::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<TrackPointsProto*>(&to_msg);
+  auto& from = static_cast<const TrackPointsProto&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:tracks.TrackPointsProto)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.tracks_.MergeFrom(from._impl_.tracks_);
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void TrackPointsProto::CopyFrom(const TrackPointsProto& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:tracks.TrackPointsProto)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool TrackPointsProto::IsInitialized() const {
+  return true;
+}
+
+void TrackPointsProto::InternalSwap(TrackPointsProto* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.tracks_.InternalSwap(&other->_impl_.tracks_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata TrackPointsProto::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_tracks_2eproto_getter, &descriptor_table_tracks_2eproto_once,
+      file_level_metadata_tracks_2eproto[9]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace tracks
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::tracks::HelloRequest*
-Arena::CreateMaybeMessage< ::tracks::HelloRequest >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tracks::HelloRequest >(arena);
-}
-template<> PROTOBUF_NOINLINE ::tracks::HelloReply*
-Arena::CreateMaybeMessage< ::tracks::HelloReply >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::tracks::HelloReply >(arena);
-}
 template<> PROTOBUF_NOINLINE ::tracks::ProtoObjExtraProperty*
 Arena::CreateMaybeMessage< ::tracks::ProtoObjExtraProperty >(Arena* arena) {
   return Arena::CreateMessageInternal< ::tracks::ProtoObjExtraProperty >(arena);
@@ -2237,6 +3277,26 @@ Arena::CreateMaybeMessage< ::tracks::ProtoFig >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::tracks::ProtoFigures*
 Arena::CreateMaybeMessage< ::tracks::ProtoFigures >(Arena* arena) {
   return Arena::CreateMessageInternal< ::tracks::ProtoFigures >(arena);
+}
+template<> PROTOBUF_NOINLINE ::tracks::ProtoObjectState*
+Arena::CreateMaybeMessage< ::tracks::ProtoObjectState >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::tracks::ProtoObjectState >(arena);
+}
+template<> PROTOBUF_NOINLINE ::tracks::ProtoObjectStates*
+Arena::CreateMaybeMessage< ::tracks::ProtoObjectStates >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::tracks::ProtoObjectStates >(arena);
+}
+template<> PROTOBUF_NOINLINE ::tracks::ProtoGeoObject*
+Arena::CreateMaybeMessage< ::tracks::ProtoGeoObject >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::tracks::ProtoGeoObject >(arena);
+}
+template<> PROTOBUF_NOINLINE ::tracks::TrackPointProto*
+Arena::CreateMaybeMessage< ::tracks::TrackPointProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::tracks::TrackPointProto >(arena);
+}
+template<> PROTOBUF_NOINLINE ::tracks::TrackPointsProto*
+Arena::CreateMaybeMessage< ::tracks::TrackPointsProto >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::tracks::TrackPointsProto >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

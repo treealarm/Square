@@ -30,6 +30,8 @@
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
+#include <google/protobuf/timestamp.pb.h>
+#include <google/protobuf/wrappers.pb.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_tracks_2eproto
@@ -45,12 +47,6 @@ struct TableStruct_tracks_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_tracks_2eproto;
 namespace tracks {
-class HelloReply;
-struct HelloReplyDefaultTypeInternal;
-extern HelloReplyDefaultTypeInternal _HelloReply_default_instance_;
-class HelloRequest;
-struct HelloRequestDefaultTypeInternal;
-extern HelloRequestDefaultTypeInternal _HelloRequest_default_instance_;
 class ProtoCoord;
 struct ProtoCoordDefaultTypeInternal;
 extern ProtoCoordDefaultTypeInternal _ProtoCoord_default_instance_;
@@ -60,331 +56,43 @@ extern ProtoFigDefaultTypeInternal _ProtoFig_default_instance_;
 class ProtoFigures;
 struct ProtoFiguresDefaultTypeInternal;
 extern ProtoFiguresDefaultTypeInternal _ProtoFigures_default_instance_;
+class ProtoGeoObject;
+struct ProtoGeoObjectDefaultTypeInternal;
+extern ProtoGeoObjectDefaultTypeInternal _ProtoGeoObject_default_instance_;
 class ProtoGeometry;
 struct ProtoGeometryDefaultTypeInternal;
 extern ProtoGeometryDefaultTypeInternal _ProtoGeometry_default_instance_;
 class ProtoObjExtraProperty;
 struct ProtoObjExtraPropertyDefaultTypeInternal;
 extern ProtoObjExtraPropertyDefaultTypeInternal _ProtoObjExtraProperty_default_instance_;
+class ProtoObjectState;
+struct ProtoObjectStateDefaultTypeInternal;
+extern ProtoObjectStateDefaultTypeInternal _ProtoObjectState_default_instance_;
+class ProtoObjectStates;
+struct ProtoObjectStatesDefaultTypeInternal;
+extern ProtoObjectStatesDefaultTypeInternal _ProtoObjectStates_default_instance_;
+class TrackPointProto;
+struct TrackPointProtoDefaultTypeInternal;
+extern TrackPointProtoDefaultTypeInternal _TrackPointProto_default_instance_;
+class TrackPointsProto;
+struct TrackPointsProtoDefaultTypeInternal;
+extern TrackPointsProtoDefaultTypeInternal _TrackPointsProto_default_instance_;
 }  // namespace tracks
 PROTOBUF_NAMESPACE_OPEN
-template<> ::tracks::HelloReply* Arena::CreateMaybeMessage<::tracks::HelloReply>(Arena*);
-template<> ::tracks::HelloRequest* Arena::CreateMaybeMessage<::tracks::HelloRequest>(Arena*);
 template<> ::tracks::ProtoCoord* Arena::CreateMaybeMessage<::tracks::ProtoCoord>(Arena*);
 template<> ::tracks::ProtoFig* Arena::CreateMaybeMessage<::tracks::ProtoFig>(Arena*);
 template<> ::tracks::ProtoFigures* Arena::CreateMaybeMessage<::tracks::ProtoFigures>(Arena*);
+template<> ::tracks::ProtoGeoObject* Arena::CreateMaybeMessage<::tracks::ProtoGeoObject>(Arena*);
 template<> ::tracks::ProtoGeometry* Arena::CreateMaybeMessage<::tracks::ProtoGeometry>(Arena*);
 template<> ::tracks::ProtoObjExtraProperty* Arena::CreateMaybeMessage<::tracks::ProtoObjExtraProperty>(Arena*);
+template<> ::tracks::ProtoObjectState* Arena::CreateMaybeMessage<::tracks::ProtoObjectState>(Arena*);
+template<> ::tracks::ProtoObjectStates* Arena::CreateMaybeMessage<::tracks::ProtoObjectStates>(Arena*);
+template<> ::tracks::TrackPointProto* Arena::CreateMaybeMessage<::tracks::TrackPointProto>(Arena*);
+template<> ::tracks::TrackPointsProto* Arena::CreateMaybeMessage<::tracks::TrackPointsProto>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace tracks {
 
 // ===================================================================
-
-class HelloRequest final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.HelloRequest) */ {
- public:
-  inline HelloRequest() : HelloRequest(nullptr) {}
-  ~HelloRequest() override;
-  explicit PROTOBUF_CONSTEXPR HelloRequest(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  HelloRequest(const HelloRequest& from);
-  HelloRequest(HelloRequest&& from) noexcept
-    : HelloRequest() {
-    *this = ::std::move(from);
-  }
-
-  inline HelloRequest& operator=(const HelloRequest& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline HelloRequest& operator=(HelloRequest&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const HelloRequest& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const HelloRequest* internal_default_instance() {
-    return reinterpret_cast<const HelloRequest*>(
-               &_HelloRequest_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    0;
-
-  friend void swap(HelloRequest& a, HelloRequest& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(HelloRequest* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(HelloRequest* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  HelloRequest* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<HelloRequest>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const HelloRequest& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const HelloRequest& from) {
-    HelloRequest::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(HelloRequest* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "tracks.HelloRequest";
-  }
-  protected:
-  explicit HelloRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kNameFieldNumber = 1,
-  };
-  // string name = 1;
-  void clear_name();
-  const std::string& name() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_name(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_name();
-  PROTOBUF_NODISCARD std::string* release_name();
-  void set_allocated_name(std::string* name);
-  private:
-  const std::string& _internal_name() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_name(const std::string& value);
-  std::string* _internal_mutable_name();
-  public:
-
-  // @@protoc_insertion_point(class_scope:tracks.HelloRequest)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_tracks_2eproto;
-};
-// -------------------------------------------------------------------
-
-class HelloReply final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.HelloReply) */ {
- public:
-  inline HelloReply() : HelloReply(nullptr) {}
-  ~HelloReply() override;
-  explicit PROTOBUF_CONSTEXPR HelloReply(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
-
-  HelloReply(const HelloReply& from);
-  HelloReply(HelloReply&& from) noexcept
-    : HelloReply() {
-    *this = ::std::move(from);
-  }
-
-  inline HelloReply& operator=(const HelloReply& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline HelloReply& operator=(HelloReply&& from) noexcept {
-    if (this == &from) return *this;
-    if (GetOwningArena() == from.GetOwningArena()
-  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
-        && GetOwningArena() != nullptr
-  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
-    ) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
-    return GetDescriptor();
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  static const HelloReply& default_instance() {
-    return *internal_default_instance();
-  }
-  static inline const HelloReply* internal_default_instance() {
-    return reinterpret_cast<const HelloReply*>(
-               &_HelloReply_default_instance_);
-  }
-  static constexpr int kIndexInFileMessages =
-    1;
-
-  friend void swap(HelloReply& a, HelloReply& b) {
-    a.Swap(&b);
-  }
-  inline void Swap(HelloReply* other) {
-    if (other == this) return;
-  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() != nullptr &&
-        GetOwningArena() == other->GetOwningArena()) {
-   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
-    if (GetOwningArena() == other->GetOwningArena()) {
-  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
-      InternalSwap(other);
-    } else {
-      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(HelloReply* other) {
-    if (other == this) return;
-    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  HelloReply* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<HelloReply>(arena);
-  }
-  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const HelloReply& from);
-  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const HelloReply& from) {
-    HelloReply::MergeImpl(*this, from);
-  }
-  private:
-  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
-  public:
-  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
-  bool IsInitialized() const final;
-
-  size_t ByteSizeLong() const final;
-  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
-  uint8_t* _InternalSerialize(
-      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
-  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
-
-  private:
-  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
-  void SharedDtor();
-  void SetCachedSize(int size) const final;
-  void InternalSwap(HelloReply* other);
-
-  private:
-  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
-  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "tracks.HelloReply";
-  }
-  protected:
-  explicit HelloReply(::PROTOBUF_NAMESPACE_ID::Arena* arena,
-                       bool is_message_owned = false);
-  public:
-
-  static const ClassData _class_data_;
-  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
-
-  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  enum : int {
-    kMessageFieldNumber = 1,
-  };
-  // string message = 1;
-  void clear_message();
-  const std::string& message() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_message(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_message();
-  PROTOBUF_NODISCARD std::string* release_message();
-  void set_allocated_message(std::string* message);
-  private:
-  const std::string& _internal_message() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_message(const std::string& value);
-  std::string* _internal_mutable_message();
-  public:
-
-  // @@protoc_insertion_point(class_scope:tracks.HelloReply)
- private:
-  class _Internal;
-
-  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
-  typedef void InternalArenaConstructable_;
-  typedef void DestructorSkippable_;
-  struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr message_;
-    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_tracks_2eproto;
-};
-// -------------------------------------------------------------------
 
 class ProtoObjExtraProperty final :
     public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.ProtoObjExtraProperty) */ {
@@ -434,7 +142,7 @@ class ProtoObjExtraProperty final :
                &_ProtoObjExtraProperty_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    2;
+    0;
 
   friend void swap(ProtoObjExtraProperty& a, ProtoObjExtraProperty& b) {
     a.Swap(&b);
@@ -619,7 +327,7 @@ class ProtoCoord final :
                &_ProtoCoord_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    3;
+    1;
 
   friend void swap(ProtoCoord& a, ProtoCoord& b) {
     a.Swap(&b);
@@ -778,7 +486,7 @@ class ProtoGeometry final :
                &_ProtoGeometry_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    4;
+    2;
 
   friend void swap(ProtoGeometry& a, ProtoGeometry& b) {
     a.Swap(&b);
@@ -951,7 +659,7 @@ class ProtoFig final :
                &_ProtoFig_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    5;
+    3;
 
   friend void swap(ProtoFig& a, ProtoFig& b) {
     a.Swap(&b);
@@ -1236,7 +944,7 @@ class ProtoFigures final :
                &_ProtoFigures_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    4;
 
   friend void swap(ProtoFigures& a, ProtoFigures& b) {
     a.Swap(&b);
@@ -1359,6 +1067,945 @@ class ProtoFigures final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_tracks_2eproto;
 };
+// -------------------------------------------------------------------
+
+class ProtoObjectState final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.ProtoObjectState) */ {
+ public:
+  inline ProtoObjectState() : ProtoObjectState(nullptr) {}
+  ~ProtoObjectState() override;
+  explicit PROTOBUF_CONSTEXPR ProtoObjectState(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ProtoObjectState(const ProtoObjectState& from);
+  ProtoObjectState(ProtoObjectState&& from) noexcept
+    : ProtoObjectState() {
+    *this = ::std::move(from);
+  }
+
+  inline ProtoObjectState& operator=(const ProtoObjectState& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ProtoObjectState& operator=(ProtoObjectState&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ProtoObjectState& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ProtoObjectState* internal_default_instance() {
+    return reinterpret_cast<const ProtoObjectState*>(
+               &_ProtoObjectState_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  friend void swap(ProtoObjectState& a, ProtoObjectState& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ProtoObjectState* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ProtoObjectState* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ProtoObjectState* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ProtoObjectState>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ProtoObjectState& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ProtoObjectState& from) {
+    ProtoObjectState::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ProtoObjectState* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "tracks.ProtoObjectState";
+  }
+  protected:
+  explicit ProtoObjectState(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kStatesFieldNumber = 2,
+    kIdFieldNumber = 1,
+    kTimestampFieldNumber = 3,
+  };
+  // repeated string states = 2;
+  int states_size() const;
+  private:
+  int _internal_states_size() const;
+  public:
+  void clear_states();
+  const std::string& states(int index) const;
+  std::string* mutable_states(int index);
+  void set_states(int index, const std::string& value);
+  void set_states(int index, std::string&& value);
+  void set_states(int index, const char* value);
+  void set_states(int index, const char* value, size_t size);
+  std::string* add_states();
+  void add_states(const std::string& value);
+  void add_states(std::string&& value);
+  void add_states(const char* value);
+  void add_states(const char* value, size_t size);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& states() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_states();
+  private:
+  const std::string& _internal_states(int index) const;
+  std::string* _internal_add_states();
+  public:
+
+  // string id = 1;
+  void clear_id();
+  const std::string& id() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_id();
+  PROTOBUF_NODISCARD std::string* release_id();
+  void set_allocated_id(std::string* id);
+  private:
+  const std::string& _internal_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(const std::string& value);
+  std::string* _internal_mutable_id();
+  public:
+
+  // .google.protobuf.Timestamp timestamp = 3;
+  bool has_timestamp() const;
+  private:
+  bool _internal_has_timestamp() const;
+  public:
+  void clear_timestamp();
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& timestamp() const;
+  PROTOBUF_NODISCARD ::PROTOBUF_NAMESPACE_ID::Timestamp* release_timestamp();
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* mutable_timestamp();
+  void set_allocated_timestamp(::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp);
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& _internal_timestamp() const;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _internal_mutable_timestamp();
+  public:
+  void unsafe_arena_set_allocated_timestamp(
+      ::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp);
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* unsafe_arena_release_timestamp();
+
+  // @@protoc_insertion_point(class_scope:tracks.ProtoObjectState)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> states_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr id_;
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tracks_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ProtoObjectStates final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.ProtoObjectStates) */ {
+ public:
+  inline ProtoObjectStates() : ProtoObjectStates(nullptr) {}
+  ~ProtoObjectStates() override;
+  explicit PROTOBUF_CONSTEXPR ProtoObjectStates(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ProtoObjectStates(const ProtoObjectStates& from);
+  ProtoObjectStates(ProtoObjectStates&& from) noexcept
+    : ProtoObjectStates() {
+    *this = ::std::move(from);
+  }
+
+  inline ProtoObjectStates& operator=(const ProtoObjectStates& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ProtoObjectStates& operator=(ProtoObjectStates&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ProtoObjectStates& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ProtoObjectStates* internal_default_instance() {
+    return reinterpret_cast<const ProtoObjectStates*>(
+               &_ProtoObjectStates_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  friend void swap(ProtoObjectStates& a, ProtoObjectStates& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ProtoObjectStates* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ProtoObjectStates* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ProtoObjectStates* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ProtoObjectStates>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ProtoObjectStates& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ProtoObjectStates& from) {
+    ProtoObjectStates::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ProtoObjectStates* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "tracks.ProtoObjectStates";
+  }
+  protected:
+  explicit ProtoObjectStates(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kStatesFieldNumber = 1,
+  };
+  // repeated .tracks.ProtoObjectState states = 1;
+  int states_size() const;
+  private:
+  int _internal_states_size() const;
+  public:
+  void clear_states();
+  ::tracks::ProtoObjectState* mutable_states(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjectState >*
+      mutable_states();
+  private:
+  const ::tracks::ProtoObjectState& _internal_states(int index) const;
+  ::tracks::ProtoObjectState* _internal_add_states();
+  public:
+  const ::tracks::ProtoObjectState& states(int index) const;
+  ::tracks::ProtoObjectState* add_states();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjectState >&
+      states() const;
+
+  // @@protoc_insertion_point(class_scope:tracks.ProtoObjectStates)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjectState > states_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tracks_2eproto;
+};
+// -------------------------------------------------------------------
+
+class ProtoGeoObject final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.ProtoGeoObject) */ {
+ public:
+  inline ProtoGeoObject() : ProtoGeoObject(nullptr) {}
+  ~ProtoGeoObject() override;
+  explicit PROTOBUF_CONSTEXPR ProtoGeoObject(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  ProtoGeoObject(const ProtoGeoObject& from);
+  ProtoGeoObject(ProtoGeoObject&& from) noexcept
+    : ProtoGeoObject() {
+    *this = ::std::move(from);
+  }
+
+  inline ProtoGeoObject& operator=(const ProtoGeoObject& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ProtoGeoObject& operator=(ProtoGeoObject&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const ProtoGeoObject& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const ProtoGeoObject* internal_default_instance() {
+    return reinterpret_cast<const ProtoGeoObject*>(
+               &_ProtoGeoObject_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    7;
+
+  friend void swap(ProtoGeoObject& a, ProtoGeoObject& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(ProtoGeoObject* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ProtoGeoObject* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  ProtoGeoObject* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<ProtoGeoObject>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const ProtoGeoObject& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const ProtoGeoObject& from) {
+    ProtoGeoObject::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(ProtoGeoObject* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "tracks.ProtoGeoObject";
+  }
+  protected:
+  explicit ProtoGeoObject(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kIdFieldNumber = 1,
+    kZoomLevelFieldNumber = 4,
+    kLocationFieldNumber = 2,
+    kRadiusFieldNumber = 3,
+  };
+  // optional string id = 1;
+  bool has_id() const;
+  private:
+  bool _internal_has_id() const;
+  public:
+  void clear_id();
+  const std::string& id() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_id();
+  PROTOBUF_NODISCARD std::string* release_id();
+  void set_allocated_id(std::string* id);
+  private:
+  const std::string& _internal_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(const std::string& value);
+  std::string* _internal_mutable_id();
+  public:
+
+  // optional string zoom_level = 4;
+  bool has_zoom_level() const;
+  private:
+  bool _internal_has_zoom_level() const;
+  public:
+  void clear_zoom_level();
+  const std::string& zoom_level() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_zoom_level(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_zoom_level();
+  PROTOBUF_NODISCARD std::string* release_zoom_level();
+  void set_allocated_zoom_level(std::string* zoom_level);
+  private:
+  const std::string& _internal_zoom_level() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_zoom_level(const std::string& value);
+  std::string* _internal_mutable_zoom_level();
+  public:
+
+  // .tracks.ProtoGeometry location = 2;
+  bool has_location() const;
+  private:
+  bool _internal_has_location() const;
+  public:
+  void clear_location();
+  const ::tracks::ProtoGeometry& location() const;
+  PROTOBUF_NODISCARD ::tracks::ProtoGeometry* release_location();
+  ::tracks::ProtoGeometry* mutable_location();
+  void set_allocated_location(::tracks::ProtoGeometry* location);
+  private:
+  const ::tracks::ProtoGeometry& _internal_location() const;
+  ::tracks::ProtoGeometry* _internal_mutable_location();
+  public:
+  void unsafe_arena_set_allocated_location(
+      ::tracks::ProtoGeometry* location);
+  ::tracks::ProtoGeometry* unsafe_arena_release_location();
+
+  // optional double radius = 3;
+  bool has_radius() const;
+  private:
+  bool _internal_has_radius() const;
+  public:
+  void clear_radius();
+  double radius() const;
+  void set_radius(double value);
+  private:
+  double _internal_radius() const;
+  void _internal_set_radius(double value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:tracks.ProtoGeoObject)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr zoom_level_;
+    ::tracks::ProtoGeometry* location_;
+    double radius_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tracks_2eproto;
+};
+// -------------------------------------------------------------------
+
+class TrackPointProto final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.TrackPointProto) */ {
+ public:
+  inline TrackPointProto() : TrackPointProto(nullptr) {}
+  ~TrackPointProto() override;
+  explicit PROTOBUF_CONSTEXPR TrackPointProto(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  TrackPointProto(const TrackPointProto& from);
+  TrackPointProto(TrackPointProto&& from) noexcept
+    : TrackPointProto() {
+    *this = ::std::move(from);
+  }
+
+  inline TrackPointProto& operator=(const TrackPointProto& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline TrackPointProto& operator=(TrackPointProto&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const TrackPointProto& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const TrackPointProto* internal_default_instance() {
+    return reinterpret_cast<const TrackPointProto*>(
+               &_TrackPointProto_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    8;
+
+  friend void swap(TrackPointProto& a, TrackPointProto& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(TrackPointProto* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(TrackPointProto* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  TrackPointProto* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<TrackPointProto>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const TrackPointProto& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const TrackPointProto& from) {
+    TrackPointProto::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(TrackPointProto* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "tracks.TrackPointProto";
+  }
+  protected:
+  explicit TrackPointProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kExtraPropsFieldNumber = 4,
+    kIdFieldNumber = 1,
+    kFigureFieldNumber = 2,
+    kTimestampFieldNumber = 3,
+  };
+  // repeated .tracks.ProtoObjExtraProperty extra_props = 4;
+  int extra_props_size() const;
+  private:
+  int _internal_extra_props_size() const;
+  public:
+  void clear_extra_props();
+  ::tracks::ProtoObjExtraProperty* mutable_extra_props(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjExtraProperty >*
+      mutable_extra_props();
+  private:
+  const ::tracks::ProtoObjExtraProperty& _internal_extra_props(int index) const;
+  ::tracks::ProtoObjExtraProperty* _internal_add_extra_props();
+  public:
+  const ::tracks::ProtoObjExtraProperty& extra_props(int index) const;
+  ::tracks::ProtoObjExtraProperty* add_extra_props();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjExtraProperty >&
+      extra_props() const;
+
+  // string id = 1;
+  void clear_id();
+  const std::string& id() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_id();
+  PROTOBUF_NODISCARD std::string* release_id();
+  void set_allocated_id(std::string* id);
+  private:
+  const std::string& _internal_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_id(const std::string& value);
+  std::string* _internal_mutable_id();
+  public:
+
+  // .tracks.ProtoGeoObject figure = 2;
+  bool has_figure() const;
+  private:
+  bool _internal_has_figure() const;
+  public:
+  void clear_figure();
+  const ::tracks::ProtoGeoObject& figure() const;
+  PROTOBUF_NODISCARD ::tracks::ProtoGeoObject* release_figure();
+  ::tracks::ProtoGeoObject* mutable_figure();
+  void set_allocated_figure(::tracks::ProtoGeoObject* figure);
+  private:
+  const ::tracks::ProtoGeoObject& _internal_figure() const;
+  ::tracks::ProtoGeoObject* _internal_mutable_figure();
+  public:
+  void unsafe_arena_set_allocated_figure(
+      ::tracks::ProtoGeoObject* figure);
+  ::tracks::ProtoGeoObject* unsafe_arena_release_figure();
+
+  // .google.protobuf.Timestamp timestamp = 3;
+  bool has_timestamp() const;
+  private:
+  bool _internal_has_timestamp() const;
+  public:
+  void clear_timestamp();
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& timestamp() const;
+  PROTOBUF_NODISCARD ::PROTOBUF_NAMESPACE_ID::Timestamp* release_timestamp();
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* mutable_timestamp();
+  void set_allocated_timestamp(::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp);
+  private:
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp& _internal_timestamp() const;
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _internal_mutable_timestamp();
+  public:
+  void unsafe_arena_set_allocated_timestamp(
+      ::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp);
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* unsafe_arena_release_timestamp();
+
+  // @@protoc_insertion_point(class_scope:tracks.TrackPointProto)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjExtraProperty > extra_props_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr id_;
+    ::tracks::ProtoGeoObject* figure_;
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tracks_2eproto;
+};
+// -------------------------------------------------------------------
+
+class TrackPointsProto final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:tracks.TrackPointsProto) */ {
+ public:
+  inline TrackPointsProto() : TrackPointsProto(nullptr) {}
+  ~TrackPointsProto() override;
+  explicit PROTOBUF_CONSTEXPR TrackPointsProto(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  TrackPointsProto(const TrackPointsProto& from);
+  TrackPointsProto(TrackPointsProto&& from) noexcept
+    : TrackPointsProto() {
+    *this = ::std::move(from);
+  }
+
+  inline TrackPointsProto& operator=(const TrackPointsProto& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline TrackPointsProto& operator=(TrackPointsProto&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const TrackPointsProto& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const TrackPointsProto* internal_default_instance() {
+    return reinterpret_cast<const TrackPointsProto*>(
+               &_TrackPointsProto_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    9;
+
+  friend void swap(TrackPointsProto& a, TrackPointsProto& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(TrackPointsProto* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(TrackPointsProto* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  TrackPointsProto* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<TrackPointsProto>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const TrackPointsProto& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const TrackPointsProto& from) {
+    TrackPointsProto::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(TrackPointsProto* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "tracks.TrackPointsProto";
+  }
+  protected:
+  explicit TrackPointsProto(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kTracksFieldNumber = 1,
+  };
+  // repeated .tracks.TrackPointProto tracks = 1;
+  int tracks_size() const;
+  private:
+  int _internal_tracks_size() const;
+  public:
+  void clear_tracks();
+  ::tracks::TrackPointProto* mutable_tracks(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::TrackPointProto >*
+      mutable_tracks();
+  private:
+  const ::tracks::TrackPointProto& _internal_tracks(int index) const;
+  ::tracks::TrackPointProto* _internal_add_tracks();
+  public:
+  const ::tracks::TrackPointProto& tracks(int index) const;
+  ::tracks::TrackPointProto* add_tracks();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::TrackPointProto >&
+      tracks() const;
+
+  // @@protoc_insertion_point(class_scope:tracks.TrackPointsProto)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::TrackPointProto > tracks_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_tracks_2eproto;
+};
 // ===================================================================
 
 
@@ -1368,114 +2015,6 @@ class ProtoFigures final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// HelloRequest
-
-// string name = 1;
-inline void HelloRequest::clear_name() {
-  _impl_.name_.ClearToEmpty();
-}
-inline const std::string& HelloRequest::name() const {
-  // @@protoc_insertion_point(field_get:tracks.HelloRequest.name)
-  return _internal_name();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void HelloRequest::set_name(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:tracks.HelloRequest.name)
-}
-inline std::string* HelloRequest::mutable_name() {
-  std::string* _s = _internal_mutable_name();
-  // @@protoc_insertion_point(field_mutable:tracks.HelloRequest.name)
-  return _s;
-}
-inline const std::string& HelloRequest::_internal_name() const {
-  return _impl_.name_.Get();
-}
-inline void HelloRequest::_internal_set_name(const std::string& value) {
-  
-  _impl_.name_.Set(value, GetArenaForAllocation());
-}
-inline std::string* HelloRequest::_internal_mutable_name() {
-  
-  return _impl_.name_.Mutable(GetArenaForAllocation());
-}
-inline std::string* HelloRequest::release_name() {
-  // @@protoc_insertion_point(field_release:tracks.HelloRequest.name)
-  return _impl_.name_.Release();
-}
-inline void HelloRequest::set_allocated_name(std::string* name) {
-  if (name != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.name_.SetAllocated(name, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.name_.IsDefault()) {
-    _impl_.name_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:tracks.HelloRequest.name)
-}
-
-// -------------------------------------------------------------------
-
-// HelloReply
-
-// string message = 1;
-inline void HelloReply::clear_message() {
-  _impl_.message_.ClearToEmpty();
-}
-inline const std::string& HelloReply::message() const {
-  // @@protoc_insertion_point(field_get:tracks.HelloReply.message)
-  return _internal_message();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void HelloReply::set_message(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.message_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:tracks.HelloReply.message)
-}
-inline std::string* HelloReply::mutable_message() {
-  std::string* _s = _internal_mutable_message();
-  // @@protoc_insertion_point(field_mutable:tracks.HelloReply.message)
-  return _s;
-}
-inline const std::string& HelloReply::_internal_message() const {
-  return _impl_.message_.Get();
-}
-inline void HelloReply::_internal_set_message(const std::string& value) {
-  
-  _impl_.message_.Set(value, GetArenaForAllocation());
-}
-inline std::string* HelloReply::_internal_mutable_message() {
-  
-  return _impl_.message_.Mutable(GetArenaForAllocation());
-}
-inline std::string* HelloReply::release_message() {
-  // @@protoc_insertion_point(field_release:tracks.HelloReply.message)
-  return _impl_.message_.Release();
-}
-inline void HelloReply::set_allocated_message(std::string* message) {
-  if (message != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.message_.SetAllocated(message, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.message_.IsDefault()) {
-    _impl_.message_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:tracks.HelloReply.message)
-}
-
-// -------------------------------------------------------------------
-
 // ProtoObjExtraProperty
 
 // string str_val = 1;
@@ -2304,9 +2843,844 @@ inline void ProtoFigures::set_add_tracks(bool value) {
   // @@protoc_insertion_point(field_set:tracks.ProtoFigures.add_tracks)
 }
 
+// -------------------------------------------------------------------
+
+// ProtoObjectState
+
+// string id = 1;
+inline void ProtoObjectState::clear_id() {
+  _impl_.id_.ClearToEmpty();
+}
+inline const std::string& ProtoObjectState::id() const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoObjectState.id)
+  return _internal_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ProtoObjectState::set_id(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:tracks.ProtoObjectState.id)
+}
+inline std::string* ProtoObjectState::mutable_id() {
+  std::string* _s = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:tracks.ProtoObjectState.id)
+  return _s;
+}
+inline const std::string& ProtoObjectState::_internal_id() const {
+  return _impl_.id_.Get();
+}
+inline void ProtoObjectState::_internal_set_id(const std::string& value) {
+  
+  _impl_.id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ProtoObjectState::_internal_mutable_id() {
+  
+  return _impl_.id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ProtoObjectState::release_id() {
+  // @@protoc_insertion_point(field_release:tracks.ProtoObjectState.id)
+  return _impl_.id_.Release();
+}
+inline void ProtoObjectState::set_allocated_id(std::string* id) {
+  if (id != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.id_.SetAllocated(id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.id_.IsDefault()) {
+    _impl_.id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:tracks.ProtoObjectState.id)
+}
+
+// repeated string states = 2;
+inline int ProtoObjectState::_internal_states_size() const {
+  return _impl_.states_.size();
+}
+inline int ProtoObjectState::states_size() const {
+  return _internal_states_size();
+}
+inline void ProtoObjectState::clear_states() {
+  _impl_.states_.Clear();
+}
+inline std::string* ProtoObjectState::add_states() {
+  std::string* _s = _internal_add_states();
+  // @@protoc_insertion_point(field_add_mutable:tracks.ProtoObjectState.states)
+  return _s;
+}
+inline const std::string& ProtoObjectState::_internal_states(int index) const {
+  return _impl_.states_.Get(index);
+}
+inline const std::string& ProtoObjectState::states(int index) const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoObjectState.states)
+  return _internal_states(index);
+}
+inline std::string* ProtoObjectState::mutable_states(int index) {
+  // @@protoc_insertion_point(field_mutable:tracks.ProtoObjectState.states)
+  return _impl_.states_.Mutable(index);
+}
+inline void ProtoObjectState::set_states(int index, const std::string& value) {
+  _impl_.states_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set:tracks.ProtoObjectState.states)
+}
+inline void ProtoObjectState::set_states(int index, std::string&& value) {
+  _impl_.states_.Mutable(index)->assign(std::move(value));
+  // @@protoc_insertion_point(field_set:tracks.ProtoObjectState.states)
+}
+inline void ProtoObjectState::set_states(int index, const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.states_.Mutable(index)->assign(value);
+  // @@protoc_insertion_point(field_set_char:tracks.ProtoObjectState.states)
+}
+inline void ProtoObjectState::set_states(int index, const char* value, size_t size) {
+  _impl_.states_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:tracks.ProtoObjectState.states)
+}
+inline std::string* ProtoObjectState::_internal_add_states() {
+  return _impl_.states_.Add();
+}
+inline void ProtoObjectState::add_states(const std::string& value) {
+  _impl_.states_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add:tracks.ProtoObjectState.states)
+}
+inline void ProtoObjectState::add_states(std::string&& value) {
+  _impl_.states_.Add(std::move(value));
+  // @@protoc_insertion_point(field_add:tracks.ProtoObjectState.states)
+}
+inline void ProtoObjectState::add_states(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  _impl_.states_.Add()->assign(value);
+  // @@protoc_insertion_point(field_add_char:tracks.ProtoObjectState.states)
+}
+inline void ProtoObjectState::add_states(const char* value, size_t size) {
+  _impl_.states_.Add()->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_add_pointer:tracks.ProtoObjectState.states)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
+ProtoObjectState::states() const {
+  // @@protoc_insertion_point(field_list:tracks.ProtoObjectState.states)
+  return _impl_.states_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+ProtoObjectState::mutable_states() {
+  // @@protoc_insertion_point(field_mutable_list:tracks.ProtoObjectState.states)
+  return &_impl_.states_;
+}
+
+// .google.protobuf.Timestamp timestamp = 3;
+inline bool ProtoObjectState::_internal_has_timestamp() const {
+  return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
+}
+inline bool ProtoObjectState::has_timestamp() const {
+  return _internal_has_timestamp();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& ProtoObjectState::_internal_timestamp() const {
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Timestamp&>(
+      ::PROTOBUF_NAMESPACE_ID::_Timestamp_default_instance_);
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& ProtoObjectState::timestamp() const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoObjectState.timestamp)
+  return _internal_timestamp();
+}
+inline void ProtoObjectState::unsafe_arena_set_allocated_timestamp(
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  _impl_.timestamp_ = timestamp;
+  if (timestamp) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:tracks.ProtoObjectState.timestamp)
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* ProtoObjectState::release_timestamp() {
+  
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* ProtoObjectState::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:tracks.ProtoObjectState.timestamp)
+  
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* ProtoObjectState::_internal_mutable_timestamp() {
+  
+  if (_impl_.timestamp_ == nullptr) {
+    auto* p = CreateMaybeMessage<::PROTOBUF_NAMESPACE_ID::Timestamp>(GetArenaForAllocation());
+    _impl_.timestamp_ = p;
+  }
+  return _impl_.timestamp_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* ProtoObjectState::mutable_timestamp() {
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:tracks.ProtoObjectState.timestamp)
+  return _msg;
+}
+inline void ProtoObjectState::set_allocated_timestamp(::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  if (timestamp) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
+    if (message_arena != submessage_arena) {
+      timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, timestamp, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.timestamp_ = timestamp;
+  // @@protoc_insertion_point(field_set_allocated:tracks.ProtoObjectState.timestamp)
+}
+
+// -------------------------------------------------------------------
+
+// ProtoObjectStates
+
+// repeated .tracks.ProtoObjectState states = 1;
+inline int ProtoObjectStates::_internal_states_size() const {
+  return _impl_.states_.size();
+}
+inline int ProtoObjectStates::states_size() const {
+  return _internal_states_size();
+}
+inline void ProtoObjectStates::clear_states() {
+  _impl_.states_.Clear();
+}
+inline ::tracks::ProtoObjectState* ProtoObjectStates::mutable_states(int index) {
+  // @@protoc_insertion_point(field_mutable:tracks.ProtoObjectStates.states)
+  return _impl_.states_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjectState >*
+ProtoObjectStates::mutable_states() {
+  // @@protoc_insertion_point(field_mutable_list:tracks.ProtoObjectStates.states)
+  return &_impl_.states_;
+}
+inline const ::tracks::ProtoObjectState& ProtoObjectStates::_internal_states(int index) const {
+  return _impl_.states_.Get(index);
+}
+inline const ::tracks::ProtoObjectState& ProtoObjectStates::states(int index) const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoObjectStates.states)
+  return _internal_states(index);
+}
+inline ::tracks::ProtoObjectState* ProtoObjectStates::_internal_add_states() {
+  return _impl_.states_.Add();
+}
+inline ::tracks::ProtoObjectState* ProtoObjectStates::add_states() {
+  ::tracks::ProtoObjectState* _add = _internal_add_states();
+  // @@protoc_insertion_point(field_add:tracks.ProtoObjectStates.states)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjectState >&
+ProtoObjectStates::states() const {
+  // @@protoc_insertion_point(field_list:tracks.ProtoObjectStates.states)
+  return _impl_.states_;
+}
+
+// -------------------------------------------------------------------
+
+// ProtoGeoObject
+
+// optional string id = 1;
+inline bool ProtoGeoObject::_internal_has_id() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  return value;
+}
+inline bool ProtoGeoObject::has_id() const {
+  return _internal_has_id();
+}
+inline void ProtoGeoObject::clear_id() {
+  _impl_.id_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
+inline const std::string& ProtoGeoObject::id() const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoGeoObject.id)
+  return _internal_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ProtoGeoObject::set_id(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000001u;
+ _impl_.id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:tracks.ProtoGeoObject.id)
+}
+inline std::string* ProtoGeoObject::mutable_id() {
+  std::string* _s = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:tracks.ProtoGeoObject.id)
+  return _s;
+}
+inline const std::string& ProtoGeoObject::_internal_id() const {
+  return _impl_.id_.Get();
+}
+inline void ProtoGeoObject::_internal_set_id(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  _impl_.id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ProtoGeoObject::_internal_mutable_id() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  return _impl_.id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ProtoGeoObject::release_id() {
+  // @@protoc_insertion_point(field_release:tracks.ProtoGeoObject.id)
+  if (!_internal_has_id()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  auto* p = _impl_.id_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.id_.IsDefault()) {
+    _impl_.id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ProtoGeoObject::set_allocated_id(std::string* id) {
+  if (id != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.id_.SetAllocated(id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.id_.IsDefault()) {
+    _impl_.id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:tracks.ProtoGeoObject.id)
+}
+
+// .tracks.ProtoGeometry location = 2;
+inline bool ProtoGeoObject::_internal_has_location() const {
+  return this != internal_default_instance() && _impl_.location_ != nullptr;
+}
+inline bool ProtoGeoObject::has_location() const {
+  return _internal_has_location();
+}
+inline void ProtoGeoObject::clear_location() {
+  if (GetArenaForAllocation() == nullptr && _impl_.location_ != nullptr) {
+    delete _impl_.location_;
+  }
+  _impl_.location_ = nullptr;
+}
+inline const ::tracks::ProtoGeometry& ProtoGeoObject::_internal_location() const {
+  const ::tracks::ProtoGeometry* p = _impl_.location_;
+  return p != nullptr ? *p : reinterpret_cast<const ::tracks::ProtoGeometry&>(
+      ::tracks::_ProtoGeometry_default_instance_);
+}
+inline const ::tracks::ProtoGeometry& ProtoGeoObject::location() const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoGeoObject.location)
+  return _internal_location();
+}
+inline void ProtoGeoObject::unsafe_arena_set_allocated_location(
+    ::tracks::ProtoGeometry* location) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.location_);
+  }
+  _impl_.location_ = location;
+  if (location) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:tracks.ProtoGeoObject.location)
+}
+inline ::tracks::ProtoGeometry* ProtoGeoObject::release_location() {
+  
+  ::tracks::ProtoGeometry* temp = _impl_.location_;
+  _impl_.location_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::tracks::ProtoGeometry* ProtoGeoObject::unsafe_arena_release_location() {
+  // @@protoc_insertion_point(field_release:tracks.ProtoGeoObject.location)
+  
+  ::tracks::ProtoGeometry* temp = _impl_.location_;
+  _impl_.location_ = nullptr;
+  return temp;
+}
+inline ::tracks::ProtoGeometry* ProtoGeoObject::_internal_mutable_location() {
+  
+  if (_impl_.location_ == nullptr) {
+    auto* p = CreateMaybeMessage<::tracks::ProtoGeometry>(GetArenaForAllocation());
+    _impl_.location_ = p;
+  }
+  return _impl_.location_;
+}
+inline ::tracks::ProtoGeometry* ProtoGeoObject::mutable_location() {
+  ::tracks::ProtoGeometry* _msg = _internal_mutable_location();
+  // @@protoc_insertion_point(field_mutable:tracks.ProtoGeoObject.location)
+  return _msg;
+}
+inline void ProtoGeoObject::set_allocated_location(::tracks::ProtoGeometry* location) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.location_;
+  }
+  if (location) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(location);
+    if (message_arena != submessage_arena) {
+      location = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, location, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.location_ = location;
+  // @@protoc_insertion_point(field_set_allocated:tracks.ProtoGeoObject.location)
+}
+
+// optional double radius = 3;
+inline bool ProtoGeoObject::_internal_has_radius() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000004u) != 0;
+  return value;
+}
+inline bool ProtoGeoObject::has_radius() const {
+  return _internal_has_radius();
+}
+inline void ProtoGeoObject::clear_radius() {
+  _impl_.radius_ = 0;
+  _impl_._has_bits_[0] &= ~0x00000004u;
+}
+inline double ProtoGeoObject::_internal_radius() const {
+  return _impl_.radius_;
+}
+inline double ProtoGeoObject::radius() const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoGeoObject.radius)
+  return _internal_radius();
+}
+inline void ProtoGeoObject::_internal_set_radius(double value) {
+  _impl_._has_bits_[0] |= 0x00000004u;
+  _impl_.radius_ = value;
+}
+inline void ProtoGeoObject::set_radius(double value) {
+  _internal_set_radius(value);
+  // @@protoc_insertion_point(field_set:tracks.ProtoGeoObject.radius)
+}
+
+// optional string zoom_level = 4;
+inline bool ProtoGeoObject::_internal_has_zoom_level() const {
+  bool value = (_impl_._has_bits_[0] & 0x00000002u) != 0;
+  return value;
+}
+inline bool ProtoGeoObject::has_zoom_level() const {
+  return _internal_has_zoom_level();
+}
+inline void ProtoGeoObject::clear_zoom_level() {
+  _impl_.zoom_level_.ClearToEmpty();
+  _impl_._has_bits_[0] &= ~0x00000002u;
+}
+inline const std::string& ProtoGeoObject::zoom_level() const {
+  // @@protoc_insertion_point(field_get:tracks.ProtoGeoObject.zoom_level)
+  return _internal_zoom_level();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void ProtoGeoObject::set_zoom_level(ArgT0&& arg0, ArgT... args) {
+ _impl_._has_bits_[0] |= 0x00000002u;
+ _impl_.zoom_level_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:tracks.ProtoGeoObject.zoom_level)
+}
+inline std::string* ProtoGeoObject::mutable_zoom_level() {
+  std::string* _s = _internal_mutable_zoom_level();
+  // @@protoc_insertion_point(field_mutable:tracks.ProtoGeoObject.zoom_level)
+  return _s;
+}
+inline const std::string& ProtoGeoObject::_internal_zoom_level() const {
+  return _impl_.zoom_level_.Get();
+}
+inline void ProtoGeoObject::_internal_set_zoom_level(const std::string& value) {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  _impl_.zoom_level_.Set(value, GetArenaForAllocation());
+}
+inline std::string* ProtoGeoObject::_internal_mutable_zoom_level() {
+  _impl_._has_bits_[0] |= 0x00000002u;
+  return _impl_.zoom_level_.Mutable(GetArenaForAllocation());
+}
+inline std::string* ProtoGeoObject::release_zoom_level() {
+  // @@protoc_insertion_point(field_release:tracks.ProtoGeoObject.zoom_level)
+  if (!_internal_has_zoom_level()) {
+    return nullptr;
+  }
+  _impl_._has_bits_[0] &= ~0x00000002u;
+  auto* p = _impl_.zoom_level_.Release();
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.zoom_level_.IsDefault()) {
+    _impl_.zoom_level_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  return p;
+}
+inline void ProtoGeoObject::set_allocated_zoom_level(std::string* zoom_level) {
+  if (zoom_level != nullptr) {
+    _impl_._has_bits_[0] |= 0x00000002u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000002u;
+  }
+  _impl_.zoom_level_.SetAllocated(zoom_level, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.zoom_level_.IsDefault()) {
+    _impl_.zoom_level_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:tracks.ProtoGeoObject.zoom_level)
+}
+
+// -------------------------------------------------------------------
+
+// TrackPointProto
+
+// string id = 1;
+inline void TrackPointProto::clear_id() {
+  _impl_.id_.ClearToEmpty();
+}
+inline const std::string& TrackPointProto::id() const {
+  // @@protoc_insertion_point(field_get:tracks.TrackPointProto.id)
+  return _internal_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void TrackPointProto::set_id(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:tracks.TrackPointProto.id)
+}
+inline std::string* TrackPointProto::mutable_id() {
+  std::string* _s = _internal_mutable_id();
+  // @@protoc_insertion_point(field_mutable:tracks.TrackPointProto.id)
+  return _s;
+}
+inline const std::string& TrackPointProto::_internal_id() const {
+  return _impl_.id_.Get();
+}
+inline void TrackPointProto::_internal_set_id(const std::string& value) {
+  
+  _impl_.id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* TrackPointProto::_internal_mutable_id() {
+  
+  return _impl_.id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* TrackPointProto::release_id() {
+  // @@protoc_insertion_point(field_release:tracks.TrackPointProto.id)
+  return _impl_.id_.Release();
+}
+inline void TrackPointProto::set_allocated_id(std::string* id) {
+  if (id != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.id_.SetAllocated(id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.id_.IsDefault()) {
+    _impl_.id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:tracks.TrackPointProto.id)
+}
+
+// .tracks.ProtoGeoObject figure = 2;
+inline bool TrackPointProto::_internal_has_figure() const {
+  return this != internal_default_instance() && _impl_.figure_ != nullptr;
+}
+inline bool TrackPointProto::has_figure() const {
+  return _internal_has_figure();
+}
+inline void TrackPointProto::clear_figure() {
+  if (GetArenaForAllocation() == nullptr && _impl_.figure_ != nullptr) {
+    delete _impl_.figure_;
+  }
+  _impl_.figure_ = nullptr;
+}
+inline const ::tracks::ProtoGeoObject& TrackPointProto::_internal_figure() const {
+  const ::tracks::ProtoGeoObject* p = _impl_.figure_;
+  return p != nullptr ? *p : reinterpret_cast<const ::tracks::ProtoGeoObject&>(
+      ::tracks::_ProtoGeoObject_default_instance_);
+}
+inline const ::tracks::ProtoGeoObject& TrackPointProto::figure() const {
+  // @@protoc_insertion_point(field_get:tracks.TrackPointProto.figure)
+  return _internal_figure();
+}
+inline void TrackPointProto::unsafe_arena_set_allocated_figure(
+    ::tracks::ProtoGeoObject* figure) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.figure_);
+  }
+  _impl_.figure_ = figure;
+  if (figure) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:tracks.TrackPointProto.figure)
+}
+inline ::tracks::ProtoGeoObject* TrackPointProto::release_figure() {
+  
+  ::tracks::ProtoGeoObject* temp = _impl_.figure_;
+  _impl_.figure_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::tracks::ProtoGeoObject* TrackPointProto::unsafe_arena_release_figure() {
+  // @@protoc_insertion_point(field_release:tracks.TrackPointProto.figure)
+  
+  ::tracks::ProtoGeoObject* temp = _impl_.figure_;
+  _impl_.figure_ = nullptr;
+  return temp;
+}
+inline ::tracks::ProtoGeoObject* TrackPointProto::_internal_mutable_figure() {
+  
+  if (_impl_.figure_ == nullptr) {
+    auto* p = CreateMaybeMessage<::tracks::ProtoGeoObject>(GetArenaForAllocation());
+    _impl_.figure_ = p;
+  }
+  return _impl_.figure_;
+}
+inline ::tracks::ProtoGeoObject* TrackPointProto::mutable_figure() {
+  ::tracks::ProtoGeoObject* _msg = _internal_mutable_figure();
+  // @@protoc_insertion_point(field_mutable:tracks.TrackPointProto.figure)
+  return _msg;
+}
+inline void TrackPointProto::set_allocated_figure(::tracks::ProtoGeoObject* figure) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.figure_;
+  }
+  if (figure) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(figure);
+    if (message_arena != submessage_arena) {
+      figure = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, figure, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.figure_ = figure;
+  // @@protoc_insertion_point(field_set_allocated:tracks.TrackPointProto.figure)
+}
+
+// .google.protobuf.Timestamp timestamp = 3;
+inline bool TrackPointProto::_internal_has_timestamp() const {
+  return this != internal_default_instance() && _impl_.timestamp_ != nullptr;
+}
+inline bool TrackPointProto::has_timestamp() const {
+  return _internal_has_timestamp();
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& TrackPointProto::_internal_timestamp() const {
+  const ::PROTOBUF_NAMESPACE_ID::Timestamp* p = _impl_.timestamp_;
+  return p != nullptr ? *p : reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Timestamp&>(
+      ::PROTOBUF_NAMESPACE_ID::_Timestamp_default_instance_);
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Timestamp& TrackPointProto::timestamp() const {
+  // @@protoc_insertion_point(field_get:tracks.TrackPointProto.timestamp)
+  return _internal_timestamp();
+}
+inline void TrackPointProto::unsafe_arena_set_allocated_timestamp(
+    ::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  _impl_.timestamp_ = timestamp;
+  if (timestamp) {
+    
+  } else {
+    
+  }
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:tracks.TrackPointProto.timestamp)
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* TrackPointProto::release_timestamp() {
+  
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  }
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* TrackPointProto::unsafe_arena_release_timestamp() {
+  // @@protoc_insertion_point(field_release:tracks.TrackPointProto.timestamp)
+  
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* temp = _impl_.timestamp_;
+  _impl_.timestamp_ = nullptr;
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* TrackPointProto::_internal_mutable_timestamp() {
+  
+  if (_impl_.timestamp_ == nullptr) {
+    auto* p = CreateMaybeMessage<::PROTOBUF_NAMESPACE_ID::Timestamp>(GetArenaForAllocation());
+    _impl_.timestamp_ = p;
+  }
+  return _impl_.timestamp_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Timestamp* TrackPointProto::mutable_timestamp() {
+  ::PROTOBUF_NAMESPACE_ID::Timestamp* _msg = _internal_mutable_timestamp();
+  // @@protoc_insertion_point(field_mutable:tracks.TrackPointProto.timestamp)
+  return _msg;
+}
+inline void TrackPointProto::set_allocated_timestamp(::PROTOBUF_NAMESPACE_ID::Timestamp* timestamp) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.timestamp_);
+  }
+  if (timestamp) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(timestamp));
+    if (message_arena != submessage_arena) {
+      timestamp = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, timestamp, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  _impl_.timestamp_ = timestamp;
+  // @@protoc_insertion_point(field_set_allocated:tracks.TrackPointProto.timestamp)
+}
+
+// repeated .tracks.ProtoObjExtraProperty extra_props = 4;
+inline int TrackPointProto::_internal_extra_props_size() const {
+  return _impl_.extra_props_.size();
+}
+inline int TrackPointProto::extra_props_size() const {
+  return _internal_extra_props_size();
+}
+inline void TrackPointProto::clear_extra_props() {
+  _impl_.extra_props_.Clear();
+}
+inline ::tracks::ProtoObjExtraProperty* TrackPointProto::mutable_extra_props(int index) {
+  // @@protoc_insertion_point(field_mutable:tracks.TrackPointProto.extra_props)
+  return _impl_.extra_props_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjExtraProperty >*
+TrackPointProto::mutable_extra_props() {
+  // @@protoc_insertion_point(field_mutable_list:tracks.TrackPointProto.extra_props)
+  return &_impl_.extra_props_;
+}
+inline const ::tracks::ProtoObjExtraProperty& TrackPointProto::_internal_extra_props(int index) const {
+  return _impl_.extra_props_.Get(index);
+}
+inline const ::tracks::ProtoObjExtraProperty& TrackPointProto::extra_props(int index) const {
+  // @@protoc_insertion_point(field_get:tracks.TrackPointProto.extra_props)
+  return _internal_extra_props(index);
+}
+inline ::tracks::ProtoObjExtraProperty* TrackPointProto::_internal_add_extra_props() {
+  return _impl_.extra_props_.Add();
+}
+inline ::tracks::ProtoObjExtraProperty* TrackPointProto::add_extra_props() {
+  ::tracks::ProtoObjExtraProperty* _add = _internal_add_extra_props();
+  // @@protoc_insertion_point(field_add:tracks.TrackPointProto.extra_props)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::ProtoObjExtraProperty >&
+TrackPointProto::extra_props() const {
+  // @@protoc_insertion_point(field_list:tracks.TrackPointProto.extra_props)
+  return _impl_.extra_props_;
+}
+
+// -------------------------------------------------------------------
+
+// TrackPointsProto
+
+// repeated .tracks.TrackPointProto tracks = 1;
+inline int TrackPointsProto::_internal_tracks_size() const {
+  return _impl_.tracks_.size();
+}
+inline int TrackPointsProto::tracks_size() const {
+  return _internal_tracks_size();
+}
+inline void TrackPointsProto::clear_tracks() {
+  _impl_.tracks_.Clear();
+}
+inline ::tracks::TrackPointProto* TrackPointsProto::mutable_tracks(int index) {
+  // @@protoc_insertion_point(field_mutable:tracks.TrackPointsProto.tracks)
+  return _impl_.tracks_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::TrackPointProto >*
+TrackPointsProto::mutable_tracks() {
+  // @@protoc_insertion_point(field_mutable_list:tracks.TrackPointsProto.tracks)
+  return &_impl_.tracks_;
+}
+inline const ::tracks::TrackPointProto& TrackPointsProto::_internal_tracks(int index) const {
+  return _impl_.tracks_.Get(index);
+}
+inline const ::tracks::TrackPointProto& TrackPointsProto::tracks(int index) const {
+  // @@protoc_insertion_point(field_get:tracks.TrackPointsProto.tracks)
+  return _internal_tracks(index);
+}
+inline ::tracks::TrackPointProto* TrackPointsProto::_internal_add_tracks() {
+  return _impl_.tracks_.Add();
+}
+inline ::tracks::TrackPointProto* TrackPointsProto::add_tracks() {
+  ::tracks::TrackPointProto* _add = _internal_add_tracks();
+  // @@protoc_insertion_point(field_add:tracks.TrackPointsProto.tracks)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::tracks::TrackPointProto >&
+TrackPointsProto::tracks() const {
+  // @@protoc_insertion_point(field_list:tracks.TrackPointsProto.tracks)
+  return _impl_.tracks_;
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
