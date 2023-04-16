@@ -40,14 +40,13 @@ public:
     fig->set_radius(100);
     figs.set_add_tracks(true);
 
-    tracks::ProtoGeometry* loc = new tracks::ProtoGeometry();
+    tracks::ProtoGeometry* loc = fig->mutable_geometry();
     
     loc->set_type("Point");
     auto coord = loc->add_coord();
     coord->set_lat(lat);
     coord->set_lon(lon);
    
-    fig->set_allocated_geometry(loc);
 
     auto extra_prop = fig->add_extra_props();
     extra_prop->set_prop_name("track_name");
