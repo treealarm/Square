@@ -37,8 +37,8 @@ export function TrackProperties(props: any) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
     <List>
-      <ListItem>{selected_track?.id}</ListItem>
-      <ListItem>
+      <ListItem key="01">{selected_track?.id}</ListItem>
+        <ListItem key="02">
           <DateTimeField
           size="small"
           readOnly
@@ -49,7 +49,7 @@ export function TrackProperties(props: any) {
         </ListItem>
         {
           selected_track?.extra_props.map((prop, index) =>
-            <ListItem>
+            <ListItem key={index} >
               <TextField
                 size="small"
                 label={prop.prop_name} value={prop.str_val}>

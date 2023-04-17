@@ -1,22 +1,18 @@
 ﻿import * as React from 'react';
 
-import { useEffect, useCallback, useState } from 'react';
-import { useDispatch, useSelector, useStore } from "react-redux";
-
 import * as SearchResultStore from '../store/SearchResultStates';
-import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
-import { DeepCopy, TreeMarker, ViewOption } from '../store/Marker';
+import { DeepCopy, ITrackPointDTO} from '../store/Marker';
+import * as TracksStore from '../store/TracksStates';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
-import IconButton from '@mui/material/IconButton';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Button, ButtonGroup } from '@mui/material';
+import { useAppDispatch } from '../store/configureStore';
+import { useSelector } from 'react-redux';
+import { useCallback } from 'react';
 
 
 declare module 'react-redux' {
@@ -25,32 +21,25 @@ declare module 'react-redux' {
 
 export function SearchResult() {
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    console.log('ComponentDidMount SearchResult');
-  }, []);
+  const appDispatch = useAppDispatch();
 
   const searchStates = useSelector((state: ApplicationState) => state?.searchResultStates);
 
   const markers = searchStates.list;
 
   // Selected.
-  const reduxSelectedId = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+  const reduxSelectedId = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track_id);
 
-  function selectItem(selected_marker: TreeMarker | null) {
 
-    var selected_id = selected_marker?.id;
+  const handleSelect = useCallback((selected_marker: ITrackPointDTO) => () => {
+    var selected_track_id = selected_marker?.id;
 
-    if (selected_id == reduxSelectedId) {
-      selected_id = null;
+    if (selected_track_id == reduxSelectedId) {
+      selected_track_id = null;
     }
+    console.log("SELECTED_TRACK:", selected_track_id, " ", reduxSelectedId);
+    appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(selected_track_id));
 
-    dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
-  }
-
-  const handleSelect = useCallback((selected: TreeMarker) => () => {
-    selectItem(selected);
   }, [reduxSelectedId]);
 
   const OnNavigate = useCallback(
@@ -65,7 +54,7 @@ export function SearchResult() {
           filter.start_id = searchStates.list[searchStates.list.length - 1].id;
         }
         
-        dispatch<any>(          
+        appDispatch<any>(          
           SearchResultStore.actionCreators.getByFilter(filter)
         );
       }
@@ -74,7 +63,7 @@ export function SearchResult() {
           filter.start_id = searchStates.list[0].id;
         }
         
-        dispatch<any>(
+        appDispatch<any>(
           SearchResultStore.actionCreators.getByFilter(filter)
         );
       }
@@ -102,8 +91,11 @@ export function SearchResult() {
               key={marker.id}
               disablePadding
             >
-              <ListItemButton selected={reduxSelectedId == marker.id} role={undefined} onClick={handleSelect(marker)}>
-                <ListItemText id={marker.id} primary={marker.name} />
+              <ListItemButton
+                selected={reduxSelectedId == marker.id}
+                role={undefined}
+                onClick={handleSelect(marker)}>
+                <ListItemText id={marker.id} primary={marker.timestamp} />
               </ListItemButton>
             </ListItem>
           )}

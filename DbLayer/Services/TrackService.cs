@@ -1,4 +1,5 @@
-﻿using Domain.GeoDTO;
+﻿using Domain;
+using Domain.GeoDTO;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
@@ -304,7 +305,7 @@ namespace DbLayer.Services
       var builder = Builders<DBTrackPoint>.Filter;
 
       GeoJsonGeometry<GeoJson2DCoordinates> geometry;
-      FilterDefinition<DBTrackPoint> filter = null;
+      FilterDefinition<DBTrackPoint> filter = FilterDefinition<DBTrackPoint>.Empty;
 
       if (box.zone != null)
       {
@@ -313,7 +314,7 @@ namespace DbLayer.Services
           geometry = ModelGate.ConvertGeoDTO2DB(zone);
           var f1 = builder.GeoIntersects(t => t.meta.figure.location, geometry);
 
-          if (filter == null)
+          if (filter == FilterDefinition<DBTrackPoint>.Empty)
           {
             filter = f1;
           }
@@ -404,6 +405,75 @@ namespace DbLayer.Services
         // Desc is bad on time series.
         //finder = finder.SortByDescending(el => el.timestamp);
       }
+
+      Log(filter);
+
+      var list = await finder
+        .ToListAsync();
+
+      dbObjects.AddRange(list);
+
+      return DBListToDTO(dbObjects);
+    }
+
+    public async Task<List<TrackPointDTO>> GetTracksByFilter(SearchFilterDTO filter_in)
+    {
+      int limit = 10000;
+
+      if (filter_in.count > 0)
+      {
+        limit = filter_in.count;
+      }
+
+      var builder = Builders<DBTrackPoint>.Filter;
+
+      FilterDefinition<DBTrackPoint> filter = 
+        builder
+        .Where(t => t.timestamp >= filter_in.time_start
+          && t.timestamp <= filter_in.time_end);
+
+
+      if (!string.IsNullOrEmpty(filter_in.start_id))
+      {
+        FilterDefinition<DBTrackPoint> filterPaging = null;
+
+        if (filter_in.forward)
+          filterPaging = Builders<DBTrackPoint>.Filter
+            .Gt("meta._id", new ObjectId(filter_in.start_id));
+        else
+          filterPaging = Builders<DBTrackPoint>.Filter
+            .Lt("meta._id", new ObjectId(filter_in.start_id));
+
+        filter = filter & filterPaging;
+      }
+
+
+      List<DBTrackPoint> dbObjects = new List<DBTrackPoint>();
+
+      if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
+      {
+        foreach (var prop in filter_in.property_filter.props)
+        {
+          var request =
+            string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
+            prop.prop_name,
+            prop.str_val);
+
+          var f1 = Builders<DBTrackPoint>
+            .Filter
+            .ElemMatch(t => t.meta.extra_props, request)
+            ;
+
+          var metaValue = new BsonDocument(
+              "str_val",
+              prop.str_val
+              );
+
+            filter &= f1;
+        }
+      }
+
+      var finder = _collFigures.Find(filter).Limit(limit);
 
       Log(filter);
 

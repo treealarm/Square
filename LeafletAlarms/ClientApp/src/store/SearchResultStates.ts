@@ -1,13 +1,13 @@
 ﻿import { Action, Reducer } from "redux";
-import { ApiRootString, AppThunkAction } from "./";
+import { ApiTracksRootString, AppThunkAction } from "./";
 import { DoFetch } from "./Fetcher";
-import { GetBySearchDTO, SearchFilterDTO, TreeMarker } from "./Marker";
+import { GetTracksBySearchDTO, ITrackPointDTO, SearchFilterDTO } from "./Marker";
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface SearchResultState {
-  list: TreeMarker[];
+  list: ITrackPointDTO[];
   filter: SearchFilterDTO;
 }
 
@@ -22,7 +22,7 @@ interface RequestSearchStateAction {
 
 interface ReceiveSearchStateAction {
   type: "RECEIVE_SEARCH_STATE";
-  data: GetBySearchDTO
+  data: GetTracksBySearchDTO
 }
 
 
@@ -44,7 +44,7 @@ export const actionCreators = {
     dispatch,
     getState
   ) => {
-    var emptyResult: GetBySearchDTO = {
+    var emptyResult: GetTracksBySearchDTO = {
       search_id: "",
       list: []
     }
@@ -63,7 +63,7 @@ export const actionCreators = {
 
 
     let body = JSON.stringify(filter);
-    var request = ApiRootString + "/GetByFilter";
+    var request = ApiTracksRootString + "/GetByFilter";
 
     var fetched = DoFetch(request, {
       method: "POST",
@@ -72,7 +72,7 @@ export const actionCreators = {
     });
 
       fetched
-        .then(response => response.json() as Promise<GetBySearchDTO>)
+        .then(response => response.json() as Promise<GetTracksBySearchDTO>)
         .then(data => {
           dispatch({
             type: "RECEIVE_SEARCH_STATE",

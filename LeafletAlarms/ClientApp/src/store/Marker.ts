@@ -124,6 +124,12 @@ export interface GetBySearchDTO {
   search_id: string;
 }
 
+export interface GetTracksBySearchDTO {
+  list?: ITrackPointDTO[];
+  search_id: string;
+}
+
+
 export interface BoundBox {
   wn: number[];
   es: number[];

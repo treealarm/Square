@@ -17,5 +17,7 @@ namespace Domain.ServiceInterfaces
       DateTime? time_end,
       List<string> ids
     );
+
+    Task<List<TrackPointDTO>> GetTracksByFilter(SearchFilterDTO filter_in);
   }
 }

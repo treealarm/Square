@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DbLayer.Services;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.NonDto;
@@ -20,12 +21,15 @@ namespace LeafletAlarms.Controllers
   public class TracksController : ControllerBase
   {
     private TracksUpdateService _trackUpdateService;
+    private readonly ITrackService _tracksService;
 
     public TracksController(
-      TracksUpdateService trackUpdateService
+      TracksUpdateService trackUpdateService,
+      ITrackService tracksService
     )
     {
       _trackUpdateService = trackUpdateService;
+      _tracksService = tracksService;
     }
 
 
@@ -56,6 +60,19 @@ namespace LeafletAlarms.Controllers
     public async Task<TrackPointDTO> GetTrackById(string id)
     {
       return await _trackUpdateService.GetTrackById(id);
+    }
+
+    [HttpPost]
+    [Route("GetByFilter")]
+    public async Task<ActionResult<List<GetTracksBySearchDTO>>> GetByFilter(
+      SearchFilterDTO filter
+    )
+    {
+      GetTracksBySearchDTO retVal = new GetTracksBySearchDTO();
+      retVal.search_id = filter.search_id;
+      retVal.list = await _tracksService.GetTracksByFilter(filter);        
+
+      return CreatedAtAction(nameof(GetByFilter), retVal);
     }
   }
 }
