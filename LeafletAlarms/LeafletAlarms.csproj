@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\tracks.proto" GrpcServices="Server" OutputDir="Grpc" />
+    <!--Protobuf Include="Protos\tracks.proto" GrpcServices="Server" OutputDir="Grpc" /-->
   </ItemGroup>
 
   <ItemGroup>

@@ -28,19 +28,19 @@ export function SearchResult() {
   const markers = searchStates.list;
 
   // Selected.
-  const reduxSelectedId = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track_id);
+  const reduxSelectedTrack = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
 
 
   const handleSelect = useCallback((selected_marker: ITrackPointDTO) => () => {
     var selected_track_id = selected_marker?.id;
 
-    if (selected_track_id == reduxSelectedId) {
-      selected_track_id = null;
+    if (selected_track_id == reduxSelectedTrack?.id) {
+      selected_marker = null;
     }
-    console.log("SELECTED_TRACK:", selected_track_id, " ", reduxSelectedId);
-    appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(selected_track_id));
+    console.log("SELECTED_TRACK:", selected_track_id, " ", reduxSelectedTrack);
+    appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(selected_marker));
 
-  }, [reduxSelectedId]);
+  }, [reduxSelectedTrack]);
 
   const OnNavigate = useCallback(
     (next: boolean, e: any) => {
@@ -92,7 +92,7 @@ export function SearchResult() {
               disablePadding
             >
               <ListItemButton
-                selected={reduxSelectedId == marker.id}
+                selected={reduxSelectedTrack?.id == marker.id}
                 role={undefined}
                 onClick={handleSelect(marker)}>
                 <ListItemText id={marker.id} primary={marker.timestamp} />

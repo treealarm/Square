@@ -25,6 +25,8 @@ COPY ["PubSubLib/PubSubLib.csproj", "PubSubLib/"]
 COPY ["DbLayer/DbLayer.csproj", "DbLayer/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["Router/Router.csproj", "Router/"]
+COPY ["GrpcTracksClient/GrpcTracksClient.csproj", "GrpcTracksClient/"]
+
 RUN dotnet restore "LeafletAlarms/LeafletAlarms.csproj"
 COPY . .
 WORKDIR "/src/LeafletAlarms"

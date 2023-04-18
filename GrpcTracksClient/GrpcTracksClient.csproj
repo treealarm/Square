@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\LeafletAlarms\Protos\tracks.proto" Link="Protos\tracks.proto" GrpcServices="Client" OutputDir="Grpc" />
+    <None Include="..\LeafletAlarms\Protos\tracks.proto" Link="Protos\tracks.proto" GrpcServices="Client" OutputDir="Grpc" />
   </ItemGroup>
   
   <ItemGroup>

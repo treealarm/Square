@@ -49,15 +49,15 @@ function TrackPolygon(props: any) {
 
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord;
-  let track_id = props.track_id;
+  let track = props.track;
 
   const eventHandlers = React.useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track_id));
+        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
       }
     }),
-    [track_id],
+    [track],
   )
 
   return (
@@ -78,15 +78,15 @@ function TrackPolyline(props: any) {
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord;
 
-  let track_id = props.track_id;
+  let track = props.track;
 
   const eventHandlers = React.useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track_id));
+        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
       }
     }),
-    [track_id],
+    [track],
   )
 
   return (
@@ -107,15 +107,15 @@ function TrackCircle(props: any) {
 
   let figure = props.figure as IGeoObjectDTO;
   var positions = figure.location.coord as any;
-  let track_id = props.track_id;
+  let track = props.track;
 
   const eventHandlers = React.useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track_id));
+        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
       }
     }),
-    [track_id],
+    [track],
   )
 
   return (
@@ -196,7 +196,7 @@ export function TrackViewer() {
   const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked);
   const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
-  const selected_track_id = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track_id);
+  const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
 
   function UpdateTracks() {
     var bounds: L.LatLngBounds;
@@ -268,10 +268,10 @@ export function TrackViewer() {
         tracks?.map((track, index) =>          
           <CommonTrack
             key={track?.id }
-            track_id={track?.id}
+            track={track}
             hidden={false}
             marker={track?.figure}
-            pathOptions={selected_track_id == track?.id ? pathOptionsTracksSelected : pathOptionsTracks}
+            pathOptions={selected_track?.id == track?.id ? pathOptionsTracksSelected : pathOptionsTracks}
           >
           </CommonTrack>
         )}

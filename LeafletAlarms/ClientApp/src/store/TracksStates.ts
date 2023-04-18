@@ -9,7 +9,6 @@ export interface TracksState {
   routs: IRoutLineDTO[];
   tracks: ITrackPointDTO[]
   box: BoxTrackDTO; 
-  selected_track_id: string;
   selected_track: ITrackPointDTO;
 }
 
@@ -46,7 +45,7 @@ interface ReceiveTracksAction {
 
 interface SelectTrackAction {
   type: "SELECT_TRACK";
-  selected_track_id: string;
+  selected_track: ITrackPointDTO;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -66,11 +65,11 @@ type KnownAction =
 
 export const actionCreators = {
 
-  OnSelectTrack: (selected_track_id: string): AppThunkAction<KnownAction> => (
+  OnSelectTrack: (selected_track: ITrackPointDTO): AppThunkAction<KnownAction> => (
     dispatch,
     getState
-  ) => { 
-    let body = JSON.stringify([selected_track_id]);
+  ) => {
+    let body = JSON.stringify([selected_track?.id]);
     var request = ApiRouterRootString + "/GetRoutsByTracksIds";
 
     var fetched = DoFetch(request, {
@@ -92,7 +91,7 @@ export const actionCreators = {
 
       });
 
-    dispatch({ type: "SELECT_TRACK", selected_track_id: selected_track_id });
+    dispatch({ type: "SELECT_TRACK", selected_track: selected_track });
   },
 
   requestRouts: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (
@@ -186,7 +185,6 @@ const unloadedState: TracksState = {
   routs: null,
   tracks: null,
   box: null,
-  selected_track_id: null,
   selected_track: null
 };
 
@@ -210,12 +208,9 @@ export const reducer: Reducer<TracksState> = (
 
     case "SELECT_TRACK":
       {
-        const sel_track = state.tracks.find(t => t.id == action.selected_track_id);
-        console.log("OnSelectTrack:", JSON.stringify(sel_track));
           return {
             ...state,
-            selected_track_id: action.selected_track_id,
-            selected_track: sel_track
+            selected_track: action.selected_track
           };
       }
       

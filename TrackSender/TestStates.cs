@@ -25,7 +25,6 @@ namespace TrackSender
   {   
     TestClient _testClient;
     FiguresDTO m_figures = new FiguresDTO();
-    private int _nameCounter = 0;
     
     private Random _random = new Random();
     public TestStates(HttpClient client) 
