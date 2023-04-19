@@ -19,7 +19,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowBack from '@mui/icons-material/ArrowBack';
 import { SearchMeOnMap } from './SearchMeOnMap';
 import { useAppDispatch } from '../store/configureStore';
 
@@ -335,7 +334,7 @@ export function RetroSearch() {
             format={INPUT_FORMAT}
           />
           <Button color="secondary" onClick={(e: any) => OnNavigate(false, e)}>
-            <ArrowBack />
+            <ArrowBackIcon />
           </Button>
         </ListItem>
 

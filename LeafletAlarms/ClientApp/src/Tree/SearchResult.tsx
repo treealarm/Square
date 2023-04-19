@@ -9,11 +9,13 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Box, Button, ButtonGroup } from '@mui/material';
+import { Box, IconButton, Toolbar } from '@mui/material';
 import { useAppDispatch } from '../store/configureStore';
 import { useSelector } from 'react-redux';
 import { useCallback } from 'react';
 
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -89,10 +91,19 @@ export function SearchResult() {
 
       <List>
         <ListItem>
-          <ButtonGroup variant="contained" aria-label="navigation button group">
-            <Button onClick={(e: any) => OnNavigate(false, e)}>{'<'}</Button>
-            <Button onClick={(e: any) => OnNavigate(true, e)}>{'>'}</Button>
-          </ButtonGroup>
+
+          <Box sx={{ flexGrow: 1, border: 1 }}>
+            <Toolbar variant="dense">
+              <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
+                <ArrowBackIcon/>
+              </IconButton>
+            <Box sx={{ flexGrow: 1}} />
+              <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
+                <ArrowForwardIcon />
+              </IconButton>
+              </Toolbar>
+          </Box>
+        
         </ListItem>
         {
           markers?.map((marker, index) =>

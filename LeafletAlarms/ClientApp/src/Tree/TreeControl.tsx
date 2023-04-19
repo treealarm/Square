@@ -16,8 +16,10 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Button, ButtonGroup } from '@mui/material';
+import { Box, Toolbar } from '@mui/material';
 
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -121,10 +123,17 @@ export function TreeControl() {
 
         <List>
           <ListItem>
-            <ButtonGroup variant="contained" aria-label="navigation button group">
-              <Button onClick={(e: any) => OnNavigate(false, e)}>{'<'}</Button>
-              <Button onClick={(e: any) => OnNavigate(true, e)}>{'>'}</Button>
-            </ButtonGroup>
+            <Box sx={{ flexGrow: 1, border: 1 }}>
+              <Toolbar variant="dense">
+                <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
+                  <ArrowBackIcon />
+                </IconButton>
+                <Box sx={{ flexGrow: 1 }} />
+                <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
+                  <ArrowForwardIcon />
+                </IconButton>
+              </Toolbar>
+            </Box>
           </ListItem>
         {
           markers?.map((marker, index) =>
