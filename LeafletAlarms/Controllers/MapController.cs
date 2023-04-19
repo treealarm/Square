@@ -445,7 +445,7 @@ namespace LeafletAlarms.Controllers
 
       var geoPart = await _geoService.GetGeoObjectAsync(id);
 
-      if (geoPart != null)
+      if (geoPart != null && geoPart.location != null)
       {
         var type = geoPart.location.GetFigureType();
 

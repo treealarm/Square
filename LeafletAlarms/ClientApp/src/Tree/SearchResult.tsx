@@ -69,6 +69,15 @@ export function SearchResult() {
       }
     }, [searchStates?.list])
 
+  function getLocalTimeString(timestamp: string) {
+    try {
+      var d = new Date(timestamp);
+      return d.toLocaleDateString() + " " + d.toLocaleTimeString()
+    }
+    catch (e:any) {
+      return (e as Error)?.message;
+    }
+  }
   return (
     <Box sx={{
       width: '100%',
@@ -95,7 +104,9 @@ export function SearchResult() {
                 selected={reduxSelectedTrack?.id == marker.id}
                 role={undefined}
                 onClick={handleSelect(marker)}>
-                <ListItemText id={marker.id} primary={marker.timestamp} />
+                <ListItemText id={marker.id}
+                  primary={getLocalTimeString(marker.timestamp)}
+                  secondary={marker.timestamp} />
               </ListItemButton>
             </ListItem>
           )}
