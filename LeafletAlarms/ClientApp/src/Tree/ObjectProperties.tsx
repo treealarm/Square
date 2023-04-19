@@ -12,13 +12,14 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import SearchIcon from '@mui/icons-material/Search';
-import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, IPointCoord, IPolygonCoord, LatLngPair, getExtraProp, setExtraProp, DeepCopy } from '../store/Marker';
+import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, IPointCoord, IPolygonCoord, LatLngPair, getExtraProp, setExtraProp, DeepCopy, IGeometryDTO } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as TreeStore from '../store/TreeStates';
 import NotInterestedSharpIcon from '@mui/icons-material/NotInterestedSharp';
 import * as L from 'leaflet';
+import { SearchMeOnMap } from './SearchMeOnMap';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -172,6 +173,8 @@ export function ObjectProperties() {
       return null;
   }
 
+  var geometry = JSON.parse(getExtraProp(objProps, "geometry")) as IGeometryDTO;
+
   return (
     <Box sx={{
       width: '100%',
@@ -188,7 +191,8 @@ export function ObjectProperties() {
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
             </IconButton>
-            <IconButton aria-label="edit" size="medium" onClick={(e: any) => editMe(objProps, !selectedEditMode.edit_mode)} >
+            <IconButton aria-label="edit" size="medium"
+              onClick={(e: any) => editMe(objProps, !selectedEditMode.edit_mode)} >
               {
                 selectedEditMode.edit_mode ?
                   <NotInterestedSharpIcon fontSize="inherit" /> :
@@ -201,21 +205,12 @@ export function ObjectProperties() {
             </IconButton>
           </ButtonGroup>
 
-          <ButtonGroup variant="contained" aria-label="search button group">
-            <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap(objProps, e)}>
-              <SearchIcon fontSize="inherit" />
-            </IconButton>
-          </ButtonGroup>          
-
         </ListItem>        
         <ListItem>
-          <TextField
-            fullWidth
-            label='Id'
-            size="small"
-            value={objProps.id ? objProps.id : ''}
-            inputProps={{ readOnly: true }}>
-          </TextField>
+          <SearchMeOnMap
+            geometry={geometry}
+            text={objProps?.id}
+            zoom_min={objProps?.zoom_min} />
         </ListItem>
 
         <ListItem>

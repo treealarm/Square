@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import { ApplicationState } from '../store';
-import { Box, IconButton, TextField } from '@mui/material';
+import { Box, IconButton, Stack, TextField } from '@mui/material';
 import FlareIcon from '@mui/icons-material/Flare';
 import {
   PointType,
@@ -20,7 +20,13 @@ declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
 
-export function SearchMeOnMap(props: any) {
+interface ISearchMeOnMapProps {
+  geometry: IGeometryDTO;
+  text: string;
+  zoom_min?:number
+}
+
+export function SearchMeOnMap(props: ISearchMeOnMapProps) {
 
   let geometry: IGeometryDTO = props.geometry;
   let text: string = props.text;
@@ -66,14 +72,11 @@ export function SearchMeOnMap(props: any) {
 
 
   return (
-    <Box sx={{
-      width: '100%',
-
-      bgcolor: 'background.paper',
-      overflow: 'auto',
-      height: '100%',
-      border: 1
-    }}>
+    <Stack direction="row" spacing={2}
+      justifyContent="space-around"
+      sx={{
+        width: '100%',
+      }}>
 
       <TextField
             fullWidth
@@ -87,6 +90,6 @@ export function SearchMeOnMap(props: any) {
         <FlareIcon fontSize="inherit" />
       </IconButton>
        
-    </Box>
+    </Stack>
   );
 }

@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, List, ListItem, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
@@ -20,6 +20,8 @@ import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowBack from '@mui/icons-material/ArrowBack';
+import { SearchMeOnMap } from './SearchMeOnMap';
+import { useAppDispatch } from '../store/configureStore';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -34,12 +36,45 @@ export function TrackProperties(props: any) {
   if (selected_track == null) {
     return null;
   }
+
+  const appDispatch = useAppDispatch();
+
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+
+  const handleSelect = useCallback(() => () => {
+
+    if (selected_id == null) {
+      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_track?.figure.id));
+    }
+    else {
+      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+    }
+
+  }, [selected_id]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <List>
-        <ListItem key="00">{selected_track?.figure?.id}</ListItem>
-        <ListItem key="01">{selected_track?.id}</ListItem>
-        <ListItem key="02">
+        <ListItem key="figure_id">
+          
+          <ListItemButton
+            selected={selected_id == selected_track?.figure.id}
+            onClick={handleSelect()}>
+            <ListItemText id={selected_track?.figure.id}
+              primary={selected_track?.figure.id}
+              />
+          </ListItemButton>
+
+        </ListItem>
+
+        <ListItem key="track_id">
+          <SearchMeOnMap
+            geometry={selected_track?.figure?.location}
+            text={selected_track?.id}
+            zoom_min={null} />
+        </ListItem>
+        
+        <ListItem key="timestamp">
           <DateTimeField
           size="small"
           readOnly
