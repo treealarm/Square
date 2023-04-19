@@ -14,10 +14,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--Protobuf Include="Protos\tracks.proto" GrpcServices="Server" OutputDir="Grpc" /-->
-  </ItemGroup>
-
-  <ItemGroup>
 
     <PackageReference Include="Dapr.AspNetCore" Version="1.10.0" />
 
@@ -41,10 +37,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\Tree\SearchMeOnMap.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
     <ProjectReference Include="..\Router\Router.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\Tree\SearchMeOnMap.tsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

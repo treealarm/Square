@@ -150,7 +150,7 @@ function CommonTrack(props: any) {
         <TrackPolygon
           figure={figure}
           pathOptions={props.pathOptions}
-          track_id={props.track_id}
+          track={props.track}
         >
         </TrackPolygon>
       </React.Fragment>
@@ -163,7 +163,7 @@ function CommonTrack(props: any) {
         <TrackPolyline
           figure={figure}
           pathOptions={props.pathOptions}
-          track_id={props.track_id}
+          track={props.track}
         >
         </TrackPolyline>
       </React.Fragment>
@@ -175,7 +175,7 @@ function CommonTrack(props: any) {
         <TrackCircle
           figure={figure}
           pathOptions={props.pathOptions}
-          track_id={props.track_id}
+          track={props.track}
         >
         </TrackCircle>
       </React.Fragment>
