@@ -8,6 +8,11 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import DataObjectIcon from '@mui/icons-material/DataObject';
+import SearchIcon from '@mui/icons-material/Search';
+import SchemaIcon from '@mui/icons-material/Schema';
+import LockPersonIcon from '@mui/icons-material/LockPerson';
+
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../store/configureStore';
@@ -47,6 +52,11 @@ export default function PanelSwitch() {
 
   var search_result = panels.find(e => e.panelName == "search_result");
   var tree = panels.find(e => e.panelName == "tree");
+
+  var properties = panels.find(e => e.panelName == "properties");
+  var search = panels.find(e => e.panelName == "search");
+  var logic = panels.find(e => e.panelName == "logic");
+  var rights = panels.find(e => e.panelName == "rights");
 
   return (
     <React.Fragment>
@@ -103,11 +113,40 @@ export default function PanelSwitch() {
           </ListItemIcon>
           Tree
         </MenuItem>
+
         <MenuItem onClick={() => handleSelect("search_result")} selected={search_result!=null }>
           <ListItemIcon>
             <QueryStatsIcon fontSize="small" />
           </ListItemIcon>
           Search results
+        </MenuItem>
+
+        <MenuItem onClick={() => handleSelect("properties")} selected={properties != null}>
+          <ListItemIcon>
+            <DataObjectIcon fontSize="small" />
+          </ListItemIcon>
+          Properties
+        </MenuItem>
+
+        <MenuItem onClick={() => handleSelect("search")} selected={search != null}>
+          <ListItemIcon>
+            <SearchIcon fontSize="small" />
+          </ListItemIcon>
+          Search
+        </MenuItem>
+
+        <MenuItem onClick={() => handleSelect("logic")} selected={logic != null}>
+          <ListItemIcon>
+            <SchemaIcon fontSize="small" />
+          </ListItemIcon>
+          Logic
+        </MenuItem>
+
+        <MenuItem onClick={() => handleSelect("rights")} selected={rights != null}>
+          <ListItemIcon>
+            <LockPersonIcon fontSize="small" />
+          </ListItemIcon>
+          Rights
         </MenuItem>
       </Menu>
 

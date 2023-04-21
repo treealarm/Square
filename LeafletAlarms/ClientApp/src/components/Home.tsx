@@ -33,7 +33,7 @@ const LeftPanel = () => {
 
     if (datum.panelName == "tree") {
       return (
-        <Accordion>
+        <Accordion defaultExpanded>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon/>}
             aria-controls="panel-tree"
@@ -50,7 +50,7 @@ const LeftPanel = () => {
 
     if (datum.panelName == "search_result") {
       return (
-        <Accordion>
+        <Accordion defaultExpanded>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon/>}
             aria-controls="panel-search-result"
@@ -74,14 +74,97 @@ const LeftPanel = () => {
   return <div>{components}</div>;
 };
 
+const RightPanel = () => {
+
+  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
+
+  var components = panels.map((datum) => {
+
+    if (datum.panelName == "properties") {
+      return (
+        <Accordion defaultExpanded>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon color="primary" />}
+            aria-controls="panel1a-content"
+            id="panel1a-header">
+            <Typography color="primary">Properties</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Stack sx={{ height: "100%" }}>
+              <EditOptions />
+              <ObjectProperties />
+            </Stack>
+          </AccordionDetails>
+        </Accordion>
+      );
+    }
+
+    if (datum.panelName == "search") {
+      return (
+        <Accordion defaultExpanded>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon color="secondary" />}
+            aria-controls="panel-properties"
+            id="panel-properties"
+          >
+            <Typography color="secondary">Search</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <RetroSearch></RetroSearch>
+          </AccordionDetails>
+        </Accordion>
+      );
+    }
+
+    if (datum.panelName == "logic") {
+      return (
+        <Accordion defaultExpanded>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon color="action" />}
+            aria-controls="panel-logic"
+            id="panel-logic"
+          >
+            <Typography color="action">Logic</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <ObjectLogic />
+          </AccordionDetails>
+        </Accordion>
+      );
+    }
+
+    if (datum.panelName == "rights") {
+      return (
+        <Accordion defaultExpanded>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon color="action" />}
+            aria-controls="panel-logic"
+            id="panel-logic"
+          >
+            <Typography color="warning">Rights</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <ObjectRights />
+          </AccordionDetails>
+        </Accordion>
+      );
+    }        
+
+          
+    return null;
+  });
+
+  components = components.filter(e => e != null);
+
+  if (components.length == 0) {
+    return null;
+  }
+  return <div>{components}</div>;
+};
+
 
 export function Home() {
 
-  const [showPannel, setShowPannel] = React.useState(true);
-
-  const handleShowPannel = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowPannel(event.target.checked);
-  };
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
   var search_result = panels.find(e => e.panelName == "search_result");
@@ -89,33 +172,27 @@ export function Home() {
 
   var showLeftPannel = tree != null || search_result != null;
 
+  var properties = panels.find(e => e.panelName == "properties");
+  var search = panels.find(e => e.panelName == "search");
+  var logic = panels.find(e => e.panelName == "logic");
+  var rights = panels.find(e => e.panelName == "rights");
+
+  var showRightPannel =
+    properties != null ||
+    logic != null ||
+    rights != null ||
+    search != null;
+
   return (
     <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>
       <Grid item xs={12} sx={{ height: "auto" }}>
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static" sx={{ backgroundColor: '#aaaaaa' }} >
-        <Toolbar>
-          
-          <FormGroup row>
-                <PanelSwitch/>
-            <FormControlLabel control={
-              <Checkbox
-                checked={showPannel}
-                id="CheckBoxShowPannel"
-                onChange={handleShowPannel}
-                size="small"
-                tabIndex={-1}
-                disableRipple
-              />}
-                  label="Show panels"
-                />
-              
-          </FormGroup>
-
+            <Toolbar>  
+              <PanelSwitch />
           <WebSockClient />
           <GlobalLayersOptions />
           <Login />
-
             </Toolbar>
           </AppBar>
         </Box>
@@ -136,63 +213,10 @@ export function Home() {
         
       </Grid>
 
-      <Grid item xs={3} sx={{ height: "90%", display: showPannel ? '' : 'none' }}
+      <Grid item xs={3} sx={{ height: "90%", display: showRightPannel ? '' : 'none' }}
         container spacing={0}>
         <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }}>
-          <Accordion>
-            <AccordionSummary              
-              expandIcon={<ExpandMoreIcon color="primary" />}
-              aria-controls="panel1a-content"              
-              id="panel1a-header">
-              <Typography color="primary">Properties</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Stack sx={{ height: "100%" }}>
-                <EditOptions />
-                <ObjectProperties />
-              </Stack>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon color="secondary" />}
-              aria-controls="panel-properties"
-              id="panel-properties"
-            >
-              <Typography color="secondary">Search</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <RetroSearch></RetroSearch>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon color="action" />}
-              aria-controls="panel-logic"
-              id="panel-logic"
-            >
-              <Typography color="action">Logic</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <ObjectLogic/>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon color="action" />}
-              aria-controls="panel-logic"
-              id="panel-logic"
-            >
-              <Typography color="warning">Rights</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <ObjectRights />
-            </AccordionDetails>
-          </Accordion>
-
+          <RightPanel/>
         </Paper>
 
       </Grid>
