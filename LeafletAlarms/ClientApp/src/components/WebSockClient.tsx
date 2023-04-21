@@ -157,7 +157,7 @@ export function WebSockClient() {
 
   return (
       <React.Fragment key={"WebSock1"}>
-      <Box sx={{ border: 1 }}>
+      <Box>
         <Tooltip title={selected_track?.id + '\n' + url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
         <IconButton
           onClick = {sendPing}
@@ -166,9 +166,7 @@ export function WebSockClient() {
           >
             <h1>{REACT_APP_AUTH_SERVER_URL}</h1>
           <CircleIcon color={isConnected ? "success" : "error"} />
-            <Item key={'item1'} elevation={1}>
-              objs:{markers?.figs?.length}, zoom:{box?.zoom}
-            </Item>
+            <div>objs:{markers?.figs?.length}, zoom:{box?.zoom}</div>
           </IconButton> 
         </Tooltip>
         

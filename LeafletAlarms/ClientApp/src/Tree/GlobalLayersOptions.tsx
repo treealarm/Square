@@ -45,7 +45,7 @@ export default function GlobalLayersOptions() {
   ];
 
   return (
-    <Box sx={{ border: 1, borderColor: 'divider' }}>
+    <Box>
       <FormGroup row>
         {
           checks.map((item, index) =>

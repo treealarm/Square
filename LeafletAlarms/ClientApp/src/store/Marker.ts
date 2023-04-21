@@ -267,3 +267,7 @@ export interface IRightValuesDTO {
   rightName: string;
   rightValue: number;
 }
+
+export interface IPanelsStatesDTO {
+  panelName: string;
+}

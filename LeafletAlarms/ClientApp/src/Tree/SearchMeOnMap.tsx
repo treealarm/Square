@@ -3,8 +3,9 @@
 import { useCallback } from 'react';
 
 import { ApplicationState } from '../store';
-import { Box, IconButton, Stack, TextField } from '@mui/material';
-import FlareIcon from '@mui/icons-material/Flare';
+import { IconButton, Stack, TextField } from '@mui/material';
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
+
 import {
   PointType,
   LineStringType,
@@ -87,7 +88,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
       </TextField>
 
       <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap(geometry, e)}>
-        <FlareIcon fontSize="inherit" />
+        <LocationSearchingIcon fontSize="inherit" />
       </IconButton>
        
     </Stack>
