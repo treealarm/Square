@@ -117,39 +117,38 @@ export function TreeControl() {
       <Box sx={{
             width: '100%',
             overflow: 'auto',
-            height: '100%',
-        border: 1
+            height: '100%'
             }}>
-
-        <List>
-          <ListItem>
-            <Box sx={{ flexGrow: 1, border: 1 }}>
-              <Toolbar variant="dense">
-                <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
-                  <ArrowBackIcon />
-                </IconButton>
-                <Box sx={{ flexGrow: 1 }} />
-                <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
-                  <ArrowForwardIcon />
-                </IconButton>
-              </Toolbar>
-            </Box>
-          </ListItem>
-        {
+        <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
+          <Toolbar variant="dense">
+            <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Box sx={{ flexGrow: 1 }} />
+            <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
+              <ArrowForwardIcon />
+            </IconButton>
+          </Toolbar>
+        </Box> 
+        <List dense>
+         {
           markers?.map((marker, index) =>
             <ListItem
               key={marker.id}
               disablePadding
               secondaryAction={
                 marker.has_children &&
-                <IconButton edge="end" aria-label="drill_down" onClick={drillDown(marker)}>
-                  <ChevronRightIcon/>
+                <IconButton size="small" edge="end" aria-label="drill_down" onClick={drillDown(marker)}>
+                  <ChevronRightIcon />
                 </IconButton>
               }
             >
-              <ListItemButton selected={reduxSelectedId == marker.id} role = {undefined} onClick={handleSelect(marker)}>
+              <ListItemButton
+                selected={reduxSelectedId == marker.id} role={undefined}
+                onClick={handleSelect(marker)}>
                 <ListItemIcon>
                   <Checkbox
+                    size="small"
                     edge="start"
                     checked={checked.indexOf(marker.id) !== -1}
                     tabIndex={-1}
@@ -158,7 +157,7 @@ export function TreeControl() {
                     onChange={handleChecked}
                   />
                 </ListItemIcon>
-                <ListItemText id={marker.id} primary={marker.name} />
+                <ListItemText  id={marker.id} primary={marker.name} />
               </ListItemButton>
           </ListItem>
         )}

@@ -35,10 +35,10 @@ const LeftPanel = () => {
       return (
         <Accordion>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon color="primary" />}
+            expandIcon={<ExpandMoreIcon/>}
             aria-controls="panel-tree"
             id="panel-tree">
-            <Typography color="primary">Tree</Typography>
+            <Typography>Tree</Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
             <TabControl />
@@ -52,10 +52,10 @@ const LeftPanel = () => {
       return (
         <Accordion>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon color="secondary" />}
+            expandIcon={<ExpandMoreIcon/>}
             aria-controls="panel-search-result"
             id="panel-search-result">
-            <Typography color="secondary">Search result</Typography>
+            <Typography>Search result</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <SearchResult></SearchResult>

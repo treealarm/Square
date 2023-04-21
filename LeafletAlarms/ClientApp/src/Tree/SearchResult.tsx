@@ -85,26 +85,20 @@ export function SearchResult() {
       width: '100%',
       bgcolor: 'background.paper',
       overflow: 'auto',
-      height: '100%',
-      border: 1
+      height: '100%'
     }}>
-
-      <List>
-        <ListItem>
-
-          <Box sx={{ flexGrow: 1, border: 1 }}>
-            <Toolbar variant="dense">
-              <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
-                <ArrowBackIcon/>
-              </IconButton>
-            <Box sx={{ flexGrow: 1}} />
-              <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
-                <ArrowForwardIcon />
-              </IconButton>
-              </Toolbar>
-          </Box>
-        
-        </ListItem>
+      <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
+        <Toolbar variant="dense">
+          <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
+            <ArrowForwardIcon />
+          </IconButton>
+        </Toolbar>
+      </Box>
+      <List dense>
         {
           markers?.map((marker, index) =>
             <ListItem
