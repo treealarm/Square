@@ -39,6 +39,7 @@
   <ItemGroup>
     <None Remove="ClientApp\src\components\PanelSwitch.tsx" />
     <None Remove="ClientApp\src\Tree\SearchMeOnMap.tsx" />
+    <None Remove="ClientApp\src\Tree\TrackProps.tsx" />
   </ItemGroup>
 
   <ItemGroup>
@@ -51,6 +52,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
     <TypeScriptCompile Include="ClientApp\src\Tree\SearchMeOnMap.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\Tree\TrackProps.tsx" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

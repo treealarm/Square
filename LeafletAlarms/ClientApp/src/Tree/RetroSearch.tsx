@@ -1,14 +1,16 @@
 ﻿import * as React from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import TextField from '@mui/material/TextField';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
-import { Accordion, AccordionDetails, AccordionSummary, Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import {
+  Accordion, AccordionDetails, AccordionSummary,
+  Box, Button, IconButton, List, ListItem, ListItemButton, ListItemText, Typography
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import * as SearchResultStore from '../store/SearchResultStates';
 import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO, DeepCopy, ITrackPointDTO } from '../store/Marker';
 import { PropertyFilter } from './PropertyFilter';
@@ -21,6 +23,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { SearchMeOnMap } from './SearchMeOnMap';
 import { useAppDispatch } from '../store/configureStore';
+import { TrackProps } from './TrackProps';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -28,77 +31,8 @@ declare module 'react-redux' {
 
 const INPUT_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
-export function TrackProperties(props: any) {
-
-  var selected_track: ITrackPointDTO = props.selected_track;
-
-  if (selected_track == null) {
-    return null;
-  }
-
-  const appDispatch = useAppDispatch();
-
-  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-
-  const handleSelect = useCallback(() => () => {
-
-    if (selected_id == null) {
-      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_track?.figure.id));
-    }
-    else {
-      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-    }
-
-  }, [selected_id]);
-
-  return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <List>
-        <ListItem key="figure_id">
-          
-          <ListItemButton
-            selected={selected_id == selected_track?.figure.id}
-            onClick={handleSelect()}>
-            <ListItemText id={selected_track?.figure.id}
-              primary={selected_track?.figure.id}
-              />
-          </ListItemButton>
-
-        </ListItem>
-
-        <ListItem key="track_id">
-          <SearchMeOnMap
-            geometry={selected_track?.figure?.location}
-            text={selected_track?.id}
-            zoom_min={null} />
-        </ListItem>
-        
-        <ListItem key="timestamp">
-          <DateTimeField
-          size="small"
-          readOnly
-          label="timestamp"
-            value={dayjs(selected_track?.timestamp)}
-            format={INPUT_FORMAT}
-        />
-        </ListItem>
-        {
-          selected_track?.extra_props.map((prop, index) =>
-            <ListItem key={index} >
-              <TextField
-                size="small"
-                label={prop.prop_name} value={prop.str_val}>
-                id={prop?.prop_name + prop?.str_val}
-              </TextField>
-            </ListItem>
-        )}
-      </List>
-    </LocalizationProvider>
-  );
-}
-
 export function RetroSearch() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
@@ -288,17 +222,7 @@ export function RetroSearch() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <Accordion hidden={selected_track == null} sx={{ width: "100%", padding: 1, margin: 0 }} >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon color="secondary" />}
-          aria-controls="panel-tree"
-          id="panel-track-props">
-          <Typography color="secondary">Track properties</Typography>
-        </AccordionSummary>
-        <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
-          <TrackProperties selected_track={selected_track}></TrackProperties>
-        </AccordionDetails>
-      </Accordion>
+      <TrackProps/>
 
       <List>
         <ListItem>

@@ -24,6 +24,8 @@ import { ObjectRights } from "../Rights/ObjectRights";
 import PanelSwitch from "./PanelSwitch";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
+import { TrackProps } from "../Tree/TrackProps";
+import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 
 const LeftPanel = () => {
 
@@ -31,7 +33,7 @@ const LeftPanel = () => {
 
   var components = panels.map((datum) => {
 
-    if (datum.panelName == "tree") {
+    if (datum.panelId == IPanelTypes.tree) {
       return (
         <Accordion defaultExpanded>
           <AccordionSummary
@@ -48,7 +50,7 @@ const LeftPanel = () => {
       );
     }
 
-    if (datum.panelName == "search_result") {
+    if (datum.panelId == IPanelTypes.search_result) {
       return (
         <Accordion defaultExpanded>
           <AccordionSummary
@@ -78,79 +80,41 @@ const RightPanel = () => {
 
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
-  var components = panels.map((datum) => {
 
-    if (datum.panelName == "properties") {
-      return (
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon color="primary" />}
-            aria-controls="panel1a-content"
-            id="panel1a-header">
-            <Typography color="primary">Properties</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+  var components: Array<[IPanelsStatesDTO, JSX.Element]> = panels.map((datum) => {
+
+    if (datum.panelId == IPanelTypes.properties) {
+      return [datum, (
             <Stack sx={{ height: "100%" }}>
               <EditOptions />
               <ObjectProperties />
             </Stack>
-          </AccordionDetails>
-        </Accordion>
-      );
+      )];
     }
 
-    if (datum.panelName == "search") {
-      return (
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon color="secondary" />}
-            aria-controls="panel-properties"
-            id="panel-properties"
-          >
-            <Typography color="secondary">Search</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+    if (datum.panelId == IPanelTypes.search) {
+      return [datum, (
             <RetroSearch></RetroSearch>
-          </AccordionDetails>
-        </Accordion>
-      );
+      )];
     }
 
-    if (datum.panelName == "logic") {
-      return (
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon color="action" />}
-            aria-controls="panel-logic"
-            id="panel-logic"
-          >
-            <Typography color="action">Logic</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+    if (datum.panelId == IPanelTypes.logic) {
+      return [datum, (
             <ObjectLogic />
-          </AccordionDetails>
-        </Accordion>
-      );
+      )];
     }
 
-    if (datum.panelName == "rights") {
-      return (
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon color="action" />}
-            aria-controls="panel-logic"
-            id="panel-logic"
-          >
-            <Typography color="warning">Rights</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+    if (datum.panelId == IPanelTypes.rights) {
+      return [datum, (
             <ObjectRights />
-          </AccordionDetails>
-        </Accordion>
-      );
-    }        
-
-          
+      )];
+    } 
+    
+    if (datum.panelId == IPanelTypes.track_props) {
+      return [datum, (
+            <TrackProps />
+      )];
+    }
     return null;
   });
 
@@ -159,7 +123,21 @@ const RightPanel = () => {
   if (components.length == 0) {
     return null;
   }
-  return <div>{components}</div>;
+
+  var accordions = components.map((component) => {
+    return (
+      <Accordion defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>{component[0].panelValue}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {component[1]}
+        </AccordionDetails>
+      </Accordion>
+    )
+  });
+
+  return <div>{accordions}</div>;
 };
 
 
@@ -167,21 +145,23 @@ export function Home() {
 
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
-  var search_result = panels.find(e => e.panelName == "search_result");
-  var tree = panels.find(e => e.panelName == "tree");
+  var search_result = panels.find(e => e.panelId == IPanelTypes.search_result);
+  var tree = panels.find(e => e.panelId == IPanelTypes.tree);
 
   var showLeftPannel = tree != null || search_result != null;
 
-  var properties = panels.find(e => e.panelName == "properties");
-  var search = panels.find(e => e.panelName == "search");
-  var logic = panels.find(e => e.panelName == "logic");
-  var rights = panels.find(e => e.panelName == "rights");
+  var properties = panels.find(e => e.panelId == IPanelTypes.properties);
+  var search = panels.find(e => e.panelId == IPanelTypes.search);
+  var logic = panels.find(e => e.panelId == IPanelTypes.logic);
+  var rights = panels.find(e => e.panelId == IPanelTypes.rights);
+  var track_props = panels.find(e => e.panelId == IPanelTypes.track_props);
 
   var showRightPannel =
     properties != null ||
     logic != null ||
     rights != null ||
-    search != null;
+    search != null ||
+    track_props != null;
 
   return (
     <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>

@@ -17,7 +17,8 @@ import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../store/configureStore';
 import * as PanelsStore from '../store/PanelsStates';
-import { DeepCopy } from '../store/Marker';
+import { DeepCopy, IPanelTypes } from '../store/Marker';
+import { MouseEventHandler } from 'react';
 
 export default function PanelSwitch() {
 
@@ -35,28 +36,34 @@ export default function PanelSwitch() {
     setAnchorEl(null);
   };
 
-  const handleSelect = (menuItem: string) => {
+  const handleSelect = (e: any, menuItem: string) => {
     setAnchorEl(null);
-    var exist = panels.find(e => e.panelName == menuItem);
+    var exist = panels.find(e => e.panelId == menuItem);
 
     if (exist) {
-      var removed = panels.filter(e => e.panelName != menuItem);
+      var removed = panels.filter(e => e.panelId != menuItem);
       appDispatch(PanelsStore.set_panels(removed));
     }
     else {
       var newPanels = DeepCopy(panels);
-      newPanels.push({ panelName: menuItem });
+      newPanels.push(
+        {
+          panelId: menuItem,
+          panelValue: e.target.innerText
+        });
       appDispatch(PanelsStore.set_panels(newPanels));
     }
   };
 
-  var search_result = panels.find(e => e.panelName == "search_result");
-  var tree = panels.find(e => e.panelName == "tree");
+  var search_result = panels.find(e => e.panelId == IPanelTypes.search_result);
+  var tree = panels.find(e => e.panelId == IPanelTypes.tree);
 
-  var properties = panels.find(e => e.panelName == "properties");
-  var search = panels.find(e => e.panelName == "search");
-  var logic = panels.find(e => e.panelName == "logic");
-  var rights = panels.find(e => e.panelName == "rights");
+  var properties = panels.find(e => e.panelId == IPanelTypes.properties);
+  var search = panels.find(e => e.panelId == IPanelTypes.search);
+  var logic = panels.find(e => e.panelId == IPanelTypes.logic);
+  var rights = panels.find(e => e.panelId == IPanelTypes.rights);
+
+  var track_props = panels.find(e => e.panelId == IPanelTypes.track_props);
 
   return (
     <React.Fragment>
@@ -107,42 +114,52 @@ export default function PanelSwitch() {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         <Divider />
-        <MenuItem onClick={() => handleSelect("tree")} selected={tree != null}>
+
+        <MenuItem
+          onClick={(e: any) => handleSelect(e, IPanelTypes.tree) }
+          selected={tree != null}>
           <ListItemIcon>
             <AccountTreeIcon fontSize="small" />
           </ListItemIcon>
           Tree
         </MenuItem>
 
-        <MenuItem onClick={() => handleSelect("search_result")} selected={search_result!=null }>
+        <MenuItem onClick={(e: any) => handleSelect(e, IPanelTypes.search_result)} selected={search_result!=null }>
           <ListItemIcon>
             <QueryStatsIcon fontSize="small" />
           </ListItemIcon>
           Search results
         </MenuItem>
 
-        <MenuItem onClick={() => handleSelect("properties")} selected={properties != null}>
+        <MenuItem onClick={(e: any) => handleSelect(e, IPanelTypes.properties)} selected={properties != null}>
           <ListItemIcon>
             <DataObjectIcon fontSize="small" />
           </ListItemIcon>
           Properties
         </MenuItem>
 
-        <MenuItem onClick={() => handleSelect("search")} selected={search != null}>
+        <MenuItem onClick={(e: any) => handleSelect(e, IPanelTypes.search)} selected={search != null}>
           <ListItemIcon>
             <SearchIcon fontSize="small" />
           </ListItemIcon>
           Search
         </MenuItem>
 
-        <MenuItem onClick={() => handleSelect("logic")} selected={logic != null}>
+        <MenuItem onClick={(e: any) => handleSelect(e, IPanelTypes.track_props)} selected={track_props != null}>
+          <ListItemIcon>
+            <LockPersonIcon fontSize="small" />
+          </ListItemIcon>
+          Track properties
+        </MenuItem>
+
+        <MenuItem onClick={(e: any) => handleSelect(e, IPanelTypes.logic)} selected={logic != null}>
           <ListItemIcon>
             <SchemaIcon fontSize="small" />
           </ListItemIcon>
           Logic
         </MenuItem>
 
-        <MenuItem onClick={() => handleSelect("rights")} selected={rights != null}>
+        <MenuItem onClick={(e: any) => handleSelect(e, IPanelTypes.rights)} selected={rights != null}>
           <ListItemIcon>
             <LockPersonIcon fontSize="small" />
           </ListItemIcon>

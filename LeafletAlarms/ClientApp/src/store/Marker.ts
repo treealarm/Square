@@ -269,5 +269,17 @@ export interface IRightValuesDTO {
 }
 
 export interface IPanelsStatesDTO {
-  panelName: string;
+  panelId: string;
+  panelValue?: string;
+}
+
+export class IPanelTypes{
+  static search_result: string = 'search_result';
+  static tree: string = 'tree';
+
+  static properties: string = 'properties';
+  static search: string = 'search';
+  static logic: string = 'logic';
+  static rights: string = 'rights';
+  static track_props: string = 'track_props';
 }
