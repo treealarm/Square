@@ -189,7 +189,7 @@ export function Home() {
 
       <Grid item xs sx={{ minWidth: "100px", height: "90%", flexGrow: 1 }}
         spacing={0}>
-        <Box sx={{ flexGrow: 1}}>
+        <Box sx={{ flexGrow: 1, height:'100%'}}>
           <MapComponent />
         </Box>
         
