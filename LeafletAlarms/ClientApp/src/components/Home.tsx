@@ -8,11 +8,9 @@ import {
   Accordion, AccordionDetails, AccordionSummary,
   AppBar,
   Box,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
   Grid, Paper, Stack, Toolbar, Typography
 } from "@mui/material";
+
 import { WebSockClient } from "./WebSockClient";
 import { RetroSearch } from "../Tree/RetroSearch";
 import { SearchResult } from "../Tree/SearchResult";
@@ -27,53 +25,65 @@ import { ApplicationState } from "../store";
 import { TrackProps } from "../Tree/TrackProps";
 import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 
-const LeftPanel = () => {
 
-  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
+const AccordionPanels = (props:{ components: Array<[IPanelsStatesDTO, JSX.Element]>}) => {
 
-  var components = panels.map((datum) => {
-
-    if (datum.panelId == IPanelTypes.tree) {
-      return (
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon/>}
-            aria-controls="panel-tree"
-            id="panel-tree">
-            <Typography>Tree</Typography>
-          </AccordionSummary>
-          <AccordionDetails sx={{ maxHeight: "100%", padding: 1, margin: 0 }} >
-            <TabControl />
-            <TreeControl />
-          </AccordionDetails>
-        </Accordion>
-      );
-    }
-
-    if (datum.panelId == IPanelTypes.search_result) {
-      return (
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon/>}
-            aria-controls="panel-search-result"
-            id="panel-search-result">
-            <Typography>Search result</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <SearchResult></SearchResult>
-          </AccordionDetails>
-        </Accordion>
-      );
-    }
-    return null;
-  });
-
-  components = components.filter(e => e != null);
+  var components = props.components.filter(e => e != null);
 
   if (components.length == 0) {
     return null;
   }
-  return <div>{components}</div>;
+
+  var counter = 0;
+
+  var accordions = components.map((component) => {
+
+    var color = '#dddddd';
+
+    if (counter % 2 == 0) {
+      color = '#f0f0f0';
+    }
+    counter++;
+
+    return (
+      <Accordion defaultExpanded sx={{ backgroundColor: color }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: color }}>
+          <Typography sx={{ fontWeight: 'bold' }}>{component[0].panelValue}</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ backgroundColor: color }}>
+          {component[1]}
+        </AccordionDetails>
+      </Accordion>
+    )
+  });
+
+  return <div>{accordions}</div>;
+};
+
+const LeftPanel = () => {
+
+  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
+
+  var components: Array<[IPanelsStatesDTO, JSX.Element]> = panels.map((datum) => {
+
+    if (datum.panelId == IPanelTypes.tree) {
+      return [datum, (
+        <div>
+            <TabControl />
+            <TreeControl />
+        </div>
+      )];
+    }
+
+    if (datum.panelId == IPanelTypes.search_result) {
+      return [datum, (
+            <SearchResult></SearchResult>
+      )];
+    }
+    return null;
+  });
+
+  return (<AccordionPanels components={components} />);
 };
 
 const RightPanel = () => {
@@ -118,26 +128,7 @@ const RightPanel = () => {
     return null;
   });
 
-  components = components.filter(e => e != null);
-
-  if (components.length == 0) {
-    return null;
-  }
-
-  var accordions = components.map((component) => {
-    return (
-      <Accordion defaultExpanded>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>{component[0].panelValue}</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          {component[1]}
-        </AccordionDetails>
-      </Accordion>
-    )
-  });
-
-  return <div>{accordions}</div>;
+  return (<AccordionPanels components={components} />);
 };
 
 

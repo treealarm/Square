@@ -185,7 +185,7 @@ export function ObjectProperties() {
       border: 1
     }}>
 
-      <List>
+      <List dense>
         <ListItem>
           <ButtonGroup variant="contained" aria-label="properties pannel">
             <IconButton aria-label="save" size="medium" onClick={handleSave}>

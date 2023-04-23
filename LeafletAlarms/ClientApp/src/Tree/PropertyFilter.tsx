@@ -62,7 +62,7 @@ export function PropertyFilter(props:any) {
         height: '100%',
         border: 1
       }}>
-    <List>
+      <List dense>
       {
         props.propsFilter?.props?.map((item: KeyValueDTO, index: { toString: () => string; }) =>
 

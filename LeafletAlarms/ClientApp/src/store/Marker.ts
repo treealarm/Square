@@ -282,4 +282,13 @@ export class IPanelTypes{
   static logic: string = 'logic';
   static rights: string = 'rights';
   static track_props: string = 'track_props';
+
+  static search_resultName: string = 'Search result';
+  static treeName: string = 'Tree';
+
+  static propertiesName: string = 'Properties';
+  static searchName: string = 'Search';
+  static logicName: string = 'Logic';
+  static rightsName: string = 'Rights';
+  static track_propsName: string = 'Track properties';
 }

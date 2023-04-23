@@ -224,7 +224,7 @@ export function RetroSearch() {
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <TrackProps/>
 
-      <List>
+      <List dense>
         <ListItem>
           <Box display="flex" justifyContent="flex-start">
             <ToggleButton
