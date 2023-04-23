@@ -90,7 +90,7 @@ export default function RoleRightSelector(properties: any) {
             renderInput={(params) => <TextField {...params} label="Enter role/user" />}
           />
 
-          <IconButton color="primary"
+          <IconButton
             aria-label="addProp"
             size="medium"
             onClick={(e: any) => deleteMe(e)}          >

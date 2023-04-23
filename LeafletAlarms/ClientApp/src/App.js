@@ -10,12 +10,31 @@ import UserService from "./auth/UserService";
 import { useAppDispatch } from './store/configureStore';
 
 const theme = createTheme({
-  spacing: 4,
+  spacing: 3,
+
   typography: {    
     button: {
       textTransform: 'none'
     }
-  }
+  },
+  palette: {
+    primary: {
+      main: '#ffffff'      
+    }    
+  },
+  components: {
+    MuiListItem: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'white',
+
+          '&.Mui-selected': {
+            backgroundColor: 'lightgray',
+          },
+        },
+      },
+    },
+  },
 });
 
 export default () => {
@@ -36,9 +55,7 @@ export default () => {
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          height: "95vh",
-          border: 1,
-          borderColor: 'primary.main'
+          height: "98vh"
         }}
       >
         <Layout>

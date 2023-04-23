@@ -35,16 +35,17 @@ export function Login() {
 
   return (
     <React.Fragment key={"Login"}>
-      <Box sx={{ border: 1 }}>
+      
         <Tooltip title={UserService.getToken()}>
           <Button
+            variant="contained"
             onClick={onButtonClick}
             style={{ textTransform: 'none' }}
             size="small"
           >{!loggedIn ? "login" : "logout " + user}
           </Button>
         </Tooltip>
-      </Box>
+      
     </React.Fragment>
   );
 }

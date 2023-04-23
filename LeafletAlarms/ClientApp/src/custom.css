@@ -8,11 +8,6 @@ code {
   color: #E01A76;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
-}
 
 @import url("~leaflet/dist/leaflet.css");
 
@@ -23,21 +18,6 @@ code {
     cursor: initial;
 }
 
-.menu_item:hover {
-    background: blue;
-    cursor: pointer;
-    color: white;
-}
-
-tr.menu_header td {
-    background: lightgray;
-    border-bottom: 1px solid lightgray;
-    border-top: 1px solid lightgray;
-}
-
-tr.border-bottom td {
-    
-}
 
 
 

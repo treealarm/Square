@@ -171,8 +171,6 @@ export function LogicEditor(props: any) {
   return (
     <Box sx={{
       width: '100%',
-
-      bgcolor: 'background.paper',
       overflow: 'auto',
       height: '100%',
       border: 1
@@ -189,7 +187,7 @@ export function LogicEditor(props: any) {
           />
           <Tooltip title="Delete this logic">
 
-          <IconButton color="primary"
+          <IconButton
             aria-label="addProp"
             size="medium"
             onClick={(e: any) => deleteLogic(e)}          >
@@ -225,7 +223,7 @@ export function LogicEditor(props: any) {
         
         <ButtonGroup variant="contained" aria-label="logic pannel">
 
-          <IconButton color="primary"
+          <IconButton
             aria-label="addProp"
             size="medium"
             onClick={(e: any) => addFigureLink(e)}>
@@ -273,7 +271,6 @@ export function LogicEditor(props: any) {
                 />
                 <Tooltip title="Find figure of the logic">
                 <ToggleButton
-                  color="success"
                   value="check"
                   aria-label="search"
                   selected={figureIdMode == item}
@@ -294,7 +291,7 @@ export function LogicEditor(props: any) {
           justifyContent="flex-start"
         >
           <Tooltip title="Add property filter">
-          <IconButton color="primary" aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
+          <IconButton aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
             <LibraryAddIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>

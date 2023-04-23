@@ -81,11 +81,8 @@ export function ObjectRights() {
   return (
     <Box sx={{
       width: '100%',
-
-      bgcolor: 'background.paper',
       overflow: 'auto',
-      height: '100%',
-      border: 1
+      height: '100%'
     }}>
 
       <List>
@@ -95,7 +92,7 @@ export function ObjectRights() {
             <SaveIcon fontSize="inherit"></SaveIcon>
           </IconButton> 
 
-          <IconButton color="primary"
+          <IconButton
             aria-label="addProp"
             size="medium"
             onClick={(e: any) => addRoleRight(e)}>

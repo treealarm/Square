@@ -1,12 +1,17 @@
 ﻿import * as React from 'react';
 
 import {
-  Box, Checkbox, FormControlLabel, FormGroup
+  Box,
+  Checkbox,
+  FormControlLabel,
+  FormGroup
 } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { DeepCopy, SearchFilterGUI } from '../store/Marker';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
+import dayjs from 'dayjs';
+
 
 export default function GlobalLayersOptions() {
 
@@ -15,6 +20,21 @@ export default function GlobalLayersOptions() {
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = DeepCopy(searchFilter);
+
+    if (filter == null) {
+      filter =
+      {
+        time_start: dayjs().subtract(1, "day").toISOString(),
+        time_end: dayjs().toISOString(),
+        property_filter: {
+          props: [{ prop_name: "track_name", str_val: "mentovskoy_bobik" }]
+        },
+        search_id: "",
+        show_objects: true,
+        show_routs: true,
+        show_tracks: true
+      };
+    }
     return filter;
   }
 
@@ -49,7 +69,7 @@ export default function GlobalLayersOptions() {
       <FormGroup row>
         {
           checks.map((item, index) =>
-            <FormControlLabel key={"fkl"+item.id} control={
+            <FormControlLabel key={"fkl" + item.id} control={
               <Checkbox
                 checked={item.checked != false}
                 id={item.id}

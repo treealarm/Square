@@ -141,10 +141,11 @@ export function Home() {
 
   return (
     <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>
-      <Grid item xs={12} sx={{ height: "auto" }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static" sx={{ backgroundColor: '#aaaaaa' }} >
-            <Toolbar>
+
+      <Grid item xs={12} sx={{ height: "10%" }}>
+        <Box sx={{ flexGrow: 1}}>
+          <AppBar sx={{ backgroundColor: '#bbbbbb' }} >
+            <Toolbar variant='dense' >
               <Box
                 sx={{ flexGrow: 1 }}                
                 display="flex"
@@ -152,15 +153,24 @@ export function Home() {
               >
                 <PanelSwitch IsLeftPanel={true} />
                 <WebSockClient />
-                <GlobalLayersOptions />
-                <Login />
+                
               </Box>
-             
+              <Box
+                sx={{ flexGrow: 1 }}
+                display="flex"
+                justifyContent="flex-center"
+              >
+                <GlobalLayersOptions />
+                
+              </Box>
               <Box
                 display="flex"
-                justifyContent="flex-end"                
-                sx={{ flexGrow: 1 }}
+                justifyContent="flex-end"
+                alignContent="center"
+                sx={{ border: 1 }}
               >
+                <Box sx={{m: 2, p: 2, border:1 }}><Login /></Box>
+                
                 <PanelSwitch IsLeftPanel={false} />
               </Box>
               

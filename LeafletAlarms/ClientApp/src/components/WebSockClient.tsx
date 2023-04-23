@@ -1,13 +1,14 @@
 ﻿import * as React from "react";
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import * as MarkersStore from '../store/MarkersStates';
-import { Box, IconButton, Paper, styled, Tooltip } from "@mui/material";
+import { Box, Button, IconButton, Paper, styled, Tooltip } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import CircleIcon from '@mui/icons-material/Circle';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import { useAppDispatch } from '../store/configureStore';
-import * as TracksStore from '../store/TracksStates';
+import SignalCellular4BarIcon from '@mui/icons-material/SignalCellular4Bar';
+import SignalCellularNodataIcon from '@mui/icons-material/SignalCellularNodata';
 
 const  REACT_APP_AUTH_SERVER_URL  = process.env.REACT_APP_AUTH_SERVER_URL;
 
@@ -159,18 +160,24 @@ export function WebSockClient() {
       <React.Fragment key={"WebSock1"}>
       <Box>
         <Tooltip title={selected_track?.id + '\n' + url + '\n' + JSON.stringify(box) + '\n' + markers?.figs?.length}>
-        <IconButton
+        <Button
           onClick = {sendPing}
             style = {{ textTransform: 'none' }}
             size = "small"
           >
             <h1>{REACT_APP_AUTH_SERVER_URL}</h1>
-            <CircleIcon color={isConnected ? "success" : "error"} />
+            {
+              isConnected ?
+                <SignalCellular4BarIcon sx = {{m: 4}} color="success" />
+                :
+                <SignalCellularNodataIcon sx={{ m: 4 }} color="error" />
+            }
+            
             {
               markers?.figs != null ? <div>objects:{markers?.figs?.length.toString() + ","}</div> : <div />
             }
             <div> zoom:{box?.zoom}</div>
-          </IconButton> 
+          </Button> 
         </Tooltip>
         
       </Box>

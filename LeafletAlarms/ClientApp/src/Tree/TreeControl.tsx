@@ -136,6 +136,7 @@ export function TreeControl() {
             <ListItem
               key={marker.id}
               disablePadding
+              selected={reduxSelectedId == marker.id}
               secondaryAction={
                 marker.has_children &&
                 <IconButton size="small" edge="end" aria-label="drill_down" onClick={drillDown(marker)}>
@@ -157,7 +158,10 @@ export function TreeControl() {
                     onChange={handleChecked}
                   />
                 </ListItemIcon>
-                <ListItemText  id={marker.id} primary={marker.name} />
+                <ListItemText
+                  id={marker.id}
+                  primary={marker.name}                  
+                />
               </ListItemButton>
           </ListItem>
         )}

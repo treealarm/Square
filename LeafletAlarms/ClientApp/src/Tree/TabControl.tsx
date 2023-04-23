@@ -27,7 +27,7 @@ export default function TabControl() {
   
 
   return (
-    <Box sx={{ backgroundColor: 'blanchedalmond' }}>
+    <Box sx={{ backgroundColor: 'gray' }}>
       <Tabs
         value={curMarker}
         onChange={handleChange}
