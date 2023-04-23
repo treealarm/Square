@@ -180,14 +180,15 @@ export function Home() {
       </Grid>
 
       <Grid item xs={2} sx={{ height: "90%", display: showLeftPannel ? '' : 'none' }}
-        container spacing={0}>
+        spacing={0}>
         <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }} >
           <LeftPanel/>
         </Paper>
 
       </Grid>
 
-      <Grid item xs sx={{ minWidth: "100px", height: "90%", flexGrow: 1 }} container spacing={0}>
+      <Grid item xs sx={{ minWidth: "100px", height: "90%", flexGrow: 1 }}
+        spacing={0}>
         <Box sx={{ flexGrow: 1}}>
           <MapComponent />
         </Box>
@@ -195,7 +196,7 @@ export function Home() {
       </Grid>
 
       <Grid item xs={3} sx={{ height: "90%", display: showRightPannel ? '' : 'none' }}
-        container spacing={0}>
+        spacing={0}>
         <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }}>
           <RightPanel/>
         </Paper>
