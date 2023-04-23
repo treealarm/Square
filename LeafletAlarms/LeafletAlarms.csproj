@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\MainToolbar.tsx" />
     <None Remove="ClientApp\src\components\PanelSwitch.tsx" />
     <None Remove="ClientApp\src\Tree\SearchMeOnMap.tsx" />
     <None Remove="ClientApp\src\Tree\TrackProps.tsx" />
@@ -50,6 +51,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\MainToolbar.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
     <TypeScriptCompile Include="ClientApp\src\Tree\SearchMeOnMap.tsx" />
     <TypeScriptCompile Include="ClientApp\src\Tree\TrackProps.tsx" />

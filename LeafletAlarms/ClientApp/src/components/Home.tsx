@@ -24,6 +24,7 @@ import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import { TrackProps } from "../Tree/TrackProps";
 import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
+import { MainToolbar } from "./MainToolbar";
 
 
 const AccordionPanels = (props:{ components: Array<[IPanelsStatesDTO, JSX.Element]>}) => {
@@ -143,40 +144,7 @@ export function Home() {
     <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>
 
       <Grid item xs={12} sx={{ height: "10%" }}>
-        <Box sx={{ flexGrow: 1}}>
-          <AppBar sx={{ backgroundColor: '#bbbbbb' }} >
-            <Toolbar variant='dense' >
-              <Box
-                sx={{ flexGrow: 1 }}                
-                display="flex"
-                justifyContent="flex-start"                
-              >
-                <PanelSwitch IsLeftPanel={true} />
-                <WebSockClient />
-                
-              </Box>
-              <Box
-                sx={{ flexGrow: 1 }}
-                display="flex"
-                justifyContent="flex-center"
-              >
-                <GlobalLayersOptions />
-                
-              </Box>
-              <Box
-                display="flex"
-                justifyContent="flex-end"
-                alignContent="center"
-                sx={{ border: 1 }}
-              >
-                <Box sx={{m: 2, p: 2, border:1 }}><Login /></Box>
-                
-                <PanelSwitch IsLeftPanel={false} />
-              </Box>
-              
-            </Toolbar>
-          </AppBar>
-        </Box>
+        <MainToolbar/>
       </Grid>
 
       <Grid item xs={2} sx={{ height: "90%", display: showLeftPannel ? '' : 'none' }}
