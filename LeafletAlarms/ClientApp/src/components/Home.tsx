@@ -136,34 +136,34 @@ export function Home() {
 
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
-  var search_result = panels.find(e => e.panelId == IPanelTypes.search_result);
-  var tree = panels.find(e => e.panelId == IPanelTypes.tree);
-
-  var showLeftPannel = tree != null || search_result != null;
-
-  var properties = panels.find(e => e.panelId == IPanelTypes.properties);
-  var search = panels.find(e => e.panelId == IPanelTypes.search);
-  var logic = panels.find(e => e.panelId == IPanelTypes.logic);
-  var rights = panels.find(e => e.panelId == IPanelTypes.rights);
-  var track_props = panels.find(e => e.panelId == IPanelTypes.track_props);
-
-  var showRightPannel =
-    properties != null ||
-    logic != null ||
-    rights != null ||
-    search != null ||
-    track_props != null;
+  var showLeftPannel = panels.find(e => e.IsLeft) != null;
+  var showRightPannel = panels.find(e => e.IsLeft == false) != null;
 
   return (
     <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>
       <Grid item xs={12} sx={{ height: "auto" }}>
         <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static" sx={{ backgroundColor: '#aaaaaa' }} >
-            <Toolbar>  
-              <PanelSwitch />
-          <WebSockClient />
-          <GlobalLayersOptions />
-          <Login />
+            <Toolbar>
+              <Box
+                sx={{ flexGrow: 1 }}                
+                display="flex"
+                justifyContent="flex-start"                
+              >
+                <PanelSwitch IsLeftPanel={true} />
+                <WebSockClient />
+                <GlobalLayersOptions />
+                <Login />
+              </Box>
+             
+              <Box
+                display="flex"
+                justifyContent="flex-end"                
+                sx={{ flexGrow: 1 }}
+              >
+                <PanelSwitch IsLeftPanel={false} />
+              </Box>
+              
             </Toolbar>
           </AppBar>
         </Box>

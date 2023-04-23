@@ -37,7 +37,6 @@ export function RetroSearch() {
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
   const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
-  const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = DeepCopy(searchFilter);
@@ -222,8 +221,6 @@ export function RetroSearch() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <TrackProps/>
-
       <List dense>
         <ListItem>
           <Box display="flex" justifyContent="flex-start">

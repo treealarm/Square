@@ -271,6 +271,7 @@ export interface IRightValuesDTO {
 export interface IPanelsStatesDTO {
   panelId: string;
   panelValue?: string;
+  IsLeft: boolean;
 }
 
 export class IPanelTypes{

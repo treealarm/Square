@@ -165,8 +165,11 @@ export function WebSockClient() {
             size = "small"
           >
             <h1>{REACT_APP_AUTH_SERVER_URL}</h1>
-          <CircleIcon color={isConnected ? "success" : "error"} />
-            <div>objs:{markers?.figs?.length}, zoom:{box?.zoom}</div>
+            <CircleIcon color={isConnected ? "success" : "error"} />
+            {
+              markers?.figs != null ? <div>objects:{markers?.figs?.length.toString() + ","}</div> : <div />
+            }
+            <div> zoom:{box?.zoom}</div>
           </IconButton> 
         </Tooltip>
         
