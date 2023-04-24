@@ -53,15 +53,9 @@ export default () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          height: "98vh"
-        }}
-      >
         <Layout>
           <Home/>
         </Layout>
-      </Box>
     </ThemeProvider>
   );
 

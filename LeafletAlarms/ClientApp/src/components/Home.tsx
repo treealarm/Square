@@ -8,7 +8,7 @@ import {
   Accordion, AccordionDetails, AccordionSummary,
   AppBar,
   Box,
-  Grid, Paper, Stack, Toolbar, Typography
+  Grid, Paper, Stack, styled, Toolbar, Typography
 } from "@mui/material";
 
 import { WebSockClient } from "./WebSockClient";
@@ -25,9 +25,10 @@ import { ApplicationState } from "../store";
 import { TrackProps } from "../Tree/TrackProps";
 import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
+import { MapContainer } from "react-leaflet";
 
 
-const AccordionPanels = (props:{ components: Array<[IPanelsStatesDTO, JSX.Element]>}) => {
+const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 
   var components = props.components.filter(e => e != null);
 
@@ -70,15 +71,15 @@ const LeftPanel = () => {
     if (datum.panelId == IPanelTypes.tree) {
       return [datum, (
         <div>
-            <TabControl />
-            <TreeControl />
+          <TabControl />
+          <TreeControl />
         </div>
       )];
     }
 
     if (datum.panelId == IPanelTypes.search_result) {
       return [datum, (
-            <SearchResult></SearchResult>
+        <SearchResult></SearchResult>
       )];
     }
     return null;
@@ -96,34 +97,34 @@ const RightPanel = () => {
 
     if (datum.panelId == IPanelTypes.properties) {
       return [datum, (
-            <Stack sx={{ height: "100%" }}>
-              <EditOptions />
-              <ObjectProperties />
-            </Stack>
+        <Stack sx={{ height: "100%" }}>
+          <EditOptions />
+          <ObjectProperties />
+        </Stack>
       )];
     }
 
     if (datum.panelId == IPanelTypes.search) {
       return [datum, (
-            <RetroSearch></RetroSearch>
+        <RetroSearch></RetroSearch>
       )];
     }
 
     if (datum.panelId == IPanelTypes.logic) {
       return [datum, (
-            <ObjectLogic />
+        <ObjectLogic />
       )];
     }
 
     if (datum.panelId == IPanelTypes.rights) {
       return [datum, (
-            <ObjectRights />
+        <ObjectRights />
       )];
-    } 
-    
+    }
+
     if (datum.panelId == IPanelTypes.track_props) {
       return [datum, (
-            <TrackProps />
+        <TrackProps />
       )];
     }
     return null;
@@ -132,6 +133,7 @@ const RightPanel = () => {
   return (<AccordionPanels components={components} />);
 };
 
+const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 export function Home() {
 
@@ -141,35 +143,36 @@ export function Home() {
   var showRightPannel = panels.find(e => e.IsLeft == false) != null;
 
   return (
-    <Grid container spacing={1} sx={{ height: "100%", p: "1px" }}>
+    <Box sx={{ height: '98vh' }}>
+      <MainToolbar />
+      <Box sx={{ height: '90%' }}>
+        <Offset />
 
-      <Grid item xs={12} sx={{ height: "10%" }}>
-        <MainToolbar/>
-      </Grid>
+        <Grid container sx={{ height: 1 }}>
 
-      <Grid item xs={2} sx={{ height: "90%", display: showLeftPannel ? '' : 'none' }}
-        spacing={0}>
-        <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }} >
-          <LeftPanel/>
-        </Paper>
+          <Grid item xs={2} sx={{ display: showLeftPannel ? '' : 'none' }}>
+            <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }} >
+              <LeftPanel />
+            </Paper>
 
-      </Grid>
+          </Grid>
 
-      <Grid item xs sx={{ minWidth: "100px", height: "90%", flexGrow: 1 }}
-        spacing={0}>
-        <Box sx={{ flexGrow: 1, height:'100%'}}>
-          <MapComponent />
-        </Box>
-        
-      </Grid>
+          <Grid item xs sx={{ minWidth: "100px" }}>
 
-      <Grid item xs={3} sx={{ height: "90%", display: showRightPannel ? '' : 'none' }}
-        spacing={0}>
-        <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }}>
-          <RightPanel/>
-        </Paper>
+            <Box sx={{ height: '100%' }}>
+              <MapComponent />
+            </Box>
 
-      </Grid>
-    </Grid>
+          </Grid>
+
+          <Grid item xs={3} sx={{ display: showRightPannel ? '' : 'none' }}>
+            <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }}>
+              <RightPanel />
+            </Paper>
+
+          </Grid>
+        </Grid>
+      </Box>
+    </Box>
   );
 }
