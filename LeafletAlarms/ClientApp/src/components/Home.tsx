@@ -26,6 +26,7 @@ import { TrackProps } from "../Tree/TrackProps";
 import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import { MapContainer } from "react-leaflet";
+import { useRef } from "react";
 
 
 const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
@@ -144,12 +145,10 @@ export function Home() {
 
   return (
     <Box sx={{ height: '98vh' }}>
-      <MainToolbar />
-      <Box sx={{ height: '90%' }}>
-        <Offset />
-
-        <Grid container sx={{ height: 1 }}>
-
+      <MainToolbar  />
+      <Toolbar />
+      <Grid container sx={{ height: 'calc(100% - 60px)' }}>
+      
           <Grid item xs={2} sx={{ display: showLeftPannel ? '' : 'none' }}>
             <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }} >
               <LeftPanel />
@@ -172,7 +171,6 @@ export function Home() {
 
           </Grid>
         </Grid>
-      </Box>
     </Box>
   );
 }

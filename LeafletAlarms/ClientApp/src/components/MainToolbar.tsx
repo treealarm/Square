@@ -37,9 +37,8 @@ return (
         display="flex"
         justifyContent="flex-end"
         alignContent="center"
-        sx={{ border: 1 }}
       >
-        <Box sx={{ m: 2, p: 2, border: 1 }}><Login /></Box>
+        <Box sx={{ m: 2, p: 2}}><Login /></Box>
 
         <PanelSwitch IsLeftPanel={false} />
       </Box>
