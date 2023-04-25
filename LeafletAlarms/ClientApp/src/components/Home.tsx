@@ -7,7 +7,7 @@ import { ObjectProperties } from "../Tree/ObjectProperties";
 import {
   Accordion, AccordionDetails, AccordionSummary,
   Box,
-  Grid, IconButton, Paper, Stack, styled, Toolbar, Tooltip, Typography
+  Grid, IconButton, Paper, Stack, styled, ToggleButton, Toolbar, Tooltip, Typography
 } from "@mui/material";
 
 import * as PanelsStore from '../store/PanelsStates';
@@ -19,15 +19,23 @@ import { ObjectRights } from "../Rights/ObjectRights";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import { TrackProps } from "../Tree/TrackProps";
-import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
+import { DeepCopy, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import CloseIcon from "@mui/icons-material/Close";
 import { useAppDispatch } from "../store/configureStore";
 
+import DataObjectIcon from '@mui/icons-material/DataObject';
+import SearchIcon from '@mui/icons-material/Search';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
 const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 
   const appDispatch = useAppDispatch();
+  const [expand, setExpand] = React.useState(false);
+  const toggleAccordion = () => {
+    setExpand((prev) => !prev);
+  };
+
   var components = props.components.filter(e => e != null);
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
@@ -35,10 +43,61 @@ const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Eleme
     return null;
   }
 
+  var firstComponent = components[0];
+
+  if (firstComponent[0].IsLeft) {
+
+  }
+
+  var properties: IPanelsStatesDTO = null;
+  var search: IPanelsStatesDTO = null;
+  var track_props: IPanelsStatesDTO = null;
+
+  components.map((component) => {
+
+    if (component[0].panelId == IPanelTypes.properties) {
+      properties = component[0];
+    }
+
+    if (component[0].panelId == IPanelTypes.search) {
+      search = component[0];
+    }
+
+    if (component[0].panelId == IPanelTypes.track_props) {
+      track_props = component[0];
+    }
+  });
+
+  const showToggleButtons =
+    properties != null || search != null || track_props != null;
+
   const handleClose = (panelId: string) => {
 
       var removed = panels.filter(e => e.panelId != panelId);
       appDispatch(PanelsStore.set_panels(removed));
+  };
+
+  const handleSelectRight = (panelId: string, text: string) => {
+
+    var exist = panels.find(e => e.panelId == panelId);
+
+    if (exist) {
+      var removed = panels.filter(e => e.panelId != panelId);
+      appDispatch(PanelsStore.set_panels(removed));
+    }
+    else {
+      var newPanels = DeepCopy(panels);
+
+      newPanels = newPanels.filter(e => e.IsLeft != false);
+      newPanels.push(
+        {
+          panelId: panelId,
+          panelValue: text,
+          IsLeft: false
+        });
+
+      appDispatch(PanelsStore.set_panels(newPanels));
+    }
   };
 
   var counter = 0;
@@ -53,8 +112,10 @@ const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Eleme
     counter++;
 
     return (
-      <Accordion key={ counter } defaultExpanded sx={{ backgroundColor: color }}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: color }}>
+      <Accordion key={counter} expanded={expand} sx={{ backgroundColor: color }}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon
+          onClick={toggleAccordion}
+        />} sx={{ backgroundColor: color }}>
 
           <Box
             sx={{ flexGrow: 1 }}
@@ -63,6 +124,53 @@ const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Eleme
           >
             <Typography sx={{ fontWeight: 'bold' }}>{component[0].panelValue}</Typography>
           </Box>
+
+          {
+            showToggleButtons ?
+              <Box
+                sx={{ flexGrow: 1 }}
+                display="flex"
+                justifyContent="flex-end"
+                alignContent="center">
+
+                <ToggleButton
+                  value="check"
+                  aria-label="properties"
+                  selected={properties != null}
+                  size="small"
+                  onChange={() =>
+                    handleSelectRight(IPanelTypes.properties, IPanelTypes.propertiesName)
+                  }
+                  >
+                  <DataObjectIcon />
+                </ToggleButton>
+
+                <ToggleButton
+                  value="check"
+                  aria-label="search"
+                  selected={search != null}
+                  size="small"
+                  onChange={() => 
+                    handleSelectRight(IPanelTypes.search, IPanelTypes.searchName)
+                  }
+                  >
+                  <SearchIcon />
+                </ToggleButton>
+
+                <ToggleButton
+                  value="check"
+                  aria-label="track_props"
+                  selected={track_props != null}
+                  size="small"
+                  onChange={() => handleSelectRight(IPanelTypes.track_props, IPanelTypes.track_propsName)
+                  }>
+                  <SummarizeIcon />
+                </ToggleButton>
+              </Box>
+            :
+            <div/>
+          }
+          
 
           <Box
             display="flex"
