@@ -7,9 +7,10 @@ import { ObjectProperties } from "../Tree/ObjectProperties";
 import {
   Accordion, AccordionDetails, AccordionSummary,
   Box,
-  Grid, Paper, Stack, styled, Toolbar, Typography
+  Grid, IconButton, Paper, Stack, styled, Toolbar, Tooltip, Typography
 } from "@mui/material";
 
+import * as PanelsStore from '../store/PanelsStates';
 import { RetroSearch } from "../Tree/RetroSearch";
 import { SearchResult } from "../Tree/SearchResult";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -20,15 +21,25 @@ import { ApplicationState } from "../store";
 import { TrackProps } from "../Tree/TrackProps";
 import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
+import CloseIcon from "@mui/icons-material/Close";
+import { useAppDispatch } from "../store/configureStore";
 
 
 const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 
+  const appDispatch = useAppDispatch();
   var components = props.components.filter(e => e != null);
+  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
   if (components.length == 0) {
     return null;
   }
+
+  const handleClose = (panelId: string) => {
+
+      var removed = panels.filter(e => e.panelId != panelId);
+      appDispatch(PanelsStore.set_panels(removed));
+  };
 
   var counter = 0;
 
@@ -44,7 +55,32 @@ const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Eleme
     return (
       <Accordion key={ counter } defaultExpanded sx={{ backgroundColor: color }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: color }}>
-          <Typography sx={{ fontWeight: 'bold' }}>{component[0].panelValue}</Typography>
+
+          <Box
+            sx={{ flexGrow: 1 }}
+            display="flex"
+            justifyContent="flex-start"
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>{component[0].panelValue}</Typography>
+          </Box>
+
+          <Box
+            display="flex"
+            justifyContent="flex-end"
+            alignContent="center"
+          >
+          <Tooltip title="Remove panel">
+            <IconButton
+              aria-label="close"
+              size="small"
+              onClick={(e: any) => handleClose(component[0].panelId)}
+              
+            >
+              <CloseIcon />
+            </IconButton>
+            </Tooltip>
+          </Box>
+
         </AccordionSummary>
         <AccordionDetails sx={{ backgroundColor: color }}>
           {component[1]}
