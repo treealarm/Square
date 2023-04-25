@@ -8,12 +8,22 @@ const _kc = new Keycloak('keycloak.json');
  * @param onAuthenticatedCallback
  */
 
+const CleanToken = () => {
+  localStorage.setItem('kc_token', '');
+  localStorage.setItem('kc_refreshToken', '');
+
+  if (_kc != null) {
+    _kc.token = null;
+  }  
+}
+
 const initKeycloak = (onAuthenticatedCallback: any) => {
 
   var token = localStorage.getItem('kc_token');
   var refreshToken = localStorage.getItem('kc_refreshToken');
 
   console.log("KC INIT:");
+
   _kc.onTokenExpired = () => {
     console.log('expired ' + new Date());
     _kc.updateToken(0).then((refreshed) => {
@@ -21,16 +31,20 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
         console.log('refreshed ' + new Date());
       } else {
         console.log('not refreshed ' + new Date());
-        _kc.clearToken();
+        CleanToken();
       }
     }).catch(() => {
       console.error('Failed to refresh token ' + new Date());
-      _kc.clearToken();
+      CleanToken();
     });
   }
 
   _kc.onAuthError = () => {
     console.log('ON_AUTH_ERROR');
+  }
+
+  _kc.onAuthLogout = () => {
+    console.log('ON_AUTH_LOGOUT');
   }
 
   _kc.init({
@@ -44,9 +58,7 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
 
       if (!authenticated) {
         console.log("user is not authenticated..!");
-        _kc.clearToken();
-        localStorage.setItem('kc_token', '');
-        localStorage.setItem('kc_refreshToken', '');
+        CleanToken();
       }
       else {
         localStorage.setItem('kc_token', _kc.token);
@@ -64,6 +76,7 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
     })
     .catch((e: any) =>
     {      
+      CleanToken();
       console.log("KC ERROR:", e);
     });
 };
@@ -73,10 +86,9 @@ const doLogin = () => {
 }
 
 const doLogout = () =>
-{
-  localStorage.setItem('kc_token', '');
-  localStorage.setItem('kc_refreshToken', '');
+{  
   _kc.logout();
+  CleanToken();
 }
 
 const getToken = () => _kc.token;

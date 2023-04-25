@@ -3,7 +3,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
+
 
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -12,6 +12,8 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import SearchIcon from '@mui/icons-material/Search';
 import SchemaIcon from '@mui/icons-material/Schema';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
@@ -126,7 +128,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
                   IPanelTypes.treeName, IPanelTypes.tree, true)}
                 selected={tree != null}>
                 <ListItemIcon>
-                  <AccountTreeIcon fontSize="small" />
+                  <AccountTreeIcon />
                 </ListItemIcon>
                 {IPanelTypes.treeName}
               </MenuItem>
@@ -135,7 +137,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
                 IPanelTypes.search_resultName, IPanelTypes.search_result, true)}
                 selected={search_result != null}>
                 <ListItemIcon>
-                  <QueryStatsIcon fontSize="small" />
+                  <ManageSearchIcon />
                 </ListItemIcon>
                 {IPanelTypes.search_resultName}
               </MenuItem>
@@ -146,7 +148,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
                 IPanelTypes.propertiesName, IPanelTypes.properties)}
                 selected={properties != null}>
                 <ListItemIcon>
-                  <DataObjectIcon fontSize="small" />
+                  <DataObjectIcon />
                 </ListItemIcon>
                 {IPanelTypes.propertiesName}
               </MenuItem>
@@ -155,7 +157,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
                 IPanelTypes.searchName, IPanelTypes.search)}
                 selected={search != null}>
                 <ListItemIcon>
-                  <SearchIcon fontSize="small" />
+                  <SearchIcon />
                 </ListItemIcon>
                 {IPanelTypes.searchName}
               </MenuItem>
@@ -164,7 +166,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
                 IPanelTypes.track_propsName, IPanelTypes.track_props)}
                 selected={track_props != null}>
                 <ListItemIcon>
-                  <LockPersonIcon fontSize="small" />
+                  <SummarizeIcon />
                 </ListItemIcon>
                 {IPanelTypes.track_propsName}
               </MenuItem>
@@ -173,7 +175,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
                 IPanelTypes.logicName, IPanelTypes.logic)}
                 selected={logic != null}>
                 <ListItemIcon>
-                  <SchemaIcon fontSize="small" />
+                  <SchemaIcon />
                 </ListItemIcon>
                 {IPanelTypes.logicName}
               </MenuItem>
@@ -182,7 +184,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
                 IPanelTypes.rightsName, IPanelTypes.rights)}
                 selected={rights != null}>
                 <ListItemIcon>
-                  <LockPersonIcon fontSize="small" />
+                  <LockPersonIcon />
                 </ListItemIcon>
                 {IPanelTypes.rightsName}
               </MenuItem>

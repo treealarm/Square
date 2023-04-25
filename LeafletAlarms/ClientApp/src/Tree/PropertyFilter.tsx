@@ -57,10 +57,8 @@ export function PropertyFilter(props:any) {
     <Box
       sx={{
         width: '100%',
-        bgcolor: 'background.paper',
         overflow: 'auto',
-        height: '100%',
-        border: 1
+        height: '100%'
       }}>
       <List dense>
       {

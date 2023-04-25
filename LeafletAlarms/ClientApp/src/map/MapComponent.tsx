@@ -8,7 +8,6 @@ import {
 import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
 import { TrackViewer } from "../tracks/TrackViewer";
-import { Browser, Control } from "leaflet";
 
 export function MapComponent(props: any) {
 

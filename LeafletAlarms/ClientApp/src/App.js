@@ -27,13 +27,32 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: 'white',
-
           '&.Mui-selected': {
             backgroundColor: 'lightgray',
           },
         },
       },
     },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'white',
+          '&.Mui-selected': {
+            backgroundColor: 'lightgray',
+          },
+        },
+      },
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'white',
+          '&.Mui-selected': {
+            backgroundColor: 'lightgray',
+          },
+        },
+      },
+    }
   },
 });
 
