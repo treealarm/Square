@@ -149,8 +149,8 @@ export function Home() {
       <Toolbar />
       <Grid container sx={{ height: 'calc(100% - 60px)' }}>
       
-          <Grid item xs={2} sx={{ display: showLeftPannel ? '' : 'none' }}>
-            <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }} >
+        <Grid item xs={3} sx={{ height: "100%", display: showLeftPannel ? '' : 'none' }}>
+            <Paper sx={{ height: "100%", overflow: 'auto', width: "100%" }} >
               <LeftPanel />
             </Paper>
 
@@ -164,8 +164,8 @@ export function Home() {
 
           </Grid>
 
-          <Grid item xs={3} sx={{ display: showRightPannel ? '' : 'none' }}>
-            <Paper sx={{ maxHeight: "100%", overflow: 'auto', width: "100%" }}>
+        <Grid item xs={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
+          <Paper sx={{ height: "100%", overflow: 'auto', width: "100%" }}>
               <RightPanel />
             </Paper>
 

@@ -5,11 +5,25 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface PanelsStates {
   panels: IPanelsStatesDTO[];
+  inited: boolean;
 }
 
 const unloadedState: PanelsStates = {
-  panels: []
+  panels: [],
+  inited:false
 };
+
+var panels = localStorage.getItem('PanelsStates');
+
+if (panels != null && panels != '') {
+  try {
+    unloadedState.panels = JSON.parse(panels);
+  }
+  catch (e: any) {
+    unloadedState.panels = [];
+  }
+  
+}
 
 export const updatePannelsStates = createAsyncThunk<IPanelsStatesDTO[], IPanelsStatesDTO[]>(
   'states/UpdatePanelsStates',
@@ -35,7 +49,11 @@ const panelsSlice = createSlice({
   reducers: {
     // Give case reducers meaningful past-tense "event"-style names
     set_panels(state: PanelsStates, action: PayloadAction<IPanelsStatesDTO[]>) {
+
+      localStorage.setItem('PanelsStates', JSON.stringify(action.payload));
+
       state.panels = action.payload;
+      state.inited = true;
     }
   }
 })
