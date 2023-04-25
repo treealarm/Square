@@ -1,22 +1,10 @@
-﻿using Domain.OptionsModels;
-using Domain.Rights;
+﻿using Domain.Rights;
 using Domain.ServiceInterfaces;
 using Itinero;
 using LeafletAlarms.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using MongoDB.Driver.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text.Json;
-using System.Threading.Tasks;
+
 
 namespace LeafletAlarms.Controllers
 {

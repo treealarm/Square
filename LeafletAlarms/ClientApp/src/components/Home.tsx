@@ -6,27 +6,20 @@ import EditOptions from "../Tree/EditOptions";
 import { ObjectProperties } from "../Tree/ObjectProperties";
 import {
   Accordion, AccordionDetails, AccordionSummary,
-  AppBar,
   Box,
   Grid, Paper, Stack, styled, Toolbar, Typography
 } from "@mui/material";
 
-import { WebSockClient } from "./WebSockClient";
 import { RetroSearch } from "../Tree/RetroSearch";
 import { SearchResult } from "../Tree/SearchResult";
-import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ObjectLogic } from "../Logic/ObjectLogic";
-import { Login } from "../auth/Login";
 import { ObjectRights } from "../Rights/ObjectRights";
-import PanelSwitch from "./PanelSwitch";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import { TrackProps } from "../Tree/TrackProps";
 import { IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
-import { MapContainer } from "react-leaflet";
-import { useRef } from "react";
 
 
 const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
@@ -49,7 +42,7 @@ const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Eleme
     counter++;
 
     return (
-      <Accordion defaultExpanded sx={{ backgroundColor: color }}>
+      <Accordion key={ counter } defaultExpanded sx={{ backgroundColor: color }}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ backgroundColor: color }}>
           <Typography sx={{ fontWeight: 'bold' }}>{component[0].panelValue}</Typography>
         </AccordionSummary>

@@ -14,13 +14,24 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
   var refreshToken = localStorage.getItem('kc_refreshToken');
 
   console.log("KC INIT:");
-
-  if (_kc.isTokenExpired) {
-    console.error("KC ERROR: EXPIRED");
-    _kc.token = null;
-    token = null;
+  _kc.onTokenExpired = () => {
+    console.log('expired ' + new Date());
+    _kc.updateToken(0).then((refreshed) => {
+      if (refreshed) {
+        console.log('refreshed ' + new Date());
+      } else {
+        console.log('not refreshed ' + new Date());
+        _kc.clearToken();
+      }
+    }).catch(() => {
+      console.error('Failed to refresh token ' + new Date());
+      _kc.clearToken();
+    });
   }
 
+  _kc.onAuthError = () => {
+    console.log('ON_AUTH_ERROR');
+  }
 
   _kc.init({
     onLoad: 'check-sso',
@@ -30,8 +41,10 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
     refreshToken: refreshToken
   })
     .then((authenticated) => {
+
       if (!authenticated) {
         console.log("user is not authenticated..!");
+        _kc.clearToken();
         localStorage.setItem('kc_token', '');
         localStorage.setItem('kc_refreshToken', '');
       }
@@ -39,28 +52,20 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
         localStorage.setItem('kc_token', _kc.token);
         localStorage.setItem('kc_refreshToken', _kc.refreshToken);
         console.log('roles', _kc.realmAccess.roles);
-        console.log('KC SEEMS TO BE AUTHENTIFICATED', _kc.authenticated); 
-      }
+        console.log('KC SEEMS TO BE AUTHENTIFICATED', _kc.authenticated);
+
+        if (_kc.isTokenExpired(10)) {
+          console.error("KC ERROR: EXPIRED");
+          _kc.onTokenExpired();
+        }
+      }      
 
       onAuthenticatedCallback();
     })
     .catch((e: any) =>
-    {
+    {      
       console.log("KC ERROR:", e);
     });
-
-  _kc.onTokenExpired = () => {
-    console.log('expired ' + new Date());
-    _kc.updateToken(0).then((refreshed) => {
-      if (refreshed) {
-        console.log('refreshed ' + new Date());
-      } else {
-        console.log('not refreshed ' + new Date());
-      }
-    }).catch(() => {
-      console.error('Failed to refresh token ' + new Date());
-    });
-  }
 };
 
 const doLogin = () => {
