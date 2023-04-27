@@ -7,21 +7,16 @@ import Divider from '@mui/material/Divider';
 
 import { IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import DataObjectIcon from '@mui/icons-material/DataObject';
-import SearchIcon from '@mui/icons-material/Search';
-import SchemaIcon from '@mui/icons-material/Schema';
-import LockPersonIcon from '@mui/icons-material/LockPerson';
-import ManageSearchIcon from '@mui/icons-material/ManageSearch';
-import SummarizeIcon from '@mui/icons-material/Summarize';
+
 
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../store/configureStore';
 import * as PanelsStore from '../store/PanelsStates';
-import { DeepCopy, IPanelTypes } from '../store/Marker';
+import { DeepCopy, EPanelType, IPanelTypes } from '../store/Marker';
+import { PanelIcon } from './PanelIcon';
 
-export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
+export default function PanelSwitch(props: { panelType: EPanelType }) {
 
   const appDispatch = useAppDispatch();
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
@@ -37,7 +32,7 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
     setAnchorEl(null);
   };
 
-  const handleSelect = (text: string, menuItem: string, isLeft: boolean = false) => {
+  const handleSelect = (text: string, menuItem: string, panType: EPanelType) => {
     setAnchorEl(null);
     var exist = panels.find(e => e.panelId == menuItem);
 
@@ -48,27 +43,19 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
     else {
       var newPanels = DeepCopy(panels);
 
-      newPanels = newPanels.filter(e => e.IsLeft != isLeft);
+      newPanels = newPanels.filter(e => e.panelType != panType);
       newPanels.push(
         {
           panelId: menuItem,
           panelValue: text,
-          IsLeft: isLeft
+          panelType: panType
         });
       console.log(JSON.stringify(newPanels));
       appDispatch(PanelsStore.set_panels(newPanels));
     }
   };
 
-  var search_result = panels.find(e => e.panelId == IPanelTypes.search_result);
-  var tree = panels.find(e => e.panelId == IPanelTypes.tree);
-
-  var properties = panels.find(e => e.panelId == IPanelTypes.properties);
-  var search = panels.find(e => e.panelId == IPanelTypes.search);
-  var logic = panels.find(e => e.panelId == IPanelTypes.logic);
-  var rights = panels.find(e => e.panelId == IPanelTypes.rights);
-
-  var track_props = panels.find(e => e.panelId == IPanelTypes.track_props);
+  var curPannels = IPanelTypes.panels.filter(p => p.panelType == props.panelType);
 
   return (
     <React.Fragment>
@@ -118,79 +105,20 @@ export default function PanelSwitch(props: { IsLeftPanel: boolean }) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Divider />
-
+        <Divider/>
         {
-          props.IsLeftPanel ?
-            <div>
-              <MenuItem
-                onClick={(e: any) => handleSelect(
-                  IPanelTypes.treeName, IPanelTypes.tree, true)}
-                selected={tree != null}>
-                <ListItemIcon>
-                  <AccountTreeIcon />
-                </ListItemIcon>
-                {IPanelTypes.treeName}
-              </MenuItem>
-
-              <MenuItem onClick={(e: any) => handleSelect(
-                IPanelTypes.search_resultName, IPanelTypes.search_result, true)}
-                selected={search_result != null}>
-                <ListItemIcon>
-                  <ManageSearchIcon />
-                </ListItemIcon>
-                {IPanelTypes.search_resultName}
-              </MenuItem>
-            </div>
-            :
-            <div>
-              <MenuItem onClick={(e: any) => handleSelect(
-                IPanelTypes.propertiesName, IPanelTypes.properties)}
-                selected={properties != null}>
-                <ListItemIcon>
-                  <DataObjectIcon />
-                </ListItemIcon>
-                {IPanelTypes.propertiesName}
-              </MenuItem>
-
-              <MenuItem onClick={(e: any) => handleSelect(
-                IPanelTypes.searchName, IPanelTypes.search)}
-                selected={search != null}>
-                <ListItemIcon>
-                  <SearchIcon />
-                </ListItemIcon>
-                {IPanelTypes.searchName}
-              </MenuItem>
-
-              <MenuItem onClick={(e: any) => handleSelect(
-                IPanelTypes.track_propsName, IPanelTypes.track_props)}
-                selected={track_props != null}>
-                <ListItemIcon>
-                  <SummarizeIcon />
-                </ListItemIcon>
-                {IPanelTypes.track_propsName}
-              </MenuItem>
-
-              <MenuItem onClick={(e: any) => handleSelect(
-                IPanelTypes.logicName, IPanelTypes.logic)}
-                selected={logic != null}>
-                <ListItemIcon>
-                  <SchemaIcon />
-                </ListItemIcon>
-                {IPanelTypes.logicName}
-              </MenuItem>
-
-              <MenuItem onClick={(e: any) => handleSelect(
-                IPanelTypes.rightsName, IPanelTypes.rights)}
-                selected={rights != null}>
-                <ListItemIcon>
-                  <LockPersonIcon />
-                </ListItemIcon>
-                {IPanelTypes.rightsName}
-              </MenuItem>
-            </div>
+          curPannels.map((datum) => 
+            <MenuItem
+              onClick={(e: any) => handleSelect(
+                datum.panelValue, datum.panelId, props.panelType)}
+              selected={panels.find(p => p.panelId == datum.panelId )!= null}>
+              <ListItemIcon>
+                <PanelIcon panelId={datum.panelId} />
+              </ListItemIcon>
+              {datum.panelValue}
+            </MenuItem>
+          )
         }
-
       </Menu>
 
     </React.Fragment>

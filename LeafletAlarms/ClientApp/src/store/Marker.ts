@@ -268,15 +268,20 @@ export interface IRightValuesDTO {
   rightValue: number;
 }
 
+export enum EPanelType {
+  Left,
+  Right
+}
+
 export interface IPanelsStatesDTO {
   panelId: string;
-  panelValue?: string;
-  IsLeft: boolean;
+  panelValue: string;
+  panelType: EPanelType;
 }
 
 export class IPanelTypes{
-  static search_result: string = 'search_result';
   static tree: string = 'tree';
+  static search_result: string = 'search_result';  
 
   static properties: string = 'properties';
   static search: string = 'search';
@@ -284,16 +289,44 @@ export class IPanelTypes{
 
   static logic: string = 'logic';
   static rights: string = 'rights';
-  
 
-  static search_resultName: string = 'Search result';
-  static treeName: string = 'Tree';
+  static panels: IPanelsStatesDTO[] = [
+    {
+      panelId: IPanelTypes.tree,
+      panelValue: 'Tree',
+      panelType: EPanelType.Left
+    },
+    {
+      panelId: IPanelTypes.search_result,
+      panelValue: 'Search result',
+      panelType: EPanelType.Left
+    },
 
-  static propertiesName: string = 'Properties';
-  static searchName: string = 'Search';
-  static track_propsName: string = 'Track properties';
 
-  static logicName: string = 'Logic';
-  static rightsName: string = 'Rights';
-  
+    {
+      panelId: IPanelTypes.search,
+      panelValue: 'Search',
+      panelType: EPanelType.Right
+    },
+    {
+      panelId: IPanelTypes.properties,
+      panelValue: 'Properties',
+      panelType: EPanelType.Right
+    },
+    {
+      panelId: IPanelTypes.track_props,
+      panelValue: 'Track properties',
+      panelType: EPanelType.Right
+    },
+    {
+      panelId: IPanelTypes.logic,
+      panelValue: 'Logic',
+      panelType: EPanelType.Right
+    },
+    {
+      panelId: IPanelTypes.rights,
+      panelValue: 'Rights',
+      panelType: EPanelType.Right
+    }
+  ];
 }

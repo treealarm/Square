@@ -10,6 +10,7 @@ import { WebSockClient } from "./WebSockClient";
 import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
 import { Login } from "../auth/Login";
 import PanelSwitch from "./PanelSwitch";
+import { EPanelType } from "../store/Marker";
 
 export function MainToolbar() {
 return (
@@ -21,7 +22,7 @@ return (
         display="flex"
         justifyContent="flex-start"
       >
-        <PanelSwitch IsLeftPanel={true} />
+          <PanelSwitch panelType={EPanelType.Left} />
         <WebSockClient />
 
       </Box>
@@ -40,7 +41,7 @@ return (
       >
         <Box sx={{ m: 2, p: 2}}><Login /></Box>
 
-        <PanelSwitch IsLeftPanel={false} />
+          <PanelSwitch panelType={EPanelType.Right} />
       </Box>
 
     </Toolbar>

@@ -5,9 +5,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
 import {
-  Box, Button, IconButton, List, ListItem
+  Box, IconButton, List, ListItem
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import FindInPageIcon from '@mui/icons-material/FindInPage';
 import { useCallback, useEffect } from 'react';
 import { useSelector } from "react-redux";
 import * as SearchResultStore from '../store/SearchResultStates';
@@ -225,7 +226,7 @@ export function RetroSearch() {
               selected={searchFilter?.applied == true}
               size="small"
               onChange={() => searchTracks()}>
-              <SearchIcon />
+              <FindInPageIcon />
             </ToggleButton>
           </Box>
         </ListItem>

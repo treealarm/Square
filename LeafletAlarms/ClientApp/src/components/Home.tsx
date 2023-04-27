@@ -19,14 +19,59 @@ import { ObjectRights } from "../Rights/ObjectRights";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import { TrackProps } from "../Tree/TrackProps";
-import { DeepCopy, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
+import { DeepCopy, EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import CloseIcon from "@mui/icons-material/Close";
 import { useAppDispatch } from "../store/configureStore";
 
-import DataObjectIcon from '@mui/icons-material/DataObject';
-import SearchIcon from '@mui/icons-material/Search';
-import SummarizeIcon from '@mui/icons-material/Summarize';
+import { PanelIcon } from "./PanelIcon";
+
+const TogglePanelButton = (props: { panel: IPanelsStatesDTO }) =>
+{
+  const appDispatch = useAppDispatch();
+
+  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
+
+  var thisPanel = panels.find(p => p.panelId == props.panel.panelId);
+
+  const handleSelectRight = (panelId: string, text: string) => {
+
+    var exist = panels.find(e => e.panelId == panelId);
+
+    if (exist) {
+      var removed = panels.filter(e => e.panelId != panelId);
+      appDispatch(PanelsStore.set_panels(removed));
+    }
+    else {
+      var newPanels = DeepCopy(panels);
+
+      newPanels = newPanels.filter(e => e.panelType != EPanelType.Right);
+      newPanels.push(
+        {
+          panelId: panelId,
+          panelValue: text,
+          panelType: EPanelType.Right
+        });
+
+      appDispatch(PanelsStore.set_panels(newPanels));
+    }
+  };
+
+  return (
+    <ToggleButton
+      value="check"
+      aria-label="properties"
+      selected={thisPanel != null}
+      size="small"
+      onChange={() =>
+        handleSelectRight(props.panel.panelId,
+          props.panel.panelValue)
+      }
+    >
+      <PanelIcon panelId={props.panel.panelId} />
+    </ToggleButton>
+  );
+}
 
 const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 
@@ -43,61 +88,26 @@ const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Eleme
     return null;
   }
 
-  var firstComponent = components[0];
+  var togglePanels = IPanelTypes.panels.filter(p =>
+    p.panelId == IPanelTypes.search ||
+    p.panelId == IPanelTypes.properties ||
+    p.panelId == IPanelTypes.track_props
+  );
 
-  if (firstComponent[0].IsLeft) {
 
+  var showToggleButtons = false;
+
+  if (components[0][0].panelType == EPanelType.Right) {
+    showToggleButtons = panels
+      .filter(p => togglePanels.find(p1 => p1.panelId == p.panelId) != null)
+      .length > 0;
   }
 
-  var properties: IPanelsStatesDTO = null;
-  var search: IPanelsStatesDTO = null;
-  var track_props: IPanelsStatesDTO = null;
-
-  components.map((component) => {
-
-    if (component[0].panelId == IPanelTypes.properties) {
-      properties = component[0];
-    }
-
-    if (component[0].panelId == IPanelTypes.search) {
-      search = component[0];
-    }
-
-    if (component[0].panelId == IPanelTypes.track_props) {
-      track_props = component[0];
-    }
-  });
-
-  const showToggleButtons =
-    properties != null || search != null || track_props != null;
 
   const handleClose = (panelId: string) => {
 
       var removed = panels.filter(e => e.panelId != panelId);
       appDispatch(PanelsStore.set_panels(removed));
-  };
-
-  const handleSelectRight = (panelId: string, text: string) => {
-
-    var exist = panels.find(e => e.panelId == panelId);
-
-    if (exist) {
-      var removed = panels.filter(e => e.panelId != panelId);
-      appDispatch(PanelsStore.set_panels(removed));
-    }
-    else {
-      var newPanels = DeepCopy(panels);
-
-      newPanels = newPanels.filter(e => e.IsLeft != false);
-      newPanels.push(
-        {
-          panelId: panelId,
-          panelValue: text,
-          IsLeft: false
-        });
-
-      appDispatch(PanelsStore.set_panels(newPanels));
-    }
   };
 
   var counter = 0;
@@ -133,39 +143,11 @@ const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Eleme
                 justifyContent="flex-end"
                 alignContent="center">
 
-                <ToggleButton
-                  value="check"
-                  aria-label="properties"
-                  selected={properties != null}
-                  size="small"
-                  onChange={() =>
-                    handleSelectRight(IPanelTypes.properties, IPanelTypes.propertiesName)
-                  }
-                  >
-                  <DataObjectIcon />
-                </ToggleButton>
-
-                <ToggleButton
-                  value="check"
-                  aria-label="search"
-                  selected={search != null}
-                  size="small"
-                  onChange={() => 
-                    handleSelectRight(IPanelTypes.search, IPanelTypes.searchName)
-                  }
-                  >
-                  <SearchIcon />
-                </ToggleButton>
-
-                <ToggleButton
-                  value="check"
-                  aria-label="track_props"
-                  selected={track_props != null}
-                  size="small"
-                  onChange={() => handleSelectRight(IPanelTypes.track_props, IPanelTypes.track_propsName)
-                  }>
-                  <SummarizeIcon />
-                </ToggleButton>
+                {
+                  togglePanels.map((datum) =>
+                    <TogglePanelButton panel={datum}/>
+                  )
+                }
               </Box>
             :
             <div/>
@@ -277,8 +259,8 @@ export function Home() {
 
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
-  var showLeftPannel = panels.find(e => e.IsLeft) != null;
-  var showRightPannel = panels.find(e => e.IsLeft == false) != null;
+  var showLeftPannel = panels.find(e => e.panelType == EPanelType.Left) != null;
+  var showRightPannel = panels.find(e => e.panelType == EPanelType.Right) != null;
 
   return (
     <Box sx={{ height: '98vh' }}>
