@@ -1,4 +1,5 @@
-﻿import { Action, Reducer } from 'redux';
+﻿import dayjs from 'dayjs';
+import { Action, Reducer } from 'redux';
 import { AppThunkAction } from './';
 import { SearchFilterGUI, ViewOption } from './Marker';
 
@@ -93,7 +94,14 @@ const unloadedState: GUIState = {
   requestedTreeUpdate: 0,
   map_option: { map_center: null }
   ,
-  searchFilter: null
+  searchFilter: {
+    time_start: dayjs().subtract(1, "day").toISOString(),
+    time_end: dayjs().toISOString(),
+    property_filter: {
+      props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
+    },
+    search_id: ""
+  }
 };
 
 export const reducer: Reducer<GUIState> = (state: GUIState | undefined, incomingAction: Action): GUIState => {

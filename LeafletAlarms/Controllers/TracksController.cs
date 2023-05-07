@@ -6,6 +6,7 @@ using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using LeafletAlarms.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace LeafletAlarms.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
+  [Authorize(AuthenticationSchemes = "Bearer")]
   public class TracksController : ControllerBase
   {
     private TracksUpdateService _trackUpdateService;
@@ -33,6 +35,7 @@ namespace LeafletAlarms.Controllers
     }
 
 
+    [AllowAnonymous]
     [HttpGet()]
     [Route("GetHello")]
     public  List<string> GetHello()

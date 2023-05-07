@@ -197,6 +197,7 @@ export function TrackViewer() {
   const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
   const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
+  const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
   function UpdateTracks() {
     var bounds: L.LatLngBounds;
@@ -244,7 +245,7 @@ export function TrackViewer() {
       UpdateTracks();
     }
     
-  }, [searchFilter?.search_id, selected_id, checked_ids]);
+  }, [searchFilter?.search_id, selected_id, checked_ids, user]);
 
   const mapEvents = useMapEvents({
     moveend(e: L.LeafletEvent) {

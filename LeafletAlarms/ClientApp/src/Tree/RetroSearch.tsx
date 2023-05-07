@@ -41,16 +41,7 @@ export function RetroSearch() {
 
   useEffect(() => {
     if (searchFilter == null) {
-      var filter: SearchFilterGUI =
-      {
-        time_start: dayjs().subtract(1,"day").toISOString(),
-        time_end: dayjs().toISOString(),
-        property_filter: {
-          props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
-        },
-        search_id: ""
-      };
-      dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
+      console.error("Normally search filter should be inited");
     }
   }, []);
 

@@ -21,7 +21,7 @@ export function SearchApplyButton() {
       let filter: SearchFilterGUI = DeepCopy(searchFilter);
       filter.applied = !filter.applied;
       dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
-    }, [searchFilter?.applied]);
+    }, [searchFilter]);
 
   return (
     <Tooltip title={"Search tracks by time and properties and objects by properties"}>
