@@ -37,9 +37,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\AccordionPanels.tsx" />
     <None Remove="ClientApp\src\components\MainToolbar.tsx" />
     <None Remove="ClientApp\src\components\PanelIcon.tsx" />
     <None Remove="ClientApp\src\components\PanelSwitch.tsx" />
+    <None Remove="ClientApp\src\components\TogglePanelButton.tsx" />
     <None Remove="ClientApp\src\Tree\SearchMeOnMap.tsx" />
     <None Remove="ClientApp\src\Tree\TrackProps.tsx" />
   </ItemGroup>
@@ -52,9 +54,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\MainToolbar.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelIcon.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\TogglePanelButton.tsx" />
     <TypeScriptCompile Include="ClientApp\src\Tree\SearchMeOnMap.tsx" />
     <TypeScriptCompile Include="ClientApp\src\Tree\TrackProps.tsx" />
   </ItemGroup>

@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { ApiDefaultPagingNum, ApplicationState } from '../store';
 import {
-  Box, IconButton, List, ListItem
+  Box, IconButton, List, ListItem, Tooltip
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
@@ -220,6 +220,7 @@ export function RetroSearch() {
       <List dense>
         <ListItem>
           <Box display="flex" justifyContent="flex-start">
+            <Tooltip title={"Search tracks by time and properties and objects by properties"}>
             <ToggleButton
               value="check"
               aria-label="search"
@@ -227,7 +228,8 @@ export function RetroSearch() {
               size="small"
               onChange={() => searchTracks()}>
               <FindInPageIcon />
-            </ToggleButton>
+              </ToggleButton>
+            </Tooltip>
           </Box>
         </ListItem>
         <ListItem>
@@ -255,11 +257,12 @@ export function RetroSearch() {
         </ListItem>
 
           <Box display="flex"
-            justifyContent="flex-start"
-        >
+          justifyContent="flex-start">
+          <Tooltip title={"Add property value into the filter"}>
           <IconButton aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
                 <LibraryAddIcon fontSize="inherit" />
-              </IconButton>            
+            </IconButton>
+          </Tooltip>
           </Box>
 
         <ListItem>

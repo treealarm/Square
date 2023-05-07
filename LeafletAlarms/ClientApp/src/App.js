@@ -27,7 +27,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: 'white',
-          '&.Mui-selected': {
+          '&.Mui-selected, &.Mui-selected:hover': {
             backgroundColor: 'lightgray',
           },
         },
@@ -37,7 +37,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: 'white',
-          '&.Mui-selected': {
+          '&.Mui-selected, &.Mui-selected:hover': {
             backgroundColor: 'lightgray',
           },
         },
@@ -47,7 +47,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: 'white',
-          '&.Mui-selected': {
+          '&.Mui-selected, &.Mui-selected:hover': {
             backgroundColor: 'lightgray',
           },
         },

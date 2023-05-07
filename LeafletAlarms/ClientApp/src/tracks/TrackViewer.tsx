@@ -220,12 +220,12 @@ export function TrackViewer() {
 
     if (selected_id != null || checked_ids != null) {
       boundBox.ids = [];
-      if (checked_ids != null) {
-        boundBox.ids = [... checked_ids];
-      }
-      if (selected_id != null) {
-        boundBox.ids.push(selected_id);
-      }
+      //if (checked_ids != null) {
+      //  boundBox.ids = [... checked_ids];
+      //}
+      //if (selected_id != null) {
+      //  boundBox.ids.push(selected_id);
+      //}
     }
     // We request routs by selection for now.
     //dispatch<any>(TracksStore.actionCreators.requestRouts(boundBox));
