@@ -7,8 +7,7 @@ import { ApiDefaultPagingNum, ApplicationState } from '../store';
 import {
   Box, IconButton, List, ListItem, Tooltip
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import FindInPageIcon from '@mui/icons-material/FindInPage';
+
 import { useCallback, useEffect } from 'react';
 import { useSelector } from "react-redux";
 import * as SearchResultStore from '../store/SearchResultStates';
@@ -16,10 +15,11 @@ import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO, DeepCopy } from '.
 import { PropertyFilter } from './PropertyFilter';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
 import * as GuiStore from '../store/GUIStates';
-import ToggleButton from '@mui/material/ToggleButton';
+
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAppDispatch } from '../store/configureStore';
+import { SearchApplyButton } from './SearchApplyButton';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -54,6 +54,15 @@ export function RetroSearch() {
     }
   }, []);
 
+  useEffect(() => {
+    var filter: SearchFilterGUI = GetCopyOfSearchFilter();
+
+    if (filter == null) {
+      return;
+    }
+    DoSearchTracks(filter);
+  }, [searchFilter?.applied]);
+
   function UpdateFilterInRedux(filter: SearchFilterGUI, applyFilter: boolean) {
     filter.applied = applyFilter;
     dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
@@ -87,6 +96,12 @@ export function RetroSearch() {
   };
 
   function DoSearchTracks(filterIn: SearchFilterGUI) {
+
+    if (filterIn == null) {
+      console.error("DoSearchTracks:", "filterIn == null");
+      return;
+    }
+
     filterIn.search_id = (new Date()).toISOString();
     UpdateFilterInRedux(filterIn, filterIn.applied == true);
 
@@ -101,23 +116,13 @@ export function RetroSearch() {
       count: ApiDefaultPagingNum
     }
 
-    if (filterIn.applied != true) {
-      
+    if (filterIn.applied != true) {      
       dispatch<any>(SearchResultStore.actionCreators.setEmptyResult());
     }
     else {
       dispatch<any>(SearchResultStore.actionCreators.getByFilter(filterDto));
-    }
-    
+    }    
   }
-
-  const searchTracks = useCallback(
-    () => {
-      var filter: SearchFilterGUI = GetCopyOfSearchFilter();
-      filter.applied = !filter.applied;
-      DoSearchTracks(filter);
-
-    }, [searchFilter]);
 
   const addProperty = useCallback(
     (e: any) => {
@@ -220,16 +225,7 @@ export function RetroSearch() {
       <List dense>
         <ListItem>
           <Box display="flex" justifyContent="flex-start">
-            <Tooltip title={"Search tracks by time and properties and objects by properties"}>
-            <ToggleButton
-              value="check"
-              aria-label="search"
-              selected={searchFilter?.applied == true}
-              size="small"
-              onChange={() => searchTracks()}>
-              <FindInPageIcon />
-              </ToggleButton>
-            </Tooltip>
+            <SearchApplyButton/>
           </Box>
         </ListItem>
         <ListItem>

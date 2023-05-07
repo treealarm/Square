@@ -87,7 +87,7 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
 
                 {
                   togglePanels.map((datum) =>
-                    <TogglePanelButton panel={datum} />
+                    <TogglePanelButton panel={datum} key={"TogglePanelButton:" + datum.panelId} />
                   )
                 }
               </Box>
