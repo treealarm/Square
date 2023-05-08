@@ -216,7 +216,7 @@ export function RetroSearch() {
       <List dense>
         <ListItem>
           <Box display="flex" justifyContent="flex-start">
-            <SearchApplyButton/>
+            <SearchApplyButton hideIfNotPushed={false} />
           </Box>
         </ListItem>
         <ListItem>
@@ -227,9 +227,13 @@ export function RetroSearch() {
             views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
             format={INPUT_FORMAT}
           />
+
+          <Tooltip title={"Shift begin time to next track"}>
           <IconButton onClick={(e: any) => OnNavigate(true, e)}>
             <ArrowForwardIcon />
-          </IconButton>
+            </IconButton>
+          </Tooltip>
+
           </ListItem>
           <ListItem>
           <DateTimePicker
@@ -238,9 +242,13 @@ export function RetroSearch() {
             onChange={handleChange2}
             format={INPUT_FORMAT}
           />
+
+          <Tooltip title={"Shift begin time to previous track"}>
           <IconButton onClick={(e: any) => OnNavigate(false, e)}>
             <ArrowBackIcon />
-          </IconButton>
+            </IconButton>
+          </Tooltip>
+
         </ListItem>
 
           <Box display="flex"
