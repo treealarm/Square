@@ -1,25 +1,24 @@
 ﻿import * as React from 'react';
 
 import { useEffect, useCallback} from 'react';
-import { useDispatch, useSelector} from "react-redux";
+import { useSelector} from "react-redux";
 
 import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, ButtonGroup, IconButton, TextField, Tooltip } from '@mui/material';
+import { Box, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import SearchIcon from '@mui/icons-material/Search';
-import { IObjProps, PointType, LineStringType, PolygonType, Marker, TreeMarker, ViewOption, IPointCoord, IPolygonCoord, LatLngPair, getExtraProp, setExtraProp, DeepCopy, IGeometryDTO } from '../store/Marker';
+import { IObjProps, Marker, TreeMarker, getExtraProp, DeepCopy, IGeometryDTO } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as TreeStore from '../store/TreeStates';
 import NotInterestedSharpIcon from '@mui/icons-material/NotInterestedSharp';
-import * as L from 'leaflet';
 import { SearchMeOnMap } from './SearchMeOnMap';
+import { useAppDispatch } from '../store/configureStore';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -27,7 +26,7 @@ declare module 'react-redux' {
 
 export function ObjectProperties() {
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
@@ -103,7 +102,7 @@ export function ObjectProperties() {
       id: copy.id,
       name: copy.name
     }
-    dispatch<any>(TreeStore.actionCreators.setTreeItem(copy));
+    dispatch<any>(TreeStore.actionCreators.setTreeItem(treeItem));
 
     // Stop edit mode.
     dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
@@ -178,7 +177,8 @@ export function ObjectProperties() {
 
           </ButtonGroup>
 
-        </ListItem>        
+        </ListItem>
+        <Divider><br></br></Divider>
         <ListItem>
           <SearchMeOnMap
             geometry={geometry}
@@ -203,7 +203,7 @@ export function ObjectProperties() {
             value={objProps?.name}
             onChange={handleChangeName} />
         </ListItem>
-        
+        <Divider><br></br></Divider>
         {
           objProps?.extra_props?.map((item, index) =>
             <ListItem key={index}>

@@ -1,7 +1,7 @@
 ﻿import { Action, Reducer } from "redux";
 import { ApiRootString, AppThunkAction } from "./";
 import { DoFetch } from "./Fetcher";
-import { GetByParentDTO, TreeMarker } from "./Marker";
+import { DeepCopy, GetByParentDTO, TreeMarker } from "./Marker";
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -155,7 +155,9 @@ export const reducer: Reducer<TreeState> = (
         return state;
       }
 
-      var newMarkers = state.children.map((item : any): TreeMarker => {
+      var newMarkers = DeepCopy(state.children);
+
+      newMarkers = newMarkers.map((item : any): TreeMarker => {
         if (item.id == action.item.id) {
           item.name = action.item.name;
         }
