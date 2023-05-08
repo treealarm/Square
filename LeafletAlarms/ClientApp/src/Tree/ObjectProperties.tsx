@@ -19,6 +19,7 @@ import * as TreeStore from '../store/TreeStates';
 import NotInterestedSharpIcon from '@mui/icons-material/NotInterestedSharp';
 import { SearchMeOnMap } from './SearchMeOnMap';
 import { useAppDispatch } from '../store/configureStore';
+import EditOptions from './EditOptions';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -150,7 +151,7 @@ export function ObjectProperties() {
       <List dense>
         <ListItem>
           <ButtonGroup variant="contained" aria-label="properties pannel">
-
+            <EditOptions />
             <Tooltip title={"Save object" }>
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />

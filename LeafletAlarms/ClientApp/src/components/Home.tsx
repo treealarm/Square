@@ -59,7 +59,7 @@ const RightPanel = () => {
     if (datum.panelId == IPanelTypes.properties) {
       return [datum, (
         <Stack sx={{ height: "100%" }}>
-          <EditOptions />
+          
           <ObjectProperties />
         </Stack>
       )];

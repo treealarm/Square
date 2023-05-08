@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
 
-import { Box, IconButton, Menu, MenuItem} from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, Tooltip} from '@mui/material';
 import * as EditStore from '../store/EditStates';
 import { useDispatch, useSelector } from 'react-redux';
 import { IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
@@ -89,22 +89,13 @@ export default function EditOptions() {
   };
 
   return (
-    <Box
-      key="Edit_Options"
-      sx={{
-      width: '100%',
-      bgcolor: 'background.paper',
-
-      height: 'auto',
-      border: 1,
-      
-    }}>
-      <IconButton onClick={handleClickListItem} size="small"  style={{ textTransform: 'none' }}>
+    <Box>
+      <Tooltip title={"Create new object"}>
+      <IconButton onClick={handleClickListItem} style={{ textTransform: 'none' }}>
         
-        <AddIcon fontSize="inherit" />
-        <Box>New Object</Box>
-        
-      </IconButton>
+        <AddIcon fontSize="inherit" />       
+        </IconButton>
+      </Tooltip>
           <Menu
             id="lock-menu"
             anchorEl={anchorEl}
