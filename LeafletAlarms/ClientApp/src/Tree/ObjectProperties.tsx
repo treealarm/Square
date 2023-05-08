@@ -7,7 +7,7 @@ import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, ButtonGroup, IconButton, TextField } from '@mui/material';
+import { Box, Button, ButtonGroup, IconButton, TextField, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
@@ -131,44 +131,7 @@ export function ObjectProperties() {
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
-  const searchMeOnMap = useCallback(
-    (props: IObjProps, e: any) => {
-
-      var geo = JSON.parse(getExtraProp(props, "geometry"));
-      var myFigure = null;
-      var center: L.LatLng = null;
-
-      switch (geo.type) {
-        case PointType:
-          var coord: LatLngPair = geo.coord;
-          center = new L.LatLng(coord[0], coord[1]);
-          break;
-        case LineStringType:
-          var coordArr: LatLngPair[] = geo.coord;
-          myFigure = new L.Polyline(coordArr)
-          break;
-        case PolygonType:
-          var coordArr: LatLngPair[] = geo.coord;
-          myFigure = new L.Polygon(coordArr)
-          break;
-        default:
-          break;
-      }
-
-      if (center == null) {
-        let bounds: L.LatLngBounds = myFigure.getBounds();
-        center = bounds.getCenter();
-      }
-      
-      var viewOption: ViewOption = {
-        map_center: [center.lat, center.lng],
-        zoom: props.zoom_min
-      };
-
-      dispatch<any>(GuiStore.actionCreators.setMapOption(viewOption));
-
-    }, [objProps])
-
+ 
     if (objProps == null || objProps == undefined) {
       return null;
   }
@@ -188,9 +151,14 @@ export function ObjectProperties() {
       <List dense>
         <ListItem>
           <ButtonGroup variant="contained" aria-label="properties pannel">
+
+            <Tooltip title={"Save object" }>
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
             </IconButton>
+          </Tooltip>
+
+            <Tooltip title={"Edit object"}>
             <IconButton aria-label="edit" size="medium"
               onClick={(e: any) => editMe(objProps, !selectedEditMode.edit_mode)} >
               {
@@ -199,10 +167,15 @@ export function ObjectProperties() {
                   <EditIcon fontSize="inherit" />
               }
 
-            </IconButton>
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip title={"Delete object"}>
             <IconButton aria-label="delete" size="medium" onClick={(e: any) => deleteMe(objProps, e)}>
               <DeleteIcon fontSize="inherit" />
-            </IconButton>
+              </IconButton>
+            </Tooltip>
+
           </ButtonGroup>
 
         </ListItem>        

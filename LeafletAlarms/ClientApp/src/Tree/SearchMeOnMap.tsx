@@ -3,7 +3,7 @@
 import { useCallback } from 'react';
 
 import { ApplicationState } from '../store';
-import { IconButton, Stack, TextField } from '@mui/material';
+import { IconButton, Stack, TextField, Tooltip } from '@mui/material';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 
 import {
@@ -87,10 +87,11 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
             inputProps={{ readOnly: true }}>
       </TextField>
 
+      <Tooltip title={"Find object on map"}>
       <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap(geometry, e)}>
         <LocationSearchingIcon fontSize="inherit" />
-      </IconButton>
-       
+        </IconButton>
+      </Tooltip>
     </Stack>
   );
 }

@@ -19,7 +19,7 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#ffffff'      
+      main: '#fff'      
     }    
   },
   components: {
@@ -52,7 +52,21 @@ const theme = createTheme({
           },
         },
       },
-    }
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#aaa"            
+          },
+          "& .MuiOutlinedInput-root.Mui-focused  .MuiOutlinedInput-notchedOutline":
+          {
+            borderColor: "#aaa",
+          },
+          "& .MuiInputLabel-root.Mui-focused": { color: 'black' }
+        },
+      },
+    },
   },
 });
 
