@@ -60,7 +60,7 @@ export function PropertyFilter(props:any) {
         overflow: 'auto',
         height: '100%'
       }}>
-      <List dense>
+      <List dense sx={{ maxHeight: "250px", overflow: 'auto', width: "100%" }}>
       {
         props.propsFilter?.props?.map((item: KeyValueDTO, index: { toString: () => string; }) =>
 

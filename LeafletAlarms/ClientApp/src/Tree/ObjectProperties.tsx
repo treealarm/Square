@@ -136,7 +136,15 @@ export function ObjectProperties() {
       return null;
   }
 
-  var geometry = JSON.parse(getExtraProp(objProps, "geometry")) as IGeometryDTO;
+  var geometry: IGeometryDTO;
+
+  try {
+    geometry = JSON.parse(getExtraProp(objProps, "geometry")) as IGeometryDTO;
+  }
+  catch (e: any) {
+    console.error(e);
+  }
+  
 
   return (
     <Box sx={{

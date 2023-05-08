@@ -137,8 +137,11 @@ function MyCommonFig(props: any) {
 
   var fig: ICommonFig = props.marker;
   var geo: IGeometryDTO = fig.geometry;
-    
-  
+
+  if (geo?.type == null) {
+    return null;
+  }
+
   if (geo.type == PointType) {
     const center = geo.coord as [number, number];
     return (

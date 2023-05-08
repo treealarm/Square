@@ -30,6 +30,7 @@ interface ISearchMeOnMapProps {
 export function SearchMeOnMap(props: ISearchMeOnMapProps) {
 
   let geometry: IGeometryDTO = props.geometry;
+
   let text: string = props.text;
 
   const appDispatch = useAppDispatch();
@@ -71,7 +72,6 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
 
     }, [props])
 
-
   return (
     <Stack direction="row" spacing={2}
       justifyContent="space-around"
@@ -87,7 +87,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
             inputProps={{ readOnly: true }}>
       </TextField>
 
-      <Tooltip title={"Find object on map"}>
+      <Tooltip title={"Find object on map"} hidden={geometry == null}>
       <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap(geometry, e)}>
         <LocationSearchingIcon fontSize="inherit" />
         </IconButton>
