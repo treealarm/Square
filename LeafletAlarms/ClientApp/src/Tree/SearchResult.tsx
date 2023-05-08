@@ -98,7 +98,7 @@ export function SearchResult() {
           </IconButton>
         </Toolbar>
       </Box>
-      <List dense>
+      <List dense sx={{ height: "450px", overflow: 'auto', width: "100%" }}>
         {
           markers?.map((marker, index) =>
             <ListItem
