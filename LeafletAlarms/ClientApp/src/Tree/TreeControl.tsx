@@ -16,10 +16,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Toolbar } from '@mui/material';
+import { Box, Toolbar, Tooltip } from '@mui/material';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TabControl from './TabControl';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -115,22 +116,39 @@ export function TreeControl() {
 
     return (
       <Box sx={{
-            width: '100%',
-            overflow: 'auto',
-            height: '100%'
-            }}>
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        <TabControl />
         <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
           <Toolbar variant="dense">
-            <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
+
+            <Tooltip title="Go to previous page">
+            <IconButton onClick={(e: any) => OnNavigate(false, e)}>
               <ArrowBackIcon />
-            </IconButton>
+              </IconButton>
+            </Tooltip>
+
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
+
+            <Tooltip title="Go to next page">
+            <IconButton onClick={(e: any) => OnNavigate(true, e)}>
               <ArrowForwardIcon />
-            </IconButton>
+              </IconButton>
+            </Tooltip>
+
           </Toolbar>
-        </Box> 
-        <List dense sx={{ height: "450px", overflow: 'auto', width: "100%" }}>
+        </Box>
+
+        <Box sx={{
+          width: '100%',
+          height: '100%',
+          overflow: 'auto'
+        }}>
+        <List dense sx={{
+          minHeight: '100%', width: "100%" }}>
          {
           markers?.map((marker, index) =>
             <ListItem
@@ -166,6 +184,7 @@ export function TreeControl() {
           </ListItem>
         )}
           </List>
+        </Box>
         </Box>
     );
 }

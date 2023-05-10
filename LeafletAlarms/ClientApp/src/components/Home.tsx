@@ -31,22 +31,21 @@ const LeftPanel = () => {
 
     if (datum.panelId == IPanelTypes.tree) {
       return [datum, (
-        <div>
-          <TabControl />
           <TreeControl />
-        </div>
       )];
     }
 
     if (datum.panelId == IPanelTypes.search_result) {
       return [datum, (
-        <SearchResult></SearchResult>
+        <SearchResult/>
       )];
     }
     return null;
   });
 
-  return (<AccordionPanels components={components} />);
+  return (
+    <AccordionPanels components={components} />      
+  );
 };
 
 const RightPanel = () => {
@@ -57,17 +56,14 @@ const RightPanel = () => {
   var components: Array<[IPanelsStatesDTO, JSX.Element]> = panels.map((datum) => {
 
     if (datum.panelId == IPanelTypes.properties) {
-      return [datum, (
-        <Stack sx={{ height: "100%" }}>
-          
+      return [datum, (         
           <ObjectProperties />
-        </Stack>
       )];
     }
 
     if (datum.panelId == IPanelTypes.search) {
       return [datum, (
-        <RetroSearch></RetroSearch>
+        <RetroSearch/>
       )];
     }
 
@@ -104,31 +100,32 @@ export function Home() {
   var showRightPannel = panels.find(e => e.panelType == EPanelType.Right) != null;
 
   return (
-    <Box sx={{ height: '98vh' }}>
+    <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{
+        width: '100%'
+      }}
+      >
       <MainToolbar  />
-      <Toolbar />
-      <Grid container sx={{ height: 'calc(100% - 60px)' }}>
+        <Toolbar />
+      </Box>
+
+      <Grid container sx={{
+        height: '100%',
+        width: '100%',
+        overflow: 'auto',
+        flex: 1
+      }}>
       
         <Grid item xs={3} sx={{ height: "100%", display: showLeftPannel ? '' : 'none' }}>
-            <Paper sx={{ height: "100%", overflow: 'auto', width: "100%" }} >
-              <LeftPanel />
-            </Paper>
-
+          <LeftPanel />
           </Grid>
 
-          <Grid item xs sx={{ minWidth: "100px" }}>
-
-            <Box sx={{ height: '100%' }}>
+        <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
               <MapComponent />
-            </Box>
-
           </Grid>
 
         <Grid item xs={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
-          <Paper sx={{ height: "100%", overflow: 'auto', width: "100%" }}>
               <RightPanel />
-            </Paper>
-
           </Grid>
         </Grid>
     </Box>

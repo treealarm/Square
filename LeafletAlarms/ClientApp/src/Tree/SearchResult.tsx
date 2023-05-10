@@ -9,7 +9,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Box, IconButton, Toolbar } from '@mui/material';
+import { Box, IconButton, Toolbar, Tooltip } from '@mui/material';
 import { useAppDispatch } from '../store/configureStore';
 import { useSelector } from 'react-redux';
 import { useCallback } from 'react';
@@ -83,22 +83,37 @@ export function SearchResult() {
   return (
     <Box sx={{
       width: '100%',
-      bgcolor: 'background.paper',
-      overflow: 'auto',
-      height: '100%'
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
         <Toolbar variant="dense">
-          <IconButton edge="start" onClick={(e: any) => OnNavigate(false, e)}>
+
+          <Tooltip title="Go to previous page">
+          <IconButton onClick={(e: any) => OnNavigate(false, e)}>
             <ArrowBackIcon />
-          </IconButton>
+            </IconButton>
+          </Tooltip>
+
           <Box sx={{ flexGrow: 1 }} />
-          <IconButton edge="end" onClick={(e: any) => OnNavigate(true, e)}>
+          <Tooltip title="Go to next page">
+          <IconButton onClick={(e: any) => OnNavigate(true, e)}>
             <ArrowForwardIcon />
-          </IconButton>
+            </IconButton>
+          </Tooltip>
+
         </Toolbar>
       </Box>
-      <List dense sx={{ height: "450px", overflow: 'auto', width: "100%" }}>
+
+      <Box sx={{
+        width: '100%',
+        height: '100%',
+        overflow: 'auto'
+      }}>
+      <List dense sx={{
+        width: "100%",
+        minHeight: '100%' }}>
         {
           markers?.map((marker, index) =>
             <ListItem
@@ -115,7 +130,8 @@ export function SearchResult() {
               </ListItemButton>
             </ListItem>
           )}
-      </List>
+        </List>
+      </Box>
     </Box>
   );
 }

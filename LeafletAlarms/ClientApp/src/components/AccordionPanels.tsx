@@ -18,10 +18,6 @@ import * as PanelsStore from '../store/PanelsStates';
 export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 
   const appDispatch = useAppDispatch();
-  const [expand, setExpand] = React.useState(true);
-  const toggleAccordion = () => {
-    setExpand((prev) => !prev);
-  };
 
   var components = props.components.filter(e => e != null);
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
@@ -64,19 +60,23 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
     counter++;
 
     return (
-      <Accordion key={counter} expanded={expand} sx={{ backgroundColor: color }}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon
-          onClick={toggleAccordion}
-        />} sx={{ backgroundColor: color }}>
+      <Box sx={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+          <Box
+            sx={{ flexGrow: 1, backgroundColor: color }}
+            display="flex"
+          justifyContent="flex-start">
 
           <Box
-            sx={{ flexGrow: 1 }}
+            sx={{ flexGrow: 1, backgroundColor: color }}
             display="flex"
-            justifyContent="flex-start"
-          >
+            justifyContent="flex-start">
             <Typography sx={{ fontWeight: 'bold' }}>{component[0].panelValue}</Typography>
           </Box>
-
           {
             showToggleButtons ?
               <Box
@@ -95,12 +95,10 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
               <div />
           }
 
-
           <Box
             display="flex"
             justifyContent="flex-end"
-            alignContent="center"
-          >
+            alignContent="center">
             <Tooltip title="Remove panel">
               <IconButton
                 aria-label="close"
@@ -113,13 +111,24 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
             </Tooltip>
           </Box>
 
-        </AccordionSummary>
-        <AccordionDetails sx={{ backgroundColor: color }}>
+          </Box>
+
+
+        <Box sx={{
+          width: '100%',
+          height: '100%',
+          overflow: 'auto'
+        }}>
           {component[1]}
-        </AccordionDetails>
-      </Accordion>
+        </Box>
+      </Box>
     )
   });
 
-  return <div>{accordions}</div>;
+  return <Box sx={{
+    width: '100%',
+    height:'100%',
+    display: 'flex',
+    flexDirection: 'column'
+  }}>{accordions}</Box>;
 };
