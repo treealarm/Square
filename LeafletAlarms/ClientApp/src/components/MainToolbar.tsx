@@ -12,6 +12,7 @@ import { Login } from "../auth/Login";
 import PanelSwitch from "./PanelSwitch";
 import { EPanelType } from "../store/Marker";
 import { SearchApplyButton } from "../Tree/SearchApplyButton";
+import EditOptions from "../Tree/EditOptions";
 
 export function MainToolbar() {
   return (
@@ -33,7 +34,7 @@ export function MainToolbar() {
             display="flex"
             justifyContent="flex-end"
           >
-            <SearchApplyButton hideIfNotPushed={true} />
+            <SearchApplyButton hideIfNotPushed={true} />            
           </Box>
 
           <Box

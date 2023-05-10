@@ -67,6 +67,13 @@ const theme = createTheme({
         },
       },
     },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          height: 4
+        }
+      }
+    }
   },
 });
 

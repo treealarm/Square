@@ -27,14 +27,19 @@ export default function TabControl() {
   
 
   return (
-    <Box sx={{ backgroundColor: 'gray' }}>
+    <Box sx={{
+      backgroundColor: '#dca',
+      flexGrow: 1,
+      display: 'flex'
+    }}
+      >
       <Tabs
         value={curMarker}
-        onChange={handleChange}
-        variant="scrollable"
+        onChange={handleChange}        
+        variant='scrollable'
         scrollButtons
         allowScrollButtonsMobile
-        aria-label="scrollable force tabs example"
+        selectionFollowsFocus
       >
         {
           parent_list?.map((marker, index) =>

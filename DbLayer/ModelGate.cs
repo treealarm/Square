@@ -206,6 +206,11 @@ namespace DbLayer
     {
       var retVal = new List<ObjExtraPropertyDTO> ();
 
+      if (props == null)
+      {
+        return retVal;
+      }
+
       foreach (var prop in props)
       {
         ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()

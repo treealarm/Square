@@ -2,6 +2,7 @@
 import {
   Accordion, AccordionDetails, AccordionSummary,
   Box,
+  Card,
   IconButton, Tooltip, Typography
 } from "@mui/material";
 import { TogglePanelButton } from "./TogglePanelButton";
@@ -14,6 +15,7 @@ import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import * as PanelsStore from '../store/PanelsStates';
+import EditOptions from "../Tree/EditOptions";
 
 export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 
@@ -48,16 +50,9 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
     appDispatch(PanelsStore.set_panels(removed));
   };
 
-  var counter = 0;
-
   var accordions = components.map((component) => {
 
-    var color = '#dddddd';
-
-    if (counter % 2 == 0) {
-      color = '#f0f0f0';
-    }
-    counter++;
+    var color = '#eee';
 
     return (
       <Box sx={{
@@ -67,16 +62,22 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
         flexDirection: 'column'
       }}>
           <Box
-            sx={{ flexGrow: 1, backgroundColor: color }}
-            display="flex"
-          justifyContent="flex-start">
+            sx={{ flexGrow: 1, backgroundColor: color, display:'flex' }}>
 
           <Box
-            sx={{ flexGrow: 1, backgroundColor: color }}
             display="flex"
-            justifyContent="flex-start">
-            <Typography sx={{ fontWeight: 'bold' }}>{component[0].panelValue}</Typography>
+            justifyContent="flex-start"
+            alignContent="center"
+            sx={{ flexGrow: 1, backgroundColor: color }}>
+              <Typography sx={{ p: 2, fontWeight: 'bold' }}>{component[0].panelValue}</Typography>            
           </Box>
+          {
+            component[0].panelId == IPanelTypes.properties ?
+              <EditOptions />
+              :
+              <div/>
+          }
+          
           {
             showToggleButtons ?
               <Box
@@ -93,8 +94,10 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
               </Box>
               :
               <div />
-          }
 
+              
+          }
+          
           <Box
             display="flex"
             justifyContent="flex-end"
