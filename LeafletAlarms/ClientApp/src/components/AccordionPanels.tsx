@@ -28,22 +28,6 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
     return null;
   }
 
-  var togglePanels = IPanelTypes.panels.filter(p =>
-    p.panelId == IPanelTypes.search ||
-    p.panelId == IPanelTypes.properties ||
-    p.panelId == IPanelTypes.track_props
-  );
-
-
-  var showToggleButtons = false;
-
-  if (components[0][0].panelType == EPanelType.Right) {
-    showToggleButtons = panels
-      .filter(p => togglePanels.find(p1 => p1.panelId == p.panelId) != null)
-      .length > 0;
-  }
-
-
   const handleClose = (panelId: string) => {
 
     var removed = panels.filter(e => e.panelId != panelId);
@@ -53,6 +37,38 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
   var accordions = components.map((component) => {
 
     var color = '#eee';
+
+    var togglePanels: IPanelsStatesDTO[] = [];
+
+    if (component[0].panelType == EPanelType.Right) {
+      togglePanels = IPanelTypes.panels.filter(p =>
+        p.panelId == IPanelTypes.search ||
+        p.panelId == IPanelTypes.properties ||
+        p.panelId == IPanelTypes.track_props
+      );
+
+      if (component[0].panelId == IPanelTypes.search) {
+        togglePanels.unshift(
+          IPanelTypes.panels.find(p =>
+            p.panelId == IPanelTypes.search_result)
+        );
+      }
+    }
+
+    if (component[0].panelId == IPanelTypes.tree) {
+      togglePanels = IPanelTypes.panels.filter(p =>
+        p.panelId == IPanelTypes.properties
+      );
+    }
+
+      if (component[0].panelId == IPanelTypes.search_result) {
+      togglePanels = IPanelTypes.panels.filter(p =>
+        p.panelId == IPanelTypes.track_props
+      );
+    }
+
+    // if we want to hide buttons which are active
+    //togglePanels = togglePanels.filter(p => panels.findIndex(p1 => p1.panelId == p.panelId) < 0);
 
     return (
       <Box sx={{
@@ -78,25 +94,18 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
               <div/>
           }
           
-          {
-            showToggleButtons ?
-              <Box
-                sx={{ flexGrow: 1 }}
-                display="flex"
-                justifyContent="flex-end"
-                alignContent="center">
+          <Box
+            sx={{ flexGrow: 1 }}
+            display="flex"
+            justifyContent="center"
+            alignContent="center">
 
-                {
-                  togglePanels.map((datum) =>
-                    <TogglePanelButton panel={datum} key={"TogglePanelButton:" + datum.panelId} />
-                  )
-                }
-              </Box>
-              :
-              <div />
-
-              
-          }
+            {
+              togglePanels.map((datum) =>
+                <TogglePanelButton panel={datum} key={"TogglePanelButton:" + datum.panelId} />
+              )
+            }
+          </Box>
           
           <Box
             display="flex"

@@ -18,21 +18,21 @@ export const TogglePanelButton = (props: { panel: IPanelsStatesDTO }) => {
 
   const handleSelectRight = (panelId: string, text: string) => {
 
-    var exist = panels.find(e => e.panelId == panelId);
+    var exist = panels.find(e => e.panelId == panelId && e.panelType == e.panelType);
 
     if (exist) {
-      var removed = panels.filter(e => e.panelId != panelId);
-      appDispatch(PanelsStore.set_panels(removed));
+      //var removed = panels.filter(e => e.panelId != panelId);
+      //appDispatch(PanelsStore.set_panels(removed));
     }
     else {
       var newPanels = DeepCopy(panels);
 
-      newPanels = newPanels.filter(e => e.panelType != EPanelType.Right);
+      newPanels = newPanels.filter(e => e.panelType != props.panel.panelType);
       newPanels.push(
         {
           panelId: panelId,
           panelValue: text,
-          panelType: EPanelType.Right
+          panelType: props.panel.panelType
         });
 
       appDispatch(PanelsStore.set_panels(newPanels));

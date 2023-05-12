@@ -4,6 +4,7 @@ import DataObjectIcon from '@mui/icons-material/DataObject';
 import SchemaIcon from '@mui/icons-material/Schema';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import SearchIcon from '@mui/icons-material/Search';
 import SummarizeIcon from '@mui/icons-material/Summarize';
 import { IPanelTypes } from '../store/Marker';
 
@@ -29,7 +30,7 @@ export function PanelIcon(props: { panelId: string }) {
 
   if (props.panelId == IPanelTypes.search) {
     return (
-      <ManageSearchIcon />
+      <SearchIcon />
     );
   }
 

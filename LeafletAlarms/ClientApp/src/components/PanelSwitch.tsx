@@ -34,7 +34,8 @@ export default function PanelSwitch(props: { panelType: EPanelType }) {
 
   const handleSelect = (text: string, menuItem: string, panType: EPanelType) => {
     setAnchorEl(null);
-    var exist = panels.find(e => e.panelId == menuItem);
+
+    var exist = panels.find(e => e.panelId == menuItem && e.panelType == panType);
 
     if (exist) {
       var removed = panels.filter(e => e.panelId != menuItem);
@@ -111,7 +112,7 @@ export default function PanelSwitch(props: { panelType: EPanelType }) {
             <MenuItem
               key={"PanelSwith:" + datum.panelId }
               onClick={(e: any) => handleSelect(
-                datum.panelValue, datum.panelId, props.panelType)}
+                datum.panelValue, datum.panelId, datum.panelType)}
               selected={panels.find(p => p.panelId == datum.panelId )!= null}>
               <ListItemIcon>
                 <PanelIcon panelId={datum.panelId} />
