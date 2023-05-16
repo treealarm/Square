@@ -31,13 +31,13 @@ const LeftPanel = () => {
 
     if (datum.panelId == IPanelTypes.tree) {
       return [datum, (
-          <TreeControl />
+        <TreeControl key={"TreeControl"+datum.panelId } />
       )];
     }
 
     if (datum.panelId == IPanelTypes.search_result) {
       return [datum, (
-        <SearchResult/>
+        <SearchResult key={"SearchResult"+datum.panelId} />
       )];
     }
     return null;

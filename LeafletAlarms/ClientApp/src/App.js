@@ -84,11 +84,16 @@ export default () => {
     appDispatch(RightsStore.set_user(UserService.getUsername()));
   }
 
+  function onUserChangedCallback() {
+    appDispatch(RightsStore.set_user(UserService.getUsername()));
+  }
+  
+
   React.useEffect(() => {
     if (!UserService.isLoggedIn()) {
-      UserService.initKeycloak(setToken);
+      UserService.initKeycloak(setToken, onUserChangedCallback);
     }
-  }, [setToken]);
+  }, [setToken, onUserChangedCallback]);
 
 
   return (

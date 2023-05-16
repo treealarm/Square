@@ -2,11 +2,11 @@ import Keycloak from "keycloak-js";
 
 const _kc = new Keycloak('keycloak.json');
 
-/**
- * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
- *
- * @param onAuthenticatedCallback
- */
+class FunctionHolder {
+  onUserChangedCallback?(): void;
+}
+
+const _fh = new FunctionHolder();
 
 const CleanToken = () => {
   localStorage.setItem('kc_token', '');
@@ -14,10 +14,26 @@ const CleanToken = () => {
 
   if (_kc != null) {
     _kc.token = null;
-  }  
+  }
+
+
+  if (_fh.onUserChangedCallback != null) {
+    console.log('onUserChangedCallback');
+    _fh.onUserChangedCallback();
+  }
 }
 
-const initKeycloak = (onAuthenticatedCallback: any) => {
+/**
+ * Initializes Keycloak instance and calls the provided callback function if successfully authenticated.
+ *
+ * @param onAuthenticatedCallback
+ */
+
+const initKeycloak = (
+  onAuthenticatedCallback: any,
+  onUserChangedCallback: any) => {
+
+  _fh.onUserChangedCallback = onUserChangedCallback;
 
   var token = localStorage.getItem('kc_token');
   var refreshToken = localStorage.getItem('kc_refreshToken');
@@ -26,15 +42,15 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
 
   _kc.onTokenExpired = () => {
     console.log('expired ' + new Date());
-    _kc.updateToken(0).then((refreshed) => {
+    _kc.updateToken(60).then((refreshed) => {
       if (refreshed) {
         console.log('refreshed ' + new Date());
       } else {
-        console.log('not refreshed ' + new Date());
+        console.error('not refreshed ' + new Date());
         CleanToken();
       }
-    }).catch(() => {
-      console.error('Failed to refresh token ' + new Date());
+    }).catch((e: any) => {
+      console.error('Failed to refresh token ', new Date(), e.message);
       CleanToken();
     });
   }
@@ -66,7 +82,7 @@ const initKeycloak = (onAuthenticatedCallback: any) => {
         console.log('roles', _kc.realmAccess.roles);
         console.log('KC SEEMS TO BE AUTHENTIFICATED', _kc.authenticated);
 
-        if (_kc.isTokenExpired(10)) {
+        if (_kc.isTokenExpired(60)) {
           console.error("KC ERROR: EXPIRED");
           _kc.onTokenExpired();
         }
@@ -96,7 +112,7 @@ const getToken = () => _kc.token;
 const isLoggedIn = () => !!_kc.token;
 
 const updateToken = (successCallback: any) =>
-  _kc.updateToken(5)
+  _kc.updateToken(60)
     .then(successCallback)
     .catch(doLogin);
 

@@ -71,13 +71,17 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
     //togglePanels = togglePanels.filter(p => panels.findIndex(p1 => p1.panelId == p.panelId) < 0);
 
     return (
-      <Box sx={{
+      <Box
+        key={"Box1"+component[0].panelId}
+        sx={{
         width: '100%',
         height: '100%',
         display: 'flex',
         flexDirection: 'column'
+        
       }}>
-          <Box
+        <Box
+          key={"Box2" +component[0].panelId}
             sx={{ flexGrow: 1, backgroundColor: color, display:'flex' }}>
 
           <Box
@@ -126,10 +130,13 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
           </Box>
 
 
-        <Box sx={{
+        <Box
+          key={"Box3" +component[0].panelId}
+          sx={{
           width: '100%',
           height: '100%',
           overflow: 'auto'
+          
         }}>
           {component[1]}
         </Box>
