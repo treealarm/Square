@@ -58,11 +58,23 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetRoute")]
-    public async Task<ActionResult<List<Geo2DCoordDTO>>> GetRoute(RoutDTO routData)
+    public async Task<ActionResult<List<RoutLineDTO>>> GetRoute(RoutDTO routData)
     {
-      var routRet = await _router.GetRoute(routData.InstanceName,"car", routData.Coordinates);
+      var ret = new List<RoutLineDTO>();
+      var routRet = await _router.GetRoute(routData.InstanceName, routData.Profile, routData.Coordinates);
 
-      return CreatedAtAction(nameof(GetRoute), routRet);
+      ret.Add(new RoutLineDTO()
+      {
+        figure = new GeoObjectDTO()
+        {
+          location = new GeometryPolylineDTO()
+          {
+            coord = routRet
+          }
+        }
+      });      
+
+      return CreatedAtAction(nameof(GetRoute), ret);
     }
 
     [HttpPost]

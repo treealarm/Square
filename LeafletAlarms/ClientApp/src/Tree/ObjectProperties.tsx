@@ -20,6 +20,7 @@ import NotInterestedSharpIcon from '@mui/icons-material/NotInterestedSharp';
 import { SearchMeOnMap } from './SearchMeOnMap';
 import { useAppDispatch } from '../store/configureStore';
 import EditOptions from './EditOptions';
+import { RequestRoute } from './RequestRoute';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -193,6 +194,7 @@ export function ObjectProperties() {
             geometry={geometry}
             text={objProps?.id}
             zoom_min={objProps?.zoom_min} />
+          <RequestRoute geometry={geometry}></RequestRoute>
         </ListItem>
 
         <ListItem>

@@ -87,6 +87,7 @@ export function PolygonMaker(props: any) {
   };
 
   function DoSetMovedIndex(index: number, place: any) {
+    console.log("DoSetMovedIndex ", place, " ", index);
     setMovedIndex(index);
   }
 
@@ -223,7 +224,7 @@ export function PolygonMaker(props: any) {
         type: PolygonType,
         coord: [...curPolygon.geometry.coord]
       }          
-
+      console.log("addVertex:", index);
       geometry_upd.coord.splice(index, 0, geometry_upd.coord[index]);
 
       setPolygon(polygon1 => ({
@@ -232,6 +233,7 @@ export function PolygonMaker(props: any) {
       }));
 
       DoSetMovedIndex(index, "AddVertex");
+      setClick(1);
     }, [curPolygon])
 
   const deleteVertex = useCallback(
@@ -242,14 +244,16 @@ export function PolygonMaker(props: any) {
       {
         type: PolygonType,
         coord: [...curPolygon.geometry.coord]
-      };     
-
+      };
+      
       geometry_upd.coord.splice(index, 1);
-
+      console.log("deleteVertex:", index, " ", geometry_upd.coord.length);
       setPolygon(polygon1 => ({
         ...curPolygon,
         geometry: geometry_upd
       }));
+
+      setClick(1);
 
     }, [curPolygon])
 

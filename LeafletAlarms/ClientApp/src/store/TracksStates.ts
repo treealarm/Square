@@ -1,7 +1,7 @@
 import { Action, Reducer } from "redux";
 import { ApiDefaultMaxCountResult, ApiRouterRootString, ApiTracksRootString, AppThunkAction } from "./";
 import { DoFetch } from "./Fetcher";
-import { BoxTrackDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } from "./Marker";
+import { BoxTrackDTO, IRoutDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
@@ -133,6 +133,33 @@ export const actionCreators = {
 
       dispatch({ type: "REQUEST_ROUTS", box: box });
     }
+  },
+  requestRoutsByLine: (routRequest: IRoutDTO): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+
+    let body = JSON.stringify(routRequest);
+    var request = ApiRouterRootString + "/GetRoute";
+
+    var fetched = DoFetch(request, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: body
+    });
+
+    fetched
+      .then(response => {
+        if (!response.ok) throw response.statusText;
+        var json = response.json();
+        return json as Promise<IRoutLineDTO[]>;
+      })
+      .then(data => {
+        dispatch({ type: "RECEIVE_ROUTS_BY_ID", routs: data });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   },
   ///////////////////////////////////////////////////////////
   requestTracks: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (

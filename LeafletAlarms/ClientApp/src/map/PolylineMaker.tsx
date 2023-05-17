@@ -78,7 +78,11 @@ export function PolylineMaker(props: any) {
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
-
+  const [click, setClick] = React.useState(0);
+  function DoSetMovedIndex(index: number, place:string) {
+    console.log("DoSetMovedIndex ", place, " ", index);
+    setMovedIndex(index);
+  }
   const initFigure: IPolyline = {
     id: null,
     name: 'New Polyline',
@@ -117,11 +121,15 @@ export function PolylineMaker(props: any) {
     
   const mapEvents = useMapEvents({
     click(e: any) {
-      
+
+      if (click == 1) {
+        setClick(0);
+        return;
+      }
       var ll: L.LatLng = e.latlng as L.LatLng;
 
       if (movedIndex >= 0) {
-        setMovedIndex(-1);
+        DoSetMovedIndex(-1, "click");
         return;
       }
       
@@ -160,7 +168,7 @@ export function PolylineMaker(props: any) {
     keydown(e: LeafletKeyboardEvent) {
       if (e.originalEvent.code == 'Escape') {
         if (movedIndex >= 0) {
-          setMovedIndex(-1);
+          DoSetMovedIndex(-1, "keydown");
           setFigure(oldFigure);
           setOldFigure(initFigure);
         }
@@ -187,8 +195,9 @@ export function PolylineMaker(props: any) {
       console.log(e.target.value);
       parentMap.closePopup();
       
-      setMovedIndex(index);
-    }, [])
+      DoSetMovedIndex(index, "moveVertex");
+      setClick(1);
+    }, [figure])
 
   const addVertex = useCallback(
     (index: any, toEnd: any, e: any) => {
@@ -211,7 +220,8 @@ export function PolylineMaker(props: any) {
         index++;
       }
 
-      setMovedIndex(index);
+      DoSetMovedIndex(index, "AddVertex");
+      setClick(1);
     }, [figure])
 
   const deleteVertex = useCallback(
@@ -229,6 +239,8 @@ export function PolylineMaker(props: any) {
         ...polygon,
         geometry: geometry_upd
       }));
+
+      setClick(1);
 
     }, [figure])
 

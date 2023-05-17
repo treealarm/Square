@@ -47,6 +47,11 @@ export interface IPolyline extends ICommonFig {
   geometry: IPolylineCoord;  
 }
 
+export interface IRoutDTO {
+  InstanceName: string;
+  Profile: string;
+  Coordinates: LatLngPair[];
+}
 export interface ObjExtraPropertyDTO {
   visual_type?: string;
   str_val: string;
