@@ -60,7 +60,7 @@ namespace LeafletAlarms.Controllers
     [Route("GetRoute")]
     public async Task<ActionResult<List<Geo2DCoordDTO>>> GetRoute(RoutDTO routData)
     {
-      var routRet = await _router.GetRoute(routData.InstanceName, routData.Coordinates);
+      var routRet = await _router.GetRoute(routData.InstanceName,"car", routData.Coordinates);
 
       return CreatedAtAction(nameof(GetRoute), routRet);
     }

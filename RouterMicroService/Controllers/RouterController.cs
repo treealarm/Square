@@ -1,4 +1,5 @@
 using Dapr.Client;
+using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
@@ -9,20 +10,14 @@ namespace RouterMicroService.Controllers
   [Route("[controller]")]
   public class RouterController : ControllerBase
   {
-    private readonly ILogger<RouterController> _logger;
-    private IRoutService _routService;
-    private ITrackRouter _router;
     private readonly DaprClient _daprClient;
+    private ITrackRouter _router;
     public RouterController(
-      ILogger<RouterController> logger,
-      ITrackRouter router,
-      IRoutService routService,
-      DaprClient daprClient
+      DaprClient daprClient,
+      ITrackRouter router
     )
     {
-      _routService = routService;
       _router = router;
-      _logger = logger;
       _daprClient = daprClient;
     }
 
@@ -37,6 +32,15 @@ namespace RouterMicroService.Controllers
             @"api/Tracks/GetHello");
 
       return forecasts;
+    }
+
+    [HttpPost]
+    [Route("GetRoute")]
+    public async Task<ActionResult<List<Geo2DCoordDTO>>> GetRoute(RoutDTO routData)
+    {
+      var routRet = await _router.GetRoute(routData.InstanceName, routData.Profile, routData.Coordinates);
+
+      return CreatedAtAction(nameof(GetRoute), routRet);
     }
   }
 }

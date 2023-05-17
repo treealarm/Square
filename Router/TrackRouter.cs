@@ -56,7 +56,7 @@ namespace LeafletAlarmsRouter
       return false;
     }
 
-    public async Task<List<Geo2DCoordDTO>> GetRoute(string inst, List<Geo2DCoordDTO> coords)
+    public async Task<List<Geo2DCoordDTO>> GetRoute(string inst,string strProfile, List<Geo2DCoordDTO> coords)
     {
       await Task.Delay(0);
 
@@ -64,6 +64,21 @@ namespace LeafletAlarmsRouter
       {
         // get a profile.
         var profile = Vehicle.Car.Fastest(); // the default OSM car profile.
+
+        if (strProfile.ToLower() == "bicycle")
+        {
+          profile = Vehicle.Bicycle.Fastest();
+        }
+
+        if (strProfile.ToLower() == "pedestrian")
+        {
+          profile = Vehicle.Pedestrian.Fastest();
+        }
+
+        if (strProfile.ToLower() == "moped")
+        {
+          profile = Vehicle.Moped.Fastest();
+        }
         //var start = router.Resolve(profile, 51.51467784097949f, -0.1486710157204226f);
         //var end = router.Resolve(profile, 51.1237f, 1.3134f);
         List<Coordinate> list_native = ConvertCoordsToNative(coords);

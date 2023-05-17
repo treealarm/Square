@@ -160,7 +160,7 @@ namespace RouterMicroService
         coords.Add(p1);
         coords.Add(p2);
 
-        routRet = await _router.GetRoute(_routeInstanse, coords);
+        routRet = await _router.GetRoute(_routeInstanse, "car", coords);
 
         if (routRet == null)
         {

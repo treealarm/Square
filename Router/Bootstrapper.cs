@@ -63,21 +63,21 @@ namespace LeafletAlarmsRouter
         }
 
         // check if there are folder with OSM-XML or OSM-PBF file.
-          var osmFiles = dataDirectory.EnumerateFiles("*.osm.pbf").ToArray();
+        var osmFiles = dataDirectory.EnumerateFiles("*.osm.pbf").ToArray();
 
-          if (osmFiles.Length > 0)
+        if (osmFiles.Length > 0)
+        {
+          var thread = new Thread((state) =>
           {
-            var thread = new Thread((state) =>
-            {
-              var localDirectory = state as DirectoryInfo;
+            var localDirectory = state as DirectoryInfo;
 
-              if (Bootstrapper.LoadInstanceFromFolder(localDirectory))
-              {
-                
-              }
-            });
-            thread.Start(dataDirectory);
-          }
+            if (Bootstrapper.LoadInstanceFromFolder(localDirectory))
+            {
+
+            }
+          });
+          thread.Start(dataDirectory);
+        }
       }
       catch (Exception ex)
       {
@@ -162,13 +162,25 @@ namespace LeafletAlarmsRouter
             OsmStreamSource source;
 
             source = new PBFOsmStreamSource(osmFileStream);
-            routerDb.LoadOsmData(source, Vehicle.Car);
+            Itinero.Profiles.Vehicle[] vehicles = { Vehicle.Car, Vehicle.Bicycle, Vehicle.Pedestrian, Vehicle.Moped };
+            routerDb.LoadOsmData(source, vehicles);
 
             using (var stream = new FileInfo(convertedFileName).Open(FileMode.Create))
             {
+
+              var profiles = routerDb.GetSupportedProfiles().ToList();
+
               routerDb.AddContracted(routerDb.GetSupportedProfile("car"));
+              routerDb.AddContracted(routerDb.GetSupportedProfile("bicycle"));
+              routerDb.AddContracted(routerDb.GetSupportedProfile("pedestrian"));
+              routerDb.AddContracted(routerDb.GetSupportedProfile("moped"));
+
+              foreach (var profile in profiles)
+              {                
+                //routerDb.AddContracted(profile);
+              }
               routerDb.Serialize(stream);
-            }            
+            }
           }
 
           var multimodalRouter = new Router(routerDb);
