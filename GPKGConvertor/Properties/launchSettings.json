@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GPKGConvertor": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\TESTS\\SAMOKAT\\Datasets\\"
+    }
+  }
+}
