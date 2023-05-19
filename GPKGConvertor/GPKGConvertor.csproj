@@ -13,4 +13,8 @@
     <PackageReference Include="GeoJSON.Net" Version="1.2.19" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
 </Project>

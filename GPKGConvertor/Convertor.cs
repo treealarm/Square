@@ -1,4 +1,6 @@
-﻿using GeoJSON.Net;
+﻿using Domain;
+using Domain.GeoDBDTO;
+using GeoJSON.Net;
 using GeoJSON.Net.Converters;
 using GeoJSON.Net.Geometry;
 using Newtonsoft.Json;
@@ -19,7 +21,7 @@ namespace GPKGConvertor
     private volatile bool _configured;
     private volatile String _geopackagePath;
     private volatile DataSource _dataSource;
-
+    private static int _uid = 10000;
     public bool Configure(String geopackagePath)
     {
       if (_configured)
@@ -52,7 +54,7 @@ namespace GPKGConvertor
       return true;
     }
 
-    public string ReadGeometry()
+    public List<JObject> ReadGeometry()
     {
       List<JObject> list = new List<JObject>();
 
@@ -96,14 +98,48 @@ namespace GPKGConvertor
           var s = geometry.ExportToJson(options);
 
           JObject o = JObject.Parse(s);
-          o.AddFirst(new JProperty("id", id));
-
+          o.AddFirst(new JProperty("src_id", id));
+          o.AddFirst(new JProperty("layer_name", $"{resultLayer.GetName()}"));
           list.Add(o);
           feature = resultLayer.GetNextFeature();
         }
       }
 
-      return JsonConvert.SerializeObject(list);
+      return list;
+    }
+
+    public void AddJListToFigs(List<JObject> list, FiguresDTO figDto)
+    {
+      foreach (var item in list)
+      {
+        AddJObjToFigs(item, figDto);
+      }
+    }
+
+    public void AddJObjToFigs(JObject jObject, FiguresDTO figDto)
+    {
+      GeometryDTO geo = System.Text.Json.JsonSerializer.Deserialize<GeometryDTO>(jObject?.ToString());
+
+      FigureGeoDTO fig = new FigureGeoDTO()
+      {
+        name = jObject.GetValue("id")?.ToString(),
+        geometry = geo,
+        id = _uid++.ToString().PadLeft(24, '0')
+      };
+
+      fig.extra_props = new List<ObjExtraPropertyDTO>();
+
+      fig.extra_props.Add(new ObjExtraPropertyDTO() { 
+      prop_name = "layer_name",
+      str_val = jObject.GetValue("layer_name")?.ToString(),
+      });
+
+      fig.extra_props.Add(new ObjExtraPropertyDTO()
+      {
+        prop_name = "src_id",
+        str_val = jObject.GetValue("src_id")?.ToString(),
+      });
+      figDto.figs.Add(fig);
     }
   }
 }
