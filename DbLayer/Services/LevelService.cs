@@ -87,18 +87,28 @@ namespace DbLayer.Services
           zoom_min = 14,
           zoom_max = 17
         };
-        levels.Add(level);
 
-        for (int i = 0; i < 20; i++)
+        levels.Add(level);
+        for (int j = 1; j < 20; j++)
         {
-          level = new DBLevel()
+          for (int i = j; i < 20; i++)
           {
-            zoom_level = i.ToString(),
-            zoom_min = i,
-            zoom_max = i
-          };
-          levels.Add(level);
+            var levelName = $"{j}-{i}";
+
+            if (i == j)
+            {
+              levelName = i.ToString();
+            }
+            level = new DBLevel()
+            {
+              zoom_level = levelName,
+              zoom_min = j,
+              zoom_max = i
+            };
+            levels.Add(level);
+          }
         }
+        
 
         await InsertManyAsync(levels);
         _cash = await GetLevelsAsync();

@@ -30,14 +30,16 @@ try
       Console.WriteLine($"failed to configure {currentFile}!");
       return;
     }
+    
+    var jList = conv.ReadGeometry(currentFile);    
+    //File.WriteAllText($"{file}.json", JsonConvert.SerializeObject(jList));
 
-    var jList = conv.ReadGeometry();    
-    File.WriteAllText($"{file}.json", JsonConvert.SerializeObject(jList));
-
-    conv.AddJListToFigs(jList, figDto);
+    conv.AddJListToFigs(Path.GetFileNameWithoutExtension(currentFile),jList, figDto);
   }
 
-  File.WriteAllText($"{Path.Combine(sourceDirectory, "figs.json")}",
+  File.WriteAllText(
+    "D:\\TESTS\\Leaflet\\leaflet_data\\import_data\\states.json",
+    //$"{Path.Combine(sourceDirectory, "states.json")}",
     JsonConvert.SerializeObject(figDto));
 }
 catch (Exception e)

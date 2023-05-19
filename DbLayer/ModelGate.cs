@@ -5,6 +5,7 @@ using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -180,7 +181,22 @@ namespace DbLayer
           prop_name = prop.prop_name,
           visual_type = prop.visual_type
         };
-
+        var s = BsonType.Double.ToString();
+        if (prop.visual_type == BsonType.Double.ToString())
+        {
+          if(double.TryParse(
+            prop.str_val,
+            NumberStyles.Any,
+            CultureInfo.InvariantCulture,
+            out var result))
+          {
+            newProp.str_val = new BsonDocument(
+            "str_val",
+            result
+            );
+          }
+         }
+        else
         if (prop.visual_type == BsonType.DateTime.ToString())
         {
           newProp.str_val = new BsonDocument(
@@ -190,7 +206,8 @@ namespace DbLayer
               .ToUniversalTime()
             );
         }
-        else
+
+        if (newProp.str_val == null)
         {
           newProp.str_val = new BsonDocument(
             "str_val",
