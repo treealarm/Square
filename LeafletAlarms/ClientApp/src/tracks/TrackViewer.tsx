@@ -44,14 +44,14 @@ const pathOptionsTracksSelected = {
 
 var pathOptionsRouts: any[] =
 [
-    { color: "blue" },
-    { color: "red" },
-    { color: "yello" },
-    { color: "green" },
-    { color: "#FAF" },
-    { color: "#AA0" },
-    { color: "#A0A" },
-    { color: "#FA0" }
+    { color: "#0F0" },
+    { color: "#5AA" },
+    { color: "#6AA" },
+    { color: "#7AA" },
+    { color: "#AAA" },
+    { color: "#BAA" },
+    { color: "#CAA" },
+    { color: "red" }
 ]
 function TrackPolygon(props: any) {
   const appDispatch = useAppDispatch();

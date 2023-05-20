@@ -241,6 +241,34 @@ namespace DbLayer.Services
       return new Dictionary<string, GeoObjectDTO>();
     }
 
+    public async Task<Dictionary<string, GeoObjectDTO>> GetGeoIntersectAsync(GeometryDTO geoObject)
+    {
+      int limit = 10000;
+
+      var builder = Builders<DBGeoObject>.Filter;
+
+      GeoJsonGeometry<GeoJson2DCoordinates> geometry;
+      FilterDefinition<DBGeoObject> filter = null;
+
+      geometry = ModelGate.ConvertGeoDTO2DB(geoObject);
+      filter = builder.GeoIntersects(t => t.location, geometry);
+
+      try
+      {
+        var list = await _geoCollection.Find(filter)
+          .Limit(limit)
+          .ToListAsync();
+
+        return ModelGate.ConvertListDB2DTO(list);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }
+
+      return new Dictionary<string, GeoObjectDTO>();
+    }
+
     public async Task<Dictionary<string, GeoObjectDTO>> GetGeoObjectsAsync(List<string> ids)
     {
       List<DBGeoObject> obj = null;

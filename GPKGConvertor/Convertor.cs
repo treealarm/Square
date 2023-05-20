@@ -59,6 +59,14 @@ namespace GPKGConvertor
     public List<JObject> ReadGeometry(string file)
     {
       var file_id = Path.GetFileNameWithoutExtension(file).ToLower();
+
+      List<JObject> list = new List<JObject>();
+
+      if (file_id != "forbidden_zones" &&
+        file_id != "parkings")
+      {
+        return list;
+      }
       var dir = Path.GetDirectoryName(file);
 
       var mapRoadIndex = new Dictionary<string, string>();
@@ -96,9 +104,7 @@ namespace GPKGConvertor
 
         csv = Path.Combine(dir, "clashes.csv");
         lines = File.ReadAllLines(csv);
-      }
-     
-      List<JObject> list = new List<JObject>();
+      }    
 
       var layerCount = _dataSource.GetLayerCount();
 
@@ -273,7 +279,6 @@ namespace GPKGConvertor
         parent_id = parent_id,
         geometry = geo,
         id = _uid++.ToString().PadLeft(24, '0'),
-        radius = 100,
         zoom_level = zoom
       };
 

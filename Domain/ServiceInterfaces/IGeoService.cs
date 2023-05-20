@@ -26,5 +26,7 @@ namespace Domain.ServiceInterfaces
       Geo2DCoordDTO ptDto,
       int limit
     );
+
+    Task<Dictionary<string, GeoObjectDTO>> GetGeoIntersectAsync(GeometryDTO geoObject);
   }
 }
