@@ -58,7 +58,7 @@ namespace DbLayer
       if (location is GeometryCircleDTO point)
       {
         ret = new GeoJsonPoint<GeoJson2DCoordinates>(
-          GeoJson.Position(point.coord[1], point.coord[0])
+          GeoJson.Position(point.coord.Lon, point.coord.Lat)
         );
       }
 

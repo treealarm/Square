@@ -24,6 +24,8 @@ builder.Services.AddSingleton<ILevelService, LevelService>();
 builder.Services.AddSingleton<IRoutService, RoutService>();
 builder.Services.AddSingleton<ITrackRouter, TrackRouter>();
 builder.Services.AddSingleton<ITrackService, TrackService>();
+builder.Services.AddSingleton<IMapService, MapService>();
+builder.Services.AddSingleton<IGeoService, GeoService>();
 
 builder.Services.AddHostedService<TimedHostedService>();
 

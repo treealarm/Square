@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using PubSubLib;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -58,21 +59,46 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("GetRoute")]
-    public async Task<ActionResult<List<RoutLineDTO>>> GetRoute(RoutDTO routData)
+    public async Task<ActionResult<List<List<Geo2DCoordDTO>>>> GetRoute(RoutDTO routData)
     {
+      //var routRet = await _router.GetRoute(routData.InstanceName, routData.Profile, routData.Coordinates);
       var ret = new List<RoutLineDTO>();
-      var routRet = await _router.GetRoute(routData.InstanceName, routData.Profile, routData.Coordinates);
 
-      ret.Add(new RoutLineDTO()
+      HttpClient client = new HttpClient();
+      client.BaseAddress = new Uri(@"https://localhost:7177");
+      client.DefaultRequestHeaders.Accept.Clear();
+      client.DefaultRequestHeaders.Accept.Add(
+          new MediaTypeWithQualityHeaderValue("application/json"));
+      HttpResponseMessage response =
+       await client.PostAsJsonAsync($"Router/GetSmartRoute", routData);
+
+      response.EnsureSuccessStatusCode();
+
+      // Deserialize the updated product from the response body.
+      var s = await response.Content.ReadAsStringAsync();
+
+      try
       {
-        figure = new GeoObjectDTO()
+        var routRets = JsonSerializer.Deserialize<List<List<Geo2DCoordDTO>>>(s);
+
+        foreach (var r in routRets)
         {
-          location = new GeometryPolylineDTO()
+          ret.Add(new RoutLineDTO()
           {
-            coord = routRet
-          }
-        }
-      });      
+            figure = new GeoObjectDTO()
+            {
+              location = new GeometryPolylineDTO()
+              {
+                coord = r
+              }
+            }
+          });
+        }        
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }      
 
       return CreatedAtAction(nameof(GetRoute), ret);
     }

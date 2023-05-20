@@ -170,10 +170,10 @@ namespace LeafletAlarmsRouter
 
               var profiles = routerDb.GetSupportedProfiles().ToList();
 
-              routerDb.AddContracted(routerDb.GetSupportedProfile("car"));
+              //routerDb.AddContracted(routerDb.GetSupportedProfile("car"));
               routerDb.AddContracted(routerDb.GetSupportedProfile("bicycle"));
               routerDb.AddContracted(routerDb.GetSupportedProfile("pedestrian"));
-              routerDb.AddContracted(routerDb.GetSupportedProfile("moped"));
+              //routerDb.AddContracted(routerDb.GetSupportedProfile("moped"));
 
               foreach (var profile in profiles)
               {                

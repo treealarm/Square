@@ -1,8 +1,13 @@
 using Dapr.Client;
+using DbLayer.Services;
+using Domain;
 using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using Itinero;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
+using System.Text.Json;
 
 namespace RouterMicroService.Controllers
 {
@@ -12,13 +17,19 @@ namespace RouterMicroService.Controllers
   {
     private readonly DaprClient _daprClient;
     private ITrackRouter _router;
+    private IMapService _mapService;
+    private IGeoService _geoService;
     public RouterController(
       DaprClient daprClient,
-      ITrackRouter router
+      ITrackRouter router,
+      IMapService mapService,
+      IGeoService geoService
     )
     {
       _router = router;
       _daprClient = daprClient;
+      _mapService = mapService;
+      _geoService = geoService;
     }
 
 
@@ -39,8 +50,95 @@ namespace RouterMicroService.Controllers
     public async Task<ActionResult<List<Geo2DCoordDTO>>> GetRoute(RoutDTO routData)
     {
       var routRet = await _router.GetRoute(routData.InstanceName, routData.Profile, routData.Coordinates);
-
       return CreatedAtAction(nameof(GetRoute), routRet);
+    }
+
+    [HttpPost]
+    [Route("GetSmartRoute")]
+    public async Task<ActionResult<List<List<Geo2DCoordDTO>>>> GetSmartRoute(RoutDTO routData)
+    {
+      List<List<Geo2DCoordDTO>> bunchOfRouts = new List<List<Geo2DCoordDTO>> ();
+
+      ObjPropsSearchDTO property_filter = new ObjPropsSearchDTO()
+      {
+        props = new List<KeyValueDTO>()
+        {
+          new KeyValueDTO()
+          {
+            prop_name = "layer_name",
+            str_val = "parkings"
+          }
+        }
+      };
+
+      var props = await _mapService.GetPropByValuesAsync(
+        property_filter,
+        null,
+        true,
+        10000
+      );
+
+      var ped0 = routData.Coordinates.First();
+      var ped1 = routData.Coordinates.Last();
+
+      var ids = props.Select(i => i.id).ToList();
+
+      var geoParks0 = await _geoService.GetGeoObjectNearestsAsync(
+        ids,
+        ped0,
+        3
+      );
+
+      var geoParks1 = await _geoService.GetGeoObjectNearestsAsync(
+        ids,
+        ped1,
+        3
+      );
+
+      foreach( var park0 in geoParks0.Values )
+      {
+        foreach (var park1 in geoParks1.Values)
+        {
+          var p0 = park0.location as GeometryCircleDTO;
+          var p1 = park1.location as GeometryCircleDTO;
+
+          if (p0 == null ||  p1 == null)
+          { continue; }
+
+          List<Geo2DCoordDTO> scooterPark = new List<Geo2DCoordDTO>()
+          {
+            p0.coord,
+            p1.coord
+          };
+
+          List<Geo2DCoordDTO> pedestrian0 = new List<Geo2DCoordDTO>()
+          {
+            ped0,
+            p0.coord
+          };
+
+          List<Geo2DCoordDTO> pedestrian1 = new List<Geo2DCoordDTO>()
+          {
+            p1.coord,
+            ped1
+          };
+
+          var routPed0 = await _router.GetRoute(routData.InstanceName, "pedestrian", pedestrian0);
+          var routPed1 = await _router.GetRoute(routData.InstanceName, "pedestrian", pedestrian1);
+          var routRet = await _router.GetRoute(routData.InstanceName, "bicycle", scooterPark);
+
+          if (routRet == null)
+          {
+            continue;
+          }
+
+          routRet.InsertRange(0, routPed0);
+          routRet.AddRange(routPed1);
+          bunchOfRouts.Add(routRet);
+        }
+      }      
+
+      return CreatedAtAction(nameof(GetSmartRoute), bunchOfRouts);
     }
   }
 }

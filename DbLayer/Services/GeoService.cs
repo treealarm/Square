@@ -334,6 +334,36 @@ namespace DbLayer.Services
       return retVal ;
     }
 
+    public async Task<Dictionary<string, GeoObjectDTO>> GetGeoObjectNearestsAsync(
+      List<string> ids,
+      Geo2DCoordDTO ptDto,
+      int limit
+    )
+    {
+      var point = new GeoJsonPoint<GeoJson2DCoordinates>(
+          GeoJson.Position(ptDto.Lon, ptDto.Lat)
+        );
+      //var point = GeoJson.Point(GeoJson.Position(-74.005, 40.7358879));
+
+      List<DBGeoObject> obj = null;
+
+      try
+      {
+        var maxGeoDistanceInKm = 1;
+        var builder = Builders<DBGeoObject>.Filter;
+        var filter0 = builder.Where(x => ids.Contains(x.id));
+        var filter1 = builder.NearSphere(x => x.location, point, maxGeoDistanceInKm * 1000);
+        var filter = filter0 & filter1;
+        obj = await _geoCollection.Find(filter).Limit(limit).ToListAsync();
+      }
+      catch (Exception)
+      {
+
+      }
+
+      return ModelGate.ConvertListDB2DTO(obj);
+    }
+
     private static void Log(FilterDefinition<DBGeoObject> filter)
     {
       var serializerRegistry = BsonSerializer.SerializerRegistry;

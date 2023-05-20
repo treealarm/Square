@@ -14,7 +14,9 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PubSubLib;
+using SharpCompress.Common;
 using Swashbuckle.AspNetCore.Filters;
+using System.Data;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -200,6 +202,8 @@ namespace LeafletAlarms
             json = JsonSerializer.Deserialize<FiguresDTO>(s);
             var trackUpdate = app.Services.GetRequiredService<TracksUpdateService>();
             await trackUpdate.UpdateFigures(json);
+            FileInfo fileInfo = new FileInfo(file2Import);
+            fileInfo.MoveTo(fileInfo.Directory.FullName + "\\" + "states_done.json");
           }
           catch (Exception ex)
           {

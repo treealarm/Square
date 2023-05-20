@@ -1,4 +1,5 @@
-﻿using Domain.GeoDTO;
+﻿using Domain.GeoDBDTO;
+using Domain.GeoDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,10 @@ namespace Domain.ServiceInterfaces
       string zoom_level
     );
     Task<long> RemoveAsync(List<string> ids);
+    Task<Dictionary<string, GeoObjectDTO>> GetGeoObjectNearestsAsync(
+      List<string> ids,
+      Geo2DCoordDTO ptDto,
+      int limit
+    );
   }
 }

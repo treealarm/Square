@@ -42,8 +42,17 @@ const pathOptionsTracksSelected = {
   dashArray: '5,10'
 }
 
-var pathOptionsRouts = { color: "blue" };
-
+var pathOptionsRouts: any[] =
+[
+    { color: "blue" },
+    { color: "red" },
+    { color: "yello" },
+    { color: "green" },
+    { color: "#FAF" },
+    { color: "#AA0" },
+    { color: "#A0A" },
+    { color: "#FA0" }
+]
 function TrackPolygon(props: any) {
   const appDispatch = useAppDispatch();
 
@@ -283,7 +292,7 @@ export function TrackViewer() {
             key={rout?.id}
             hidden={false}
             marker={rout?.figure}
-            pathOptions={pathOptionsRouts}
+            pathOptions={pathOptionsRouts[index]}
           >
           </CommonTrack>
         )}

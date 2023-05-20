@@ -123,7 +123,11 @@ namespace DbLayer.Services
       foreach (var track in newObjs)
       {
         var dbTrack = ConvertDTO2DB(track);
-        list.Add(dbTrack);
+
+        if (dbTrack != null)
+        {
+          list.Add( dbTrack );
+        }
       }
       await _collRouts.InsertManyAsync(list);
     }
@@ -145,6 +149,10 @@ namespace DbLayer.Services
         dbTrack.meta.id = ObjectId.GenerateNewId().ToString();
       }
 
+      if (track.figure == null)
+      {
+        return null;
+      }
       dbTrack.meta.figure = ModelGate.ConvertDTO2DB(track.figure);
       return dbTrack;
     }
