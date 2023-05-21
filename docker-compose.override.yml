@@ -19,9 +19,9 @@ services:
   routermicroservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8888
+      - ASPNETCORE_URLS=http://+:7177
     ports:
-      - "7000:8888"
+      - "7177:7177"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

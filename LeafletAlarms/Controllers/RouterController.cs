@@ -65,7 +65,7 @@ namespace LeafletAlarms.Controllers
       var ret = new List<RoutLineDTO>();
 
       HttpClient client = new HttpClient();
-      client.BaseAddress = new Uri(@"https://localhost:7177");
+      client.BaseAddress = new Uri(@"http://routermicroservice:7177");
       client.DefaultRequestHeaders.Accept.Clear();
       client.DefaultRequestHeaders.Accept.Add(
           new MediaTypeWithQualityHeaderValue("application/json"));

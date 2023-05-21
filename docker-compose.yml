@@ -23,7 +23,7 @@ services:
 
   routermicroservice:
     image: ${DOCKER_REGISTRY-}routermicroservice
-    restart: "no"
+    restart: unless-stopped
     depends_on:
      - mongoservice
     build:
