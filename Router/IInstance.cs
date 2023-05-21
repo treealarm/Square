@@ -28,7 +28,7 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Calculates a route along the given coordinates.
     /// </summary>
-    Result<Route> Calculate(
+    Route Calculate(
       string profile,
       List<Coordinate> coordinates
     );

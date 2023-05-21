@@ -151,12 +151,12 @@ namespace LeafletAlarmsRouter
             list_native
           );
 
-          if (route.IsError)
+          if (route == null)
           {
-            Console.WriteLine($"Route error:{route.ErrorMessage}");
+            Console.WriteLine($"Route error");
             return null;
           }
-          return ConvertNativeToCoords(route.Value.Shape.ToList());
+          return ConvertNativeToCoords(route.Shape.ToList());
         }
         catch(Exception ex)
         {

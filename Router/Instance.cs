@@ -72,11 +72,11 @@ namespace LeafletAlarmsRouter
           var attrColl = _router.Db.EdgeProfiles.Get(edgeData.Profile);
           var attrColl1 = _router.Db.EdgeProfiles.Get(_speed0);
           //attrColl.AddOrReplace("max_speed", "0");
-          _router.Db.Network.RemoveEdge(edgeId);
+          //_router.Db.Network.RemoveEdge(edgeId);
           // update the speed profile of this edge.
 
-         // edgeData.Profile = (ushort)_speed0;
-         // _router.Db.Network.UpdateEdgeData(edgeId, edgeData);
+          edgeData.Profile = (ushort)_speed0;
+          _router.Db.Network.UpdateEdgeData(edgeId, edgeData);
         }
       }
       
@@ -89,7 +89,7 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Calculates a routing along the given coordinates.
     /// </summary>
-    public Result<Route> Calculate(
+    public Route Calculate(
       string profileName,
       List<Coordinate> coordinates
     )
@@ -128,10 +128,10 @@ namespace LeafletAlarmsRouter
 
       if (points.Count < 2)
       {
-        return new Result<Route>("bad data", null);
+        return null;
       }
         
-      return _router.TryCalculate(profile, points.ToArray());
+      return _router.Calculate(profile, points.ToArray());
     }
 
     /// <summary>
