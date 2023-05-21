@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbLayer", "DbLayer\DbLayer.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RouterMicroService", "RouterMicroService\RouterMicroService.csproj", "{31B43186-D2A2-4BB9-B580-F8AEA1F8D4AD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Router", "Router\Router.csproj", "{98CA4FF2-B557-471A-9ED7-48A93FF42CA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{31B43186-D2A2-4BB9-B580-F8AEA1F8D4AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31B43186-D2A2-4BB9-B580-F8AEA1F8D4AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31B43186-D2A2-4BB9-B580-F8AEA1F8D4AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98CA4FF2-B557-471A-9ED7-48A93FF42CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98CA4FF2-B557-471A-9ED7-48A93FF42CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98CA4FF2-B557-471A-9ED7-48A93FF42CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98CA4FF2-B557-471A-9ED7-48A93FF42CA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

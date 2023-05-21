@@ -27,6 +27,10 @@ namespace Domain.ServiceInterfaces
       int limit
     );
 
-    Task<Dictionary<string, GeoObjectDTO>> GetGeoIntersectAsync(GeometryDTO geoObject);
+    Task<Dictionary<string, GeoObjectDTO>> GetGeoIntersectAsync(
+      GeometryDTO geoObject,
+      HashSet<string> ids,
+       bool bNot
+      );
   }
 }

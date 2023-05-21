@@ -1,15 +1,13 @@
 using Dapr.Client;
-using DbLayer.Services;
 using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
-using Itinero;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
-using System.Net.Http.Headers;
-using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
 
 namespace RouterMicroService.Controllers
 {
@@ -51,97 +49,19 @@ namespace RouterMicroService.Controllers
     [Route("GetRoute")]
     public async Task<ActionResult<List<Geo2DCoordDTO>>> GetRoute(RoutDTO routData)
     {
-      var routRet = await _router.GetRoute(routData.InstanceName, routData.Profile, routData.Coordinates);
+      var routRet = await _router.GetRoute(
+        routData.InstanceName,
+        routData.Profile,
+        routData.Coordinates
+        );
       return CreatedAtAction(nameof(GetRoute), routRet);
     }
 
-    public static bool IsPointInPolygon4(List<Geo2DCoordDTO> polygon, Geo2DCoordDTO testPoint)
+    private async Task<Dictionary<string, GeoObjectDTO>> GetNearestParkings(
+      Geo2DCoordDTO myPoint, 
+      int parkings 
+      )
     {
-      bool result = false;
-      int j = polygon.Count() - 1;
-      for (int i = 0; i < polygon.Count(); i++)
-      {
-        if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
-        {
-          if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
-          {
-            result = !result;
-          }
-        }
-        j = i;
-      }
-      return result;
-    }
-
-    private async Task<List<Geo2DCoordDTO>> CheckForIntersections(List<Geo2DCoordDTO> route)
-    {
-      if (route == null || route.Count == 0)
-      {
-        return null;
-      }
-
-      var geoObject = new GeometryPolylineDTO()
-      {
-        coord = route
-      };
-
-      var forbiddenZones = new List<GeoObjectDTO>();
-      var intersected = await _geoService.GetGeoIntersectAsync(geoObject);
-
-      if (intersected != null)
-      {
-        var propObjects = await _mapService.GetPropsAsync(intersected.Keys.ToList());
-        List<Geo2DCoordDTO> routeNew = new List<Geo2DCoordDTO>();
-        
-        foreach (var prop in propObjects.Values)
-        {
-          var bForbidden = prop.extra_props
-            .Where(p => p.prop_name == "layer_name" && p.str_val == "forbidden_zones")
-            .Any();
-
-          if (bForbidden)
-          {
-            if (intersected.TryGetValue(prop.id, out var forbiddenZone))
-            {                
-              forbiddenZones.Add(forbiddenZone);
-            }
-          }
-        }
-
-        foreach (var pt2Check in route)
-        {
-          var bInPoly = false;
-
-          foreach (var fZone in forbiddenZones)
-          {
-            var polygon = fZone.location.coord as List<Geo2DCoordDTO>;
-
-            if (polygon == null) { continue; }
-
-            bInPoly = IsPointInPolygon4(polygon, pt2Check);
-
-            if (bInPoly)
-            {
-              break;
-            }
-          }
-
-          if (!bInPoly)
-          {
-            routeNew.Add(pt2Check);
-          }
-        }
-        return routeNew;
-      }
-      return route;
-    }
-
-    [HttpPost]
-    [Route("GetSmartRoute")]
-    public async Task<ActionResult<List<List<Geo2DCoordDTO>>>> GetSmartRoute(RoutDTO routData)
-    {
-      List<List<Geo2DCoordDTO>> bunchOfRouts = new List<List<Geo2DCoordDTO>> ();
-
       ObjPropsSearchDTO property_filter = new ObjPropsSearchDTO()
       {
         props = new List<KeyValueDTO>()
@@ -161,78 +81,236 @@ namespace RouterMicroService.Controllers
         10000
       );
 
-      var ped0 = routData.Coordinates.First();
-      var ped1 = routData.Coordinates.Last();
-
       var ids = props.Select(i => i.id).ToList();
 
       var geoParks0 = await _geoService.GetGeoObjectNearestsAsync(
         ids,
-        ped0,
+        myPoint,
         2
       );
 
-      var geoParks1 = await _geoService.GetGeoObjectNearestsAsync(
-        ids,
-        ped1,
-        2
-      );
-
-      foreach( var park0 in geoParks0.Values )
+      return geoParks0;
+    }
+    public static bool IsPointInPolygon4(List<Geo2DCoordDTO> polygon, Geo2DCoordDTO testPoint)
+    {
+      bool result = false;
+      int j = polygon.Count() - 1;
+      for (int i = 0; i < polygon.Count(); i++)
       {
-        foreach (var park1 in geoParks1.Values)
+        if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y ||
+          polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
         {
-          var p0 = park0.location as GeometryCircleDTO;
-          var p1 = park1.location as GeometryCircleDTO;
-
-          if (p0 == null ||  p1 == null)
-          { continue; }
-
-          List<Geo2DCoordDTO> scooterPark = new List<Geo2DCoordDTO>()
+          if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
           {
-            p0.coord,
-            p1.coord
-          };
-
-          List<Geo2DCoordDTO> pedestrian0 = new List<Geo2DCoordDTO>()
-          {
-            ped0,
-            p0.coord
-          };
-
-          List<Geo2DCoordDTO> pedestrian1 = new List<Geo2DCoordDTO>()
-          {
-            p1.coord,
-            ped1
-          };
-
-          var routPed0 = await _router.GetRoute(routData.InstanceName, "pedestrian", pedestrian0);
-          var routPed1 = await _router.GetRoute(routData.InstanceName, "pedestrian", pedestrian1);
-          var routRetPed = await _router.GetRoute(routData.InstanceName, 
-            "pedestrian",
-            scooterPark);
-
-          var routRetBi = await _router.GetRoute(routData.InstanceName,
-            "bicycle",
-            scooterPark);
-
-          routRetPed = await CheckForIntersections(routRetPed);
-
-          if (routRetPed != null)
-          {
-            routRetPed.InsertRange(0, routPed0);
-            routRetPed.AddRange(routPed1);
-            bunchOfRouts.Add(routRetPed);
-          }
-
-          if (routRetBi != null)
-          {
-            routRetBi.InsertRange(0, routPed0);
-            routRetBi.AddRange(routPed1);
-            bunchOfRouts.Add(routRetBi);
+            result = !result;
           }
         }
-      }      
+        j = i;
+      }
+      return result;
+    }
+
+    private void GetAlternatives(
+      TreeEdgeDTO startPoint,
+      string profileName,
+      string instanceName,
+      int maxPoints,
+      HashSet<TreeEdgeDTO> result,
+      HashSet<TreeEdgeDTO> forbiddenEdges,
+      Dictionary<string, GeoObjectDTO> forbiddenZones
+    )
+    {
+      if (result.Count > maxPoints)
+      {
+        return;
+      }
+
+      List<TreeEdgeDTO> alternatives = null;
+
+      if (startPoint != null)
+      {
+        alternatives = _router.CalculateTree(instanceName, profileName, startPoint.Shape, 100);
+      }
+
+      if (alternatives == null || alternatives.Count == 0)
+      {
+        return;
+      }
+
+      var newAlternatives = new HashSet<TreeEdgeDTO>();
+
+      foreach (var alternative in alternatives)
+      {
+        if (result.Contains(alternative))
+        {
+          continue;
+        }
+
+        if (IsIntersectedForbidden(alternative, forbiddenZones))
+        {
+          forbiddenEdges.Add(alternative);
+          continue;
+        }
+
+        newAlternatives.Add(alternative);
+      }
+
+      startPoint.Children = newAlternatives;
+
+      result.UnionWith(alternatives);
+
+      foreach (var alternative in newAlternatives)
+      { 
+        GetAlternatives(
+          alternative,
+          profileName,
+          instanceName,
+          maxPoints,
+          result,
+          forbiddenEdges,
+          forbiddenZones);
+      }
+    }
+    private Geo2DCoordDTO CheckForIntersections(
+      List<Geo2DCoordDTO> route,
+      Dictionary<string, GeoObjectDTO> forbiddenZones
+    )
+    {
+      if (route == null || route.Count == 0)
+      {
+        return null;
+      }
+
+
+      foreach (var pt2Check in route)
+      {
+        foreach (var fZone in forbiddenZones.Values)
+        {
+          var polygon = fZone.location.coord as List<Geo2DCoordDTO>;
+
+          if (polygon == null) { continue; }
+
+          var b = IsPointInPolygon4(polygon, pt2Check);
+
+          if (b)
+          {
+            return pt2Check;
+          }
+        }
+      }
+      return null;
+    }
+
+    private async Task<Dictionary<string, GeoObjectDTO>> GetForbiddenZones()
+    {
+      ObjPropsSearchDTO property_filter = new ObjPropsSearchDTO()
+      {
+        props = new List<KeyValueDTO>()
+        {
+          new KeyValueDTO()
+          {
+            prop_name = "layer_name",
+            str_val = "forbidden_zones"
+          }
+        }
+      };
+
+      var props = await _mapService.GetPropByValuesAsync(
+        property_filter,
+        null,
+        true,
+        1000
+      );
+
+      var f_zones = props.Select(z => z.id).ToList();
+
+      return  await _geoService.GetGeoObjectsAsync(f_zones);
+    }
+
+    private bool IsIntersectedForbidden(
+      TreeEdgeDTO edge,
+      Dictionary<string, GeoObjectDTO> forbiddenZones
+    )
+    {
+      foreach (var fZone in forbiddenZones.Values)
+      {
+        var polygon = fZone.location.coord as List<Geo2DCoordDTO>;
+
+        if (polygon == null) { continue; }
+
+        bool bIsForbidden = IsPointInPolygon4(polygon, edge.Shape);
+
+        if (bIsForbidden)
+        {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    [HttpPost]
+    [Route("GetSmartRoute")]
+    public async Task<ActionResult<List<List<Geo2DCoordDTO>>>> GetSmartRoute(RoutDTO routData)
+    {
+      string testProfile = "pedestrian";
+
+      List<List<Geo2DCoordDTO>> bunchOfRouts = new List<List<Geo2DCoordDTO>>();
+
+      var routRetPed = await _router.GetRoute(
+        routData.InstanceName,
+        testProfile,
+        routData.Coordinates);
+
+      var forbiddenZones = await GetForbiddenZones();
+
+      var badPointPed = CheckForIntersections(routRetPed, forbiddenZones);
+
+      if (badPointPed != null)
+      {
+        var startNode = new TreeEdgeDTO()
+        {
+          Shape = badPointPed
+        };
+        var routA = new HashSet<TreeEdgeDTO>();
+        var forbiddenEdges = new HashSet<TreeEdgeDTO>();
+
+        GetAlternatives(
+          startNode,
+          testProfile,
+          routData.InstanceName,
+          5,              
+          routA,
+          forbiddenEdges,
+          forbiddenZones
+        );
+
+        _router.RemoveEdges(
+          routData.InstanceName,
+        testProfile, forbiddenEdges.Select(e => e.EdgeId).ToHashSet());
+
+        foreach ( var r in routA)
+        {
+          List<Geo2DCoordDTO> aRout = new List<Geo2DCoordDTO>()
+          {
+            routData.Coordinates.First(),
+            r.Shape,
+            routData.Coordinates.Last()
+          };
+
+          var routRetPedA = await _router.GetRoute(
+            routData.InstanceName,
+            testProfile,
+            aRout);
+          bunchOfRouts.Add(routRetPedA);
+        }       
+      }
+
+
+      if (routRetPed != null)
+      {
+        bunchOfRouts.Add(routRetPed);
+      }
 
       return CreatedAtAction(nameof(GetSmartRoute), bunchOfRouts);
     }

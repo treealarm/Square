@@ -28,7 +28,12 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Calculates a route along the given coordinates.
     /// </summary>
-    Result<Route> Calculate(string profile, Coordinate[] coordinates);
+    Result<Route> Calculate(
+      string profile,
+      List<Coordinate> coordinates
+    );
+
+    public void RemoveEdges(string profileName, HashSet<uint> toRemove);
 
     /// <summary>
     /// Calculates a heatmap.
@@ -37,6 +42,9 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Calculates a tree.
     /// </summary>
-    Result<Itinero.Algorithms.Networks.Analytics.Trees.Models.Tree> CalculateTree(string profile, Coordinate coordinate, int max);
+    Result<Itinero.Algorithms.Networks.Analytics.Trees.Models.Tree> CalculateTree(
+      string profile,
+      Coordinate coordinate,
+      int max);
   }
 }

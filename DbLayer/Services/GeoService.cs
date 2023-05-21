@@ -241,7 +241,11 @@ namespace DbLayer.Services
       return new Dictionary<string, GeoObjectDTO>();
     }
 
-    public async Task<Dictionary<string, GeoObjectDTO>> GetGeoIntersectAsync(GeometryDTO geoObject)
+    public async Task<Dictionary<string, GeoObjectDTO>> GetGeoIntersectAsync(
+      GeometryDTO geoObject,
+      HashSet<string> ids,
+      bool bNot
+    )
     {
       int limit = 10000;
 
@@ -251,7 +255,17 @@ namespace DbLayer.Services
       FilterDefinition<DBGeoObject> filter = null;
 
       geometry = ModelGate.ConvertGeoDTO2DB(geoObject);
-      filter = builder.GeoIntersects(t => t.location, geometry);
+      filter = builder.GeoIntersects(t => t.location, geometry);      
+
+      if (bNot)
+      {
+        filter = builder.Not(filter);
+      }
+
+      if (ids != null && ids.Any())
+      {
+        filter = filter & builder.Where(t => ids.Contains(t.id));
+      }
 
       try
       {

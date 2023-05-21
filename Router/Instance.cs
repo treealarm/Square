@@ -9,14 +9,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Itinero.Algorithms.Networks.Analytics.Trees;
+using Itinero.Attributes;
+using System.Diagnostics.Metrics;
+using System.Security.AccessControl;
+using Itinero.Algorithms.Search;
+using Itinero.Data.Network;
 
 namespace LeafletAlarmsRouter
 {
   public class Instance : IInstance
   {
     private readonly Router _router;
-    private readonly Dictionary<string, int> _defaultSeconds;
-
+    private uint _speed0;
     /// <summary>
     /// Creates a new routing instances.
     /// </summary>
@@ -24,11 +28,10 @@ namespace LeafletAlarmsRouter
         int pedestrianTime = 10 * 60, int bicycleTime = 5 * 60)
     {
       _router = router;
-
-      _defaultSeconds = new Dictionary<string, int>();
-      _defaultSeconds.Add("car", carTime);
-      _defaultSeconds.Add("pedestrian", pedestrianTime);
-      _defaultSeconds.Add("bicycle", bicycleTime);
+      _speed0 = _router.Db.EdgeProfiles.Add(new AttributeCollection(
+                new Itinero.Attributes.Attribute("access", "no"),
+                new Itinero.Attributes.Attribute("highway", "footway")
+                ));
     }
 
     /// <summary>
@@ -55,22 +58,57 @@ namespace LeafletAlarmsRouter
       return _router.Db.SupportProfile(profile);
     }
 
-    /// <summary>
-    /// Calculates a routing along the given coordinates.
-    /// </summary>
-    public Result<Route> Calculate(string profileName, Coordinate[] coordinates)
+    public void RemoveEdges(string profileName, HashSet<uint> toRemove)
     {
       var profile = _router.Db.GetSupportedProfile(profileName);
 
-      var points = new List<RouterPoint>();
-
-      for (var i = 0; i < coordinates.Length; i++)
+      foreach (var edgeId in toRemove)
       {
-        var result = _router.TryResolve(profile, coordinates[i], 200);
+        var edgeInst = _router.Db.Network.GetEdge(edgeId);
+
+        if (edgeInst != null)
+        {
+          var edgeData = edgeInst.Data;
+          var attrColl = _router.Db.EdgeProfiles.Get(edgeData.Profile);
+          var attrColl1 = _router.Db.EdgeProfiles.Get(_speed0);
+          //attrColl.AddOrReplace("max_speed", "0");
+          _router.Db.Network.RemoveEdge(edgeId);
+          // update the speed profile of this edge.
+
+         // edgeData.Profile = (ushort)_speed0;
+         // _router.Db.Network.UpdateEdgeData(edgeId, edgeData);
+        }
+      }
+      
+      //var attrColl = _router.Db.EdgeProfiles.Get(edgeData.Profile);
+      //foreach (var attr in attrColl)
+      //{
+      //  Console.WriteLine($"{attr.Key}={attr.Value}");
+      //}
+    }
+    /// <summary>
+    /// Calculates a routing along the given coordinates.
+    /// </summary>
+    public Result<Route> Calculate(
+      string profileName,
+      List<Coordinate> coordinates
+    )
+    {
+      var profile = _router.Db.GetSupportedProfile(profileName);
+
+       var points = new List<RouterPoint>();
+
+      foreach (var coordinate in coordinates)
+      {
+        var result = _router.TryResolve(profile, coordinate, 200);
 
         if (result.IsError)
         {
-          result = _router.TryResolve(profile, coordinates[i], 2000);
+          result = _router.TryResolve(profile, coordinate, 2000);
+        }
+        else
+        {
+          
         }
 
         if (result.IsError)
@@ -79,7 +117,7 @@ namespace LeafletAlarmsRouter
         else
         {
           points.Add(result.Value);
-        }        
+        }
       }
 
       if (!_router.Db.HasContractedFor(profile))
@@ -92,6 +130,7 @@ namespace LeafletAlarmsRouter
       {
         return new Result<Route>("bad data", null);
       }
+        
       return _router.TryCalculate(profile, points.ToArray());
     }
 
@@ -111,7 +150,10 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Calculates a tree.
     /// </summary>
-    public Result<Itinero.Algorithms.Networks.Analytics.Trees.Models.Tree> CalculateTree(string profileName, Coordinate coordinate, int max)
+    public Result<Itinero.Algorithms.Networks.Analytics.Trees.Models.Tree> CalculateTree(
+      string profileName,
+      Coordinate coordinate,
+      int max)
     {
       var profile = _router.Db.GetSupportedProfile(profileName);
 
