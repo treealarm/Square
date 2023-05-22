@@ -23,5 +23,6 @@ namespace Domain.ServiceInterfaces
     );
     public bool IsMapExist(string inst);
     public void RemoveEdges(string inst, string profileName, HashSet<uint> toRemove);
+    public void SetLowWeight(string inst, string profileName, List<Geo2DCoordDTO> coords, double weight);
   }
 }

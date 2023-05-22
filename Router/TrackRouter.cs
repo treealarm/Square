@@ -60,6 +60,13 @@ namespace LeafletAlarmsRouter
       }
     }
 
+    public void SetLowWeight(string inst, string profileName,List<Geo2DCoordDTO> coords, double weight)
+    {
+      if (InstanceManager.TryGet(inst, out var instance))
+      {
+        instance.SetLowWeight(profileName, ConvertCoordsToNative( coords ), weight);
+      }
+    }
     public bool IsMapExist(string inst)
     {
       if (InstanceManager.TryGet(inst, out var instance))

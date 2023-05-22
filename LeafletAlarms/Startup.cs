@@ -125,7 +125,7 @@ namespace LeafletAlarms
       services.AddSwaggerExamplesFromAssemblies(Assembly.GetEntryAssembly());
     }
 
-    private bool InDocker 
+    public static bool InDocker 
     { 
       get 
       { 

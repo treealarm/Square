@@ -14,12 +14,17 @@ using System.Diagnostics.Metrics;
 using System.Security.AccessControl;
 using Itinero.Algorithms.Search;
 using Itinero.Data.Network;
+using Domain.GeoDBDTO;
+using Itinero.Data.Network.Restrictions;
+using Itinero.Algorithms.Restrictions;
+using Itinero.Osm.Vehicles;
 
 namespace LeafletAlarmsRouter
 {
-  public class Instance : IInstance
+  public class Instance
   {
     private readonly Router _router;
+    HashSet<uint> _vertexes = new HashSet<uint>();
     private uint _speed0;
     /// <summary>
     /// Creates a new routing instances.
@@ -45,6 +50,8 @@ namespace LeafletAlarmsRouter
       }
     }
 
+    private RestrictionsDb _restrictions = new RestrictionsDb();
+
     /// <summary>
     /// Gets meta-data about this instance.
     /// </summary>
@@ -56,6 +63,55 @@ namespace LeafletAlarmsRouter
     public bool Supports(string profile)
     {
       return _router.Db.SupportProfile(profile);
+    }
+
+    public void SetLowWeight(string profileName, List<Coordinate> coords, double weight)
+    {
+      
+      var profile = _router.Db.GetSupportedProfile(profileName);
+      _router.Db.AddRestrictions("", _restrictions);
+     
+      List<uint> vertexes = new List<uint>();
+
+      foreach (var coordinate in coords)
+      {
+        var result = _router.TryResolve(profile, coordinate, 50);
+
+        if (result.IsError)
+        {
+          continue;
+        }
+
+        //var test = result.Value.VertexId(_router.Db);
+
+        //if (result.Value.IsVertex())
+        //{
+        //  if (!_vertexes.Contains(test))
+        //  {
+        //    _vertexes.Add(test);
+        //    vertexes.Add(test);
+        //  }
+        //}
+
+
+        var edgeInst = _router.Db.Network.GetEdge(result.Value.EdgeId);
+
+        if (edgeInst != null)
+        {
+          var test = edgeInst.Id;
+          if (!_vertexes.Contains(test))
+          {
+            _vertexes.Add(test);
+            _restrictions.Add(new[] { edgeInst.From, edgeInst.To} );
+            _restrictions.Add(new[] { edgeInst.To, edgeInst.From });
+          }
+        }
+      }
+
+      //if (vertexes.Count > 0)
+      //{
+      //  _restrictions.Add(vertexes.ToArray());
+      //}      
     }
 
     public void RemoveEdges(string profileName, HashSet<uint> toRemove)

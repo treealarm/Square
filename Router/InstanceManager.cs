@@ -12,8 +12,8 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Holds the routing service instances.
     /// </summary>
-    private static readonly Dictionary<string, IInstance> _items =
-        new Dictionary<string, IInstance>();
+    private static readonly Dictionary<string, Instance> _items =
+        new Dictionary<string, Instance>();
 
 
     /// <summary>
@@ -32,7 +32,7 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Returns the routing module instance with the given name.
     /// </summary>
-    public static bool TryGet(string name, out IInstance instance)
+    public static bool TryGet(string name, out Instance instance)
     {
       if (_items.TryGetValue(name, out instance))
       { return true; }
@@ -53,7 +53,7 @@ namespace LeafletAlarmsRouter
     /// <summary>
     /// Registers a new instance.
     /// </summary>
-    public static void Register(string name, IInstance instance)
+    public static void Register(string name, Instance instance)
     {
       _items[name] = instance;
     }

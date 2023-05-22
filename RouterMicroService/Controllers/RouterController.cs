@@ -58,8 +58,8 @@ namespace RouterMicroService.Controllers
     }
 
     private async Task<Dictionary<string, GeoObjectDTO>> GetNearestParkings(
-      Geo2DCoordDTO myPoint, 
-      int parkings 
+      Geo2DCoordDTO myPoint,
+      int parkings
       )
     {
       ObjPropsSearchDTO property_filter = new ObjPropsSearchDTO()
@@ -160,7 +160,7 @@ namespace RouterMicroService.Controllers
       result.UnionWith(alternatives);
 
       foreach (var alternative in newAlternatives)
-      { 
+      {
         GetAlternatives(
           alternative,
           profileName,
@@ -177,42 +177,45 @@ namespace RouterMicroService.Controllers
       Dictionary<string, GeoObjectDTO> forbiddenZones
     )
     {
-        foreach (var fZone in forbiddenZones.Values)
+      foreach (var fZone in forbiddenZones.Values)
+      {
+        var polygon = fZone.location.coord as List<Geo2DCoordDTO>;
+
+        if (polygon == null) { continue; }
+
+        var b = IsPointInPolygon4(polygon, pt2Check);
+
+        if (b)
         {
-          var polygon = fZone.location.coord as List<Geo2DCoordDTO>;
-
-          if (polygon == null) { continue; }
-
-          var b = IsPointInPolygon4(polygon, pt2Check);
-
-          if (b)
-          {
-            return true;
-          }
+          return true;
         }
+      }
       return false;
     }
-    private Geo2DCoordDTO CheckForIntersections(
+    private List<Geo2DCoordDTO> CheckForIntersections(
       List<Geo2DCoordDTO> route,
-      Dictionary<string, GeoObjectDTO> forbiddenZones,
-      ref Geo2DCoordDTO lastGood
+      Dictionary<string, GeoObjectDTO> forbiddenZones
     )
     {
       if (route == null || route.Count == 0)
       {
         return null;
       }
-
+      var ret = new List<Geo2DCoordDTO>();
 
       foreach (var pt2Check in route)
       {
-        if(CheckCoordForIntersection(pt2Check, forbiddenZones))
+        if (CheckCoordForIntersection(pt2Check, forbiddenZones))
         {
-          return pt2Check;
+          ret.Add(pt2Check);
         }
-        lastGood = pt2Check;
       }
-      return null;
+
+      if (ret.Count == 0)
+      {
+        return null;
+      }
+      return ret;
     }
 
     private async Task<Dictionary<string, GeoObjectDTO>> GetForbiddenZones()
@@ -238,7 +241,7 @@ namespace RouterMicroService.Controllers
 
       var f_zones = props.Select(z => z.id).ToList();
 
-      return  await _geoService.GetGeoObjectsAsync(f_zones);
+      return await _geoService.GetGeoObjectsAsync(f_zones);
     }
 
     private bool IsIntersectedForbidden(
@@ -263,53 +266,110 @@ namespace RouterMicroService.Controllers
       return false;
     }
 
- 
+    private async Task<List<Geo2DCoordDTO>> TryToBuildRoute(
+      Dictionary<string, GeoObjectDTO> forbidden,
+      string instanceName,
+      string testProfile,      
+      List<Geo2DCoordDTO> routScooter
+      )
+    {
+      var routRetScooter = await _router.GetRoute(
+        instanceName,
+        testProfile,
+        routScooter);
+
+      var intersect = CheckForIntersections(
+          routRetScooter,
+          forbidden
+        );
+
+      if ((intersect != null))
+      {
+        _router.SetLowWeight(
+          instanceName,
+          testProfile,
+          intersect,
+          0);
+        return null;
+      }
+
+      return routRetScooter;
+    }
+
     [HttpPost]
     [Route("GetSmartRoute")]
     public async Task<ActionResult<List<List<Geo2DCoordDTO>>>> GetSmartRoute(RoutDTO routData)
     {
-      string testProfile = "pedestrian";
+      var forbidden = await GetForbiddenZones();
+
+      string pedestrianProfile = "pedestrian";
 
       var parking0 = await GetNearestParkings(routData.Coordinates.First(), 1);
       var parking1 = await GetNearestParkings(routData.Coordinates.Last(), 1);
 
       var p0 = parking0.Values.First().location.coord as Geo2DCoordDTO;
-      var routPedestrian = new List<Geo2DCoordDTO>();
-      routPedestrian.Add(p0);
-      routPedestrian.Add(routData.Coordinates.First());
+      var routPedestrian = new List<Geo2DCoordDTO>
+      {
+        p0,
+        routData.Coordinates.First()
+      };
 
       var routRetPed0 = await _router.GetRoute(
         routData.InstanceName,
-        testProfile,
+        pedestrianProfile,
         routPedestrian);
 
       var p1 = parking1.Values.Last().location.coord as Geo2DCoordDTO;
-      routPedestrian = new List<Geo2DCoordDTO>();
-      routPedestrian.Add(p1);
-      routPedestrian.Add(routData.Coordinates.Last());
+      routPedestrian = new List<Geo2DCoordDTO>
+      {
+        p1,
+        routData.Coordinates.Last()
+      };
 
       var routRetPed1 = await _router.GetRoute(
         routData.InstanceName,
-        testProfile,
+        pedestrianProfile,
         routPedestrian);
 
-      
 
       List<List<Geo2DCoordDTO>> bunchOfRouts = new List<List<Geo2DCoordDTO>>();
 
-      var routScooter = new List<Geo2DCoordDTO>();
-      routScooter.Add(p0);
-      routScooter.Add(p1);
+      var routScooter = new List<Geo2DCoordDTO>
+      {
+        p0,
+        p1
+      };
 
-      var routRetPed = await _router.GetRoute(
-        routData.InstanceName,
-        testProfile,
-        routScooter);
+      var routRetPed = new List<Geo2DCoordDTO>();
 
-      var routRetScooter = await _router.GetRoute(
-        routData.InstanceName,
-        "bicycle",
-        routScooter);
+      for (int i = 0; i <10;i++)
+      {
+        routRetPed = await TryToBuildRoute(
+          forbidden,
+          routData.InstanceName,
+          pedestrianProfile,
+          routScooter);
+
+        if (routRetPed != null)
+        {
+          break;
+        }
+      }
+      var routRetScooter =  new List<Geo2DCoordDTO>();
+
+      for (int i = 0; i < 10; i++)
+      {
+        routRetScooter = await TryToBuildRoute(
+          forbidden,
+          routData.InstanceName,
+          "bicycle",
+          routScooter);
+
+        if (routRetScooter != null)
+        {
+          break;
+        }
+      }
 
       if (routRetPed0 != null)
       {
@@ -319,10 +379,19 @@ namespace RouterMicroService.Controllers
       if (routRetScooter != null)
       {
         bunchOfRouts.Add(routRetScooter);
+
+        var intersect = CheckForIntersections(
+          routRetScooter,
+          forbidden
+        );
       }
 
       if (routRetPed != null)
       {
+        var intersect = CheckForIntersections(
+          routRetPed,
+          forbidden
+        );
         bunchOfRouts.Add(routRetPed);
       }
 
