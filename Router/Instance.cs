@@ -67,51 +67,53 @@ namespace LeafletAlarmsRouter
 
     public void SetLowWeight(string profileName, List<Coordinate> coords, double weight)
     {
-      
-      var profile = _router.Db.GetSupportedProfile(profileName);
-      _router.Db.AddRestrictions("", _restrictions);
-     
-      List<uint> vertexes = new List<uint>();
-
-      foreach (var coordinate in coords)
+      lock (_router)
       {
-        var result = _router.TryResolve(profile, coordinate, 50);
+        var profile = _router.Db.GetSupportedProfile(profileName);
+        _router.Db.AddRestrictions("", _restrictions);
 
-        if (result.IsError)
+        List<uint> vertexes = new List<uint>();
+
+        foreach (var coordinate in coords)
         {
-          continue;
-        }
+          var result = _router.TryResolve(profile, coordinate, 50);
 
-        //var test = result.Value.VertexId(_router.Db);
-
-        //if (result.Value.IsVertex())
-        //{
-        //  if (!_vertexes.Contains(test))
-        //  {
-        //    _vertexes.Add(test);
-        //    vertexes.Add(test);
-        //  }
-        //}
-
-
-        var edgeInst = _router.Db.Network.GetEdge(result.Value.EdgeId);
-
-        if (edgeInst != null)
-        {
-          var test = edgeInst.Id;
-          if (!_vertexes.Contains(test))
+          if (result.IsError)
           {
-            _vertexes.Add(test);
-            _restrictions.Add(new[] { edgeInst.From, edgeInst.To} );
-            _restrictions.Add(new[] { edgeInst.To, edgeInst.From });
+            continue;
+          }
+
+          //var test = result.Value.VertexId(_router.Db);
+
+          //if (result.Value.IsVertex())
+          //{
+          //  if (!_vertexes.Contains(test))
+          //  {
+          //    _vertexes.Add(test);
+          //    vertexes.Add(test);
+          //  }
+          //}
+
+
+          var edgeInst = _router.Db.Network.GetEdge(result.Value.EdgeId);
+
+          if (edgeInst != null)
+          {
+            var test = edgeInst.Id;
+            if (!_vertexes.Contains(test))
+            {
+              _vertexes.Add(test);
+              _restrictions.Add(new[] { edgeInst.From, edgeInst.To });
+              _restrictions.Add(new[] { edgeInst.To, edgeInst.From });
+            }
           }
         }
-      }
 
-      //if (vertexes.Count > 0)
-      //{
-      //  _restrictions.Add(vertexes.ToArray());
-      //}      
+        //if (vertexes.Count > 0)
+        //{
+        //  _restrictions.Add(vertexes.ToArray());
+        //}
+      }
     }
 
     public void RemoveEdges(string profileName, HashSet<uint> toRemove)
