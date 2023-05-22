@@ -64,48 +64,55 @@ namespace LeafletAlarms.Controllers
       //var routRet = await _router.GetRoute(routData.InstanceName, routData.Profile, routData.Coordinates);
       var ret = new List<RoutLineDTO>();
 
-      HttpClient client = new HttpClient();
-      if (Startup.InDocker)
-      {
-        client.BaseAddress = new Uri(@"http://routermicroservice:7177");
-      }
-      else
-      {
-        client.BaseAddress = new Uri(@"http://localhost:7177");
-      }
-      client.DefaultRequestHeaders.Accept.Clear();
-      client.DefaultRequestHeaders.Accept.Add(
-          new MediaTypeWithQualityHeaderValue("application/json"));
-      HttpResponseMessage response =
-       await client.PostAsJsonAsync($"Router/GetSmartRoute", routData);
-
-      response.EnsureSuccessStatusCode();
-
-      // Deserialize the updated product from the response body.
-      var s = await response.Content.ReadAsStringAsync();
-
       try
       {
-        var routRets = JsonSerializer.Deserialize<List<List<Geo2DCoordDTO>>>(s);
-
-        foreach (var r in routRets)
+        HttpClient client = new HttpClient();
+        if (Startup.InDocker)
         {
-          ret.Add(new RoutLineDTO()
+          client.BaseAddress = new Uri(@"http://routermicroservice:7177");
+        }
+        else
+        {
+          client.BaseAddress = new Uri(@"http://localhost:7177");
+        }
+        client.DefaultRequestHeaders.Accept.Clear();
+        client.DefaultRequestHeaders.Accept.Add(
+            new MediaTypeWithQualityHeaderValue("application/json"));
+        HttpResponseMessage response =
+         await client.PostAsJsonAsync($"Router/GetSmartRoute", routData);
+
+        response.EnsureSuccessStatusCode();
+
+        // Deserialize the updated product from the response body.
+        var s = await response.Content.ReadAsStringAsync();
+
+        try
+        {
+          var routRets = JsonSerializer.Deserialize<List<List<Geo2DCoordDTO>>>(s);
+
+          foreach (var r in routRets)
           {
-            figure = new GeoObjectDTO()
+            ret.Add(new RoutLineDTO()
             {
-              location = new GeometryPolylineDTO()
+              figure = new GeoObjectDTO()
               {
-                coord = r
+                location = new GeometryPolylineDTO()
+                {
+                  coord = r
+                }
               }
-            }
-          });
-        }        
+            });
+          }
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.Message);
+        }
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.Message);
-      }      
+
+      }
 
       return CreatedAtAction(nameof(GetRoute), ret);
     }
