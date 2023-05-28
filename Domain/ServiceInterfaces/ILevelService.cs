@@ -11,5 +11,6 @@ namespace Domain.ServiceInterfaces
     Task<List<string>> GetLevelsByZoom(double? zoom);
     Task<LevelDTO> GetByZoomLevel(string name);
     Task Init();
+    Task<Dictionary<string, LevelDTO>> GetAllZooms();
   }
 }

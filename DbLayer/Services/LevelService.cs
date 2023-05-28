@@ -133,6 +133,22 @@ namespace DbLayer.Services
       return dto;
     }
 
+    public async Task<Dictionary<string, LevelDTO>> GetAllZooms()
+    {
+      var cash = await GetCash();
+
+      var retval = new Dictionary<string, LevelDTO>();
+
+      foreach (var c in cash)
+      {
+        LevelDTO dto = new LevelDTO();
+        c.CopyAllTo(dto);
+        retval[c.zoom_level] = dto;
+      }     
+
+      return retval;
+    }
+
     public async Task<List<string>> GetLevelsByZoom(double? zoom)
     {
       var cash = await GetCash();

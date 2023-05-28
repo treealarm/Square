@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Domain.GeoDTO;
+using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Itinero;
@@ -410,7 +411,7 @@ namespace LeafletAlarms.Controllers
         var toView = await _rightChecker.CheckForView(geo.Keys.ToList());
         geo = geo.Where(kvp => toView.Contains(kvp.Key))
           .ToDictionary(ent => ent.Key, ent => ent.Value);
-      }
+      }            
 
       var figures =  await GetFigures(geo);
 
@@ -418,9 +419,15 @@ namespace LeafletAlarms.Controllers
       {
         return figures;
       }
+      var zooms = await _levelService.GetAllZooms();
+      figures.figs.Sort(new ZoomComparer(zooms));
 
-      var nCentroids = Math.Max(100, 1 + figures.figs.Count / 1000);
-      return KMeans.GetCentroids(figures, nCentroids);
+      var figsRaw = figures.figs.Take(500);
+      var figsRest = figures.figs.Skip(500).ToList();
+      var nCentroids = Math.Max(100, 1 + figsRest.Count / 1000);
+      var retval =  KMeans.GetCentroids(figsRest, nCentroids);
+      retval.figs.AddRange(figsRaw);
+      return retval;
     }    
 
     [HttpGet()]

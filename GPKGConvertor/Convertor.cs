@@ -23,7 +23,7 @@ namespace GPKGConvertor
     private volatile bool _configured;
     private volatile string _geopackagePath;
     private volatile DataSource _dataSource;
-    private static int _uid = 10000;
+    private static int _uid = 100000000;
     public bool Configure(string geopackagePath)
     {
       if (_configured)

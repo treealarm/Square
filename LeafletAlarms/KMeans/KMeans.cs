@@ -9,15 +9,15 @@ namespace LeafletAlarms.Controllers
   public class KMeans
   {
     static private Random _rnd = new Random();
-    public static FiguresDTO GetCentroids(FiguresDTO figures, int number)
+    public static FiguresDTO GetCentroids(List<FigureGeoDTO> figures, int number)
     {
       FiguresDTO retVal = new FiguresDTO();
 
-      var figs = figures.figs;
+      var figs = figures;
 
       List<KMCentroid> centroids = GetInitialCentroids(figures, number);
 
-      int iterations = 5;
+      int iterations = 3;
 
       for (var iteration = iterations; iteration >= 0; iteration--)
       {
@@ -61,7 +61,6 @@ namespace LeafletAlarms.Controllers
         }
       }
 
-
       foreach (KMCentroid centroid in centroids)
       {
         if (centroid.GetCount() == 0)
@@ -95,9 +94,8 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    static private List<KMCentroid> GetInitialCentroids(FiguresDTO figures, int number)
+    static private List<KMCentroid> GetInitialCentroids(List<FigureGeoDTO> figs, int number)
     {
-      var figs = figures.figs;
 
       List<KMCentroid> centroids = new List<KMCentroid>();
       var step = figs.Count / number;
