@@ -33,7 +33,7 @@ namespace Domain.NonDto
       {
         if (_zoomLevels.TryGetValue(y.zoom_level, out LevelDTO levelY))
         {
-          return levelX.zoom_min - levelY.zoom_min;
+          return levelY.zoom_min - levelX.zoom_min;
         }
       }
       return 0;
