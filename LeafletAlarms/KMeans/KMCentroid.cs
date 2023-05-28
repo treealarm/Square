@@ -38,11 +38,7 @@ namespace LeafletAlarms.KMeans
         var c = fig.geometry.GetCentroid();
         x += c.X;
         y += c.Y;
-
-        if (fig.radius != 0)
-        {
-          radius += (double)fig.radius;
-        }        
+        radius += (double)fig.GetRadius();    
       }
 
       center.X = x/ figs.Count;

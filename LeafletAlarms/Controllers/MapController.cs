@@ -419,7 +419,8 @@ namespace LeafletAlarms.Controllers
         return figures;
       }
 
-      return KMeans.GetCentroids(figures, 1 + figures.figs.Count/1000);
+      var nCentroids = Math.Max(100, 1 + figures.figs.Count / 1000);
+      return KMeans.GetCentroids(figures, nCentroids);
     }    
 
     [HttpGet()]

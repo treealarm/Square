@@ -14,11 +14,10 @@ namespace LeafletAlarms.Controllers
       FiguresDTO retVal = new FiguresDTO();
 
       var figs = figures.figs;
-      KMCentroid trashCentroid = new KMCentroid();
 
       List<KMCentroid> centroids = GetInitialCentroids(figures, number);
 
-      int iterations = 3;
+      int iterations = 5;
 
       for (var iteration = iterations; iteration >= 0; iteration--)
       {
@@ -28,7 +27,6 @@ namespace LeafletAlarms.Controllers
 
           if (circle == null)
           {
-            //trashCentroid.AddFigure(f);
             continue;
           }
 

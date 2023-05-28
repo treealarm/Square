@@ -62,8 +62,9 @@ namespace GPKGConvertor
 
       List<JObject> list = new List<JObject>();
 
-      if (file_id != "forbidden_zones" &&
-        file_id != "parkings")
+      if (file_id != "forbidden_zones"
+        &&        file_id != "parkings"
+        )
       {
         return list;
       }
@@ -72,7 +73,18 @@ namespace GPKGConvertor
       var mapRoadIndex = new Dictionary<string, string>();
       var mapRoadPop = new Dictionary<string, string>();
       var mapRoadSpeed = new Dictionary<string, string>();
+      var mapParkingToNum = new Dictionary<string, string>();
 
+      if (file_id == "parkings")
+      {
+        var csv = Path.Combine(dir, "scooters_at_parkings.csv");
+        var lines = File.ReadAllLines(csv);
+        foreach (var line in lines)
+        {
+          var row = line.Split(',');
+          mapParkingToNum[row[1]] = row[2];
+        }
+      }
       if (file_id == "hexes")
       {
         var csv = Path.Combine(dir, "road_index.csv");
@@ -160,6 +172,11 @@ namespace GPKGConvertor
           if (mapRoadSpeed.TryGetValue(id, out var map2))
           {
             o.AddFirst(new JProperty("speed_median", map2));
+          }
+
+          if (mapParkingToNum.TryGetValue(id, out var map3))
+          {
+            o.AddFirst(new JProperty("sc_num", map3));
           }
 
           o.AddFirst(new JProperty("src_id", id));
@@ -295,7 +312,7 @@ namespace GPKGConvertor
         str_val = jObject.GetValue("src_id")?.ToString()
       });
 
-      string[] other_params = { "speed_median", "route_sum", "ri_median" };
+      string[] other_params = { "speed_median", "route_sum", "ri_median", "sc_num" };
 
       var curColor = color;
 
@@ -313,11 +330,11 @@ namespace GPKGConvertor
           NumberStyles.Any,
           CultureInfo.InvariantCulture,
           out var result))
-        {
-          Color clr = Color.FromArgb(254, Math.Min((int)(result * 254), 254), 128,128);
-          int nColorWin32 = ColorTranslator.ToWin32(clr);
-          curColor = $"#{((int)(result * 254)).ToString("X2")}AAAA";
-        }
+          {
+            Color clr = Color.FromArgb(254, Math.Min((int)(result * 254), 254), 128,128);
+            int nColorWin32 = ColorTranslator.ToWin32(clr);
+            curColor = $"#{((int)(result * 254)).ToString("X2")}AAAA";
+          }
 
         fig.extra_props.Add(new ObjExtraPropertyDTO()
         {
