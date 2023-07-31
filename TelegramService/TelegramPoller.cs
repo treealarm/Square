@@ -4,32 +4,19 @@ namespace TelegramService
 {
   internal class TelegramPoller
   {
+    private string _botId;
+    private string _chatId;
+
+    private CancellationToken _cancellationToken = new CancellationToken();
+    private bool _somethingChanged = false;
+    private List<TelegramLocationRequest> _locationRequests = new List<TelegramLocationRequest>();
     private TelegramPoller() { }
     public TelegramPoller(string botId, string chatId)
     {
       _botId = botId;
       _chatId = chatId;
-
-      _timer = new Task(() => DoWork(), _cancellationToken);
-      _timer.Start();
     }
 
-    public bool IsAlive()
-    {
-      return _timer.Status.Equals(TaskStatus.Running);
-    }
-
-    public void Wait()
-    {
-      _timer.Wait();
-    }
-    private string _botId;
-    private string _chatId;
-
-    private Task _timer;
-    private CancellationToken _cancellationToken = new CancellationToken();
-    private bool _somethingChanged = false;
-    private List<TelegramLocationRequest> _locationRequests = new List<TelegramLocationRequest>();
     private void ProcessCallback(TelegramService.Result r)
     {
       var btnData = r.callback_query.data.Split(':');
@@ -83,7 +70,7 @@ namespace TelegramService
       }
     }
 
-    private void ProcessReplay(Result r, string botId)
+    private void ProcessReplay(Result r)
     {
       var replay_to_message = r.message.reply_to_message;
       var srcMessage = _locationRequests
@@ -93,6 +80,16 @@ namespace TelegramService
       if (srcMessage != null)
       {
         _locationRequests.Remove(srcMessage);
+
+      }
+    }
+
+    private void ProcessEditedMessage(Result r)
+    {
+      var edited_message = r.edited_message;
+      
+      if (edited_message?.location != null)
+      {
 
       }
     }
@@ -138,13 +135,15 @@ namespace TelegramService
       return null;
     }
 
-    private async void DoWork()
+    public async Task DoWork()
     {
       TelegramSender sender = new TelegramSender();
       long offset = 0;
 
       while (!_cancellationToken.IsCancellationRequested)
       {
+        await Task.Delay(5000);
+
         try
         {
           var replay = await sender.GetUpdates(_botId, offset);
@@ -154,6 +153,13 @@ namespace TelegramService
             continue;
           }
 
+          if (replay.result.Count == 0)
+          {
+            continue;
+          }
+
+          Console.WriteLine($"Received {replay.result.Count} updates");
+
           foreach (var r in replay.result)
           {
             offset = r.update_id + 1;
@@ -162,7 +168,10 @@ namespace TelegramService
             {
               ProcessCallback(r);
             }
-
+            if (r.edited_message != null)
+            {
+              ProcessEditedMessage(r);
+            }
             if (r.message != null)
             {
               if (r.message.photo != null)
@@ -172,7 +181,7 @@ namespace TelegramService
 
               if (r.message.reply_to_message != null)
               {
-                ProcessReplay(r, _botId);
+                ProcessReplay(r);
               }
             }
           }
@@ -186,9 +195,7 @@ namespace TelegramService
         catch (Exception ex)
         {
           Console.WriteLine(ex.Message);
-        }
-
-        await Task.Delay(5000);
+        }        
       }
     }
   }

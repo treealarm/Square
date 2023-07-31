@@ -2,7 +2,7 @@
 {
   internal class Program
   {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
       var envVars = new Dictionary<string, string>();
 
@@ -12,19 +12,17 @@
       {
         var key = variable.ToString().ToLower();
 
-        if (key == "botid")
+        if (
+          key == "botid" ||
+          key == "chatid")
         {
           envVars.Add(key, environmentVariables[variable].ToString());
         }        
       }
 
-      var sender = new TelegramPoller("809045046:AAGtKxtDWu5teRGKW_Li8wFBQuJ-l4A9h38", "-1001550499013");
+      var sender = new TelegramPoller(envVars["botid"], envVars["chatid"]);
 
-      while (true)
-      {
-        Task.Delay(5000).Wait();
-      }
-      
+      await sender.DoWork();
     }
   }
 }

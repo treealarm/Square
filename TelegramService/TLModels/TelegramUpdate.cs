@@ -6,7 +6,7 @@ namespace TelegramService
   {
     public string id { get; set; }
     public From from { get; set; }
-    public Message message { get; set; }
+    public Message message { get; set; }    
     public string chat_instance { get; set; }
     public string data { get; set; }
   }
@@ -75,6 +75,7 @@ namespace TelegramService
     public long update_id { get; set; }
     public CallbackQuery callback_query { get; set; }
     public Message message { get; set; }
+    public Message edited_message { get; set; }
   }
 
   public class TelegramUpdate
