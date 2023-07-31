@@ -49,6 +49,9 @@ namespace TelegramService
   {
     public double latitude { get; set; }
     public double longitude { get; set; }
+    public int live_period { get; set; }
+    public int heading { get; set; }
+    public double horizontal_accuracy { get; set; }
   }
 
   public class Message
