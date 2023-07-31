@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.IO;
+﻿using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Channels;
-using static System.Net.WebRequestMethods;
 
 namespace TelegramService
 {
