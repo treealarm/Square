@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TelegramService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "botid": "809045046:AAGtKxtDWu5teRGKW_Li8wFBQuJ-l4A9h38"
+      }
+    }
+  }
+}

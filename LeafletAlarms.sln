@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogicMicroService", "LogicM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcTracksClient", "GrpcTracksClient\GrpcTracksClient.csproj", "{3075C0B7-2B58-45F2-B946-C173A1F9D721}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramService", "TelegramService\TelegramService.csproj", "{06E89956-46E3-4E35-B319-AB16820336CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{3075C0B7-2B58-45F2-B946-C173A1F9D721}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3075C0B7-2B58-45F2-B946-C173A1F9D721}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3075C0B7-2B58-45F2-B946-C173A1F9D721}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06E89956-46E3-4E35-B319-AB16820336CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06E89956-46E3-4E35-B319-AB16820336CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06E89956-46E3-4E35-B319-AB16820336CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06E89956-46E3-4E35-B319-AB16820336CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
