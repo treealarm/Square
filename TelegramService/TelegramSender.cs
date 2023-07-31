@@ -7,7 +7,6 @@ using System.Text.Json;
 
 namespace TelegramService
 {
-
   public class TelegramSender
   {
     private const string SEND_MESSAGE = "sendMessage";
