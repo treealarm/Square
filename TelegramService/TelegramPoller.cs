@@ -1,20 +1,27 @@
-﻿using System.Text.Json;
+﻿using Google.Protobuf.WellKnownTypes;
+using GrpcDaprClientLib;
+using LeafletAlarmsGrpc;
+using System.Text.Json;
 
 namespace TelegramService
 {
-  internal class TelegramPoller
+  internal class TelegramPoller: IDisposable
   {
     private string _botId;
     private string _chatId;
+    GrpcMover _client = new GrpcMover();
+  
 
     private CancellationToken _cancellationToken = new CancellationToken();
     private bool _somethingChanged = false;
+
     private List<TelegramLocationRequest> _locationRequests = new List<TelegramLocationRequest>();
     private TelegramPoller() { }
     public TelegramPoller(string botId, string chatId)
     {
       _botId = botId;
       _chatId = chatId;
+      _client.Connect($"http://localhost:5000");
     }
 
     private void ProcessCallback(TelegramService.Result r)
@@ -84,13 +91,13 @@ namespace TelegramService
       }
     }
 
-    private void ProcessEditedMessage(Result r)
+    private async Task ProcessEditedMessage(Result r)
     {
       var edited_message = r.edited_message;
       
       if (edited_message?.location != null)
       {
-
+        await GrpcSendPoint(edited_message);
       }
     }
 
@@ -169,7 +176,7 @@ namespace TelegramService
             }
             if (r.edited_message != null)
             {
-              ProcessEditedMessage(r);
+              await ProcessEditedMessage(r);
             }
             if (r.message != null)
             {
@@ -195,6 +202,86 @@ namespace TelegramService
         {
           Console.WriteLine(ex.Message);
         }        
+      }
+    }
+
+    public void Dispose()
+    {
+      if (_client != null)
+      {
+        _client.Dispose();
+      }
+    }
+
+    private async Task GrpcSendPoint(Message edited_message)
+    {
+      var figs = new TrackPointsProto();
+      var track = new TrackPointProto();
+      figs.Tracks.Add(track);
+
+      track.Figure = new ProtoGeoObject();
+      var fig = track.Figure;
+
+      fig.Location = new ProtoGeometry();
+
+      fig.Location.Type = "Point";
+
+      DateTime timestamp = DateTime.UtcNow;
+
+
+      if (edited_message.edit_date != null)
+      {
+        timestamp = DateTime.UnixEpoch.AddSeconds(edited_message.edit_date.Value);
+      }
+      else if (edited_message.date != null)
+      {
+        timestamp = DateTime.UnixEpoch.AddSeconds(edited_message.date.Value);
+      }
+
+      track.Timestamp = Timestamp.FromDateTime(timestamp);
+
+      fig.Location.Coord.Add(new ProtoCoord()
+      {
+        Lat = edited_message.location.latitude,
+        Lon = edited_message.location.longitude
+      });
+
+
+      track.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "track_name",
+        StrVal = "lisa_alert"
+      });
+      
+      track.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "from.username",
+        StrVal = edited_message.from.username
+      });
+      track.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "from.id",
+        StrVal = edited_message.from.id.ToString()
+      });
+      track.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "chat.title",
+        StrVal = edited_message.chat.title
+      });
+
+      track.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "chat.id",
+        StrVal = edited_message.chat.id.ToString()
+      });
+
+      try
+      {
+        await _client.UpdateTracks(figs);
+      }
+      catch(Exception ex) 
+      {
+        Console.WriteLine(ex.Message);
       }
     }
   }

@@ -12,7 +12,7 @@ namespace GrpcDaprClientLib
     public string GRPC_DST { get; private set; } = $"http://leafletalarmsservice:5000";
     public void Connect(string endPoint)
     {
-      if (string.IsNullOrEmpty(endPoint))
+      if (!string.IsNullOrEmpty(endPoint))
       {
         GRPC_DST = endPoint;
       }

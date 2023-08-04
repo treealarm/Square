@@ -59,7 +59,9 @@ namespace TelegramService
     public long message_id { get; set; }
     public From from { get; set; }
     public Chat chat { get; set; }
-    public long date { get; set; }
+    public long? date { get; set; }
+    public long? edit_date { get; set; }
+    
     public string text { get; set; }
     public Location location { get; set; }
     public List<Entity> entities { get; set; }
