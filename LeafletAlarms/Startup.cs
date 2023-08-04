@@ -268,7 +268,11 @@ namespace LeafletAlarms
         }
       }
 
-      ImportDataOnStart(app);  
+      Task.Run(async Task () =>
+      {
+        await ImportDataOnStart(app);
+      });
+      
 
       app.UseRouting();
 

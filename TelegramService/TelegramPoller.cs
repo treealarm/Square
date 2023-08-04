@@ -98,7 +98,6 @@ namespace TelegramService
     {
       try
       {
-
         TelegramSender sender = new TelegramSender();
 
         var msg = new TelegramMessage()

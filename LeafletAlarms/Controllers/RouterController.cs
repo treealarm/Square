@@ -111,7 +111,7 @@ namespace LeafletAlarms.Controllers
       }
       catch (Exception ex)
       {
-
+        Console.WriteLine($"{ex.Message}");
       }
 
       return CreatedAtAction(nameof(GetRoute), ret);

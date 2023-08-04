@@ -1,5 +1,6 @@
 ﻿using Domain.GeoDBDTO;
 using Grpc.Net.Client;
+using GrpcDaprClientLib;
 using LeafletAlarmsGrpc;
 using System;
 using System.Collections.Generic;
@@ -79,8 +80,8 @@ namespace GrpcTracksClient
 
       var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
 
-      using var channel = GrpcChannel.ForAddress(ProgramConstants.GRPC_DST);
-      var client = new TracksGrpcServiceClient(channel);
+      using var client = new GrpcMover();
+      client.Connect(null);
 
       foreach (var c in coords?.coord)
       {
@@ -89,7 +90,7 @@ namespace GrpcTracksClient
           f.Lat = c.Lat;
           f.Lon = c.Lon;
         }
-        var newFigs = await client.UpdateTracksAsync(figs);
+        var newFigs = await client.UpdateTracks(figs);
         Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }

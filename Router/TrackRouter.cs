@@ -147,7 +147,7 @@ namespace LeafletAlarmsRouter
         //var start = router.Resolve(profile, 51.51467784097949f, -0.1486710157204226f);
         //var end = router.Resolve(profile, 51.1237f, 1.3134f);
         List<Coordinate> list_native = ConvertCoordsToNative(coords);
-        List<Coordinate> f_native = null;
+
         // calculate a route.
         var profile = GetProfile(strProfile);
 

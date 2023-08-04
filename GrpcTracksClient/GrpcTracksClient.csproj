@@ -15,15 +15,8 @@
   <ItemGroup>
     <EmbeddedResource Include="JSON\SAD.json" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LeafletAlarms\Protos\tracks.proto" Link="Protos\tracks.proto" GrpcServices="Client" OutputDir="Grpc" />
-  </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Dapr.Client" Version="1.10.0" />
-    <PackageReference Include="Google.Protobuf" Version="3.22.1" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.52.0" />
     <PackageReference Include="Grpc.Tools" Version="2.53.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -33,6 +26,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\GrpcDaprClientLib\GrpcDaprLib.csproj" />
   </ItemGroup>
 
 </Project>

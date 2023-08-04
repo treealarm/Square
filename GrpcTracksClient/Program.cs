@@ -29,5 +29,3 @@ while (true)
     await Task.Delay(1000);
   }
 }
-
-Task.WaitAll(taskTrack);

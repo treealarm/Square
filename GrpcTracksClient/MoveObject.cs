@@ -1,6 +1,8 @@
 ﻿using Dapr.Client;
 using Domain.GeoDBDTO;
 using Grpc.Net.Client;
+using GrpcDaprClientLib;
+using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using System;
 using System.Collections.Generic;
@@ -64,7 +66,7 @@ namespace GrpcTracksClient
 
     public static async Task MoveDapr(ProtoFigures figs, ProtoFig fig)
     {
-      var daprClient = new DaprClientBuilder().Build();
+      using var daprClient = new DaprMover();
 
       double step = 0.001;
 
@@ -82,11 +84,7 @@ namespace GrpcTracksClient
             f.Lon += step;
           }
           var reply =
-            await daprClient.InvokeMethodGrpcAsync<ProtoFigures, ProtoFigures>(
-              "leafletalarms",
-              "AddTracks",
-              figs
-            );
+            await daprClient.Move(figs);
           Console.WriteLine("Fig DAPR: " + reply?.ToString());
         }
         catch (Exception ex)
@@ -100,8 +98,8 @@ namespace GrpcTracksClient
 
     public static async Task MoveGrpc(ProtoFigures figs, ProtoFig fig)
     {
-      using var channel = GrpcChannel.ForAddress(ProgramConstants.GRPC_DST);
-      var client = new TracksGrpcServiceClient(channel);
+      using var client = new GrpcMover();
+      client.Connect(null);
       var step = 0.001;
 
       for (int i = 0; i < 100; i++)
@@ -115,7 +113,7 @@ namespace GrpcTracksClient
           f.Lat += step;
           f.Lon += step;
         }
-        var newFigs = await client.UpdateFiguresAsync(figs);
+        var newFigs = await client.Move(figs);
         Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }

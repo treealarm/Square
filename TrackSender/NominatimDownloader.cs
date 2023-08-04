@@ -37,6 +37,7 @@ namespace TrackSender
       [CallerFilePath] string callerFilePath = null
     )
     {
+      await Task.Delay(0);
       _client.BaseAddress = new Uri("https://nominatim.openstreetmap.org/");
       _client.DefaultRequestHeaders.Accept.Clear();
       _client.DefaultRequestHeaders.Accept.Add(
