@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import { useSelector } from "react-redux";
 import {
-  useMap
+  useMap, useMapEvents
 } from "react-leaflet";
 
 import { useEffect } from "react";
@@ -37,10 +37,21 @@ export function MapPositionChange() {
       } else {
         parentMap.setView(map_center);
       }
-      
+    }
+    else {
+      if (guiStates.map_option.find_current_pos) {
+        parentMap.locate();
+      }
     }
    
   }, [guiStates.map_option]);
+
+  const map = useMapEvents({
+    locationfound: (location) => {
+      parentMap.setView(location.latlng);
+      console.log('location found:', location)
+    },
+  });
 
   return (
     <React.Fragment>

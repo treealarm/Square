@@ -185,6 +185,11 @@ namespace TelegramService
                 await ProcessPhoto(r, _botId, _chatId);
               }
 
+              if (r.message.location != null)
+              {
+                 await GrpcSendPoint(r.message);
+              }
+
               if (r.message.reply_to_message != null)
               {
                 ProcessReplay(r);
@@ -213,7 +218,7 @@ namespace TelegramService
       }
     }
 
-    private async Task GrpcSendPoint(Message edited_message)
+    private async Task GrpcSendPoint(Message message)
     {
       var figs = new TrackPointsProto();
       var track = new TrackPointProto();
@@ -229,21 +234,21 @@ namespace TelegramService
       DateTime timestamp = DateTime.UtcNow;
 
 
-      if (edited_message.edit_date != null)
+      if (message.edit_date != null)
       {
-        timestamp = DateTime.UnixEpoch.AddSeconds(edited_message.edit_date.Value);
+        timestamp = DateTime.UnixEpoch.AddSeconds(message.edit_date.Value);
       }
-      else if (edited_message.date != null)
+      else if (message.date != null)
       {
-        timestamp = DateTime.UnixEpoch.AddSeconds(edited_message.date.Value);
+        timestamp = DateTime.UnixEpoch.AddSeconds(message.date.Value);
       }
 
       track.Timestamp = Timestamp.FromDateTime(timestamp);
 
       fig.Location.Coord.Add(new ProtoCoord()
       {
-        Lat = edited_message.location.latitude,
-        Lon = edited_message.location.longitude
+        Lat = message.location.latitude,
+        Lon = message.location.longitude
       });
 
 
@@ -256,23 +261,23 @@ namespace TelegramService
       track.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = "from.username",
-        StrVal = edited_message.from.username
+        StrVal = message.from.username
       });
       track.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = "from.id",
-        StrVal = edited_message.from.id.ToString()
+        StrVal = message.from.id.ToString()
       });
       track.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = "chat.title",
-        StrVal = edited_message.chat.title
+        StrVal = message.chat.title
       });
 
       track.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = "chat.id",
-        StrVal = edited_message.chat.id.ToString()
+        StrVal = message.chat.id.ToString()
       });
 
       try

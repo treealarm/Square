@@ -188,6 +188,7 @@ export interface BoxTrackDTO extends BoundBox
 export interface ViewOption {
   map_center: LatLngPair;
   zoom?: number;
+  find_current_pos?: boolean;
 }
 
 export interface ObjectStateDTO {
