@@ -1,7 +1,6 @@
 ﻿using DbLayer;
 using Domain;
 using Domain.GeoDBDTO;
-using Domain.GeoDTO;
 using MongoDB.Driver.GeoJsonObjectModel;
 
 namespace LeafletAlarms
@@ -89,8 +88,5 @@ namespace LeafletAlarms
 
       return null;
     }
-
-
-
   }
 }
