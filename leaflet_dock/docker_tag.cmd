@@ -1,0 +1,2 @@
+docker tag routermicroservice:latest pruginkad/routermicroservice:latest
+docker tag leafletalarms:latest pruginkad/leafletalarms:latest

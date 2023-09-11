@@ -1,0 +1,98 @@
+version: '3.8'
+   
+services:
+  leafletalarmsservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8000;http://+:5000
+      - Kestrel__Endpoints__gRPC__Url=http://*:5000
+      - Kestrel__Endpoints__gRPC__Protocols=Http2
+      - Kestrel__Endpoints__Http__Url=http://*:8000
+    image: pruginkad/leafletalarms:latest
+    restart: unless-stopped
+    depends_on:
+     - mongoservice
+     - keycloakservice
+     - redisservice
+    volumes:
+      - ./leaflet_data/osm_data:/osm_data
+      - ./leaflet_data:/leaflet_data
+    ports:
+      - "8000:8000"
+      - "5000:5000"
+
+
+  routermicroservice:
+    image: pruginkad/routermicroservice:latest
+    restart: unless-stopped
+    depends_on:
+     - mongoservice
+    build:
+      context: .
+    volumes:
+      - ./leaflet_data:/leaflet_data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:7177
+    ports:
+      - "7177:7177"
+
+ 
+  mongoservice:
+    image : mongo
+    container_name: mongodb
+    restart: unless-stopped
+    volumes: 
+      #- ./mongo_data/:/data/db #this option put all into yml folder
+     - ./leaflet_data/mongo_data/:/data/db
+    ports:
+     - "27017:27017"
+     #- "27018:27017"
+
+  redisservice:
+    image: redis
+    restart: unless-stopped
+    environment:
+     - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+     - "6379:6379"
+
+# START keycloack
+  postgresservice:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - ./leaflet_data/postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+
+  keycloakservice:
+    image: quay.io/keycloak/keycloak:21.0.1
+    restart: unless-stopped
+    volumes:
+      - ./keycloak_imports:/opt/keycloak/data/import
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgresservice:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      KEYCLOAK_LOGLEVEL: ALL
+      ROOT_LOGLEVEL: ALL
+    command: 
+      - start-dev
+      - --import-realm
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgresservice
+# command2export realm:docker exec -ti leaflet-keycloak-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
+# END keycloak
+

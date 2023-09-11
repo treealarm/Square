@@ -1,0 +1,2 @@
+docker push pruginkad/routermicroservice:latest
+docker push pruginkad/leafletalarms:latest
