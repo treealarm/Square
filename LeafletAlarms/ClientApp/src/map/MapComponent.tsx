@@ -32,6 +32,7 @@ export function MapComponent(props: any) {
       zoom={13}
       scrollWheelZoom={true}
       id='map-container'
+      
     >
 
       <TrackViewer />
@@ -41,7 +42,7 @@ export function MapComponent(props: any) {
       <MapPositionChange />
 
       <TileLayer
-        
+        maxZoom={20}
         attribution="&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
         url={url}
       />
