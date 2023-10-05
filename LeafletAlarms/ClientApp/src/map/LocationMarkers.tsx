@@ -97,13 +97,47 @@ function MyCircle(props: any) {
     [],
   )
 
-  var obj_text = getExtraProp(fig, "text");
-
+  var imageIcon: L.DivIcon = null;
   var textIcon: L.DivIcon = null;
 
-  if (obj_text != null && obj_text != "")
-  {
-    textIcon = L.divIcon({ html: "<h2>"+obj_text+"</h2>", iconSize: [0, 0] });
+  var imageUrl =  getExtraProp(fig, "image");
+
+  if (imageUrl != null && imageUrl != "") {
+
+    imageIcon = new L.DivIcon({
+      iconSize: [1, 1],
+      iconAnchor: [1, 1],
+      className: 'leaflet-div-icon',
+      html: "<img style='transform: rotate(45deg);' height='20' width='20' src='" + imageUrl +"'>"
+    });
+
+    //imageIcon = new L.Icon({
+    //  iconUrl: imageUrl,
+    //  iconRetinaUrl: imageUrl,
+    //  iconAnchor: null,
+    //  popupAnchor: null,
+    //  shadowUrl: null,
+    //  shadowSize: null,
+    //  shadowAnchor: null,
+    //  iconSize: new L.Point(20, 20),
+    //  className: 'leaflet-div-icon'
+    //});
+  }
+  else {
+    var obj_text = getExtraProp(fig, "text");
+
+    if (obj_text != null && obj_text != "") {
+      textIcon = L.divIcon({ html: "<h2>" + obj_text + "</h2>", iconSize: [0, 0] });
+    }
+  }
+
+  if (imageIcon != null) {
+    return (
+      <Marker
+        position={center}
+        icon={imageIcon}
+        eventHandlers={eventHandlers} />
+    );
   }
 
   if (textIcon != null) {
@@ -129,6 +163,7 @@ function MyCircle(props: any) {
   );
 }
 
+
 function MyCommonFig(props: any) {
   
   if (props.hidden == true) {
@@ -140,6 +175,15 @@ function MyCommonFig(props: any) {
 
   if (geo?.type == null) {
     return null;
+  }
+
+  if (geo.type == PointType) {
+    const center = geo.coord as [number, number];
+    return (
+      <MyCircle {...props}>
+
+      </MyCircle>
+    );
   }
 
   if (geo.type == PointType) {
