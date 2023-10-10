@@ -94,12 +94,17 @@ export function setExtraProp(
 
 export function getExtraProp(
   obj: IObjProps,
-  propName: string
+  propName: string,
+  defVal:string = null
 ): string {
+
   if (obj?.extra_props == null) {
-    return null;
+    return defVal;
   }
   var g = obj?.extra_props?.find(p => p.prop_name == propName);
+  if (g == null) {
+    return defVal;
+  }
   return g?.str_val;
 }
 

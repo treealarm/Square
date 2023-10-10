@@ -100,15 +100,17 @@ function MyCircle(props: any) {
   var imageIcon: L.DivIcon = null;
   var textIcon: L.DivIcon = null;
 
-  var imageUrl =  getExtraProp(fig, "image");
+  var imageUrl =  getExtraProp(fig, "__image");
 
   if (imageUrl != null && imageUrl != "") {
-
+    var image_width = getExtraProp(fig, "__image_width", "20");
+    var image_height = getExtraProp(fig, "__image_height", "20");
+    var image_rotate = getExtraProp(fig, "__image_rotate", "0");
     imageIcon = new L.DivIcon({
       iconSize: [1, 1],
       iconAnchor: [1, 1],
       className: 'leaflet-div-icon',
-      html: "<img style='transform: rotate(45deg);' height='20' width='20' src='" + imageUrl +"'>"
+      html: "<img style='transform: rotate(" + image_rotate + "deg);' height='" + image_height +"' width='" + image_width +"' src='" + imageUrl +"'>"
     });
 
     //imageIcon = new L.Icon({
