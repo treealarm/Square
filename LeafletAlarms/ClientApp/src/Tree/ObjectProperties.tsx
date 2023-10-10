@@ -11,7 +11,8 @@ import { Box, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
-import { IObjProps, Marker, TreeMarker, getExtraProp, DeepCopy, IGeometryDTO } from '../store/Marker';
+import AddTaskIcon from '@mui/icons-material/AddTask';
+import { IObjProps, Marker, TreeMarker, getExtraProp, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
@@ -35,6 +36,8 @@ export function ObjectProperties() {
   const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
   const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
+
+  const [newPropName, setNewPropName] = React.useState('');
   
   useEffect(() => {
     if (selected_id == null) {
@@ -80,6 +83,30 @@ export function ObjectProperties() {
       first.str_val = value;
     }
     
+    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  };
+
+  function handleAddProp(id: any) {
+
+    let copy = DeepCopy(objProps);
+
+    if (copy == null) {
+      return;
+    }
+
+    const first = copy.extra_props.find((obj) => {
+      return obj.prop_name === id;
+    });
+
+    if (first != null) {
+      return;
+    }
+    var newProp: ObjExtraPropertyDTO =
+    {
+      str_val: "",
+      prop_name: id
+    };
+    copy.extra_props.push(newProp);
     dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
@@ -228,6 +255,19 @@ export function ObjectProperties() {
             </ListItem>
             )
         }
+        <Divider><br></br></Divider>
+        <ListItem>
+          <TextField size="small"
+            fullWidth
+            id="outlined" label='New prop name'
+            value={newPropName}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setNewPropName(event.target.value); }} />
+          <Tooltip title={"Add new property"}>
+            <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddProp(newPropName); }}>
+              <AddTaskIcon fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+        </ListItem>
 
       </List>
     </Box>
