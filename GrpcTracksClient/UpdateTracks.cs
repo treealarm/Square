@@ -60,23 +60,12 @@ namespace GrpcTracksClient
       }      
     }
 
-    static public async Task<string> GetResource(string resourceName)
-    {
-      var assembly = Assembly.GetExecutingAssembly();
 
-      string s = string.Empty;
-      using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-      using (StreamReader reader = new StreamReader(stream))
-      {
-        s = await reader.ReadToEndAsync();
-      }
-      return s;
-    }
 
     public static async Task MoveGrpc(TrackPointsProto figs, ProtoGeoObject fig)
     {
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
-      var s = await GetResource(resourceName);
+      var s = await ResourceLoader.GetResource(resourceName);
 
       var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
 
