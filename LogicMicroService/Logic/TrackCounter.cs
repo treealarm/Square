@@ -25,7 +25,7 @@ namespace LogicMicroService
     {
       await base.InitFromDb(geoService, mapService);
 
-      var logicObjs = LogicDTO.figs.Where(f => f.group_id != "text").ToList();
+      var logicObjs = LogicDTO.figs.Where(f => f.group_id != "gr_text").ToList();
 
       var geoFigs = await
           geoService.GetGeoObjectsAsync(logicObjs.Select(f => f.id).ToList());

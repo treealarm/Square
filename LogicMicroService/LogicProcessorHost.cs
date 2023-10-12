@@ -113,7 +113,7 @@ namespace LogicMicroService
               {
                 new ObjExtraPropertyDTO()
                 {
-                  prop_name = "text",
+                  prop_name = "__text",
                   str_val = triggeredVal.Text
                 }
               }

@@ -22,7 +22,7 @@ namespace LogicMicroService
       LogicDTO = logicDto;
 
       TextObjectsIds = logicDto.figs
-          .Where(f => f.group_id == "text")
+          .Where(f => f.group_id == "gr_text")
           .Select(f => f.id)
           .ToHashSet();
     }

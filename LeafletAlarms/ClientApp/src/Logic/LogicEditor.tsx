@@ -155,10 +155,10 @@ export function LogicEditor(props: any) {
   
   React.useEffect(() => {
     if (logicObj?.logic == "from-to") {
-      setGroupArray(["from", "to", "text"]);
+      setGroupArray(["from", "to", "gr_text"]);
     }
     else {
-      setGroupArray(["count", "text"]);
+      setGroupArray(["count", "gr_text"]);
     }
 
   }, [logicObj.logic]);

@@ -126,7 +126,7 @@ function MyCircle(props: any) {
     //});
   }
   else {
-    var obj_text = getExtraProp(fig, "text");
+    var obj_text = getExtraProp(fig, "__text");
 
     if (obj_text != null && obj_text != "") {
       textIcon = L.divIcon({ html: "<h2>" + obj_text + "</h2>", iconSize: [0, 0] });
@@ -136,18 +136,21 @@ function MyCircle(props: any) {
   if (imageIcon != null) {
     return (
       <React.Fragment>
-        <Circle
-          pathOptions={props.pathOptions}
-          center={center}
-          radius={radius}
-          eventHandlers={eventHandlers}
-        >
-        </Circle>
+        {
+          radius > 0 &&
+            <Circle
+              pathOptions={props.pathOptions}
+              center={center}
+              radius={radius}
+              eventHandlers={eventHandlers}
+            />
+        }       
 
       <Marker
         position={center}
         icon={imageIcon}
-        eventHandlers={eventHandlers} />
+          eventHandlers={eventHandlers}
+        />
       </React.Fragment>
     );
   }
@@ -157,21 +160,18 @@ function MyCircle(props: any) {
       <Marker
         position={center}
         icon={textIcon}
-        eventHandlers={eventHandlers}/>
+        eventHandlers={eventHandlers}
+      />
     );
   }
 
   return (
-    <React.Fragment>
       <Circle
         pathOptions={props.pathOptions}
         center={center}
         radius={radius}
         eventHandlers={eventHandlers}
-      >
-
-      </Circle>
-    </React.Fragment>
+      />
   );
 }
 
