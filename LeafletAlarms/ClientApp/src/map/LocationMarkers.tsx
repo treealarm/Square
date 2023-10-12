@@ -135,10 +135,20 @@ function MyCircle(props: any) {
 
   if (imageIcon != null) {
     return (
+      <React.Fragment>
+        <Circle
+          pathOptions={props.pathOptions}
+          center={center}
+          radius={radius}
+          eventHandlers={eventHandlers}
+        >
+        </Circle>
+
       <Marker
         position={center}
         icon={imageIcon}
         eventHandlers={eventHandlers} />
+      </React.Fragment>
     );
   }
 
