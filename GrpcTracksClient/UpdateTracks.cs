@@ -80,7 +80,7 @@ namespace GrpcTracksClient
           f.Lon = c.Lon;
         }
         var newFigs = await client.UpdateTracks(figs);
-        Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());
+        //Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }
     }

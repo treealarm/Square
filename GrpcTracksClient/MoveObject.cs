@@ -1,5 +1,6 @@
 ﻿using Dapr.Client;
 using Domain.GeoDBDTO;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using GrpcDaprClientLib;
 using GrpcDaprLib;
@@ -20,21 +21,34 @@ namespace GrpcTracksClient
   { 
     public static async  Task Move()
     {
-      var taskCar = MoveCar();
+      List<Task> listCarsTasks = new List<Task>();
+      int index = 0;
+      for (long carId = 0; carId < 50; carId++)
+      {
+        index += 5;
+        var taskCar = MoveCar(index);
+        listCarsTasks.Add(taskCar);
+      }
+      
 
       await MovePolygon();
 
-      Task.WaitAll(taskCar);
+      Task.WaitAll(listCarsTasks.ToArray());
     }
 
-    private static async Task MoveCar()
+    static string LongTo24String(long number)
+    {
+      return "1111" + number.ToString("D20");
+    }
+    private static async Task MoveCar(long number)
     {
       var figs = new ProtoFigures();
       var fig = new ProtoFig();
       figs.Figs.Add(fig);
 
-      fig.Id = "6423e54d513bfe83e9d59794";
-      fig.Name = "TestCar";
+      fig.Id = LongTo24String(number); //"6423e54d513bfe83e9d59794";
+      fig.Name = "TestCar" + number.ToString();
+        
       fig.Geometry = new ProtoGeometry();
       fig.Geometry.Type = "Point";
       fig.Radius = 50;
@@ -58,7 +72,7 @@ namespace GrpcTracksClient
         StrVal = @"images/car_red_256.png"
       });
 
-      await MoveGrpcCar(figs, fig);
+      await MoveGrpcCar(figs, fig, number);
     }
     private static async Task MovePolygon()
     {
@@ -71,6 +85,24 @@ namespace GrpcTracksClient
       fig.Geometry = new ProtoGeometry();
       fig.Geometry.Type = "Polygon";
       figs.AddTracks = true;
+
+     
+
+      fig.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "track_name",
+        StrVal = "lisa_alert"
+      });
+
+      fig.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "track_name",
+        StrVal = "lisa_alert2"
+      });
+
+      var grpcTask = MoveGrpc(figs, fig);
+
+      fig.Geometry.Coord.Clear();
 
       fig.Geometry.Coord.Add(new ProtoCoord()
       {
@@ -89,21 +121,9 @@ namespace GrpcTracksClient
         Lat = 55.75203896803514,
         Lon = 37.618727730916895
       });
-
-      fig.ExtraProps.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "track_name",
-        StrVal = "lisa_alert"
-      });
-
-      fig.ExtraProps.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "track_name",
-        StrVal = "lisa_alert2"
-      });
-
-      await MoveGrpc(figs, fig);
       await MoveDapr(figs, fig);
+
+      Task.WaitAll(grpcTask);
     }
 
     public static async Task MoveDapr(ProtoFigures figs, ProtoFig fig)
@@ -129,7 +149,7 @@ namespace GrpcTracksClient
           {
             var reply =
             await daprClient.Move(figs);
-            Console.WriteLine("Fig DAPR: " + reply?.ToString());
+            //Console.WriteLine("Fig DAPR: " + reply?.ToString());
           }
           catch(Exception ex)
           {
@@ -148,27 +168,67 @@ namespace GrpcTracksClient
 
     public static async Task MoveGrpc(ProtoFigures figs, ProtoFig fig)
     {
+      Random random = new Random();
+
+      var center = new ProtoCoord()
+      {
+        Lat = 55.753201,
+        Lon = 37.621130
+      };
+
       using var client = new GrpcMover();
       client.Connect(null);
-      var step = 0.001;
+      var step = 0.0001;
 
-      for (int i = 0; i < 100; i++)
+      for (int i = 0; i < 1000000; i++)
       {
-        if (i > 50)
+        center.Lat += random.Next(-5, +5)*step;
+        center.Lon += random.Next(-5, +5)*step;
+
+        fig.Geometry.Coord.Clear();
+        var rad = 400;
+
+        var aStep = random.Next(20, 90);
+
+        for (double a = 0; a < 360; a+= aStep)
         {
-          step = -0.001;
-        }
-        foreach (var f in fig.Geometry.Coord)
-        {
-          f.Lat += step;
-          f.Lon += step;
-        }
+          rad += random.Next(-20, +20);
+          var pt = CalculateCoordinates(center.Lat, center.Lon, rad, a);
+          fig.Geometry.Coord.Add(new ProtoCoord()
+          {
+            Lat = pt.latitude,
+            Lon = pt.longitude
+          });
+        }        
+
         var newFigs = await client.Move(figs);
-        Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
+        //Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }
     }
 
+    public static (double latitude, double longitude) 
+      CalculateCoordinates(double startingLatitude, double startingLongitude, double distance, double azimuth)
+    {
+      // Переводим координаты из градусов в радианы
+      double phi1 = startingLatitude * Math.PI / 180.0;
+      double lambda1 = startingLongitude * Math.PI / 180.0;
+      double alpha = azimuth * Math.PI / 180.0;
+
+      // Радиус Земли (приближенное значение в метрах)
+      double earthRadius = 6371000;
+
+      // Вычисляем новую широту и долготу
+      double delta = distance / earthRadius;
+      double phi2 = Math.Asin(Math.Sin(phi1) * Math.Cos(delta) + Math.Cos(phi1) * Math.Sin(delta) * Math.Cos(alpha));
+      double lambda2 = lambda1 + Math.Atan2(Math.Sin(alpha) * Math.Sin(delta) * Math.Cos(phi1), Math.Cos(delta) - Math.Sin(phi1) * Math.Sin(phi2));
+
+      // Переводим координаты обратно в градусы
+      double newLatitude = phi2 * 180.0 / Math.PI;
+      double newLongitude = lambda2 * 180.0 / Math.PI;
+
+      return (newLatitude, newLongitude);
+    }
     public static double CalculateAzimuth(double latitude1, double longitude1, double latitude2, double longitude2)
     {
       // Переводим координаты из градусов в радианы
@@ -189,8 +249,14 @@ namespace GrpcTracksClient
       return azimuth;
     }
 
-    public static async Task MoveGrpcCar(ProtoFigures figs, ProtoFig fig)
+    public static async Task MoveGrpcCar(ProtoFigures figs, ProtoFig fig, long startPt)
     {
+      var center = new ProtoCoord()
+      {
+        Lat = 55.753201,
+        Lon = 37.621130
+      };
+
       var rotate = new ProtoObjExtraProperty()
       {
         PropName = @"__image_rotate",
@@ -202,30 +268,47 @@ namespace GrpcTracksClient
       var s = await ResourceLoader.GetResource(resourceName);
 
       var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
+      //var coords = new GeometryPolylineDTO();
+      //coords.coord = new List<Geo2DCoordDTO>();
+
+      //for (double a = 0; a < 360; a += 0.3)
+      //{
+      //  var pt = CalculateCoordinates(center.Lat, center.Lon, 3000, a);
+      //  coords.coord.Add(new Geo2DCoordDTO()
+      //  {
+      //    Lat = pt.latitude,
+      //    Lon = pt.longitude
+      //  });
+      //}
 
       using var client = new GrpcMover();
       client.Connect(null);
       var prev = new Geo2DCoordDTO() { 0, 0 };
 
-      foreach (var c in coords?.coord)
+      for(int h = 0; h <  10;h++)
       {
-        var degrees = CalculateAzimuth(prev.Lat, prev.Lon, c.Lat, c.Lon);
+        for (long track = startPt; track < coords?.coord.Count; track++)
+        {
+          var c = coords?.coord[(int)track];
+          var degrees = CalculateAzimuth(prev.Lat, prev.Lon, c.Lat, c.Lon);
 
-        int rot = (int)(degrees);
-        rotate.StrVal = rot.ToString();
-        prev = c;
+          int rot = (int)(degrees);
+          rotate.StrVal = rot.ToString();
+          prev = c;
 
-        foreach (var f in fig.Geometry.Coord)
-        {          
-          f.Lat = c.Lat;//y
-          f.Lon = c.Lon;//x
+          foreach (var f in fig.Geometry.Coord)
+          {
+            f.Lat = c.Lat;//y
+            f.Lon = c.Lon;//x
+          }
+
+
+          var newFigs = await client.Move(figs);
+          //Console.WriteLine("Car GRPC: " + newFigs?.ToString());
+          await Task.Delay(500);
         }
-
-        
-        var newFigs = await client.Move(figs);
-        Console.WriteLine("Car GRPC: " + newFigs?.ToString());
-        await Task.Delay(100);
-      }
+        startPt = 0;
+      }      
     }
   }
 }

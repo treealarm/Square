@@ -8,10 +8,13 @@ import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Box, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/material';
+
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import AddTaskIcon from '@mui/icons-material/AddTask';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+
 import { IObjProps, Marker, TreeMarker, getExtraProp, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
@@ -95,7 +98,7 @@ export function ObjectProperties() {
     }
 
     const first = copy.extra_props.find((obj) => {
-      return obj.prop_name === id;
+      return obj.prop_name == id;
     });
 
     if (first != null) {
@@ -107,6 +110,21 @@ export function ObjectProperties() {
       prop_name: id
     };
     copy.extra_props.push(newProp);
+    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  };
+
+  function handleRemoveProp(id: any) {
+
+    let copy = DeepCopy(objProps);
+
+    if (copy == null) {
+      return;
+    }
+
+    copy.extra_props = copy.extra_props.filter((obj) => {
+      return obj.prop_name != id;
+    });
+
     dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
@@ -252,6 +270,12 @@ export function ObjectProperties() {
                 value={item.str_val}
                 onChange={handleChangeProp} />
 
+              <Tooltip title={"remove property"}>
+                <IconButton aria-label="delete" size="small" onClick={(e: any) => { handleRemoveProp(item.prop_name); }}>
+                  <DeleteOutlineIcon fontSize="inherit" />
+                </IconButton>
+              </Tooltip>
+
             </ListItem>
             )
         }
@@ -259,10 +283,10 @@ export function ObjectProperties() {
         <ListItem>
           <TextField size="small"
             fullWidth
-            id="outlined" label='New prop name'
+            id="outlined" label='new property name'
             value={newPropName}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setNewPropName(event.target.value); }} />
-          <Tooltip title={"Add new property"}>
+          <Tooltip title={"add new property"}>
             <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddProp(newPropName); }}>
               <AddTaskIcon fontSize="inherit" />
             </IconButton>
