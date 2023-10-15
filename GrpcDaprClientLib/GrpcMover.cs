@@ -34,8 +34,16 @@ namespace GrpcDaprClientLib
       {
         return null;
       }
-      var newFigs = await _client.UpdateFiguresAsync(figs);
-      return newFigs;
+      try
+      {
+        var newFigs = await _client.UpdateFiguresAsync(figs);
+        return newFigs;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      return null;
     }
 
     public async Task<bool?> UpdateTracks(TrackPointsProto figs)

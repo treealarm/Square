@@ -73,7 +73,7 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       ProtoFigures response = new ProtoFigures();
 
-      Console.WriteLine($"Received from:{request.ToString()}");
+      //Console.WriteLine($"Received from:{request.ToString()}");
       var figs = new FiguresDTO();
       figs.figs = new List<FigureGeoDTO>();
       figs.add_tracks = request.AddTracks;

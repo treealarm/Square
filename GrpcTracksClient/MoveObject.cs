@@ -25,7 +25,7 @@ namespace GrpcTracksClient
       int index = 0;
       for (long carId = 0; carId < 50; carId++)
       {
-        index += 5;
+        index += 1;
         var taskCar = MoveCar(index);
         listCarsTasks.Add(taskCar);
       }
@@ -40,6 +40,7 @@ namespace GrpcTracksClient
     {
       return "1111" + number.ToString("D20");
     }
+    private static Random _random = new Random();
     private static async Task MoveCar(long number)
     {
       var figs = new ProtoFigures();
@@ -66,10 +67,20 @@ namespace GrpcTracksClient
         StrVal = "lisa_alert"
       });
 
+      var color =
+            $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
+
+      fig.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "__color",
+        StrVal = color
+      });
+
+      int carNum = _random.Next(0,2);
       fig.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = @"__image",
-        StrVal = @"images/car_red_256.png"
+        StrVal = carNum == 0 ? @"images/car_red_256.png": @"images/car_taxi.png"
       });
 
       await MoveGrpcCar(figs, fig, number);
@@ -99,6 +110,7 @@ namespace GrpcTracksClient
         PropName = "track_name",
         StrVal = "lisa_alert2"
       });
+
 
       var grpcTask = MoveGrpc(figs, fig);
 
@@ -182,6 +194,19 @@ namespace GrpcTracksClient
 
       for (int i = 0; i < 1000000; i++)
       {
+        var propColor = fig.ExtraProps.Where(p => p.PropName == "__color").FirstOrDefault();
+
+        if (propColor == null)
+        {
+          propColor = new ProtoObjExtraProperty()
+          {
+            PropName = "__color",
+            StrVal = string.Empty
+          };
+          fig.ExtraProps.Add(propColor);
+        }
+        propColor.StrVal = $"#{_random.Next(100,150).ToString("X2")}{_random.Next(100, 150).ToString("X2")}{_random.Next(100, 256).ToString("X2")}";
+
         center.Lat += random.Next(-5, +5)*step;
         center.Lon += random.Next(-5, +5)*step;
 
@@ -249,7 +274,7 @@ namespace GrpcTracksClient
       return azimuth;
     }
 
-    public static async Task MoveGrpcCar(ProtoFigures figs, ProtoFig fig, long startPt)
+    public static async Task MoveGrpcCar(ProtoFigures figs, ProtoFig fig, long carId)
     {
       var center = new ProtoCoord()
       {
@@ -285,7 +310,9 @@ namespace GrpcTracksClient
       client.Connect(null);
       var prev = new Geo2DCoordDTO() { 0, 0 };
 
-      for(int h = 0; h <  10;h++)
+      long startPt = _random.NextInt64(0, coords.coord.Count() - 1);
+
+      for (int h = 0; h <  10; h++)
       {
         for (long track = startPt; track < coords?.coord.Count; track++)
         {
@@ -302,8 +329,14 @@ namespace GrpcTracksClient
             f.Lon = c.Lon;//x
           }
 
-
-          var newFigs = await client.Move(figs);
+          try
+          {
+            var newFigs = await client.Move(figs);
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine(ex.ToString());
+          }
           //Console.WriteLine("Car GRPC: " + newFigs?.ToString());
           await Task.Delay(500);
         }

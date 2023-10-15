@@ -209,7 +209,7 @@ namespace TrackSender
               },
               new ObjExtraPropertyDTO()
               {
-                prop_name = "color",
+                prop_name = "__color",
                 str_val = color
               }
             };

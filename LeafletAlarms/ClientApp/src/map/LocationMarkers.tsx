@@ -377,7 +377,7 @@ export function LocationMarkers() {
         retColor.color = 'red';
       }
       else {
-        var color = getExtraProp(marker, "color");
+        var color = getExtraProp(marker, "__color");
 
         if (color != null) {
           retColor.fillColor = color;
