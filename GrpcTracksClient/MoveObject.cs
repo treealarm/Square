@@ -14,77 +14,35 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using static Dapr.Client.Autogen.Grpc.v1.Dapr;
 using static LeafletAlarmsGrpc.TracksGrpcService;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GrpcTracksClient
 {
   internal class MoveObject
-  { 
-    public static async  Task Move()
+  {
+    public static async Task Move()
     {
+      var resourceName = $"GrpcTracksClient.JSON.SAD.json";
+      var s = await ResourceLoader.GetResource(resourceName);
+
+      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
+      var figSenderTask = CarFigureSender();
+
       List<Task> listCarsTasks = new List<Task>();
-      int index = 0;
-      for (long carId = 0; carId < 50; carId++)
+
+      for (long carId = 1; carId < 50; carId++)
       {
-        index += 1;
-        var taskCar = MoveCar(index);
+        var taskCar = MoveGrpcCar(carId, coords);
         listCarsTasks.Add(taskCar);
       }
-      
 
       await MovePolygon();
 
       Task.WaitAll(listCarsTasks.ToArray());
+      Task.WaitAll(figSenderTask);
     }
 
-    static string LongTo24String(long number)
-    {
-      return "1111" + number.ToString("D20");
-    }
-    private static Random _random = new Random();
-    private static async Task MoveCar(long number)
-    {
-      var figs = new ProtoFigures();
-      var fig = new ProtoFig();
-      figs.Figs.Add(fig);
 
-      fig.Id = LongTo24String(number); //"6423e54d513bfe83e9d59794";
-      fig.Name = "TestCar" + number.ToString();
-        
-      fig.Geometry = new ProtoGeometry();
-      fig.Geometry.Type = "Point";
-      fig.Radius = 50;
-      figs.AddTracks = true;
-
-      fig.Geometry.Coord.Add(new ProtoCoord()
-      {
-        Lat = 55.7566737398449,
-        Lon = 37.60722931951715
-      });
-
-      fig.ExtraProps.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "track_name",
-        StrVal = "lisa_alert"
-      });
-
-      var color =
-            $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
-
-      fig.ExtraProps.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "__color",
-        StrVal = color
-      });
-
-      int carNum = _random.Next(0,2);
-      fig.ExtraProps.Add(new ProtoObjExtraProperty()
-      {
-        PropName = @"__image",
-        StrVal = carNum == 0 ? @"images/car_red_256.png": @"images/car_taxi.png"
-      });
-
-      await MoveGrpcCar(figs, fig, number);
-    }
     private static async Task MovePolygon()
     {
       var figs = new ProtoFigures();
@@ -97,7 +55,7 @@ namespace GrpcTracksClient
       fig.Geometry.Type = "Polygon";
       figs.AddTracks = true;
 
-     
+
 
       fig.ExtraProps.Add(new ProtoObjExtraProperty()
       {
@@ -163,11 +121,11 @@ namespace GrpcTracksClient
             await daprClient.Move(figs);
             //Console.WriteLine("Fig DAPR: " + reply?.ToString());
           }
-          catch(Exception ex)
+          catch (Exception ex)
           {
             Console.WriteLine(ex.Message);
           }
-          
+
         }
         catch (Exception ex)
         {
@@ -205,17 +163,17 @@ namespace GrpcTracksClient
           };
           fig.ExtraProps.Add(propColor);
         }
-        propColor.StrVal = $"#{_random.Next(100,150).ToString("X2")}{_random.Next(100, 150).ToString("X2")}{_random.Next(100, 256).ToString("X2")}";
+        propColor.StrVal = $"#{_random.Next(100, 150).ToString("X2")}{_random.Next(100, 150).ToString("X2")}{_random.Next(100, 256).ToString("X2")}";
 
-        center.Lat += random.Next(-5, +5)*step;
-        center.Lon += random.Next(-5, +5)*step;
+        center.Lat += random.Next(-5, +5) * step;
+        center.Lon += random.Next(-5, +5) * step;
 
         fig.Geometry.Coord.Clear();
         var rad = 400;
 
         var aStep = random.Next(20, 90);
 
-        for (double a = 0; a < 360; a+= aStep)
+        for (double a = 0; a < 360; a += aStep)
         {
           rad += random.Next(-20, +20);
           var pt = CalculateCoordinates(center.Lat, center.Lon, rad, a);
@@ -224,7 +182,7 @@ namespace GrpcTracksClient
             Lat = pt.latitude,
             Lon = pt.longitude
           });
-        }        
+        }
 
         var newFigs = await client.Move(figs);
         //Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
@@ -232,7 +190,7 @@ namespace GrpcTracksClient
       }
     }
 
-    public static (double latitude, double longitude) 
+    public static (double latitude, double longitude)
       CalculateCoordinates(double startingLatitude, double startingLongitude, double distance, double azimuth)
     {
       // Переводим координаты из градусов в радианы
@@ -274,48 +232,60 @@ namespace GrpcTracksClient
       return azimuth;
     }
 
-    public static async Task MoveGrpcCar(ProtoFigures figs, ProtoFig fig, long carId)
+    static string LongTo24String(long number)
     {
-      var center = new ProtoCoord()
-      {
-        Lat = 55.753201,
-        Lon = 37.621130
-      };
+      return "1111" + number.ToString("D20");
+    }
+    private static Random _random = new Random();
 
-      var rotate = new ProtoObjExtraProperty()
-      {
-        PropName = @"__image_rotate",
-        StrVal = @"0"
-      };
-      fig.ExtraProps.Add(rotate);
 
-      var resourceName = $"GrpcTracksClient.JSON.SAD.json";
-      var s = await ResourceLoader.GetResource(resourceName);
-
-      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
-      //var coords = new GeometryPolylineDTO();
-      //coords.coord = new List<Geo2DCoordDTO>();
-
-      //for (double a = 0; a < 360; a += 0.3)
-      //{
-      //  var pt = CalculateCoordinates(center.Lat, center.Lon, 3000, a);
-      //  coords.coord.Add(new Geo2DCoordDTO()
-      //  {
-      //    Lat = pt.latitude,
-      //    Lon = pt.longitude
-      //  });
-      //}
-
-      using var client = new GrpcMover();
-      client.Connect(null);
+    public static async Task MoveGrpcCar(long number, GeometryPolylineDTO coords)
+    {
       var prev = new Geo2DCoordDTO() { 0, 0 };
 
       long startPt = _random.NextInt64(0, coords.coord.Count() - 1);
+      var color =
+        $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
 
-      for (int h = 0; h <  10; h++)
+      for (int h = 0; h < 10; h++)
       {
         for (long track = startPt; track < coords?.coord.Count; track++)
         {
+          var fig = new ProtoFig();
+
+          fig.Id = LongTo24String(number); //"6423e54d513bfe83e9d59794";
+          fig.Name = "TestCar" + number.ToString();
+
+          fig.Geometry = new ProtoGeometry();
+          fig.Geometry.Type = "Point";
+          fig.Radius = 50;
+
+          fig.ExtraProps.Add(new ProtoObjExtraProperty()
+          {
+            PropName = "track_name",
+            StrVal = "lisa_alert"
+          });
+
+          fig.ExtraProps.Add(new ProtoObjExtraProperty()
+          {
+            PropName = "__color",
+            StrVal = color
+          });
+
+          int carNum = _random.Next(0, 2);
+          fig.ExtraProps.Add(new ProtoObjExtraProperty()
+          {
+            PropName = @"__image",
+            StrVal = carNum == 0 ? @"images/car_red_256.png" : @"images/car_taxi.png"
+          });
+          var rotate = new ProtoObjExtraProperty()
+          {
+            PropName = @"__image_rotate",
+            StrVal = @"0"
+          };
+          fig.ExtraProps.Add(rotate);
+
+
           var c = coords?.coord[(int)track];
           var degrees = CalculateAzimuth(prev.Lat, prev.Lon, c.Lat, c.Lon);
 
@@ -323,25 +293,61 @@ namespace GrpcTracksClient
           rotate.StrVal = rot.ToString();
           prev = c;
 
-          foreach (var f in fig.Geometry.Coord)
+          fig.Geometry.Coord.Add(new ProtoCoord()
           {
-            f.Lat = c.Lat;//y
-            f.Lon = c.Lon;//x
+            Lat = c.Lat,
+            Lon = c.Lon //x
+           });
+
+          AddFigToSend(fig);
+          await Task.Delay(500);
+        }
+
+        startPt = 0;
+      }
+    }
+
+    static List<ProtoFig> _figsToSend = new List<ProtoFig>();
+    private static void AddFigToSend(ProtoFig f)
+    {
+      lock (_figsToSend)
+      {
+        _figsToSend.Add(f);
+      }
+    }
+    private static bool _working = true;
+    private static async Task CarFigureSender()
+    {
+      while (_working)
+      {
+        ProtoFigures figs = new ProtoFigures();
+
+        lock (_figsToSend)
+        {
+          foreach (var f in _figsToSend)
+          {
+            figs.Figs.Add(f);
           }
+          _figsToSend = new List<ProtoFig>();
+        }
+
+        if (figs.Figs.Any())
+        {
+          using var client = new GrpcMover();
+          client.Connect(null);
 
           try
           {
+            figs.AddTracks = true;
             var newFigs = await client.Move(figs);
           }
           catch (Exception ex)
           {
             Console.WriteLine(ex.ToString());
           }
-          //Console.WriteLine("Car GRPC: " + newFigs?.ToString());
-          await Task.Delay(500);
         }
-        startPt = 0;
-      }      
+        await Task.Delay(1000);
+      }
     }
   }
 }
