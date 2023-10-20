@@ -112,3 +112,11 @@ services:
       - postgresservice
 # command2export realm:docker exec -ti leaflet-keycloakservice-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
 # END keycloak
+
+  valhallaservice:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    container_name: valhalla_latest
+    ports:
+      - 8002:8002
+    volumes:
+      - ./leaflet_data/valhalla_custom_files/:/custom_files
