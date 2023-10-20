@@ -1,0 +1,3 @@
+http://localhost:8002/optimized_route?json={%22locations%22:[{%22lat%22:55.76034990679016,%22lon%22:37.56721972720697},{%22lat%22:55.75919085473824,%22lon%22:37.679829590488225}],%22costing%22:%22auto%22,%22costing_options%22:{%22auto%22:{%22country_crossing_penalty%22:2000.0}},%22id%22:%22my_work_route1%22}
+
+{"locations":[{"lat":55.76034990679016,"lon":37.56721972720697},{"lat":55.75919085473824,"lon":37.679829590488225}],"costing":"auto","costing_options":{"auto":{"country_crossing_penalty":2000.0}},"id":"my_work_route1"}

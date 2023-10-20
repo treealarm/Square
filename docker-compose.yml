@@ -47,6 +47,8 @@ services:
     build:
       context: .
       dockerfile: GrpcTracksClient/Dockerfile
+    environment:
+      - VALHALLA_PORT:${VALHALLA_PORT}
 
   grpctracksclient-dapr:
     image: "daprio/daprd:latest"

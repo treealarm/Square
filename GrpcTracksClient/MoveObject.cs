@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ValhallaLib;
 using static Dapr.Client.Autogen.Grpc.v1.Dapr;
 using static LeafletAlarmsGrpc.TracksGrpcService;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -20,10 +21,23 @@ namespace GrpcTracksClient
 {
   internal class MoveObject
   {
+    private static ValhallaRouter _router = new ValhallaRouter(GetValhallaUrl());
+    public static string GetValhallaUrl()
+    {
+      if (int.TryParse(Environment.GetEnvironmentVariable("VALHALLA_PORT"), out var VALHALLA_PORT))
+      {
+        var builder = new UriBuilder("http", "valhallaservice", VALHALLA_PORT);
+        return builder.ToString();
+      }
+      return string.Empty;
+    }
     public static async Task Move()
     {
-      var VALHALLA_PORT = Environment.GetEnvironmentVariable("VALHALLA_PORT");
-
+      //{"lat":55.76034990679016,"lon":37.56721972720697},{"lat":55.75919085473824,"lon":37.679829590488225}
+      var testReturn = await _router.GetRoute(
+        new ProtoCoord() { Lat = 55.76034990679016, Lon = 37.56721972720697 },
+        new ProtoCoord() { Lat = 55.75919085473824, Lon = 37.679829590488225 }
+      );
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);
 

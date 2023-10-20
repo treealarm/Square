@@ -25,7 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcTracksClient", "GrpcTra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramService", "TelegramService\TelegramService.csproj", "{06E89956-46E3-4E35-B319-AB16820336CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcDaprLib", "GrpcDaprClientLib\GrpcDaprLib.csproj", "{56EFDEF5-0AC0-4E9E-BC8F-077F754BD56D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcDaprLib", "GrpcDaprClientLib\GrpcDaprLib.csproj", "{56EFDEF5-0AC0-4E9E-BC8F-077F754BD56D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ValhallaLib", "ValhallaLib\ValhallaLib.csproj", "{2BABDCAA-3F54-427E-842E-CDC3F1D17386}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -81,6 +83,10 @@ Global
 		{56EFDEF5-0AC0-4E9E-BC8F-077F754BD56D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56EFDEF5-0AC0-4E9E-BC8F-077F754BD56D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56EFDEF5-0AC0-4E9E-BC8F-077F754BD56D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BABDCAA-3F54-427E-842E-CDC3F1D17386}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BABDCAA-3F54-427E-842E-CDC3F1D17386}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BABDCAA-3F54-427E-842E-CDC3F1D17386}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BABDCAA-3F54-427E-842E-CDC3F1D17386}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

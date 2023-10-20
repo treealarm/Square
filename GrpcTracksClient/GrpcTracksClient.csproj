@@ -27,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\GrpcDaprClientLib\GrpcDaprLib.csproj" />
+    <ProjectReference Include="..\ValhallaLib\ValhallaLib.csproj" />
   </ItemGroup>
 
 </Project>
