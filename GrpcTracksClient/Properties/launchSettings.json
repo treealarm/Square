@@ -3,7 +3,7 @@
     "GrpcTracksClient": {
       "commandName": "Project",
       "environmentVariables": {
-        "VALHALLA_PORT": "8002"
+        "VALHALLA_PORT": "8012"
       }
     },
     "Docker": {

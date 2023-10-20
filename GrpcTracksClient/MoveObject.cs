@@ -33,11 +33,7 @@ namespace GrpcTracksClient
     }
     public static async Task Move()
     {
-      //{"lat":55.76034990679016,"lon":37.56721972720697},{"lat":55.75919085473824,"lon":37.679829590488225}
-      var testReturn = await _router.GetRoute(
-        new ProtoCoord() { Lat = 55.76034990679016, Lon = 37.56721972720697 },
-        new ProtoCoord() { Lat = 55.75919085473824, Lon = 37.679829590488225 }
-      );
+     
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);
 
@@ -254,18 +250,35 @@ namespace GrpcTracksClient
     }
     private static Random _random = new Random();
 
-
-    public static async Task MoveGrpcCar(long number, GeometryPolylineDTO coords)
+    static double GetRandomDouble(double min, double max)
     {
-      var prev = new Geo2DCoordDTO() { 0, 0 };
+      return min + (_random.NextDouble() * (max - min));
+    }
+    public static async Task MoveGrpcCar(long number, GeometryPolylineDTO coords)
+    { 
+      var endLat = GetRandomDouble(55.750, 55.770);
+      var endLon = GetRandomDouble(37.567, 37.680);
 
-      long startPt = _random.NextInt64(0, coords.coord.Count() - 1);
       var color =
         $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
 
       for (int h = 0; h < 10; h++)
       {
-        for (long track = startPt; track < coords?.coord.Count; track++)
+        var startLat = endLat;
+        var startLon = endLon;
+
+        var prev = new ProtoCoord() { Lat = startLat, Lon = startLon };
+
+        endLat = GetRandomDouble(55.750, 55.770);
+        endLon = GetRandomDouble(37.567, 37.680);
+
+        //{"lat":55.76034990679016,"lon":37.56721972720697},{"lat":55.75919085473824,"lon":37.679829590488225}
+        var testReturn = await _router.GetRoute(
+          new ProtoCoord() { Lat = startLat, Lon = startLon },
+          new ProtoCoord() { Lat = endLat, Lon = endLon }
+        );
+
+        foreach (var track in testReturn)
         {
           var fig = new ProtoFig();
 
@@ -301,25 +314,21 @@ namespace GrpcTracksClient
           };
           fig.ExtraProps.Add(rotate);
 
-
-          var c = coords?.coord[(int)track];
-          var degrees = CalculateAzimuth(prev.Lat, prev.Lon, c.Lat, c.Lon);
+          var degrees = CalculateAzimuth(prev.Lat, prev.Lon, track.Lat, track.Lon);
 
           int rot = (int)(degrees);
           rotate.StrVal = rot.ToString();
-          prev = c;
+          prev = track;
 
           fig.Geometry.Coord.Add(new ProtoCoord()
           {
-            Lat = c.Lat,
-            Lon = c.Lon //x
+            Lat = track.Lat,
+            Lon = track.Lon //x
            });
 
           AddFigToSend(fig);
           await Task.Delay(500);
         }
-
-        startPt = 0;
       }
     }
 

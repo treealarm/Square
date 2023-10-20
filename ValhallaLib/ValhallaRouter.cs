@@ -46,14 +46,14 @@ namespace ValhallaLib
       // Grab each 5 bits and mask it in where it belongs using the shift
       int byteData, shift = 0, result = 0;
       do {
-          byteData = (int)(encoded[i++]) - 63;
+          byteData = (int)(Convert.ToInt16(encoded[i++]) - 63);
           result |= (byteData & 0x1f) << shift;
           shift += 5;
       } while (byteData >= 0x20);
         // Undo the left shift from above or the bit flipping and add to previous
         // since its an offset
         int v = result & 1;
-        return previous + (v == 0 ? ~(result >> 1) : (result >> 1));
+        return previous + (v > 0 ? ~(result >> 1) : (result >> 1));
     }
     private List<ProtoCoord> decode(string? encoded) 
     {
