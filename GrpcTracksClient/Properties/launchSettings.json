@@ -1,7 +1,10 @@
 {
   "profiles": {
     "GrpcTracksClient": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "environmentVariables": {
+        "VALHALLA_PORT": "8002"
+      }
     },
     "Docker": {
       "commandName": "Docker"

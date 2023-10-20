@@ -22,6 +22,8 @@ namespace GrpcTracksClient
   {
     public static async Task Move()
     {
+      var VALHALLA_PORT = Environment.GetEnvironmentVariable("VALHALLA_PORT");
+
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);
 
