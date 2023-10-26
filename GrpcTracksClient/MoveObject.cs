@@ -32,19 +32,18 @@ namespace GrpcTracksClient
       return string.Empty;
     }
     public static async Task Move()
-    {
-     
-      var resourceName = $"GrpcTracksClient.JSON.SAD.json";
-      var s = await ResourceLoader.GetResource(resourceName);
+    {     
+      //var resourceName = $"GrpcTracksClient.JSON.SAD.json";
+      //var s = await ResourceLoader.GetResource(resourceName);
 
-      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
+      //var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
       var figSenderTask = CarFigureSender();
 
       List<Task> listCarsTasks = new List<Task>();
 
       for (long carId = 1; carId < 50; carId++)
       {
-        var taskCar = MoveGrpcCar(carId, coords);
+        var taskCar = MoveGrpcCar(carId);
         listCarsTasks.Add(taskCar);
       }
 
@@ -82,7 +81,7 @@ namespace GrpcTracksClient
       });
 
 
-      var grpcTask = MoveGrpc(figs, fig);
+      var grpcTask = MoveGrpcPolygon(figs, fig);
 
       fig.Geometry.Coord.Clear();
 
@@ -148,7 +147,7 @@ namespace GrpcTracksClient
       }
     }
 
-    public static async Task MoveGrpc(ProtoFigures figs, ProtoFig fig)
+    public static async Task MoveGrpcPolygon(ProtoFigures figs, ProtoFig fig)
     {
       Random random = new Random();
 
@@ -188,7 +187,7 @@ namespace GrpcTracksClient
         for (double a = 0; a < 360; a += aStep)
         {
           rad += random.Next(-20, +20);
-          var pt = CalculateCoordinates(center.Lat, center.Lon, rad, a);
+          var pt = GeoCalculator.CalculateCoordinates(center.Lat, center.Lon, rad, a);
           fig.Geometry.Coord.Add(new ProtoCoord()
           {
             Lat = pt.latitude,
@@ -202,47 +201,7 @@ namespace GrpcTracksClient
       }
     }
 
-    public static (double latitude, double longitude)
-      CalculateCoordinates(double startingLatitude, double startingLongitude, double distance, double azimuth)
-    {
-      // Переводим координаты из градусов в радианы
-      double phi1 = startingLatitude * Math.PI / 180.0;
-      double lambda1 = startingLongitude * Math.PI / 180.0;
-      double alpha = azimuth * Math.PI / 180.0;
 
-      // Радиус Земли (приближенное значение в метрах)
-      double earthRadius = 6371000;
-
-      // Вычисляем новую широту и долготу
-      double delta = distance / earthRadius;
-      double phi2 = Math.Asin(Math.Sin(phi1) * Math.Cos(delta) + Math.Cos(phi1) * Math.Sin(delta) * Math.Cos(alpha));
-      double lambda2 = lambda1 + Math.Atan2(Math.Sin(alpha) * Math.Sin(delta) * Math.Cos(phi1), Math.Cos(delta) - Math.Sin(phi1) * Math.Sin(phi2));
-
-      // Переводим координаты обратно в градусы
-      double newLatitude = phi2 * 180.0 / Math.PI;
-      double newLongitude = lambda2 * 180.0 / Math.PI;
-
-      return (newLatitude, newLongitude);
-    }
-    public static double CalculateAzimuth(double latitude1, double longitude1, double latitude2, double longitude2)
-    {
-      // Переводим координаты из градусов в радианы
-      double phi1 = latitude1 * Math.PI / 180.0;
-      double lambda1 = longitude1 * Math.PI / 180.0;
-      double phi2 = latitude2 * Math.PI / 180.0;
-      double lambda2 = longitude2 * Math.PI / 180.0;
-
-      // Вычисляем разницу в долготе
-      double deltaLambda = lambda2 - lambda1;
-
-      // Вычисляем азимут
-      double azimuth = Math.Atan2(Math.Sin(deltaLambda), Math.Cos(phi1) * Math.Tan(phi2) - Math.Sin(phi1) * Math.Cos(deltaLambda));
-
-      // Переводим азимут из радианов в градусы
-      azimuth = azimuth * 180.0 / Math.PI;
-
-      return azimuth;
-    }
 
     static string LongTo24String(long number)
     {
@@ -254,13 +213,17 @@ namespace GrpcTracksClient
     {
       return min + (_random.NextDouble() * (max - min));
     }
-    public static async Task MoveGrpcCar(long number, GeometryPolylineDTO coords)
+    public static async Task MoveGrpcCar(long number)
     { 
       var endLat = GetRandomDouble(55.750, 55.770);
       var endLon = GetRandomDouble(37.567, 37.680);
 
       var color =
         $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
+      int carNum = _random.Next(0, 2);
+
+      var fig_Id = LongTo24String(number); //"6423e54d513bfe83e9d59794";
+      var fig_Name = "TestCar" + number.ToString();
 
       for (int h = 0; h < 10; h++)
       {
@@ -282,8 +245,8 @@ namespace GrpcTracksClient
         {
           var fig = new ProtoFig();
 
-          fig.Id = LongTo24String(number); //"6423e54d513bfe83e9d59794";
-          fig.Name = "TestCar" + number.ToString();
+          fig.Id = fig_Id;
+          fig.Name = fig_Name;
 
           fig.Geometry = new ProtoGeometry();
           fig.Geometry.Type = "Point";
@@ -301,32 +264,50 @@ namespace GrpcTracksClient
             StrVal = color
           });
 
-          int carNum = _random.Next(0, 2);
+          
           fig.ExtraProps.Add(new ProtoObjExtraProperty()
           {
             PropName = @"__image",
             StrVal = carNum == 0 ? @"images/car_red_256.png" : @"images/car_taxi.png"
           });
+
           var rotate = new ProtoObjExtraProperty()
           {
             PropName = @"__image_rotate",
             StrVal = @"0"
           };
+
           fig.ExtraProps.Add(rotate);
 
-          var degrees = CalculateAzimuth(prev.Lat, prev.Lon, track.Lat, track.Lon);
+          
 
-          int rot = (int)(degrees);
+          var azimuth = GeoCalculator.CalculateAzimuth(prev.Lat, prev.Lon, track.Lat, track.Lon);
+          var distance = GeoCalculator.CalculateDistance(prev.Lat, prev.Lon, track.Lat, track.Lon);
+
+          int rot = (int)azimuth;
           rotate.StrVal = rot.ToString();
+          
+          var cur_speed = GetRandomDouble(7, 12);
+
+          for (double cur_distance = 0;  cur_distance <= distance; cur_distance += cur_speed) //cur_speed m/s
+          {
+            fig.Geometry.Coord.Clear();
+
+            var cur_coords = GeoCalculator.CalculateCoordinates(prev.Lat, prev.Lon, cur_distance, azimuth);
+
+            fig.Geometry.Coord.Add(new ProtoCoord()
+            {
+              Lat = cur_coords.latitude,
+              Lon = cur_coords.longitude //x
+            });
+
+            AddFigToSend(fig);
+            await Task.Delay(500);
+          }
+          
           prev = track;
 
-          fig.Geometry.Coord.Add(new ProtoCoord()
-          {
-            Lat = track.Lat,
-            Lon = track.Lon //x
-           });
-
-          AddFigToSend(fig);
+          
           await Task.Delay(500);
         }
       }
