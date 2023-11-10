@@ -117,6 +117,7 @@ services:
 
   valhallaservice:
     image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    restart: unless-stopped
     container_name: valhalla_latest
     ports:
       - ${VALHALLA_PORT}:${VALHALLA_PORT}

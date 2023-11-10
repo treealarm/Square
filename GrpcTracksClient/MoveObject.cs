@@ -220,8 +220,11 @@ namespace GrpcTracksClient
 
       var color =
         $"#{_random.Next(20).ToString("X2")}{_random.Next(256).ToString("X2")}{_random.Next(100).ToString("X2")}";
-      int carNum = _random.Next(0, 2);
-
+      int carNum = _random.Next(0, 3);
+      var carArr = new string[] {
+        @"images/car_red_256.png",
+        @"images/car_taxi.png",
+        @"images/car_police.png"};
       var fig_Id = LongTo24String(number); //"6423e54d513bfe83e9d59794";
       var fig_Name = "TestCar" + number.ToString();
 
@@ -268,7 +271,7 @@ namespace GrpcTracksClient
           fig.ExtraProps.Add(new ProtoObjExtraProperty()
           {
             PropName = @"__image",
-            StrVal = carNum == 0 ? @"images/car_red_256.png" : @"images/car_taxi.png"
+            StrVal = carArr[carNum]
           });
 
           var rotate = new ProtoObjExtraProperty()
