@@ -10,25 +10,10 @@ Console.WriteLine("Hello, DB Watcher!");
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
-      var envVars = new Dictionary<string, string>();
-
-      var environmentVariables = Environment.GetEnvironmentVariables();
-
-      foreach (var variable in environmentVariables.Keys)
-      {
-        var key = variable?.ToString().ToLower();
-
-        if (
-          key == "botid" ||
-          key == "chatid")
-        {
-          envVars.Add(key, environmentVariables[variable].ToString());
-        }
-      }
-
       var config = context.Configuration;
-
-      services.Configure<MapDatabaseSettings>(config.GetSection("MapDatabase"));
+      var mapSection = config.GetSection("MapDatabase");
+      var secVal = mapSection.GetSection("DatabaseName").Value;
+      services.Configure<MapDatabaseSettings>(mapSection);
       services.AddSingleton<IPubSubService, PubSubService>();
     })
     .Build();

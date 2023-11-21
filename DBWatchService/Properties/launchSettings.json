@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DBWatchService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "MapDatabase__DatabaseName": "Kello Ben!"
+      }
+    }
+  }
+}

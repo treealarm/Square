@@ -4,6 +4,8 @@ namespace Domain.OptionsModels
 {
     public class MapDatabaseSettings
     {
+        // We can replace these values from appsettings.json by env. vars.
+        // For example MapDatabase__DatabaseName key to replace DatabaseName
         public string ConnectionString { get; set; } = null!;
         public string DatabaseName { get; set; } = null!;
         public string ObjectsCollectionName { get; set; } = null!;
