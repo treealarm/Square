@@ -54,6 +54,8 @@ namespace LeafletAlarms
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
       services.Configure<DaprSettings>(Configuration.GetSection("DaprSettings"));
 
+      //services.AddOptions
+
 
       services.AddHostedService<InitHostedService>();
 
