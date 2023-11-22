@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using static Google.Rpc.Context.AttributeContext.Types;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace ValhallaLib
 {
@@ -13,15 +14,47 @@ namespace ValhallaLib
   {
     private string _base_url;
     private HttpClient _client = new HttpClient();
-    public ValhallaRouter(string url)
+    public ValhallaRouter(string url = "")
     {
+      if (string.IsNullOrEmpty(url))
+      {
+        url = GetValhallaUrl();
+      }
+
       _base_url = url;
-      _client.BaseAddress = new Uri(_base_url);
-      _client.DefaultRequestHeaders.Accept.Clear();
-      _client.DefaultRequestHeaders.Accept.Add(
-          new MediaTypeWithQualityHeaderValue("application/json"));
+
+      try
+      {
+        _client.BaseAddress = new Uri(_base_url);
+        _client.DefaultRequestHeaders.Accept.Clear();
+        _client.DefaultRequestHeaders.Accept.Add(
+          new MediaTypeWithQualityHeaderValue("application/json")
+          );
+      }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+      }      
     }
 
+    public static string GetValhallaUrl()
+    {
+      var allVars = Environment.GetEnvironmentVariables();
+
+      foreach(var key in allVars.Keys)
+      {
+        Console.WriteLine($"{key}- {allVars[key]}");
+      }
+      if (int.TryParse(Environment.GetEnvironmentVariable("VALHALLA_PORT"), out var VALHALLA_PORT))
+      {
+        Console.WriteLine($"valhalla port:{VALHALLA_PORT}");
+        var builder = new UriBuilder("http", "valhallaservice", VALHALLA_PORT);
+        Console.WriteLine(builder.ToString());
+        return builder.ToString();
+      }
+      Console.Error.WriteLine("GetValhallaUrl return empty string");
+      return string.Empty;
+    }
     private async Task<RootResponse?> GetRoutFromValhalla(string request)
     {
       try

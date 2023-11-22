@@ -21,16 +21,8 @@ namespace GrpcTracksClient
 {
   internal class MoveObject
   {
-    private static ValhallaRouter _router = new ValhallaRouter(GetValhallaUrl());
-    public static string GetValhallaUrl()
-    {
-      if (int.TryParse(Environment.GetEnvironmentVariable("VALHALLA_PORT"), out var VALHALLA_PORT))
-      {
-        var builder = new UriBuilder("http", "valhallaservice", VALHALLA_PORT);
-        return builder.ToString();
-      }
-      return string.Empty;
-    }
+    private static ValhallaRouter _router = new ValhallaRouter();
+
     public static async Task Move()
     {     
       //var resourceName = $"GrpcTracksClient.JSON.SAD.json";
@@ -43,11 +35,25 @@ namespace GrpcTracksClient
 
       for (long carId = 1; carId < 50; carId++)
       {
-        var taskCar = MoveGrpcCar(carId);
-        listCarsTasks.Add(taskCar);
+        try
+        {
+          var taskCar = MoveGrpcCar(carId);
+          listCarsTasks.Add(taskCar);
+        }
+        catch (Exception ex)
+        {
+          Logger.LogException(ex);
+        }
       }
 
-      await MovePolygon();
+      try
+      {
+        await MovePolygon();
+      }
+      catch(Exception ex)
+      {
+        Logger.LogException(ex);
+      }
 
       Task.WaitAll(listCarsTasks.ToArray());
       Task.WaitAll(figSenderTask);
@@ -134,13 +140,14 @@ namespace GrpcTracksClient
           }
           catch (Exception ex)
           {
-            Console.WriteLine(ex.Message);
+            Logger.LogException(ex);
+            await Task.Delay(10000);
           }
 
         }
         catch (Exception ex)
         {
-          Console.WriteLine(ex);
+          Logger.LogException(ex);
           break;
         }
         await Task.Delay(1000);
@@ -352,7 +359,7 @@ namespace GrpcTracksClient
           }
           catch (Exception ex)
           {
-            Console.WriteLine(ex.ToString());
+            Logger.LogException(ex);
           }
         }
         await Task.Delay(1000);

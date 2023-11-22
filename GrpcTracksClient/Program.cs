@@ -3,12 +3,15 @@ using Dapr.Client;
 using Grpc.Net.Client;
 using GrpcTracksClient;
 using LeafletAlarmsGrpc;
+using System.Runtime.CompilerServices;
 using static LeafletAlarmsGrpc.TracksGrpcService;
 
 
 
 
 var taskTrack = UpdateTracks.Move();
+
+
 
 while (true)
 {
@@ -25,7 +28,7 @@ while (true)
   }
   catch (Exception ex)
   {
-    Console.WriteLine(ex);
+    Logger.LogException(ex);
     await Task.Delay(1000);
   }
 }

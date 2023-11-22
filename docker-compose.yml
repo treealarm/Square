@@ -12,6 +12,8 @@ services:
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
       - ./leaflet_data:/leaflet_data
+    env_file:
+      - global.env
 
   leafletalarms-dapr:
     image: "daprio/daprd:latest"
@@ -30,6 +32,8 @@ services:
       dockerfile: RouterMicroService/Dockerfile
     volumes:
      - ./leaflet_data:/leaflet_data
+    env_file:
+      - global.env
 
   #tracksenderservice:
   #  image: ${DOCKER_REGISTRY-}tracksenderservice
@@ -47,8 +51,13 @@ services:
     build:
       context: .
       dockerfile: GrpcTracksClient/Dockerfile
+    env_file:
+      - global.env
+      - .env
     environment:
       - VALHALLA_PORT:${VALHALLA_PORT}
+    depends_on:
+      - valhallaservice
 
   grpctracksclient-dapr:
     image: "daprio/daprd:latest"

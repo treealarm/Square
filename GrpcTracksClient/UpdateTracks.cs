@@ -55,7 +55,7 @@ namespace GrpcTracksClient
         }
         catch (Exception ex)
         {
-          Console.WriteLine(ex);
+          Logger.LogException(ex);
         }
       }      
     }

@@ -11,6 +11,7 @@ IHost host = Host.CreateDefaultBuilder(args)
       var config = context.Configuration;
 
       services.Configure<MapDatabaseSettings>(config.GetSection("MapDatabase"));
+      services.Configure<DaprSettings>(config.GetSection("DaprSettings"));      
 
       services.AddSingleton<IPubSubService, PubSubService>();
       services.AddSingleton<ILevelService, LevelService>();
