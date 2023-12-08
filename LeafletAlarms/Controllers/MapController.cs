@@ -65,8 +65,8 @@ namespace LeafletAlarms.Controllers
     }
 
     [AllowAnonymous]
-    [HttpGet("GetTiles/{z}/{x}/{y}.png")]
-    public async Task<FileResult> GetTiles(string z, string x, string y)
+    [HttpGet("GetTiles/{layer}/{z}/{x}/{y}.png")]
+    public async Task<FileResult> GetTiles(string layer, string z, string x, string y)
     {
       byte[] data = null;
       var tile_server = new Uri($"https://tile.openstreetmap.org/{z}/{x}/{y}.png");

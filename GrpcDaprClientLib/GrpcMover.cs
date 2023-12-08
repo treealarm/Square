@@ -25,6 +25,7 @@ namespace GrpcDaprClientLib
       if (_channel != null)
       {
         _channel.Dispose();
+        _channel = null;
       }
     }
 

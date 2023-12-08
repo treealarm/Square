@@ -1,0 +1,14 @@
+{
+  "name": "diagrameditor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "author": "dandik",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  },
+  "scripts": {
+    "start": "electron ."
+  }
+}

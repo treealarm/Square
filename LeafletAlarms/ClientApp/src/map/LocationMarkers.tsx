@@ -29,25 +29,13 @@ function MyPolygon(props: any) {
 
   var fig: IPolygon = props.marker;
 
-  const dispatch = useDispatch();
-
-  const eventHandlers = useMemo(
-    () => ({
-      click(event: LeafletMouseEvent) {
-        var selected_id = props.marker.id;
-        console.log("MY_POLYYGON_CLICK:", event);
-        dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
-      }
-    }),
-    [],
-  )
 
   return (
     <React.Fragment>
       <Polygon
         pathOptions={props.pathOptions}
         positions={fig.geometry.coord}
-        eventHandlers={eventHandlers}
+        eventHandlers={props.eventHandlers}
       >
       </Polygon>
     </React.Fragment>
@@ -58,23 +46,12 @@ function MyPolyline(props: any) {
 
   var fig: IPolyline = props.marker;
 
-  const dispatch = useDispatch();
-  const eventHandlers = useMemo(
-    () => ({
-      click(event: LeafletMouseEvent) {
-        var selected_id = props.marker.id;
-        dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));        
-      }
-    }),
-    [],
-  )
-
   return (
     <React.Fragment>
       <Polyline
         pathOptions={props.pathOptions}
         positions={fig.geometry.coord}
-        eventHandlers={eventHandlers}
+        eventHandlers={props.eventHandlers}
       >
       </Polyline>
     </React.Fragment>
@@ -86,16 +63,6 @@ function MyCircle(props: any) {
   var fig: ICircle = props.marker;
   var center = fig.geometry.coord;  
   var radius = fig.radius > 0 ? fig.radius : 10;
-
-  const dispatch = useDispatch();
-  const eventHandlers = useMemo(
-    () => ({
-      click(event: LeafletMouseEvent) {
-        dispatch<any>(GuiStore.actionCreators.selectTreeItem(props.marker.id));
-      }
-    }),
-    [],
-  )
 
   var imageIcon: L.DivIcon = null;
   var textIcon: L.DivIcon = null;
@@ -142,14 +109,14 @@ function MyCircle(props: any) {
               pathOptions={props.pathOptions}
               center={center}
               radius={radius}
-              eventHandlers={eventHandlers}
+            eventHandlers={props.eventHandlers}
             />
         }       
 
       <Marker
         position={center}
         icon={imageIcon}
-          eventHandlers={eventHandlers}
+          eventHandlers={props.eventHandlers}
         />
       </React.Fragment>
     );
@@ -160,7 +127,7 @@ function MyCircle(props: any) {
       <Marker
         position={center}
         icon={textIcon}
-        eventHandlers={eventHandlers}
+        eventHandlers={props.eventHandlers}
       />
     );
   }
@@ -170,7 +137,7 @@ function MyCircle(props: any) {
         pathOptions={props.pathOptions}
         center={center}
         radius={radius}
-        eventHandlers={eventHandlers}
+        eventHandlers={props.eventHandlers}
       />
   );
 }
@@ -189,19 +156,26 @@ function MyCommonFig(props: any) {
     return null;
   }
 
+  const dispatch = useDispatch();
+  const eventHandlers = useMemo(
+    () => ({
+      click(event: LeafletMouseEvent) {
+        dispatch<any>(GuiStore.actionCreators.selectTreeItem(props.marker.id));
+
+        var __is_diagram = getExtraProp(fig, "__is_diagram", "0");
+
+        if (__is_diagram == '1') {
+          console.log('__is_diagram:', __is_diagram);
+        }
+      }
+    }),
+    [],
+  );
+
   if (geo.type == PointType) {
     const center = geo.coord as [number, number];
     return (
-      <MyCircle {...props}>
-
-      </MyCircle>
-    );
-  }
-
-  if (geo.type == PointType) {
-    const center = geo.coord as [number, number];
-    return (
-      <MyCircle {...props}>
+      <MyCircle {...props} eventHandlers={eventHandlers} >
         
       </MyCircle>
     );
@@ -210,7 +184,7 @@ function MyCommonFig(props: any) {
   if (geo.type == PolygonType) {
     const center = L.polygon(geo.coord).getBounds().getCenter();
     return (
-      <MyPolygon {...props}>
+      <MyPolygon {...props} eventHandlers={eventHandlers}>
       </MyPolygon>
     );
   }
@@ -218,7 +192,7 @@ function MyCommonFig(props: any) {
   if (geo.type == LineStringType) {
     const center = L.polyline(geo.coord).getBounds().getCenter();
     return (
-      <MyPolyline {...props}>
+      <MyPolyline {...props} eventHandlers={eventHandlers}>
       </MyPolyline>
     );
   }
@@ -336,11 +310,11 @@ export function LocationMarkers() {
     (marker: IObjProps) => {
       var id = marker.id;
 
-      var retColor: L.PathOptions    = {    };
+      var retColor: L.PathOptions = {};
       retColor.fillColor = 'green';
       retColor.dashArray = '';
       retColor.color = 'green';
-      
+
       if (checked_ids.indexOf(id) !== -1) {
         retColor.dashArray = '5,10';
       }
@@ -387,7 +361,8 @@ export function LocationMarkers() {
 
       return retColor;
 
-    }, [visualStates, alarmedObjects, selected_id, checked_ids])
+    }, [visualStates, alarmedObjects, selected_id, checked_ids]);
+
 
   var hidden_id: string = null;
 
