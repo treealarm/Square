@@ -1,16 +1,10 @@
-﻿using Domain.Logic;
-using Domain.ServiceInterfaces;
+﻿using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
-using Microsoft.AspNetCore.Http;
 using PubSubLib;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services
 {
@@ -49,10 +43,12 @@ namespace LeafletAlarms.Services
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
-    public async Task PushAsync(HttpContext context, WebSocket webSocket)
+    public async Task PushAsync(object context, WebSocket webSocket)
     {
+      var con = context as HttpContext;
+
       StateWebSocket stateWs = new StateWebSocket(
-        context,
+       con,
         webSocket,
         _geoService,
         _levelService,
@@ -61,7 +57,7 @@ namespace LeafletAlarms.Services
         _stateIdsQueueService
       );
 
-      StateSockets.TryAdd(context.Connection.Id, stateWs);
+      StateSockets.TryAdd(con.Connection.Id, stateWs);
 
       try
       {
@@ -84,10 +80,12 @@ namespace LeafletAlarms.Services
           );
         }        
       }
-      catch(Exception)
-      { }
+      catch(Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
 
-      StateSockets.TryRemove(context.Connection.Id, out var sock);
+      StateSockets.TryRemove(con.Connection.Id, out var sock);
     }
 
     public void OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
