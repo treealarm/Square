@@ -42,10 +42,12 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\components\AccordionPanels.tsx" />
+    <None Remove="ClientApp\src\components\DiagramNavigation.tsx" />
     <None Remove="ClientApp\src\components\MainToolbar.tsx" />
     <None Remove="ClientApp\src\components\PanelIcon.tsx" />
     <None Remove="ClientApp\src\components\PanelSwitch.tsx" />
     <None Remove="ClientApp\src\components\TogglePanelButton.tsx" />
+    <None Remove="ClientApp\src\store\DiagramsStates.ts" />
     <None Remove="ClientApp\src\Tree\FlyToMyLocationButton.tsx" />
     <None Remove="ClientApp\src\Tree\RequestRoute.tsx" />
     <None Remove="ClientApp\src\Tree\SearchApplyButton.tsx" />
@@ -62,10 +64,12 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\DiagramNavigation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\MainToolbar.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelIcon.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\TogglePanelButton.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\store\DiagramsStates.ts" />
     <TypeScriptCompile Include="ClientApp\src\Tree\FlyToMyLocationButton.tsx" />
     <TypeScriptCompile Include="ClientApp\src\Tree\SearchApplyButton.tsx" />
     <TypeScriptCompile Include="ClientApp\src\Tree\RequestRoute.tsx">

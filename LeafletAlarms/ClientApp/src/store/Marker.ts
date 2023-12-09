@@ -341,3 +341,8 @@ export class IPanelTypes{
     }
   ];
 }
+
+export interface IGetDiagramDTO {
+  cur_diagram_id: string | null;
+  parents: TreeMarker[];
+}

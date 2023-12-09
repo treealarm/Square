@@ -12,8 +12,8 @@ import { Login } from "../auth/Login";
 import PanelSwitch from "./PanelSwitch";
 import { EPanelType } from "../store/Marker";
 import { SearchApplyButton } from "../Tree/SearchApplyButton";
-import EditOptions from "../Tree/EditOptions";
 import { FlyToMyLocationButton } from "../Tree/FlyToMyLocationButton";
+import DiagramNavigation from "./DiagramNavigation";
 
 export function MainToolbar() {
   return (
@@ -36,7 +36,8 @@ export function MainToolbar() {
             justifyContent="flex-end"
           >
             <SearchApplyButton hideIfNotPushed={true} />  
-            <FlyToMyLocationButton/>
+            <FlyToMyLocationButton />
+            <DiagramNavigation />
           </Box>
 
           <Box

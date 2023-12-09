@@ -1,12 +1,10 @@
 import * as React from "react";
-import TabControl from "../Tree/TabControl";
 import { TreeControl } from "../Tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
-import EditOptions from "../Tree/EditOptions";
 import { ObjectProperties } from "../Tree/ObjectProperties";
 import {
   Box,
-  Grid, Paper, Stack, styled, Toolbar,
+  Grid, styled, Toolbar,
 } from "@mui/material";
 
 
@@ -20,7 +18,6 @@ import { TrackProps } from "../Tree/TrackProps";
 import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
-
 
 
 const LeftPanel = () => {
@@ -121,13 +118,14 @@ export function Home() {
           </Grid>
 
         <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
-              <MapComponent />
+          <MapComponent />            
           </Grid>
 
         <Grid item xs={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
               <RightPanel />
           </Grid>
-        </Grid>
+      </Grid>    
+      
     </Box>
   );
 }
