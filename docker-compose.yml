@@ -22,18 +22,18 @@ services:
       - leafletalarmsservice
     network_mode: "service:leafletalarmsservice"
 
-  routermicroservice:
-    image: ${DOCKER_REGISTRY-}routermicroservice
-    restart: unless-stopped
-    depends_on:
-     - mongoservice
-    build:
-      context: .
-      dockerfile: RouterMicroService/Dockerfile
-    volumes:
-     - ./leaflet_data:/leaflet_data
-    env_file:
-      - global.env
+  # routermicroservice:
+  #   image: ${DOCKER_REGISTRY-}routermicroservice
+  #   restart: unless-stopped
+  #   depends_on:
+  #    - mongoservice
+  #   build:
+  #     context: .
+  #     dockerfile: RouterMicroService/Dockerfile
+  #   volumes:
+  #    - ./leaflet_data:/leaflet_data
+  #   env_file:
+  #     - global.env
 
   #tracksenderservice:
   #  image: ${DOCKER_REGISTRY-}tracksenderservice
@@ -61,10 +61,16 @@ services:
 
   grpctracksclient-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "grpctracksclient"]
+    command: [ 
+      "./daprd", 
+      "--app-id", "grpctracksclient",
+      "--dapr-grpc-port","50007",
+      ]
     depends_on:
-      - leafletalarmsservice
-    network_mode: "service:grpctracksclient"
+      - grpctracksclient
+    #network_mode: "service:grpctracksclient"
+    ports:
+      - "50007:50007"
   
   mongoservice:
     image : mongo

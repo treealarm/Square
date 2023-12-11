@@ -1,16 +1,18 @@
 ﻿using Dapr.Client;
+using Grpc.Core;
+using Grpc.Net.Client;
 using GrpcDaprClientLib;
 using LeafletAlarmsGrpc;
 
 
 namespace GrpcDaprLib
 {
-  public class DaprMover : IMove, IDisposable
+  public class DaprMover : IDisposable
   {
-    private DaprClient? _daprClient = null;
+    private GrpcMover? _daprClient = null;
     public DaprMover()
-    {
-      _daprClient = new DaprClientBuilder().Build();
+    {      
+      _daprClient = new GrpcMover();      
     }
     public void Dispose()
     {
@@ -27,12 +29,18 @@ namespace GrpcDaprLib
         return null;
       }
 
-      var reply =
-            await _daprClient.InvokeMethodGrpcAsync<ProtoFigures, ProtoFigures>(
-              "leafletalarms",
-              "AddTracks",
-              figs
-            );
+      if (!_daprClient.IsConnected())
+      {
+        _daprClient.Connect("http://grpctracksclient-dapr:50007");
+      }
+      
+
+      var metadata = new Metadata
+      {
+        { "dapr-app-id", "leafletalarms" }
+      };
+
+      var reply = await _daprClient.Move(figs, metadata);
 
       return reply;
     }

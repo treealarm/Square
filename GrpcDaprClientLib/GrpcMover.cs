@@ -1,11 +1,12 @@
-﻿using Grpc.Net.Client;
+﻿using Grpc.Core;
+using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
 using System.Threading.Channels;
 using static LeafletAlarmsGrpc.TracksGrpcService;
 
 namespace GrpcDaprClientLib
 {
-  public class GrpcMover : IMove, IDisposable
+  public class GrpcMover : IDisposable
   {
     private GrpcChannel? _channel = null;
     private TracksGrpcServiceClient? _client = null;
@@ -16,10 +17,15 @@ namespace GrpcDaprClientLib
       {
         GRPC_DST = endPoint;
       }
+
       _channel = GrpcChannel.ForAddress(GRPC_DST);
       _client = new TracksGrpcServiceClient(_channel);
     }
 
+    public bool IsConnected()
+    {
+      return _client != null;
+    }
     public void Dispose()
     {
       if (_channel != null)
@@ -27,9 +33,10 @@ namespace GrpcDaprClientLib
         _channel.Dispose();
         _channel = null;
       }
+      _client = null;
     }
 
-    public async Task<ProtoFigures?> Move(ProtoFigures figs)
+    public async Task<ProtoFigures?> Move(ProtoFigures figs, Metadata? meta = null)
     {
       if (_client == null)
       {
@@ -37,7 +44,7 @@ namespace GrpcDaprClientLib
       }
       try
       {
-        var newFigs = await _client.UpdateFiguresAsync(figs);
+        var newFigs = await _client.UpdateFiguresAsync(figs, meta);
         return newFigs;
       }
       catch (Exception ex)

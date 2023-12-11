@@ -93,7 +93,7 @@ namespace LeafletAlarms.Authentication
         {
           OnTokenValidated = c =>
           {            
-            Console.WriteLine($"User successfully authenticated,{c.Request.Path}");
+            //Console.WriteLine($"User successfully authenticated,{c.Request.Path}");
             return Task.CompletedTask;
           },
 

@@ -9,41 +9,52 @@ namespace LeafletAlarms.Grpc.Implementation
   public class TracksDaprImp : AppCallback.AppCallbackBase
   {
     private readonly ILogger<TracksDaprImp> _logger;
-    TracksGrpcImp _trackGrpcService;
-    public TracksDaprImp(ILogger<TracksDaprImp> logger, TracksGrpcImp trackGrpcService)
+    GRPCServiceProxy _proxy;
+
+    public TracksDaprImp(ILogger<TracksDaprImp> logger, GRPCServiceProxy proxy)
     {
       _logger = logger;
-      _trackGrpcService = trackGrpcService;
+      _proxy = proxy;
     }
 
     public override async Task<InvokeResponse> OnInvoke(InvokeRequest request, ServerCallContext context)
     {
       InvokeResponse response = new();
 
-      switch (request.Method)
+      try
       {
-        case "UpdateFigures":
-          var input = request.Data.Unpack<ProtoFigures>();
-          var output = await _trackGrpcService.UpdateFigures(input, context);
-          response.Data = Any.Pack(output);
-          break;
+        Console.WriteLine($"Method {request.Method} is about to be called");
 
-        case "UpdateStates":
-          var states = request.Data.Unpack<ProtoObjectStates>();
-          var stateRet = await _trackGrpcService.UpdateStates(states, context);
-          response.Data = Any.Pack(stateRet);
-          break;
+        switch (request.Method)
+        {
+          case "UpdateFigures":
+            var input = request.Data.Unpack<ProtoFigures>();
+            var output = await _proxy.UpdateFigures(input);
+            response.Data = Any.Pack(output);
+            break;
 
-        case "UpdateTracks":
-          var tracks = request.Data.Unpack<TrackPointsProto>();
-          var tracksRet = await _trackGrpcService.UpdateTracks(tracks, context);
-          response.Data = Any.Pack(tracksRet);
-          break;
+          case "UpdateStates":
+            var states = request.Data.Unpack<ProtoObjectStates>();
+            var stateRet = await _proxy.UpdateStates(states);
+            response.Data = Any.Pack(stateRet);
+            break;
 
-        default:
-          Console.WriteLine("Method not supported");
-          break;
+          case "UpdateTracks":
+            var tracks = request.Data.Unpack<TrackPointsProto>();
+            var tracksRet = await _proxy.UpdateTracks(tracks);
+            response.Data = Any.Pack(tracksRet);
+            break;
+
+          default:
+            Console.WriteLine("Method not supported");
+            break;
+        }
       }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+
 
       return response;
     }

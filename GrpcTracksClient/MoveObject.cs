@@ -53,6 +53,11 @@ namespace GrpcTracksClient
       catch(Exception ex)
       {
         Logger.LogException(ex);
+
+        if (ex.InnerException != null)
+        {
+          Logger.LogException(ex.InnerException);
+        }
       }
 
       Task.WaitAll(listCarsTasks.ToArray());
@@ -62,12 +67,29 @@ namespace GrpcTracksClient
 
     private static async Task MovePolygon()
     {
+
+      var grpcTask = MoveGrpcPolygon();
+
+      try
+      {
+        await MoveDapr();
+      }
+      catch (Exception ex)
+      {
+        Logger.LogException(ex);
+      }
+
+      Task.WaitAll(grpcTask);
+    }
+
+    public static async Task MoveDapr()
+    {
       var figs = new ProtoFigures();
       var fig = new ProtoFig();
       figs.Figs.Add(fig);
 
-      fig.Id = "6423e54d513bfe83e9d59793";
-      fig.Name = "Test";
+      fig.Id = "6423e54d513bfe83e9d59794";
+      fig.Name = "Triangle";
       fig.Geometry = new ProtoGeometry();
       fig.Geometry.Type = "Polygon";
       figs.AddTracks = true;
@@ -80,16 +102,12 @@ namespace GrpcTracksClient
         StrVal = "lisa_alert"
       });
 
+
       fig.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = "track_name",
-        StrVal = "lisa_alert2"
+        StrVal = "lisa_alert3"
       });
-
-
-      var grpcTask = MoveGrpcPolygon(figs, fig);
-
-      fig.Geometry.Coord.Clear();
 
       fig.Geometry.Coord.Add(new ProtoCoord()
       {
@@ -108,13 +126,7 @@ namespace GrpcTracksClient
         Lat = 55.75203896803514,
         Lon = 37.618727730916895
       });
-      await MoveDapr(figs, fig);
 
-      Task.WaitAll(grpcTask);
-    }
-
-    public static async Task MoveDapr(ProtoFigures figs, ProtoFig fig)
-    {
       using var daprClient = new DaprMover();
 
       double step = 0.001;
@@ -154,8 +166,32 @@ namespace GrpcTracksClient
       }
     }
 
-    public static async Task MoveGrpcPolygon(ProtoFigures figs, ProtoFig fig)
+    public static async Task MoveGrpcPolygon()
     {
+      var figs = new ProtoFigures();
+      var fig = new ProtoFig();
+      figs.Figs.Add(fig);
+
+      fig.Id = "6423e54d513bfe83e9d59793";
+      fig.Name = "Test";
+      fig.Geometry = new ProtoGeometry();
+      fig.Geometry.Type = "Polygon";
+      figs.AddTracks = true;
+
+
+
+      fig.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "track_name",
+        StrVal = "lisa_alert"
+      });
+
+      fig.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "track_name",
+        StrVal = "lisa_alert2"
+      });
+
       Random random = new Random();
 
       var center = new ProtoCoord()

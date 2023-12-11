@@ -6,6 +6,7 @@ using Domain.StateWebSock;
 using Itinero;
 using Itinero.Algorithms.Weights;
 using LeafletAlarms.Authentication;
+using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;
 using LeafletAlarmsRouter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -88,7 +89,9 @@ namespace LeafletAlarms
       services.AddSingleton<IStateConsumer>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
       services.AddSingleton<TracksUpdateService>();
-      services.AddSingleton<StatesUpdateService>();      
+      services.AddSingleton<StatesUpdateService>();
+
+      services.AddSingleton<GRPCServiceProxy>();
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();
