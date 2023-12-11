@@ -3,7 +3,9 @@
     "GrpcTracksClient": {
       "commandName": "Project",
       "environmentVariables": {
-        "VALHALLA_PORT": "8012"
+        "VALHALLA_PORT": "8012",
+        "DAPR_CLI_PORT": "50007",
+        "GRPC_MAIN_PORT": "5000"
       }
     },
     "Docker": {

@@ -9,6 +9,25 @@ namespace GrpcDaprLib
 {
   public class DaprMover : IDisposable
   {
+    public static string GetDaprProxyUrl()
+    {
+      var allVars = Environment.GetEnvironmentVariables();
+
+      foreach (var key in allVars.Keys)
+      {
+        Console.WriteLine($"{key}- {allVars[key]}");
+      }
+      if (int.TryParse(Environment.GetEnvironmentVariable("DAPR_CLI_PORT"), out var DAPR_CLI_PORT))
+      {
+        Console.WriteLine($"DAPR_CLI_PORT port:{DAPR_CLI_PORT}");
+        var builder = new UriBuilder("http", "grpctracksclient-dapr", DAPR_CLI_PORT);
+        Console.WriteLine(builder.ToString());
+        return builder.ToString();
+      }
+      Console.Error.WriteLine("GetDaprProxyPort return empty string");
+      return string.Empty;
+    }
+
     private GrpcMover? _daprClient = null;
     public DaprMover()
     {      
@@ -31,7 +50,7 @@ namespace GrpcDaprLib
 
       if (!_daprClient.IsConnected())
       {
-        _daprClient.Connect("http://grpctracksclient-dapr:50007");
+        _daprClient.Connect(GetDaprProxyUrl());
       }
       
 

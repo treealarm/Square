@@ -15,6 +15,7 @@ namespace GrpcTracksClient
 {
   internal class UpdateTracks
   {
+    static GrpcMover _client = new GrpcMover();
     public static async Task Move()
     {
       var figs = new TrackPointsProto();
@@ -67,10 +68,12 @@ namespace GrpcTracksClient
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);
 
-      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
+      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);      
 
-      using var client = new GrpcMover();
-      client.Connect(null);
+      if (!_client.IsConnected())
+      {
+        _client.Connect(null);
+      }      
 
       foreach (var c in coords?.coord)
       {
@@ -79,7 +82,7 @@ namespace GrpcTracksClient
           f.Lat = c.Lat;
           f.Lon = c.Lon;
         }
-        var newFigs = await client.UpdateTracks(figs);
+        var newFigs = await _client.UpdateTracks(figs);
         //Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }

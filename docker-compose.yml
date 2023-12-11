@@ -14,13 +14,16 @@ services:
       - ./leaflet_data:/leaflet_data
     env_file:
       - global.env
+      - .env
 
   leafletalarms-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "5000", "-app-protocol", "grpc" ]
+    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "${GRPC_MAIN_PORT}", "-app-protocol", "grpc" ]
     depends_on:
       - leafletalarmsservice
     network_mode: "service:leafletalarmsservice"
+    env_file:
+      - .env
 
   # routermicroservice:
   #   image: ${DOCKER_REGISTRY-}routermicroservice
@@ -64,13 +67,16 @@ services:
     command: [ 
       "./daprd", 
       "--app-id", "grpctracksclient",
-      "--dapr-grpc-port","50007",
+      "--dapr-grpc-port","${DAPR_CLI_PORT}",
       ]
     depends_on:
       - grpctracksclient
     #network_mode: "service:grpctracksclient"
+    env_file:
+      - global.env
+      - .env
     ports:
-      - "50007:50007"
+      - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
   
   mongoservice:
     image : mongo

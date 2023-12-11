@@ -4,17 +4,20 @@ services:
   leafletalarmsservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8000;http://+:5000
-      - Kestrel__Endpoints__gRPC__Url=http://*:5000
+      - ASPNETCORE_URLS=http://+:8000;http://+:${GRPC_MAIN_PORT}
+      - Kestrel__Endpoints__gRPC__Url=http://*:${GRPC_MAIN_PORT}
       - Kestrel__Endpoints__gRPC__Protocols=Http2
       - Kestrel__Endpoints__Http__Url=http://*:8000
       #- REACT_APP_AUTH_SERVER_URL=http://localhost1:8080/
     ports:
       - "8000:8000"
-      - "5000:5000"
+      - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    env_file:
+      - global.env
+      - .env
 
   # routermicroservice:
   #   environment:

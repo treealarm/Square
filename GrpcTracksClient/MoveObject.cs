@@ -370,6 +370,9 @@ namespace GrpcTracksClient
     private static bool _working = true;
     private static async Task CarFigureSender()
     {
+      using var client = new GrpcMover();
+      client.Connect(null);
+
       while (_working)
       {
         ProtoFigures figs = new ProtoFigures();
@@ -384,10 +387,7 @@ namespace GrpcTracksClient
         }
 
         if (figs.Figs.Any())
-        {
-          using var client = new GrpcMover();
-          client.Connect(null);
-
+        { 
           try
           {
             figs.AddTracks = true;

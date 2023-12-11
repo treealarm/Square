@@ -10,9 +10,31 @@ namespace GrpcDaprClientLib
   {
     private GrpcChannel? _channel = null;
     private TracksGrpcServiceClient? _client = null;
-    public string GRPC_DST { get; private set; } = $"http://leafletalarmsservice:5000";
+
+    public static string GetGrpcMainUrl()
+    {
+      var allVars = Environment.GetEnvironmentVariables();
+
+      foreach (var key in allVars.Keys)
+      {
+        Console.WriteLine($"{key}- {allVars[key]}");
+      }
+      if (int.TryParse(Environment.GetEnvironmentVariable("GRPC_MAIN_PORT"), out var GRPC_MAIN_PORT))
+      {
+        Console.WriteLine($"GRPC_MAIN_PORT port:{GRPC_MAIN_PORT}");
+        var builder = new UriBuilder("http", "leafletalarmsservice", GRPC_MAIN_PORT);
+        Console.WriteLine(builder.ToString());
+        return builder.ToString();
+      }
+      Console.Error.WriteLine("GetDaprProxyPort return empty string");
+      return string.Empty;
+    }
+
+    public string GRPC_DST { get; private set; } = string.Empty;// = $"http://leafletalarmsservice:5000";
     public void Connect(string endPoint)
     {
+      GRPC_DST = GetGrpcMainUrl();
+
       if (!string.IsNullOrEmpty(endPoint))
       {
         GRPC_DST = endPoint;
