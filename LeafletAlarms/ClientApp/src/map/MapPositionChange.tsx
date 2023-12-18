@@ -12,17 +12,19 @@ export function MapPositionChange() {
 
   const parentMap = useMap();
 
-  const setMap = (map: LeafletMap) => {
-    const resizeObserver = new ResizeObserver(() => {
-      map.invalidateSize();
-    });
+  useEffect(() => {
 
     var container = document.getElementById('map-container')
-    resizeObserver.observe(container)
-  }
 
-  useEffect(() => {
-    setMap(parentMap);
+    const resizeObserver = new ResizeObserver(() => {
+      parentMap.invalidateSize();
+    });
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.unobserve(container);
+      resizeObserver.disconnect();
+    };
   }, [parentMap]);
 
   const guiStates = useSelector((state: ApplicationState) => state.guiStates);

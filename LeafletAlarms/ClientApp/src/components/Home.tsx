@@ -18,6 +18,7 @@ import { TrackProps } from "../Tree/TrackProps";
 import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
+import DiagramViewer from "./DiagramViewer";
 
 
 const LeftPanel = () => {
@@ -95,6 +96,7 @@ export function Home() {
 
   var showLeftPannel = panels.find(e => e.panelType == EPanelType.Left) != null;
   var showRightPannel = panels.find(e => e.panelType == EPanelType.Right) != null;
+  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
 
   return (
     <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
@@ -118,8 +120,8 @@ export function Home() {
           </Grid>
 
         <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
-          <MapComponent />            
-          </Grid>
+          {diagram == null ? <MapComponent /> : <DiagramViewer/>}
+        </Grid>
 
         <Grid item xs={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
               <RightPanel />

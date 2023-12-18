@@ -5,14 +5,12 @@ import { ApiDiagramsRootString } from '.';
 
 
 export interface DiagramsStates {
-  cur_diagram_id: string | null;
-  parents: TreeMarker[];
+  cur_diagram: IGetDiagramDTO | null;
   //content: TreeMarker[];
 }
 
 const unloadedState: DiagramsStates = {
-  parents: [],
-  cur_diagram_id: null
+  cur_diagram: null
 };
 
 export const fetchDiagram = createAsyncThunk<IGetDiagramDTO, string>(
@@ -36,9 +34,9 @@ const diagramsSlice = createSlice({
   initialState: unloadedState,
   reducers: {
   //  // Give case reducers meaningful past-tense "event"-style names
-  //  set_diagram(state: DiagramsStates, action: PayloadAction<string>) {
-  //    state.cur_diagram_id = action.payload;
-  //  }
+    reset_diagram(state: DiagramsStates, action: PayloadAction<null>) {
+      state.cur_diagram = null;
+    }
   }
   ,
   extraReducers: (builder) => {
@@ -48,12 +46,11 @@ const diagramsSlice = createSlice({
       })
       .addCase(fetchDiagram.fulfilled, (state, action) => {
         const { requestId } = action.meta
-        state.parents = action.payload.parents;
-        state.cur_diagram_id = action.payload.cur_diagram_id;
+        state.cur_diagram = action.payload;
       })
       .addCase(fetchDiagram.rejected, (state, action) => {
         const { requestId } = action.meta
-        state.parents = null;
+        state.cur_diagram = null;
       })
   },
 })

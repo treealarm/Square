@@ -15,7 +15,18 @@ namespace LeafletAlarms.Controllers
     )
     {
       await Task.Delay(0);
-      var retVal = new DiagramDTO();     
+      var retVal = new DiagramDTO()
+      {
+        cur_diagram_id = "111",
+        parents = new List<BaseMarkerDTO>()
+        {
+          new BaseMarkerDTO()
+          {
+            id = "777",
+            name = "Name",
+          }
+        }
+      };     
 
       return retVal;
     }

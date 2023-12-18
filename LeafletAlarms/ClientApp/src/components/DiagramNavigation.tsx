@@ -1,6 +1,4 @@
 ﻿import * as React from 'react';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import ScubaDivingIcon from '@mui/icons-material/ScubaDiving';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';

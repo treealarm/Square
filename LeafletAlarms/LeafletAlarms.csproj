@@ -44,6 +44,7 @@
   <ItemGroup>
     <None Remove="ClientApp\src\components\AccordionPanels.tsx" />
     <None Remove="ClientApp\src\components\DiagramNavigation.tsx" />
+    <None Remove="ClientApp\src\components\DiagramViewer.tsx" />
     <None Remove="ClientApp\src\components\MainToolbar.tsx" />
     <None Remove="ClientApp\src\components\PanelIcon.tsx" />
     <None Remove="ClientApp\src\components\PanelSwitch.tsx" />
@@ -66,6 +67,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\DiagramNavigation.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\DiagramViewer.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\MainToolbar.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelIcon.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
@@ -81,6 +83,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\public\svg\" />
     <Folder Include="Protos\" />
   </ItemGroup>
 
