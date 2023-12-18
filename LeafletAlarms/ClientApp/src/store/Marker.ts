@@ -344,8 +344,8 @@ export class IPanelTypes{
 
 export interface IDiagramCoord {
   type: 'Diagram';
-  top: number;
   left: number;
+  top: number;
   width: number;
   height: number;
 }

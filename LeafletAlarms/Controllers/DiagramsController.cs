@@ -25,7 +25,7 @@ namespace LeafletAlarms.Controllers
             new ObjExtraPropertyDTO()
             {
               prop_name = "__paper_width",
-              str_val = "500"
+              str_val = "1000"
             }
           }
         },
@@ -38,10 +38,10 @@ namespace LeafletAlarms.Controllers
             name = "Name",
             geometry = new DiagramCoordDTO()
             {
-              left = 10,
+              left = 50,
               top = 10,
-              width = 20,
-              height = 50
+              width = 200,
+              height = 500
             }
           },
           new DiagramDTO()
@@ -50,10 +50,10 @@ namespace LeafletAlarms.Controllers
             name = "Name1",
             geometry = new DiagramCoordDTO()
             {
-              left = 40,
+              left = 300,
               top = 10,
-              width = 20,
-              height = 50
+              width = 200,
+              height = 500
             }
           }
         }
