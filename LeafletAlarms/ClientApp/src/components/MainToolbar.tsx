@@ -13,7 +13,7 @@ import PanelSwitch from "./PanelSwitch";
 import { EPanelType } from "../store/Marker";
 import { SearchApplyButton } from "../Tree/SearchApplyButton";
 import { FlyToMyLocationButton } from "../Tree/FlyToMyLocationButton";
-import DiagramNavigation from "./DiagramNavigation";
+import DiagramNavigation from "../diagrams/DiagramNavigation";
 
 export function MainToolbar() {
   return (

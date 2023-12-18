@@ -1,6 +1,7 @@
 ﻿import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector} from "react-redux";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from '../store/configureStore';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
@@ -156,11 +157,11 @@ function MyCommonFig(props: any) {
     return null;
   }
 
-  const dispatch = useDispatch();
+  const appDispatch = useAppDispatch();
   const eventHandlers = useMemo(
     () => ({
       click(event: LeafletMouseEvent) {
-        dispatch<any>(GuiStore.actionCreators.selectTreeItem(props.marker.id));
+        appDispatch<any>(GuiStore.actionCreators.selectTreeItem(props.marker.id));
 
         var __is_diagram = getExtraProp(fig, "__is_diagram", "0");
 
@@ -201,7 +202,7 @@ function MyCommonFig(props: any) {
 
 export function LocationMarkers() {
 
-  const dispatch = useDispatch();
+  const appDispatch = useAppDispatch();
   const parentMap = useMap();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
@@ -237,7 +238,7 @@ export function LocationMarkers() {
       boundBox.property_filter = null;
     }
 
-    dispatch<any>(MarkersStore.actionCreators.requestMarkers(boundBox));
+    appDispatch<any>(MarkersStore.actionCreators.requestMarkers(boundBox));
   }
 
   useEffect(() => {
@@ -253,14 +254,14 @@ export function LocationMarkers() {
       }
       var objArray2: string[] = [];
       markers.figs?.forEach(arr => objArray2.push(arr.id));
-      dispatch<any>(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
+      appDispatch<any>(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
     }, [markers]);
 
    const mapEvents = useMapEvents({
      preclick(e: LeafletMouseEvent) {
 
        if (!selectedEditMode.edit_mode) {
-         dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+         appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
        }       
       },
 
@@ -281,12 +282,12 @@ export function LocationMarkers() {
     (marker: any, e: any) => {
       parentMap.closePopup();
       var selected_id = marker.id;
-      dispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
+      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
     }, [])
 
   useEffect(
     () => {
-      dispatch<any>(GuiStore.actionCreators.requestTreeUpdate());
+      appDispatch<any>(GuiStore.actionCreators.requestTreeUpdate());
     }, [isChanging]);
   
   useEffect(

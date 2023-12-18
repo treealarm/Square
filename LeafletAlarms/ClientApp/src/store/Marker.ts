@@ -342,7 +342,17 @@ export class IPanelTypes{
   ];
 }
 
+export interface IDiagramCoord {
+  type: 'Diagram';
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+export interface IDiagramDTO extends ICommonFig {
+  geometry: IDiagramCoord;
+}
 export interface IGetDiagramDTO {
-  cur_diagram_id: string | null;
-  parents: TreeMarker[];
+  container_diagram: IDiagramDTO | null;
+  content: IDiagramDTO[];
 }

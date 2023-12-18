@@ -1,4 +1,4 @@
-﻿import { IGetDiagramDTO, TreeMarker } from './Marker';
+﻿import { IDiagramDTO, IGetDiagramDTO, TreeMarker } from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApiDiagramsRootString } from '.';
@@ -6,11 +6,10 @@ import { ApiDiagramsRootString } from '.';
 
 export interface DiagramsStates {
   cur_diagram: IGetDiagramDTO | null;
-  //content: TreeMarker[];
 }
 
 const unloadedState: DiagramsStates = {
-  cur_diagram: null
+  cur_diagram: null,
 };
 
 export const fetchDiagram = createAsyncThunk<IGetDiagramDTO, string>(
@@ -55,7 +54,7 @@ const diagramsSlice = createSlice({
   },
 })
 
-//export const { set_diagram } = diagramsSlice.actions
+export const { reset_diagram } = diagramsSlice.actions
 export const reducer = diagramsSlice.reducer
 
 

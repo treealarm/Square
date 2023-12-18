@@ -18,7 +18,7 @@ import { TrackProps } from "../Tree/TrackProps";
 import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
-import DiagramViewer from "./DiagramViewer";
+import DiagramViewer from "../diagrams/DiagramViewer";
 
 
 const LeftPanel = () => {
