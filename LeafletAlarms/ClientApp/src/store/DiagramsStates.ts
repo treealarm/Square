@@ -1,11 +1,11 @@
-﻿import { IDiagramDTO, IGetDiagramDTO, TreeMarker } from './Marker';
+﻿import { IDiagramDTO, IGetDiagramDTO, ObjExtraPropertyDTO, TreeMarker } from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApiDiagramsRootString } from '.';
 
 
 export interface DiagramsStates {
-  cur_diagram: IGetDiagramDTO | null;
+  cur_diagram: IGetDiagramDTO | null;  
 }
 
 const unloadedState: DiagramsStates = {
@@ -16,7 +16,7 @@ export const fetchDiagram = createAsyncThunk<IGetDiagramDTO, string>(
   'diagrams/GetDiagram',
   async (diagram_id: string, thunkAPI) => {
 
-    var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagram?diagram_id=" +
+    var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagramByParent?parent_id=" +
       diagram_id, {
       method: "GET",
       headers: { "Content-type": "application/json" }
@@ -50,6 +50,7 @@ const diagramsSlice = createSlice({
       .addCase(fetchDiagram.rejected, (state, action) => {
         const { requestId } = action.meta
         state.cur_diagram = null;
+        
       })
   },
 })

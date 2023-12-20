@@ -5,7 +5,7 @@ using System;
 namespace DbLayer.Models
 {
   [BsonIgnoreExtraElements]
-  public class DBRoutLine
+  internal class DBRoutLine
   {
     public DBFigTsMeta meta { get; set; } = new DBFigTsMeta();
 

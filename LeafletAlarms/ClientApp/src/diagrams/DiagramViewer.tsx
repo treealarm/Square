@@ -22,9 +22,9 @@ export default function DiagramViewer() {
 
   var paper_width =
     parseFloat(
-      getExtraProp(diagram?.container_diagram, "__paper_width", '1000'));
+      getExtraProp(diagram?.parent, "__paper_width", '1000'));
   var paper_height = parseFloat(
-    getExtraProp(diagram?.container_diagram, "__paper_height", '1000'));
+    getExtraProp(diagram?.parent, "__paper_height", '1000'));
   //var __is_diagram = getExtraProp(objProps, "__is_diagram", "0");
 
   const appDispatch = useAppDispatch();

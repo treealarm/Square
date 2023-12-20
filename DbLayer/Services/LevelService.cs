@@ -39,12 +39,12 @@ namespace DbLayer.Services
         mongoDatabase.GetCollection<DBLevel>(geoStoreDatabaseSettings.Value.LevelCollectionName);
     }
 
-    public async Task InsertManyAsync(List<DBLevel> newObjs)
+    private async Task InsertManyAsync(List<DBLevel> newObjs)
     {
       await _collection.InsertManyAsync(newObjs);
     }
 
-    public async Task<List<DBLevel>> GetLevelsAsync()
+    private async Task<List<DBLevel>> GetLevelsAsync()
     {
       List<DBLevel> obj = null;
 

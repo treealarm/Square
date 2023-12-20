@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Diagram;
 
-namespace DbLayer.Models
+namespace DbLayer.Models.Diagrams
 {
-  [BsonIgnoreExtraElements]
-  internal class DBObjectState
+  internal class DBDiagram
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
-    public List<string> states { get; set; }
-    public DateTime timestamp { get; set; } = DateTime.UtcNow;
+    [BsonIgnoreIfNull]
+    public DBDiagramCoord geometry { get; set; }
   }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace DbLayer
 {
   [BsonIgnoreExtraElements]
-  public class DBTrackPoint
+  internal class DBTrackPoint
   {
     public DBFigTsMeta meta { get; set; } = new DBFigTsMeta();
     public DateTime timestamp { get; set; }

@@ -353,6 +353,6 @@ export interface IDiagramDTO extends ICommonFig {
   geometry: IDiagramCoord;
 }
 export interface IGetDiagramDTO {
-  container_diagram: IDiagramDTO | null;
   content: IDiagramDTO[];
+  parent: IDiagramDTO;
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Models
 {
-  public class DBObjPropsSearch
+  internal class DBObjPropsSearch
   {
     [BsonIgnoreIfNull]
     public List<DBObjExtraProperty> props { get; set; }

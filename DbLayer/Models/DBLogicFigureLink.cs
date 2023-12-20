@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Models
 {
-  public class DBLogicFigureLink
+  internal class DBLogicFigureLink
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

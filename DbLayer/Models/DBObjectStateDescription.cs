@@ -9,7 +9,7 @@ using System.Drawing;
 
 namespace DbLayer.Models
 {
-  public class DBObjectStateDescription
+  internal class DBObjectStateDescription
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

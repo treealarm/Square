@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace DbLayer.Models
 {
   [BsonIgnoreExtraElements]
-  public class DBStaticLogic
+  internal class DBStaticLogic
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

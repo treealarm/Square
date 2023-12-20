@@ -8,7 +8,7 @@ namespace Domain.Diagram
 {
   public class GetDiagramDTO
   {
-    public DiagramDTO container_diagram { get; set; }
     public List<DiagramDTO> content { get; set; }
+    public DiagramDTO parent { get; set; }
   }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Models
 {
-  public class DBLevel
+  internal class DBLevel
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

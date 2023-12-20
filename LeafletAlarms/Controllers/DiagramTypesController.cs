@@ -29,7 +29,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("CreateBasicTemplate")]
-    public async Task<List<DiagramTypeDTO>> CreateBasicTemplate([FromQuery] List<string> diagram_ids)
+    public async Task<List<DiagramTypeDTO>> CreateBasicTemplate()
     {
       List<DiagramTypeDTO> list = new List<DiagramTypeDTO>();
 

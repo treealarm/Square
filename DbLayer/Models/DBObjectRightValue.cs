@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Models
 {
-  public class DBObjectRightValue
+  internal class DBObjectRightValue
   {
     public string role { get; set; }
     public int value { get; set; }

@@ -23,5 +23,7 @@ namespace Domain.OptionsModels
         public string LogicProcessorCollectionName { get; set; } = "LogicProcessor";
         public string RightsCollectionName { get; set; } = "Rights";
         public string DiagramTypeCollectionName { get; set; } = "DiagramType";
+        public string DiagramCollectionName { get; set; } = "Diagram";
+    
   }
 }
