@@ -8,17 +8,20 @@ namespace Domain.OptionsModels
         // For example MapDatabase__DatabaseName key to replace DatabaseName
         public string ConnectionString { get; set; } = null!;
         public string DatabaseName { get; set; } = null!;
-        public string ObjectsCollectionName { get; set; } = null!;
-        public string GeoCollectionName { get; set; } = null!;
-        public string TracksCollectionName { get; set; } = null!;
-        public string RoutsCollectionName { get; set; } = null!;
 
-        public string PropCollectionName { get; set; } = null!;
-        public string LevelCollectionName { get; set; } = null!;
-        public string StateCollectionName { get; set; } = null!;
-        public string StateDescrCollectionName { get; set; } = null!;
-        public string LogicCollectionName { get; set; } = null!;
-        public string LogicProcessorCollectionName { get; set; } = null!;
-        public string RightsCollectionName { get; set; } = null!;
-    }
+
+        public string ObjectsCollectionName { get; set; } = "Objects";
+        public string GeoCollectionName { get; set; } = "Geometry";
+        public string TracksCollectionName { get; set; } = "Tracks";
+        public string RoutsCollectionName { get; set; } = "Routs";
+
+        public string PropCollectionName { get; set; } = "Properties";
+        public string LevelCollectionName { get; set; } = "Levels";
+        public string StateCollectionName { get; set; } = "States";
+        public string StateDescrCollectionName { get; set; } = "StateDescrs";
+        public string LogicCollectionName { get; set; } = "Logic";
+        public string LogicProcessorCollectionName { get; set; } = "LogicProcessor";
+        public string RightsCollectionName { get; set; } = "Rights";
+        public string DiagramTypeCollectionName { get; set; } = "DiagramType";
+  }
 }

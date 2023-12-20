@@ -18,6 +18,14 @@ namespace Domain
 
       target = JsonSerializer.Deserialize<T1>(json);
     }
+    public static T1 CopyAll<T, T1>(this T source) where T1 : new()
+    {
+      var target = new T1();
+
+      source.CopyAllTo(target);
+
+      return target;
+    }
 
     public static void CopyAllTo<T, T1>(this T source, T1 target)
     {

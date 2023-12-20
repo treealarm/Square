@@ -75,6 +75,7 @@ namespace LeafletAlarms
       services.AddSingleton<IStateService, StateService>();
       services.AddSingleton<ILogicService, LogicService>();
       services.AddSingleton<ILogicProcessorService, FAKE_Service>();
+      services.AddSingleton<IDiagramTypeService, DiagramTypeService>();      
 
       services.AddSingleton<ITrackConsumer, ConsumerService>();
       

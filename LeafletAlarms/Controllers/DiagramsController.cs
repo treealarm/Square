@@ -1,5 +1,7 @@
-﻿using Domain;
+﻿using DbLayer.Services;
+using Domain;
 using Domain.Diagram;
+using Domain.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeafletAlarms.Controllers
@@ -8,6 +10,15 @@ namespace LeafletAlarms.Controllers
   [ApiController]
   public class DiagramsController : ControllerBase
   {
+    private readonly IDiagramTypeService _diagramTypeService;
+
+    public DiagramsController(
+     IDiagramTypeService diagramTypeService
+    )
+    {
+      _diagramTypeService = diagramTypeService;
+    }
+
     [HttpGet()]
     [Route("GetDiagram")]
     public async Task<GetDiagramDTO> GetDiagram(
