@@ -42,20 +42,27 @@ namespace LeafletAlarms.Controllers
       var diagrams = await _diagramService.GetListByIdsAsync(markers.Keys.ToList());
       var props = await _mapService.GetPropsAsync(markers.Keys.ToList());
 
+      HashSet<string> dgrTypes = new HashSet<string>();
+
       foreach (var kvp in diagrams)
       {
         if (props.TryGetValue(kvp.Key, out var value))
         {
           kvp.Value.extra_props = value.extra_props;
         }
+
         if (markers.TryGetValue(kvp.Key, out var marker))
         {
           kvp.Value.name = marker.name;
           kvp.Value.parent_id = marker.parent_id;
           kvp.Value.external_type = marker.external_type;
         }
-      }
 
+        if (!string.IsNullOrEmpty(kvp.Value.dgr_type))
+        {
+          dgrTypes.Add(kvp.Value.dgr_type);
+        }        
+      }
       
       retVal.content = diagrams.Values.ToList();
 
@@ -70,7 +77,13 @@ namespace LeafletAlarms.Controllers
         };
         retVal.parent.extra_props = propsParent.FirstOrDefault().Value.extra_props;
       }
-     
+
+      if (dgrTypes.Count > 0)
+      {
+        var dgr_types = await _diagramTypeService.GetListByTypeNamesAsync(dgrTypes.ToList());
+        retVal.dgr_types = dgr_types.Values.ToList();
+      }
+
       return retVal;
     }
 
@@ -100,6 +113,7 @@ namespace LeafletAlarms.Controllers
         id = "111100000000000000000002",
         parent_id = container_diagram.id,
         name = "Name",
+        dgr_type = "rack0",
         geometry = new DiagramCoordDTO()
         {
           left = 50,
@@ -115,6 +129,7 @@ namespace LeafletAlarms.Controllers
         id = "111100000000000000000003",
         parent_id = container_diagram.id,
         name = "Name1",
+        dgr_type = "rack1",
         geometry = new DiagramCoordDTO()
         {
           left = 300,

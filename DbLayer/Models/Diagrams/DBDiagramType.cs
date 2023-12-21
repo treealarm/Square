@@ -16,7 +16,8 @@ namespace DbLayer.Models.Diagrams
     public string id { get; set; }
     public string name { get; set; }
     public string src { get; set; }
+    
     [BsonIgnoreIfNull]
-    public List<DBDiagramTypeRegion> regions { get; set; }
+    public List<DBDiagramTypeRegion> regions { get; set; }    
   }
 }

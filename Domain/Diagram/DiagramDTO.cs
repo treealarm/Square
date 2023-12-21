@@ -10,5 +10,6 @@ namespace Domain.Diagram
   public class DiagramDTO: FigureZoomedDTO
   {
     public DiagramCoordDTO geometry {  get; set; }
+    public string dgr_type { get; set; }
   }
 }

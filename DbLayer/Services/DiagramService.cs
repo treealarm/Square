@@ -115,6 +115,7 @@ namespace DbLayer.Services
       var dbo = new DBDiagram()
       {
         id = dto.id,
+        dgr_type = dto.dgr_type,
         geometry = new DBDiagramCoord(),
       };
 
@@ -136,6 +137,7 @@ namespace DbLayer.Services
         var dto = new DiagramDTO()
         {
           id = dbObj.id,
+          dgr_type = dbObj.dgr_type,
           geometry = new DiagramCoordDTO()
         };
 

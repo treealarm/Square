@@ -13,7 +13,7 @@ import * as GuiStore from '../store/GUIStates';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import DiagramElement from './DiagramElement';
+import DiagramContent from './DiagramContent';
 export default function DiagramViewer() {
 
   const [zoom, setZoom] = useState(1.0);
@@ -96,7 +96,7 @@ export default function DiagramViewer() {
 
           {
             content.map((diagram, index) =>
-              <DiagramElement parent_id={diagram.id} zoom={zoom} />
+              <DiagramContent parent_id={diagram.id} zoom={zoom} />
             )}
 
         </Box>

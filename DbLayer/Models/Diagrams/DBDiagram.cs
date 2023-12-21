@@ -14,6 +14,7 @@ namespace DbLayer.Models.Diagrams
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string id { get; set; }
+    public string dgr_type { get; set; }
     [BsonIgnoreIfNull]
     public DBDiagramCoord geometry { get; set; }
   }

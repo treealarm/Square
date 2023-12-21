@@ -10,5 +10,6 @@ namespace Domain.Diagram
   {
     public List<DiagramDTO> content { get; set; }
     public DiagramDTO parent { get; set; }
+    public List<DiagramTypeDTO> dgr_types { get; set; }
   }
 }

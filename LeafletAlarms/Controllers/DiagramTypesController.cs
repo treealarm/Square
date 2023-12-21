@@ -42,6 +42,7 @@ namespace LeafletAlarms.Controllers
           name = $"rack{i}",
           regions = new List<DiagramTypeRegionDTO>()
         };
+
         diagramType.regions.Add(new DiagramTypeRegionDTO()
         {
           id = "1",
@@ -53,6 +54,7 @@ namespace LeafletAlarms.Controllers
             width = 0.8
           }
         });
+
         diagramType.regions.Add(new DiagramTypeRegionDTO()
         {
           id = "2",
@@ -64,6 +66,7 @@ namespace LeafletAlarms.Controllers
             width = 0.8
           }
         });
+
         list.Add(diagramType);
       }
       

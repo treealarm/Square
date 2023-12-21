@@ -343,7 +343,6 @@ export class IPanelTypes{
 }
 
 export interface IDiagramCoord {
-  type: 'Diagram';
   left: number;
   top: number;
   width: number;
@@ -351,8 +350,22 @@ export interface IDiagramCoord {
 }
 export interface IDiagramDTO extends ICommonFig {
   geometry: IDiagramCoord;
+  dgr_type: string;
 }
+
+export interface IDiagramTypeRegionDTO {
+  id: string;
+  geometry: IDiagramCoord;
+}
+export interface IDiagramTypeDTO {
+  id: string;
+  name: string
+  src: string;
+  regions: IDiagramTypeRegionDTO[];
+}
+
 export interface IGetDiagramDTO {
   content: IDiagramDTO[];
   parent: IDiagramDTO;
+  dgr_types: IDiagramTypeDTO[];
 }
