@@ -18,6 +18,14 @@ namespace Domain.ServiceInterfaces
       string end_id,
       int count
     );
+
+    Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdsAsync(
+      List<string> parent_ids,
+      string start_id,
+      string end_id,
+      int count
+    );
+
     Task<Dictionary<string, BaseMarkerDTO>> GetByNameAsync(string name);
     Task<Dictionary<string, BaseMarkerDTO>> GetTopChildren(List<string> parentIds);
     Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id);

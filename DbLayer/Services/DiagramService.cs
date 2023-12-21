@@ -139,7 +139,7 @@ namespace DbLayer.Services
           geometry = new DiagramCoordDTO()
         };
 
-        dbo.CopyAllTo(dto.geometry);
+        dbObj.geometry?.CopyAllTo(dto.geometry);
 
         newObjs.Add(dto.id, dto);
       }

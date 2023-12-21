@@ -13,6 +13,7 @@ import * as GuiStore from '../store/GUIStates';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import DiagramElement from './DiagramElement';
 export default function DiagramViewer() {
 
   const [zoom, setZoom] = useState(1.0);
@@ -50,7 +51,7 @@ export default function DiagramViewer() {
   if (diagram == null) {
     return null;
   }
-
+  var content = diagram.content.filter(e => e.parent_id == diagram.parent.id);
 
   return (
     <Box
@@ -94,72 +95,8 @@ export default function DiagramViewer() {
           }}>
 
           {
-            diagram?.content.map((diagram, index) =>
-              <React.Fragment>
-
-
-                <Box onClick={() => { selectItem(diagram?.id) }}
-                  sx={{// Main object
-                    border: 0,
-                    padding: 0,
-                    margin: 0,
-                    position: 'absolute',
-                    
-                    top: diagram.geometry.top * zoom + 'px', // Сдвиг от верхнего края
-                    left: diagram.geometry.left * zoom + 'px', // Сдвиг от левого края
-                    height: diagram.geometry.height * zoom + 'px',
-                    width: diagram.geometry.width * zoom + 'px',
-                    backgroundColor: 'transparent',
-                    '&:hover': {
-                      cursor: 'pointer'
-                    },
-                    display: 'flex', // Добавляем свойство display и flex-direction
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      border: 1,
-                      padding: 0,
-                      margin: 0,
-                      position: 'absolute',
-
-                      top: 22 * zoom + 'px', // Сдвиг от верхнего края
-                      left: 32 * zoom + 'px', // Сдвиг от левого края
-                      height: 40 * zoom + 'px',
-                      width: 158 * zoom + 'px',
-                      backgroundColor: 'transparent',
-                      display: 'flex', // Добавляем свойство display и flex-direction
-                      flexDirection: 'column',
-                    }}
-                  >
-                    {
-                      <img src="svg/cisco.svg"
-                        style={{
-                          border: 0,
-                          padding: 0,
-                          margin: 0,
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'fill', // Заполняет SVG без сохранения пропорций
-                        }} />
-                    }
-
-                  </Box>
-
-                  <img src="svg/rack.svg"
-                    style={{
-                      border: 0, 
-                      padding: 0,
-                      margin: 0,
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'fill', // Заполняет SVG без сохранения пропорций
-                    }} />
-
-                </Box>
-                
-              </React.Fragment>
+            content.map((diagram, index) =>
+              <DiagramElement parent_id={diagram.id} zoom={zoom} />
             )}
 
         </Box>

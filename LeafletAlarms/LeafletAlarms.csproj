@@ -42,6 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\diagrams\DiagramElement.tsx" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
@@ -50,6 +54,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramElement.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramNavigation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramViewer.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\MainToolbar.tsx" />

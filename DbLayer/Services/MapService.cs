@@ -88,9 +88,8 @@ namespace DbLayer.Services
       return ConvertMarkerDB2DTO(result);
     }
 
-
-    public async Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdAsync(
-      string parent_id,
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdsAsync(
+      List<string> parent_ids,
       string start_id,
       string end_id,
       int count
@@ -101,7 +100,7 @@ namespace DbLayer.Services
       if (start_id != null)
       {
         var filter = Builders<DBMarker>.Filter.Gte("_id", new ObjectId(start_id))
-          & Builders<DBMarker>.Filter.Eq("parent_id", parent_id);
+          & Builders<DBMarker>.Filter.In("parent_id", parent_ids);
 
         retVal = await _markerCollection
           .Find(filter)
@@ -111,7 +110,7 @@ namespace DbLayer.Services
       else if (end_id != null)
       {
         var filter = Builders<DBMarker>.Filter.Lte("_id", new ObjectId(end_id))
-          & Builders<DBMarker>.Filter.Eq("parent_id", parent_id);
+          & Builders<DBMarker>.Filter.In("parent_id", parent_ids);
 
         retVal = await _markerCollection
           .Find(filter)
@@ -125,12 +124,22 @@ namespace DbLayer.Services
       else
       {
         retVal = await _markerCollection
-                .Find(x => x.parent_id == parent_id)
+                .Find(x => parent_ids.Contains(x.parent_id))
                 .Limit(count)
                 .ToListAsync();
       }
-      
+
       return ConvertMarkerListDB2DTO(retVal);
+    }
+
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdAsync(
+      string parent_id,
+      string start_id,
+      string end_id,
+      int count
+    )
+    {
+      return await GetByParentIdsAsync(new List<string>() { parent_id }, start_id, end_id, count);
     }
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetByNameAsync(string name)

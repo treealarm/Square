@@ -26,11 +26,19 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetDiagramByParent")]
-    public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id)
+    public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id, int level = 1)
     {
       var retVal = new GetDiagramDTO();
 
       var markers = await _mapService.GetByParentIdAsync(parent_id, null, null, 1000);
+      var children = markers;
+
+      for (int l = 0; l < level; ++l)
+      {
+        children = await _mapService.GetByParentIdsAsync(children.Values.Select(m => m.id).ToList(), null, null, 1000);
+        markers = markers.Union(children).ToDictionary();
+      }
+
       var diagrams = await _diagramService.GetListByIdsAsync(markers.Keys.ToList());
       var props = await _mapService.GetPropsAsync(markers.Keys.ToList());
 
