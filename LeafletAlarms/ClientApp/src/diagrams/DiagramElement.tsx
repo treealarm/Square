@@ -37,6 +37,7 @@ export default function DiagramElement(props: IDiagramElement) {
     diagram_type = diagrams.dgr_types.find(t => t.name == diagram.dgr_type);
   }
   var zoom = props.zoom;
+  var content = diagrams.content.filter(e => e.parent_id == diagram.id);
 
   return (
     <React.Fragment>
@@ -69,6 +70,13 @@ export default function DiagramElement(props: IDiagramElement) {
             height: '100%',
             objectFit: 'fill', // Заполняет SVG без сохранения пропорций
           }} />
+
+        {
+          content?.map((dgr, index) =>
+            <React.Fragment>
+              <DiagramElement diagram={dgr} zoom={zoom} />
+            </React.Fragment>
+          )}        
 
       </Box>
 

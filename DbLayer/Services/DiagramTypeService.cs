@@ -122,14 +122,17 @@ namespace DbLayer.Services
         name = dto.name
       };
 
-      foreach (var item in dto.regions)
+      if (dto.regions != null)
       {
-        dbo.regions.Add(new DBDiagramTypeRegion() 
+        foreach (var item in dto.regions)
         {
-          geometry = item.geometry.CopyAll<DiagramCoordDTO, DBDiagramCoord>(),
-          id = item.id
-        });
-      }
+          dbo.regions.Add(new DBDiagramTypeRegion()
+          {
+            geometry = item.geometry.CopyAll<DiagramCoordDTO, DBDiagramCoord>(),
+            id = item.id
+          });
+        }
+      }      
 
       return dbo;
     }

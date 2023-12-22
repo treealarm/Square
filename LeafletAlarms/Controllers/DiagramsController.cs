@@ -26,7 +26,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetDiagramByParent")]
-    public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id, int level = 1)
+    public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id, int level = 2)
     {
       var retVal = new GetDiagramDTO();
 
@@ -139,6 +139,22 @@ namespace LeafletAlarms.Controllers
         }
       };
       retVal1.Add(rack1 );
+
+      var cisco1 = new DiagramDTO()
+      {
+        id = "111100000000000000000004",
+        parent_id = rack0.id,
+        name = "Cisco1",
+        dgr_type = "cisco",
+        geometry = new DiagramCoordDTO()
+        {
+          left = 20,
+          top = 10,
+          width = 160,
+          height = 20
+        }
+      };
+      retVal1.Add(cisco1);
 
       await _diagramService.UpdateListAsync( retVal1 );
       await _mapService.UpdateHierarchyAsync(retVal1);

@@ -69,7 +69,15 @@ namespace LeafletAlarms.Controllers
 
         list.Add(diagramType);
       }
-      
+
+      var diagramTypeDevice = new DiagramTypeDTO()
+      {
+        id = "6582fbd7203a7d44110c8d1f",
+        src = "svg/cisco.svg",
+        name = $"cisco",
+      };
+      list.Add(diagramTypeDevice);
+
       await _diagramTypeService.UpdateListAsync(list);
       return list;
     }

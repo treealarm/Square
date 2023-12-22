@@ -29,9 +29,9 @@ export default function DiagramContent(props: IDiagramContent) {
     <React.Fragment>
 
       {
-        content.map((diagram, index) =>
+        content.map((dgr, index) =>
           <React.Fragment>
-            <DiagramElement diagram={diagram} zoom={zoom} />
+            <DiagramElement diagram={dgr} zoom={zoom} />
           </React.Fragment>
         )}
 
