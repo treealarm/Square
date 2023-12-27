@@ -18,12 +18,13 @@ export default function DiagramViewer() {
 
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  var parent = diagram.content.find(e => e.id == diagram.parent_id);
 
   var paper_width =
     parseFloat(
-      getExtraProp(diagram?.parent, "__paper_width", '1000'));
+      getExtraProp(parent, "__paper_width", '1000'));
   var paper_height = parseFloat(
-    getExtraProp(diagram?.parent, "__paper_height", '1000'));
+    getExtraProp(parent, "__paper_height", '1000'));
   //var __is_diagram = getExtraProp(objProps, "__is_diagram", "0");
 
   const appDispatch = useAppDispatch();
@@ -49,7 +50,8 @@ export default function DiagramViewer() {
   if (diagram == null) {
     return null;
   }
-  var content = diagram.content.filter(e => e.parent_id == diagram.parent.id);
+  var content = diagram.content.filter(e => e.parent_id == diagram.parent_id);
+  
 
   return (
     <Box
@@ -80,6 +82,8 @@ export default function DiagramViewer() {
       >
         <Box
           onWheel={handleWheelEvent}
+          onClick={() => { //selectItem(diagram?.parent_id) 
+          }}
           sx={{// Paper
             position: 'absolute',
             border: 0,
@@ -94,7 +98,7 @@ export default function DiagramViewer() {
 
           {
             content.map((dgr, index) =>
-              <DiagramElement diagram={dgr} parent={diagram.parent} zoom={zoom} />
+              <DiagramElement diagram={dgr} parent={parent} zoom={zoom} />
             )}
 
         </Box>

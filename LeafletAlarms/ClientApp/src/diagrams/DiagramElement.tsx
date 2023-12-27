@@ -19,6 +19,8 @@ export default function DiagramElement(props: IDiagramElement) {
 
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+
   const diagram = props.diagram
   const parent = props.parent
 
@@ -62,7 +64,8 @@ export default function DiagramElement(props: IDiagramElement) {
       }
     }
   }
-  else {
+
+  if (coord == null) {
     coord = 
     {
       top: diagram.geometry.top,
@@ -77,7 +80,7 @@ export default function DiagramElement(props: IDiagramElement) {
     <React.Fragment>
       <Box onClick={() => { selectItem(diagram?.id) }}
         sx={{// Main object
-          border: 0,
+          border: selected_id == diagram?.id ? 2 : 0,
           padding: 0,
           margin: 0,
           position: 'absolute',

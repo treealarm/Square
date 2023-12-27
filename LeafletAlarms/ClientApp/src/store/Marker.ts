@@ -367,6 +367,6 @@ export interface IDiagramTypeDTO {
 
 export interface IGetDiagramDTO {
   content: IDiagramDTO[];
-  parent: IDiagramDTO;
   dgr_types: IDiagramTypeDTO[];
+  parent_id: string;
 }

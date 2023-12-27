@@ -9,9 +9,6 @@ import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
 import { TrackViewer } from "../tracks/TrackViewer";
 import L from "leaflet";
-import { createLayerComponent, LayerProps } from '@react-leaflet/core'
-import { ReactNode } from "react";
-
 
 
 

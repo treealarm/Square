@@ -9,7 +9,7 @@ namespace Domain.Diagram
   public class GetDiagramDTO
   {
     public List<DiagramDTO> content { get; set; }
-    public DiagramDTO parent { get; set; }
     public List<DiagramTypeDTO> dgr_types { get; set; }
+    public string parent_id { get; set; }
   }
 }
