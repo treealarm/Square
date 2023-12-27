@@ -3,11 +3,13 @@
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TypeScriptTarget>ES6</TypeScriptTarget>
     <TypeScriptOutDir>ts_out</TypeScriptOutDir>
+    <TypeScriptSourceRoot></TypeScriptSourceRoot>
   </PropertyGroup>
 
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <TypeScriptTarget>ES6</TypeScriptTarget>
     <TypeScriptOutDir>ts_out</TypeScriptOutDir>
+    <TypeScriptSourceRoot></TypeScriptSourceRoot>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -52,7 +54,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\src\diagrams\DiagramContent.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramElement.tsx" />
   </ItemGroup>
 
@@ -65,7 +66,6 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramContent.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramElement.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramNavigation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramViewer.tsx" />

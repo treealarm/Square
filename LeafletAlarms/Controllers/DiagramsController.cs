@@ -1,7 +1,9 @@
 ﻿using DbLayer.Services;
 using Domain;
 using Domain.Diagram;
+using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
+using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeafletAlarms.Controllers
@@ -13,15 +15,19 @@ namespace LeafletAlarms.Controllers
     private readonly IDiagramTypeService _diagramTypeService;
     private readonly IDiagramService _diagramService;
     private readonly IMapService _mapService;
+    private readonly TracksUpdateService _trackUpdateService;
+
     public DiagramsController(
      IDiagramTypeService diagramTypeService,
      IDiagramService diagramService,
-     IMapService mapService
+     IMapService mapService,
+     TracksUpdateService trackUpdateService
     )
     {
       _diagramTypeService = diagramTypeService;
       _diagramService = diagramService;
       _mapService = mapService;
+      _trackUpdateService = trackUpdateService;
     }
 
     [HttpGet()]
@@ -87,26 +93,69 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
+    private static FiguresDTO GetDiaFig()
+    {
+      var figs = new FiguresDTO();
+      var fig = new FigureGeoDTO();
+      figs.figs.Add(fig);
+
+      fig.id = "111100000000000000000001";
+      fig.name = "Diagram";
+      var geo = new GeometryPolygonDTO();
+
+      fig.geometry = geo;
+      fig.geometry.type = "Polygon";
+
+      fig.extra_props = new List<ObjExtraPropertyDTO>()
+        {
+          new ObjExtraPropertyDTO()
+          {
+            prop_name = "__paper_width",
+            str_val = "1000"
+          },
+          new ObjExtraPropertyDTO()
+          {
+            prop_name = "__paper_height",
+            str_val = "1000"
+          }
+          ,
+          new ObjExtraPropertyDTO()
+          {
+            prop_name = "__is_diagram",
+            str_val = "1"
+          }
+        };
+
+      geo.coord.Add(new Geo2DCoordDTO()
+      {
+        Lat = 55.7566737398449,
+        Lon = 37.60722931951715
+      });
+
+      geo.coord.Add(new Geo2DCoordDTO()
+      {
+        Lat = 55.748852242908995,
+        Lon = 37.60259563134112
+      });
+
+      geo.coord.Add(new Geo2DCoordDTO()
+      {
+        Lat = 55.75203896803514,
+        Lon = 37.618727730916895
+      });
+
+      return figs;
+    }
+
     [HttpGet()]
     [Route("CreateBasicTemplate")]
     public async Task<List<DiagramDTO>> CreateBasicTemplate()
     {
       var retVal1 = new List<DiagramDTO>();
 
-      var container_diagram = new DiagramDTO()
-      {
-        id = "111100000000000000000001",
-        parent_id = "655f41cfa139722c4f07a7b7",
-        extra_props = new List<ObjExtraPropertyDTO>()
-        {
-          new ObjExtraPropertyDTO()
-          {
-            prop_name = "__paper_width",
-            str_val = "1000"
-          }
-        }
-      };
-      retVal1.Add( container_diagram );
+      var figs = GetDiaFig();
+      var container_diagram = GetDiaFig().figs.First();
+      await _trackUpdateService.UpdateFigures(figs);
 
       var rack0 = new DiagramDTO()
       {
@@ -146,15 +195,19 @@ namespace LeafletAlarms.Controllers
         parent_id = rack0.id,
         name = "Cisco1",
         dgr_type = "cisco",
-        geometry = new DiagramCoordDTO()
-        {
-          left = 20,
-          top = 10,
-          width = 160,
-          height = 20
-        }
+        region_id = "2",
       };
       retVal1.Add(cisco1);
+
+      var cisco2 = new DiagramDTO()
+      {
+        id = "111100000000000000000005",
+        parent_id = rack1.id,
+        name = "Cisco2",
+        dgr_type = "cisco",
+        region_id = "1",
+      };
+      retVal1.Add(cisco2);
 
       await _diagramService.UpdateListAsync( retVal1 );
       await _mapService.UpdateHierarchyAsync(retVal1);

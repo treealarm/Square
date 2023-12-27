@@ -49,8 +49,8 @@ namespace LeafletAlarms.Controllers
           geometry = new DiagramCoordDTO()
           {
             top = 0.5,
-            left = 0.1,
-            height = 0.1,
+            left = 0.155,
+            height = 0.05,
             width = 0.8
           }
         });
@@ -61,8 +61,8 @@ namespace LeafletAlarms.Controllers
           geometry = new DiagramCoordDTO()
           {
             top = 0.7,
-            left = 0.1,
-            height = 0.1,
+            left = 0.155,
+            height = 0.05,
             width = 0.8
           }
         });

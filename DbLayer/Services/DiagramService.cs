@@ -116,6 +116,7 @@ namespace DbLayer.Services
       {
         id = dto.id,
         dgr_type = dto.dgr_type,
+        region_id = dto.region_id,
         geometry = new DBDiagramCoord(),
       };
 
@@ -138,7 +139,8 @@ namespace DbLayer.Services
         {
           id = dbObj.id,
           dgr_type = dbObj.dgr_type,
-          geometry = new DiagramCoordDTO()
+          geometry = new DiagramCoordDTO(),
+          region_id = dbObj.region_id
         };
 
         dbObj.geometry?.CopyAllTo(dto.geometry);

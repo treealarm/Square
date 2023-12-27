@@ -3,7 +3,7 @@ import "./custom.css";
 
 import { Layout } from "./components/Layout";
 import { Home } from "./components/Home";
-import { Box, createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material";
 import * as RightsStore from './store/RightsStates';
 import UserService from "./auth/UserService";
 

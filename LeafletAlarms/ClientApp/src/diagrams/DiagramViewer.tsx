@@ -1,19 +1,17 @@
 ﻿import * as React from 'react';
-import { WheelEvent, WheelEventHandler } from 'react';
-import ScubaDivingIcon from '@mui/icons-material/ScubaDiving';
+import { WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
 import { getExtraProp } from '../store/Marker';
 
-import * as DiagramsStore from '../store/DiagramsStates';
 import { useAppDispatch } from '../store/configureStore';
 import { useCallback, useState } from 'react';
-import { Box, ButtonGroup, IconButton, SpeedDial, SpeedDialAction, SpeedDialIcon, Toolbar, Tooltip } from '@mui/material';
+import { Box, ButtonGroup, IconButton} from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import DiagramContent from './DiagramContent';
+import DiagramElement from './DiagramElement';
 export default function DiagramViewer() {
 
   const [zoom, setZoom] = useState(1.0);
@@ -95,8 +93,8 @@ export default function DiagramViewer() {
           }}>
 
           {
-            content.map((diagram, index) =>
-              <DiagramContent parent_id={diagram.id} zoom={zoom} />
+            content.map((dgr, index) =>
+              <DiagramElement diagram={dgr} parent={diagram.parent} zoom={zoom} />
             )}
 
         </Box>

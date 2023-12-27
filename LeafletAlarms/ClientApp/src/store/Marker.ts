@@ -351,6 +351,7 @@ export interface IDiagramCoord {
 export interface IDiagramDTO extends ICommonFig {
   geometry: IDiagramCoord;
   dgr_type: string;
+  region_id: string;
 }
 
 export interface IDiagramTypeRegionDTO {

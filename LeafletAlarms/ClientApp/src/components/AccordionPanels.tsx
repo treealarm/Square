@@ -1,14 +1,11 @@
 ﻿import * as React from "react";
 import {
-  Accordion, AccordionDetails, AccordionSummary,
   Box,
-  Card,
   IconButton, Tooltip, Typography
 } from "@mui/material";
 import { TogglePanelButton } from "./TogglePanelButton";
 
 import CloseIcon from "@mui/icons-material/Close";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { useAppDispatch } from "../store/configureStore";
 import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";

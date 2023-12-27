@@ -1,16 +1,17 @@
 ﻿import * as React from 'react';
 
-import { ApplicationState } from '../store';
+import { ApplicationState } from '../store/index';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../store/configureStore';
 import { useCallback } from 'react';
 import { Box } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
-import { IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
+import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
 
 interface IDiagramElement {
   diagram: IDiagramDTO;
+  parent: IDiagramDTO;
   zoom: number;
 }
 
@@ -19,6 +20,7 @@ export default function DiagramElement(props: IDiagramElement) {
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
   const diagram = props.diagram
+  const parent = props.parent
 
   const appDispatch = useAppDispatch();
   const selectItem = useCallback(
@@ -39,6 +41,38 @@ export default function DiagramElement(props: IDiagramElement) {
   var zoom = props.zoom;
   var content = diagrams.content.filter(e => e.parent_id == diagram.id);
 
+  var coord: IDiagramCoord = null;
+
+  if (diagram.region_id != null) {
+    var parent_type: IDiagramTypeDTO = diagrams.dgr_types.find(t => t.name == parent.dgr_type);
+
+    if (parent_type != null) {
+      var region = parent_type.regions.find(r => r.id == diagram.region_id);
+
+      if (region != null) {
+        var w = parent.geometry.width;
+        var h = parent.geometry.height;
+        coord =
+        {
+          top: h*region.geometry.top,
+          left: w*region.geometry.left,
+          height: h*region.geometry.height,
+          width: w*region.geometry.width
+        };
+      }
+    }
+  }
+  else {
+    coord = 
+    {
+      top: diagram.geometry.top,
+      left: diagram.geometry.left,
+      height: diagram.geometry.height,
+      width: diagram.geometry.width
+    };
+  }
+
+
   return (
     <React.Fragment>
       <Box onClick={() => { selectItem(diagram?.id) }}
@@ -48,10 +82,10 @@ export default function DiagramElement(props: IDiagramElement) {
           margin: 0,
           position: 'absolute',
 
-          top: diagram.geometry.top * zoom + 'px', // Сдвиг от верхнего края
-          left: diagram.geometry.left * zoom + 'px', // Сдвиг от левого края
-          height: diagram.geometry.height * zoom + 'px',
-          width: diagram.geometry.width * zoom + 'px',
+          top: coord.top * zoom + 'px', // Сдвиг от верхнего края
+          left: coord.left * zoom + 'px', // Сдвиг от левого края
+          height: coord.height * zoom + 'px',
+          width: coord.width * zoom + 'px',
           backgroundColor: 'transparent',
           '&:hover': {
             cursor: 'pointer'
@@ -74,7 +108,7 @@ export default function DiagramElement(props: IDiagramElement) {
         {
           content?.map((dgr, index) =>
             <React.Fragment>
-              <DiagramElement diagram={dgr} zoom={zoom} />
+              <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} />
             </React.Fragment>
           )}        
 
