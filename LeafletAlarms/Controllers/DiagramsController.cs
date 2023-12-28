@@ -89,6 +89,16 @@ namespace LeafletAlarms.Controllers
         retVal.dgr_types = dgr_types.Values.ToList();
       }
 
+      // Fill out parents.
+      var parents = await _mapService.GetByChildIdAsync(parent_id);
+
+      retVal.parents = new List<BaseMarkerDTO>();
+
+      foreach (var parent in parents)
+      {
+        retVal.parents.Insert(0, parent);
+      }
+
       return retVal;
     }
 

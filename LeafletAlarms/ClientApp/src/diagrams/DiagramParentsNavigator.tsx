@@ -5,38 +5,47 @@ import Box from '@mui/material/Box';
 
 import { useSelector } from 'react-redux';
 
-import * as TreeStore from '../store/TreeStates';
+import * as DiagramsStore from '../store/DiagramsStates';
 import { TreeMarker } from '../store/Marker';
 import { ApplicationState } from '../store';
 import { useAppDispatch } from '../store/configureStore';
 
-export default function TabControl() {
+interface IDiagramParentsNavigator {
+  parent_list: TreeMarker[];
+  parent_id: string;
+}
+export default function DiagramParentsNavigator(props: IDiagramParentsNavigator) {
 
-  const treeState = useSelector((state: ApplicationState) => state?.treeStates);
-  const parent_list = treeState.parents;
+  const parent_list = props.parent_list;
 
-  let curMarker = parent_list.find((element: any) => {
-    return element?.id == treeState?.parent_id;
+  let curMarker = parent_list?.find((element: any) => {
+    return element?.id == props?.parent_id;
   });
 
   curMarker = curMarker == undefined ? null : curMarker;
   const appDispatch = useAppDispatch();
 
-  const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker|null) => {
-    appDispatch<any>(TreeStore.actionCreators.getByParent(newValue?.id, null, null));
+  const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker | null) => {
+    if (newValue?.id == null) {
+      appDispatch<any>(DiagramsStore.reset_diagram());
+      return;
+    }
+    appDispatch<any>(DiagramsStore.fetchDiagram(newValue?.id));
   };
-  
 
+  if (parent_list == null) {
+    return null;
+  }
   return (
     <Box sx={{
-      backgroundColor: '#dca',
+      backgroundColor: '#bbbbbb',
       flexGrow: 1,
       display: 'flex'
     }}
-      >
+    >
       <Tabs
         value={curMarker}
-        onChange={handleChange}        
+        onChange={handleChange}
         variant='scrollable'
         scrollButtons
         allowScrollButtonsMobile

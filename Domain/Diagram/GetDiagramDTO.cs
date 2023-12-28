@@ -11,5 +11,6 @@ namespace Domain.Diagram
     public List<DiagramDTO> content { get; set; }
     public List<DiagramTypeDTO> dgr_types { get; set; }
     public string parent_id { get; set; }
+    public List<BaseMarkerDTO> parents { get; set; }
   }
 }
