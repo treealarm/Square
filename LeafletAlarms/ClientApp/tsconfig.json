@@ -2,10 +2,12 @@
   "compileOnSave": true,
 
   "compilerOptions": {
+    "outDir": "tsout",
+
     "target": "ES6",
     "allowJs": true,
     "sourceMap": true,
-    "outDir": "ts_out",
+
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,

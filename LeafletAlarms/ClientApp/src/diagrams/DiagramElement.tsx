@@ -64,17 +64,17 @@ export default function DiagramElement(props: IDiagramElement) {
         var h = parent.geometry.height;
         coord =
         {
-          top: h*region.geometry.top,
-          left: w*region.geometry.left,
-          height: h*region.geometry.height,
-          width: w*region.geometry.width
+          top: h * region.geometry.top,
+          left: w * region.geometry.left,
+          height: h * region.geometry.height,
+          width: w * region.geometry.width
         };
       }
     }
   }
 
   if (coord == null) {
-    coord = 
+    coord =
     {
       top: diagram.geometry.top,
       left: diagram.geometry.left,
@@ -87,9 +87,9 @@ export default function DiagramElement(props: IDiagramElement) {
   return (
     <React.Fragment>
       <Box
-        key={ "box in element"}
+        key={"box in element"}
         onClick={handleClick//() => { selectItem(diagram?.id) }
-      }
+        }
         sx={{// Main object
           boxShadow: selected_id == diagram?.id ? '0 0 15px 0px rgba(0,255,0,0.9)' : null,
           padding: 0,
@@ -122,8 +122,8 @@ export default function DiagramElement(props: IDiagramElement) {
 
         {
           content?.map((dgr, index) =>
-              <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} z_index={props.z_index + 1} key={dgr?.id } />
-          )}        
+            <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} z_index={props.z_index + 1} key={dgr?.id} />
+          )}
 
       </Box>
 
