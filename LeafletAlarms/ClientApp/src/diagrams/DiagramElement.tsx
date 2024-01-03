@@ -13,6 +13,7 @@ interface IDiagramElement {
   diagram: IDiagramDTO;
   parent: IDiagramDTO;
   zoom: number;
+  z_index: number;
 }
 
 export default function DiagramElement(props: IDiagramElement) {
@@ -25,9 +26,16 @@ export default function DiagramElement(props: IDiagramElement) {
   const parent = props.parent
 
   const appDispatch = useAppDispatch();
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    selectItem(diagram?.id);
+  };
+
   const selectItem = useCallback(
     (diagram_id: string) => {
       appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram_id));
+      console.log("selecting diagram:", diagram_id);
     }, [objProps]);
 
 
@@ -78,13 +86,13 @@ export default function DiagramElement(props: IDiagramElement) {
 
   return (
     <React.Fragment>
-      <Box onClick={() => { selectItem(diagram?.id) }}
+      <Box onClick={handleClick//() => { selectItem(diagram?.id) }
+      }
         sx={{// Main object
-          border: selected_id == diagram?.id ? 2 : 0,
+          boxShadow: selected_id == diagram?.id ? '0 0 15px 0px rgba(0,255,0,0.9)' : null,
           padding: 0,
           margin: 0,
           position: 'absolute',
-
           top: coord.top * zoom + 'px', // Сдвиг от верхнего края
           left: coord.left * zoom + 'px', // Сдвиг от левого края
           height: coord.height * zoom + 'px',
@@ -111,7 +119,7 @@ export default function DiagramElement(props: IDiagramElement) {
         {
           content?.map((dgr, index) =>
             <React.Fragment>
-              <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} />
+              <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} z_index={props.z_index+1} />
             </React.Fragment>
           )}        
 

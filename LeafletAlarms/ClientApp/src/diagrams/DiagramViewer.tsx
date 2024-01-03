@@ -5,18 +5,18 @@ import { useSelector } from 'react-redux';
 import { getExtraProp } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
-import { useCallback, useState } from 'react';
+import {  useState } from 'react';
 import { Box, ButtonGroup, IconButton} from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DiagramElement from './DiagramElement';
+import DiagramGray from './DiagramGray';
 export default function DiagramViewer() {
 
   const [zoom, setZoom] = useState(1.0);
 
-  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
   var parent = diagram.content.find(e => e.id == diagram.parent_id);
 
@@ -28,24 +28,26 @@ export default function DiagramViewer() {
   //var __is_diagram = getExtraProp(objProps, "__is_diagram", "0");
 
   const appDispatch = useAppDispatch();
-  //const setDiagram = useCallback(
-  //  (diagram_id: string) => {
-  //    appDispatch<any>(DiagramsStore.fetchDiagram(diagram_id));
-  //  }, [objProps]);
 
 
-  const selectItem = useCallback(
-    (diagram_id: string) => {
-      //appDispatch<any>(DiagramsStore.reset_diagram(null));
-      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram_id));
-    }, [objProps]);
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+  };
 
   const handleWheelEvent = (e: WheelEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     var newZ = zoom + ((e.deltaY) / Math.abs(e.deltaY)) * -0.1
     setZoom(newZ);
     console.log("ZOOM", newZ)
   };
+
+  function handleScrollCapture(event:any) {
+    event.stopPropagation(); // Это предотвратит дальнейшее распространение события прокрутки
+    event.preventDefault();
+    console.log('Scroll event captured!');
+    // Ваша логика обработки события прокрутки
+  }
 
   if (diagram == null) {
     return null;
@@ -55,6 +57,8 @@ export default function DiagramViewer() {
 
   return (
     <Box
+      onWheel={handleWheelEvent}
+      
       sx={{
         width: '100%',
         height: '100%',
@@ -67,6 +71,7 @@ export default function DiagramViewer() {
       }}
     >
       <Box
+        
         sx={{
           width: '100%',
           height: '100%',
@@ -81,31 +86,32 @@ export default function DiagramViewer() {
         }}
       >
         <Box
-          onWheel={handleWheelEvent}
-          onClick={() => { //selectItem(diagram?.parent_id) 
-          }}
+          
+          onClick={handleClick}
           sx={{// Paper
             position: 'absolute',
             border: 0,
             padding: 0,
             margin: 0,
             top: '0px', // Сдвиг от верхнего края
-            left: '0px', // Сдвиг от левого края
+            left: '35px', // Сдвиг от левого края
             height: paper_height * zoom + 'px',
             width: paper_width * zoom + 'px',
             backgroundColor: 'yellow',
           }}>
+          <DiagramGray diagram={parent} zoom={zoom} />
 
           {
             content.map((dgr, index) =>
-              <DiagramElement diagram={dgr} parent={parent} zoom={zoom} />
+              <DiagramElement diagram={dgr} parent={parent} zoom={zoom} z_index={ 2 } />
             )}
 
+          
         </Box>
       </Box>
 
       <ButtonGroup variant="contained" orientation="vertical"
-        sx={{ position: 'absolute', left: '10px', backgroundColor: 'lightgray' }}>
+        sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
         <IconButton
           size="small"
           onClick={(e: any) => setZoom(zoom + 0.1)}>

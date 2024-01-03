@@ -12,7 +12,7 @@ import { useCallback } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import DiagramParentsNavigator from './DiagramParentsNavigator';
 
-export default function DiagramNavigator() {
+export default function DiagramNavigation() {
 
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);

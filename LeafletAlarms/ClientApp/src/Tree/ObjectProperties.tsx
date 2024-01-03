@@ -42,22 +42,22 @@ export function ObjectProperties() {
 
   const [newPropName, setNewPropName] = React.useState('');
   
-  useEffect(() => {
-    if (selected_id == null) {
-      dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
-    }
-    else if (selected_id?.startsWith('00000000', 0))
-    {
-      var selectedMarker = markers.figs.find(m => m.id == selected_id);
+  //useEffect(() => {
+  //  if (selected_id == null) {
+  //    dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
+  //  }
+  //  else if (selected_id?.startsWith('00000000', 0))
+  //  {
+  //    var selectedMarker = markers.figs.find(m => m.id == selected_id);
 
-      if (selectedMarker != null) {
-        dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
-        return;
-      }
-    }
+  //    if (selectedMarker != null) {
+  //      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
+  //      return;
+  //    }
+  //  }
 
-    dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
-  }, [selected_id]);
+  //  dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
+  //}, [selected_id]);
 
 
   function handleChangeName (e: any){
@@ -255,7 +255,7 @@ export function ObjectProperties() {
         <ListItem>
           <TextField size="small"
           fullWidth
-          id="outlined" label='Name'
+          id="name" label='Name'
             value={objProps?.name}
             onChange={handleChangeName} />
         </ListItem>
@@ -283,7 +283,7 @@ export function ObjectProperties() {
         <ListItem>
           <TextField size="small"
             fullWidth
-            id="outlined" label='new property name'
+            id="new_property_name" label='new property name'
             value={newPropName}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setNewPropName(event.target.value); }} />
           <Tooltip title={"add new property"}>

@@ -19,6 +19,7 @@ import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
 import DiagramViewer from "../diagrams/DiagramViewer";
+import { ObjectPropertiesUpdater } from "./ObjectPropertiesUpdater";
 
 
 const LeftPanel = () => {
@@ -29,20 +30,20 @@ const LeftPanel = () => {
 
     if (datum.panelId == IPanelTypes.tree) {
       return [datum, (
-        <TreeControl key={"TreeControl"+datum.panelId } />
+        <TreeControl key={"TreeControl" + datum.panelId} />
       )];
     }
 
     if (datum.panelId == IPanelTypes.search_result) {
       return [datum, (
-        <SearchResult key={"SearchResult"+datum.panelId} />
+        <SearchResult key={"SearchResult" + datum.panelId} />
       )];
     }
     return null;
   });
 
   return (
-    <AccordionPanels components={components} />      
+    <AccordionPanels components={components} />
   );
 };
 
@@ -54,14 +55,14 @@ const RightPanel = () => {
   var components: Array<[IPanelsStatesDTO, JSX.Element]> = panels.map((datum) => {
 
     if (datum.panelId == IPanelTypes.properties) {
-      return [datum, (         
-          <ObjectProperties />
+      return [datum, (
+        <ObjectProperties />
       )];
     }
 
     if (datum.panelId == IPanelTypes.search) {
       return [datum, (
-        <RetroSearch/>
+        <RetroSearch />
       )];
     }
 
@@ -104,7 +105,8 @@ export function Home() {
         width: '100%'
       }}
       >
-      <MainToolbar  />
+        <ObjectPropertiesUpdater />
+        <MainToolbar />
         <Toolbar />
       </Box>
 
@@ -114,20 +116,20 @@ export function Home() {
         overflow: 'auto',
         flex: 1
       }}>
-      
+
         <Grid item xs={3} sx={{ height: "100%", display: showLeftPannel ? '' : 'none' }}>
           <LeftPanel />
-          </Grid>
+        </Grid>
 
         <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
-          {diagram == null ? <MapComponent /> : <DiagramViewer/>}
+          {diagram == null ? <MapComponent /> : <DiagramViewer />}
         </Grid>
 
         <Grid item xs={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
-              <RightPanel />
-          </Grid>
-      </Grid>    
-      
+          <RightPanel />
+        </Grid>
+      </Grid>
+
     </Box>
   );
 }

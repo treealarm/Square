@@ -54,7 +54,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramElement.tsx" />
+    <None Remove="ClientApp\src\diagrams\DiagramGray.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramParentsNavigator.tsx" />
   </ItemGroup>
 
@@ -67,7 +69,9 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramElement.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramGray.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramNavigation.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramParentsNavigator.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramViewer.tsx" />
