@@ -2,13 +2,13 @@ import 'bootstrap/dist/css/bootstrap.css';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import reportWebVitals from './reportWebVitals';
+import * as serviceWorkerRegistration from './serviceWorkerRegistration.js';
+import reportWebVitals from './reportWebVitals.js';
 
 import { Provider } from 'react-redux';
-import { theStore } from './store/configureStore';
+import { theStore } from './store/configureStore.ts';
 
-import App from './App';
+import App from './App.js';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');

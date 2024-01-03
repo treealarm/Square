@@ -1,13 +1,13 @@
 import * as React from "react";
 import "./custom.css";
 
-import { Layout } from "./components/Layout";
-import { Home } from "./components/Home";
+import { Layout } from "./components/Layout.tsx";
+import { Home } from "./components/Home.tsx";
 import { createTheme, ThemeProvider } from "@mui/material";
-import * as RightsStore from './store/RightsStates';
-import UserService from "./auth/UserService";
+import * as RightsStore from './store/RightsStates.ts';
+import UserService from "./auth/UserService.ts";
 
-import { useAppDispatch } from './store/configureStore';
+import { useAppDispatch } from './store/configureStore.ts';
 
 const theme = createTheme({
   spacing: 3,

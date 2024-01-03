@@ -86,7 +86,9 @@ export default function DiagramElement(props: IDiagramElement) {
 
   return (
     <React.Fragment>
-      <Box onClick={handleClick//() => { selectItem(diagram?.id) }
+      <Box
+        key={ "box in element"}
+        onClick={handleClick//() => { selectItem(diagram?.id) }
       }
         sx={{// Main object
           boxShadow: selected_id == diagram?.id ? '0 0 15px 0px rgba(0,255,0,0.9)' : null,
@@ -106,7 +108,9 @@ export default function DiagramElement(props: IDiagramElement) {
         }}
       >
 
-        <img src={diagram_type?.src}
+        <img
+          key={"img" + diagram?.id}
+          src={diagram_type?.src}
           style={{
             border: 0,
             padding: 0,
@@ -118,9 +122,7 @@ export default function DiagramElement(props: IDiagramElement) {
 
         {
           content?.map((dgr, index) =>
-            <React.Fragment>
-              <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} z_index={props.z_index+1} />
-            </React.Fragment>
+              <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} z_index={props.z_index + 1} key={dgr?.id } />
           )}        
 
       </Box>

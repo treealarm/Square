@@ -58,7 +58,7 @@ export default function DiagramViewer() {
   return (
     <Box
       onWheel={handleWheelEvent}
-      
+      key={"box top"}
       sx={{
         width: '100%',
         height: '100%',
@@ -71,7 +71,7 @@ export default function DiagramViewer() {
       }}
     >
       <Box
-        
+        key={"box transparent"}
         sx={{
           width: '100%',
           height: '100%',
@@ -86,7 +86,7 @@ export default function DiagramViewer() {
         }}
       >
         <Box
-          
+          key={ "box yellow" }
           onClick={handleClick}
           sx={{// Paper
             position: 'absolute',
@@ -103,7 +103,7 @@ export default function DiagramViewer() {
 
           {
             content.map((dgr, index) =>
-              <DiagramElement diagram={dgr} parent={parent} zoom={zoom} z_index={ 2 } />
+              <DiagramElement diagram={dgr} parent={parent} zoom={zoom} z_index={2} key={ index } />
             )}
 
           
