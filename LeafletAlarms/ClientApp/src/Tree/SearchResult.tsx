@@ -115,7 +115,7 @@ export function SearchResult() {
         width: "100%",
         minHeight: '100%' }}>
         {
-          markers?.map((marker, index) =>
+          markers?.map((marker:any) =>
             <ListItem
               key={marker.id}
               disablePadding

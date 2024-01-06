@@ -1,9 +1,8 @@
 ﻿import * as React from "react";
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import * as MarkersStore from '../store/MarkersStates';
-import { Box, Button, IconButton, Paper, styled, Tooltip } from "@mui/material";
+import { Box, Button, Paper, styled, Tooltip } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import CircleIcon from '@mui/icons-material/Circle';
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import { useAppDispatch } from '../store/configureStore';
@@ -35,6 +34,7 @@ export function WebSockClient() {
   const appDispatch = useAppDispatch();
 
   const box = useSelector((state: ApplicationState) => state?.markersStates?.box);
+  const cur_diagram = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
   const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
   const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
 
@@ -142,6 +142,20 @@ export function WebSockClient() {
       SafeSend(Message);
     }
   }, [box, isConnected]);
+
+  useEffect(() => {
+    if (cur_diagram != null && isConnected) {
+      var objArray2: string[] = [];
+      cur_diagram?.content?.forEach(arr => objArray2.push(arr.id));
+
+      var Message =
+      {
+        action: "set_ids",
+        data: objArray2
+      };
+      SafeSend(Message);
+    }
+  }, [cur_diagram, isConnected]);
 
   const sendPing = () => {
     var Message =

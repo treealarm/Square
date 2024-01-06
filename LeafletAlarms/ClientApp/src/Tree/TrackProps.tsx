@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
-import { ApplicationState } from '../store';
-import { List, ListItem, ListItemButton, ListItemText, TextField, Typography } from '@mui/material';
+import { ApplicationState } from '../store/index';
+import { List, ListItem, ListItemButton, ListItemText, TextField } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { DateTimeField, LocalizationProvider } from '@mui/x-date-pickers';
 import { useAppDispatch } from '../store/configureStore';

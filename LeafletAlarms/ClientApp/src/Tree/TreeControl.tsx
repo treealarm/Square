@@ -150,7 +150,7 @@ export function TreeControl() {
         <List dense sx={{
           minHeight: '100%', width: "100%" }}>
          {
-          markers?.map((marker, index) =>
+          markers?.map((marker:any) =>
             <ListItem
               key={marker.id}
               disablePadding

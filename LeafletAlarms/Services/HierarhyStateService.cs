@@ -167,10 +167,14 @@ namespace LeafletAlarms.Services
           objToUpdate.external_type = string.Empty;
         }
 
-        var stateDescrs = await _stateService
-          .GetStateDescrAsync(objToUpdate.external_type, objState.states);
+        ObjectStateDescriptionDTO alarmedStateDescr = null;
 
-        var alarmedStateDescr = stateDescrs.Where(st => st.alarm).FirstOrDefault();
+        if (objState.states.Count > 0)
+        {
+          var stateDescrs = await _stateService
+                    .GetStateDescrAsync(objToUpdate.external_type, objState.states);
+          alarmedStateDescr = stateDescrs.Where(st => st.alarm).FirstOrDefault();
+        }
 
         var alarmedList = await SetAlarm(objToUpdate, alarmedStateDescr != null);
         blinkChanges.AddRange(alarmedList);

@@ -108,7 +108,7 @@ namespace LeafletAlarms.Controllers
       var fig = new FigureGeoDTO();
       figs.figs.Add(fig);
 
-      fig.id = "111100000000000000000001";
+      fig.id = "222200000000000000000001";
       fig.name = "Diagram";
       var geo = new GeometryPolygonDTO();
 
@@ -168,7 +168,7 @@ namespace LeafletAlarms.Controllers
 
       var rack0 = new DiagramDTO()
       {
-        id = "111100000000000000000002",
+        id = "222200000000000000000002",
         parent_id = container_diagram.id,
         name = "Name",
         dgr_type = "rack0",
@@ -205,7 +205,7 @@ namespace LeafletAlarms.Controllers
 
       var rack1 = new DiagramDTO()
       {
-        id = "111100000000000000000003",
+        id = "222200000000000000000003",
         parent_id = container_diagram.id,
         name = "Name1",
         dgr_type = "rack1",
@@ -221,7 +221,7 @@ namespace LeafletAlarms.Controllers
 
       var cisco1 = new DiagramDTO()
       {
-        id = "111100000000000000000004",
+        id = "222200000000000000000004",
         parent_id = rack0.id,
         name = "Cisco1",
         dgr_type = "cisco",
@@ -231,7 +231,7 @@ namespace LeafletAlarms.Controllers
 
       var cisco2 = new DiagramDTO()
       {
-        id = "111100000000000000000005",
+        id = "222200000000000000000005",
         parent_id = rack1.id,
         name = "Cisco2",
         dgr_type = "cisco",

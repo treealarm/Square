@@ -1,7 +1,7 @@
 import { Action, Reducer } from "redux";
-import { ApiRootString, ApiTracksRootString, AppThunkAction } from "./";
+import { ApiRootString, AppThunkAction } from "./";
 import { DoFetch } from "./Fetcher";
-import { BoundBox, IFigures, Marker } from "./Marker";
+import { BoundBox, IFigures } from "./Marker";
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 

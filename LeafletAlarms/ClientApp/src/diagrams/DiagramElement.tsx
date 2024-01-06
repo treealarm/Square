@@ -14,6 +14,7 @@ interface IDiagramElement {
   parent: IDiagramDTO;
   zoom: number;
   z_index: number;
+  getColor: (marker: IDiagramDTO) => any;
 }
 
 export default function DiagramElement(props: IDiagramElement) {
@@ -24,6 +25,7 @@ export default function DiagramElement(props: IDiagramElement) {
 
   const diagram = props.diagram
   const parent = props.parent
+  const getColor = props.getColor
 
   const appDispatch = useAppDispatch();
 
@@ -99,7 +101,7 @@ export default function DiagramElement(props: IDiagramElement) {
           left: coord.left * zoom + 'px', // Сдвиг от левого края
           height: coord.height * zoom + 'px',
           width: coord.width * zoom + 'px',
-          backgroundColor: 'transparent',
+          backgroundColor: getColor(diagram),
           '&:hover': {
             cursor: 'pointer'
           },
@@ -122,7 +124,13 @@ export default function DiagramElement(props: IDiagramElement) {
 
         {
           content?.map((dgr, index) =>
-            <DiagramElement diagram={dgr} parent={diagram} zoom={zoom} z_index={props.z_index + 1} key={dgr?.id} />
+            <DiagramElement
+              diagram={dgr}
+              parent={diagram}
+              zoom={zoom}
+              z_index={props.z_index + 1}
+              getColor={props.getColor}
+              key={dgr?.id} />
           )}
 
       </Box>

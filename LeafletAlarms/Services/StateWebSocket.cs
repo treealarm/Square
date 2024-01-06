@@ -148,6 +148,17 @@ namespace LeafletAlarms.Services
             await OnSetBox(setBox);
           }
         }
+
+        if (json.action.ToString() == "set_ids")
+        {
+          List<string> ids = JsonSerializer.Deserialize<List<string>>(json.data.ToString());
+
+          if (ids != null)
+          {
+            OnSetIds(ids);
+          }
+        }
+
         var replay = JsonSerializer.SerializeToUtf8Bytes(json);
 
         await _webSocket.SendAsync(
@@ -502,6 +513,26 @@ namespace LeafletAlarms.Services
         }
 
         _stateIdsQueueService.AddIds(newIds.Select(i => i.Key).ToList());
+      }
+    }
+
+    private void OnSetIds(List<string> ids)
+    {
+      lock (_locker)
+      {
+        _currentBox = null;
+
+        var newIds = ids.Where(g => !_dicIds.Contains(g));
+
+        _dicIds.Clear();
+
+
+        foreach (var item in ids)
+        {
+          _dicIds.Add(item);
+        }
+
+        _stateIdsQueueService.AddIds(newIds.ToList());
       }
     }
 
