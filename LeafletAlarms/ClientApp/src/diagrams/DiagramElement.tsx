@@ -85,15 +85,22 @@ export default function DiagramElement(props: IDiagramElement) {
     };
   }
 
+  var color = getColor(diagram);
+  var shadow = null;
+
+  if (selected_id == diagram?.id) {
+    shadow = '0 0 15px 0px rgba(0,0,0,0.9)';
+  }
 
   return (
     <React.Fragment>
+
       <Box
         key={"box in element"}
         onClick={handleClick//() => { selectItem(diagram?.id) }
         }
         sx={{// Main object
-          boxShadow: selected_id == diagram?.id ? '0 0 15px 0px rgba(0,255,0,0.9)' : null,
+          boxShadow: shadow,
           padding: 0,
           margin: 0,
           position: 'absolute',
@@ -101,7 +108,8 @@ export default function DiagramElement(props: IDiagramElement) {
           left: coord.left * zoom + 'px', // Сдвиг от левого края
           height: coord.height * zoom + 'px',
           width: coord.width * zoom + 'px',
-          backgroundColor: getColor(diagram),
+          backgroundColor: 'transparent',
+          color:color,
           '&:hover': {
             cursor: 'pointer'
           },
@@ -109,6 +117,7 @@ export default function DiagramElement(props: IDiagramElement) {
           flexDirection: 'column',
         }}
       >
+
 
         <img
           key={"img" + diagram?.id}
@@ -119,7 +128,7 @@ export default function DiagramElement(props: IDiagramElement) {
             margin: 0,
             width: '100%',
             height: '100%',
-            objectFit: 'fill', // Заполняет SVG без сохранения пропорций
+            objectFit: 'fill'
           }} />
 
         {
@@ -132,9 +141,24 @@ export default function DiagramElement(props: IDiagramElement) {
               getColor={props.getColor}
               key={dgr?.id} />
           )}
+        {
+          color == null ? null :
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
+              pointer-events='none'
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+              }}>
 
-      </Box>
-
+              <rect x="0" y="0" width="100%" height="100%"
+                fill={color} fill-opacity="0.1"
+                stroke={color} strokeWidth="5" opacity="0.5" />
+            </svg>
+        }
+        
+      </Box>      
+      
     </React.Fragment>
   );
 }

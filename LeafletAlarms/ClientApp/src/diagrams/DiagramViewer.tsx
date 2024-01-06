@@ -44,6 +44,10 @@ export default function DiagramViewer() {
   //var __is_diagram = getExtraProp(objProps, "__is_diagram", "0");
 
   function hexToRgba(hex: string, alpha: number): string {
+
+    if (hex == null) {
+      return null;
+    }
     const hexColor = hex.replace('#', '');
     const r = parseInt(hexColor.substring(0, 2), 16);
     const g = parseInt(hexColor.substring(2, 4), 16);
@@ -56,7 +60,7 @@ export default function DiagramViewer() {
     (marker: IDiagramDTO) => {
       var id = marker.id;
 
-      var retColor: any = 'transparent';
+      var retColor: any = null;
 
       if (selected_id == id) {
         //retColor.dashArray = '5,10';
@@ -69,7 +73,7 @@ export default function DiagramViewer() {
           var vStateFirst = vState.states[0];
           var vStateDescr = visualStates.states_descr.find(s => s.state == vStateFirst);
           if (vStateDescr != null) {
-            retColor = vStateDescr.state_color + '0.5';
+            retColor = vStateDescr.state_color;
           }
         }
       }
@@ -79,7 +83,7 @@ export default function DiagramViewer() {
       if (vAlarmState != null
         && (vAlarmState.alarm || vAlarmState.children_alarms > 0)) {
 
-        retColor = '#ff0000:0.5';
+        retColor = '#ff0000';
       }
       else {
         var color = getExtraProp(marker, "__color");
@@ -89,7 +93,7 @@ export default function DiagramViewer() {
         }
       }
 
-      return hexToRgba(retColor, 0.5); 
+      return retColor; 
 
     }, [visualStates, alarmedObjects, selected_id]);
 
