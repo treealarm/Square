@@ -370,4 +370,5 @@ export interface IGetDiagramDTO {
   dgr_types: IDiagramTypeDTO[];
   parent_id: string;
   parents?: TreeMarker[];
+  depth: number;
 }

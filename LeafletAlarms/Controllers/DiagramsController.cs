@@ -32,11 +32,12 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetDiagramByParent")]
-    public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id, int level = 2)
+    public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id, int depth = 1)
     {
       var retVal = new GetDiagramDTO()
       {
-        parent_id = parent_id
+        parent_id = parent_id,
+        depth = depth
       };
 
       if (string.IsNullOrEmpty(parent_id))
@@ -49,7 +50,7 @@ namespace LeafletAlarms.Controllers
       var markers = await _mapService.GetByParentIdAsync(parent_id, null, null, 1000);
       var children = markers;
 
-      for (int l = 0; l < level; ++l)
+      for (int l = 0; l < depth; ++l)
       {
         children = await _mapService.GetByParentIdsAsync(children.Values.Select(m => m.id).ToList(), null, null, 1000);
         markers = markers.Union(children).ToDictionary();
@@ -225,19 +226,29 @@ namespace LeafletAlarms.Controllers
         parent_id = rack0.id,
         name = "Cisco1",
         dgr_type = "cisco",
-        region_id = "2",
+        region_id = "1",
       };
       retVal1.Add(cisco1);
 
       var cisco2 = new DiagramDTO()
       {
         id = "222200000000000000000005",
-        parent_id = rack1.id,
+        parent_id = rack0.id,
         name = "Cisco2",
         dgr_type = "cisco",
-        region_id = "1",
+        region_id = "2",
       };
       retVal1.Add(cisco2);
+
+      var cisco3 = new DiagramDTO()
+      {
+        id = "222200000000000000000006",
+        parent_id = rack1.id,
+        name = "Cisco3",
+        dgr_type = "cisco",
+        region_id = "2",
+      };
+      retVal1.Add(cisco3);
 
       await _diagramService.UpdateListAsync( retVal1 );
       await _mapService.UpdateHierarchyAsync(retVal1);

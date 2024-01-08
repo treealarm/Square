@@ -1,23 +1,28 @@
-﻿import { IDiagramDTO, IGetDiagramDTO, ObjExtraPropertyDTO, TreeMarker } from './Marker';
+﻿import { IGetDiagramDTO} from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ApiDiagramsRootString } from '.';
+import { ApiDiagramsRootString, ApplicationState } from './index';
 
 
 export interface DiagramsStates {
-  cur_diagram: IGetDiagramDTO | null;  
+  cur_diagram: IGetDiagramDTO | null; 
+  depth: number;
 }
 
 const unloadedState: DiagramsStates = {
   cur_diagram: null,
+  depth: 1
 };
 
 export const fetchDiagram = createAsyncThunk<IGetDiagramDTO, string>(
   'diagrams/GetDiagram',
-  async (diagram_id: string, thunkAPI) => {
+  async (diagram_id: string, { getState }) => {
+    const state: ApplicationState = getState() as ApplicationState;
+    const diagramsStates = state.diagramsStates as DiagramsStates;
 
     var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagramByParent?parent_id=" +
-      diagram_id, {
+      diagram_id + "&depth=" + diagramsStates.depth,
+      {
       method: "GET",
       headers: { "Content-type": "application/json" }
     });
@@ -32,9 +37,12 @@ const diagramsSlice = createSlice({
   name: 'DiagramStates',
   initialState: unloadedState,
   reducers: {
-  //  // Give case reducers meaningful past-tense "event"-style names
+
     reset_diagram(state: DiagramsStates, action: PayloadAction<null>) {
       state.cur_diagram = null;
+    },
+    set_depth(state: DiagramsStates, action: PayloadAction<number>) {
+      state.depth = action.payload;
     }
   }
   ,
@@ -55,7 +63,7 @@ const diagramsSlice = createSlice({
   },
 })
 
-export const { reset_diagram } = diagramsSlice.actions
+export const { reset_diagram, set_depth } = diagramsSlice.actions
 export const reducer = diagramsSlice.reducer
 
 
