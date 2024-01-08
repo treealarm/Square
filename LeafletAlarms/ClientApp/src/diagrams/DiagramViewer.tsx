@@ -2,7 +2,7 @@
 import { useCallback, useEffect, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { getExtraProp, IDiagramDTO } from '../store/Marker';
+import { getExtraProp, IDiagramCoord, IDiagramDTO } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
@@ -133,7 +133,17 @@ export default function DiagramViewer() {
   }
   var content = diagram.content.filter(e => e.parent_id == diagram.parent_id);
 
+  var coord: IDiagramCoord = 
+  {
+    left: 0,
+    top: 0,
+    width: paper_width,
+    height: paper_height
+  }
 
+  if (parent != null && parent.geometry != null && parent.geometry.width > 0 && parent.geometry.height > 0) {
+    coord = parent.geometry;
+  }
   return (
     <Box
       onWheel={handleWheelEvent}
@@ -185,6 +195,7 @@ export default function DiagramViewer() {
               <DiagramElement
                 diagram={dgr}
                 parent={parent}
+                parent_coord={coord}
                 zoom={zoom}
                 z_index={2}
                 getColor={getColor}

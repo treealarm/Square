@@ -75,8 +75,43 @@ namespace LeafletAlarms.Controllers
         id = "6582fbd7203a7d44110c8d1f",
         src = "svg/cisco.svg",
         name = $"cisco",
+        regions = new List<DiagramTypeRegionDTO>()
       };
+
+      diagramTypeDevice.regions.Add(new DiagramTypeRegionDTO()
+      {
+        id = "port1",
+        geometry = new DiagramCoordDTO()
+        {
+          top = 0.05,
+          left = 0.04,
+          height = 0.3,
+          width = 0.05
+        }
+      });
+
+      diagramTypeDevice.regions.Add(new DiagramTypeRegionDTO()
+      {
+        id = "port2",
+        geometry = new DiagramCoordDTO()
+        {
+          top = 0.4,
+          left = 0.04,
+          height = 0.3,
+          width = 0.05
+        }
+      });
+
       list.Add(diagramTypeDevice);
+
+      var diagramTypePort = new DiagramTypeDTO()
+      {
+        id = "2222fbd7203a7d44110c8d1f",
+        src = "svg/port.svg",
+        name = $"port",
+        regions = new List<DiagramTypeRegionDTO>()
+      };
+      list.Add(diagramTypePort);
 
       await _diagramTypeService.UpdateListAsync(list);
       return list;

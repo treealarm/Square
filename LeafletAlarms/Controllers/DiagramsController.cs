@@ -52,6 +52,8 @@ namespace LeafletAlarms.Controllers
 
       for (int l = 0; l < depth; ++l)
       {
+        if (!children.Any())
+        { continue; }
         children = await _mapService.GetByParentIdsAsync(children.Values.Select(m => m.id).ToList(), null, null, 1000);
         markers = markers.Union(children).ToDictionary();
       }
@@ -247,8 +249,35 @@ namespace LeafletAlarms.Controllers
         name = "Cisco3",
         dgr_type = "cisco",
         region_id = "2",
+        geometry = new DiagramCoordDTO()
+        {
+          left = 10,
+          top = 10,
+          width = 162,
+          height = 31
+        }
       };
       retVal1.Add(cisco3);
+
+      var port1 = new DiagramDTO()
+      {
+        id = "222200000000000000000007",
+        parent_id = cisco3.id,
+        name = "port1",
+        dgr_type = "port",
+        region_id = "port1",
+      };
+      retVal1.Add(port1);
+
+      var port2 = new DiagramDTO()
+      {
+        id = "222200000000000000000008",
+        parent_id = cisco3.id,
+        name = "port2",
+        dgr_type = "port",
+        region_id = "port2",
+      };
+      retVal1.Add(port2);
 
       await _diagramService.UpdateListAsync( retVal1 );
       await _mapService.UpdateHierarchyAsync(retVal1);

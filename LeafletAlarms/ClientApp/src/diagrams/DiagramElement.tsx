@@ -12,6 +12,7 @@ import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
 interface IDiagramElement {
   diagram: IDiagramDTO;
   parent: IDiagramDTO;
+  parent_coord: IDiagramCoord
   zoom: number;
   z_index: number;
   getColor: (marker: IDiagramDTO) => any;
@@ -26,6 +27,7 @@ export default function DiagramElement(props: IDiagramElement) {
   const diagram = props.diagram
   const parent = props.parent
   const getColor = props.getColor
+  const parent_coord = props.parent_coord;
 
   const appDispatch = useAppDispatch();
 
@@ -53,7 +55,7 @@ export default function DiagramElement(props: IDiagramElement) {
   var zoom = props.zoom;
   var content = diagrams.content.filter(e => e.parent_id == diagram.id);
 
-  var coord: IDiagramCoord = null;
+  var coord: IDiagramCoord = diagram.geometry;
 
   if (diagram.region_id != null) {
     var parent_type: IDiagramTypeDTO = diagrams.dgr_types.find(t => t.name == parent.dgr_type);
@@ -62,8 +64,8 @@ export default function DiagramElement(props: IDiagramElement) {
       var region = parent_type.regions.find(r => r.id == diagram.region_id);
 
       if (region != null) {
-        var w = parent.geometry.width;
-        var h = parent.geometry.height;
+        var w = parent_coord.width;
+        var h = parent_coord.height;
         coord =
         {
           top: h * region.geometry.top,
@@ -136,6 +138,7 @@ export default function DiagramElement(props: IDiagramElement) {
             <DiagramElement
               diagram={dgr}
               parent={diagram}
+              parent_coord={ coord }
               zoom={zoom}
               z_index={props.z_index + 1}
               getColor={props.getColor}
