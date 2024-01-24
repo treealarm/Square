@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.States
 {
-  public class AlarmObject: BaseMarkerDTO
+  public record AlarmObject: BaseMarkerDTO
   {
     public bool alarm { get; set; }
     public int children_alarms { get; set; }

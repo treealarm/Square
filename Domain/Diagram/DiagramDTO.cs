@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Diagram
 {
-  public class DiagramDTO: FigureZoomedDTO
+  public record DiagramDTO: FigureZoomedDTO
   {
     public DiagramCoordDTO geometry {  get; set; }
     public string region_id { get; set; }

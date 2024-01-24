@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-  public class MarkerDTO: BaseMarkerDTO
+  public record MarkerDTO: BaseMarkerDTO
   {
     public bool has_children { get; set; }
   }

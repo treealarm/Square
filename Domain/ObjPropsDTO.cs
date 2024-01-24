@@ -4,7 +4,7 @@ using Domain.ObjectInterfaces;
 
 namespace Domain
 {
-    public class ObjPropsDTO : BaseMarkerDTO, IObjectProps, IObjectZoom
+    public record ObjPropsDTO : BaseMarkerDTO, IObjectProps, IObjectZoom
   {
     public List<ObjExtraPropertyDTO> extra_props { get; set; } = new List<ObjExtraPropertyDTO>();
     public int? zoom_min { get; set; }

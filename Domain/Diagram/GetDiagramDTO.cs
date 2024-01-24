@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Diagram
 {
-  public class GetDiagramDTO
+  public record GetDiagramDTO
   {
     public List<DiagramDTO> content { get; set; }
     public List<DiagramTypeDTO> dgr_types { get; set; }

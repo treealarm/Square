@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Diagram
 {
-  public class DiagramCoordDTO
+  public record DiagramCoordDTO
   {
     public double top {get;set;}
     public double left { get; set; }
