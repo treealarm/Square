@@ -12,7 +12,7 @@ import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import * as PanelsStore from '../store/PanelsStates';
-import EditOptions from "../Tree/EditOptions";
+import EditOptions from "../tree/EditOptions";
 
 export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 

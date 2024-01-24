@@ -7,12 +7,12 @@ import {
 } from "@mui/material";
 
 import { WebSockClient } from "./WebSockClient";
-import GlobalLayersOptions from "../Tree/GlobalLayersOptions";
+import GlobalLayersOptions from "../tree/GlobalLayersOptions";
 import { Login } from "../auth/Login";
 import PanelSwitch from "./PanelSwitch";
 import { EPanelType } from "../store/Marker";
-import { SearchApplyButton } from "../Tree/SearchApplyButton";
-import { FlyToMyLocationButton } from "../Tree/FlyToMyLocationButton";
+import { SearchApplyButton } from "../tree/SearchApplyButton";
+import { FlyToMyLocationButton } from "../tree/FlyToMyLocationButton";
 import DiagramNavigation from "../diagrams/DiagramNavigation";
 
 export function MainToolbar() {

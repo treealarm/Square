@@ -1,8 +1,13 @@
 import * as React from "react";
 import "./custom.css";
 
+import { BrowserRouter as Router, Routes ,Route  } from 'react-router-dom';
+
+
 import { Layout } from "./components/Layout.tsx";
 import { Home } from "./components/Home.tsx";
+import { DiagramTypeEditor } from "./components/DiagramTypeEditor.tsx";
+
 import { createTheme, ThemeProvider } from "@mui/material";
 import * as RightsStore from './store/RightsStates.ts';
 import UserService from "./auth/UserService.ts";
@@ -98,9 +103,13 @@ export default () => {
 
   return (
     <ThemeProvider theme={theme}>
-        <Layout>
-          <Home/>
-        </Layout>
+      <Router>
+        <Routes>
+          <Route path="/" exact element={<Layout> <Home /> </Layout>} />
+          <Route path="/editdiagram" exact element={<Layout> <DiagramTypeEditor /> </Layout>} />
+        </Routes>
+      </Router>
+       
     </ThemeProvider>
   );
 

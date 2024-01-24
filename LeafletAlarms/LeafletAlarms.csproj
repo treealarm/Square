@@ -56,6 +56,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\components\DiagramTypeEditor.tsx" />
     <None Remove="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramElement.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramGray.tsx" />
@@ -71,6 +72,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\DiagramTypeEditor.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramElement.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramGray.tsx" />
@@ -82,13 +84,13 @@
     <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\TogglePanelButton.tsx" />
     <TypeScriptCompile Include="ClientApp\src\store\DiagramsStates.ts" />
-    <TypeScriptCompile Include="ClientApp\src\Tree\FlyToMyLocationButton.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\Tree\SearchApplyButton.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\Tree\RequestRoute.tsx">
+    <TypeScriptCompile Include="ClientApp\src\tree\FlyToMyLocationButton.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\tree\SearchApplyButton.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\tree\RequestRoute.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="ClientApp\src\Tree\SearchMeOnMap.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\Tree\TrackProps.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\tree\SearchMeOnMap.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\tree\TrackProps.tsx" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,7 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import { GroupSelector } from './GroupSelector';
-import { PropertyFilter } from '../Tree/PropertyFilter';
+import { PropertyFilter } from '../tree/PropertyFilter';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }

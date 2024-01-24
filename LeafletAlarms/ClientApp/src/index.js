@@ -15,12 +15,8 @@ const rootElement = document.getElementById('root');
 const root = createRoot(rootElement);
 
 root.render(
-  <Provider store={theStore}>
-  <BrowserRouter basename={baseUrl}>
-    
+  <Provider store={theStore}>  
      <App/>
-    
-    </BrowserRouter>
   </Provider>
 );
 

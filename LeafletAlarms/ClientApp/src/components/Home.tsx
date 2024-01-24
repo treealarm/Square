@@ -1,20 +1,20 @@
 import * as React from "react";
-import { TreeControl } from "../Tree/TreeControl";
+import { TreeControl } from "../tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
-import { ObjectProperties } from "../Tree/ObjectProperties";
+import { ObjectProperties } from "../tree/ObjectProperties";
 import {
   Box,
-  Grid, styled, Toolbar,
+  Grid, Toolbar,
 } from "@mui/material";
 
 
-import { RetroSearch } from "../Tree/RetroSearch";
-import { SearchResult } from "../Tree/SearchResult";
-import { ObjectLogic } from "../Logic/ObjectLogic";
-import { ObjectRights } from "../Rights/ObjectRights";
+import { RetroSearch } from "../tree/RetroSearch";
+import { SearchResult } from "../tree/SearchResult";
+import { ObjectLogic } from "../logic/ObjectLogic";
+import { ObjectRights } from "../rights/ObjectRights";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
-import { TrackProps } from "../Tree/TrackProps";
+import { TrackProps } from "../tree/TrackProps";
 import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
@@ -88,8 +88,6 @@ const RightPanel = () => {
 
   return (<AccordionPanels components={components} />);
 };
-
-const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 export function Home() {
 
