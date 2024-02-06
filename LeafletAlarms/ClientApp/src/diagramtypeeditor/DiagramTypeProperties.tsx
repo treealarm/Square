@@ -54,7 +54,7 @@ export function DiagramTypeProperties() {
       bgcolor: 'background.paper',
       overflow: 'auto',
       height: '100%',
-      border: 1
+      border: 0
     }}>
 
       <List dense>

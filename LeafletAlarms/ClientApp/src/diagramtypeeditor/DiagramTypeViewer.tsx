@@ -70,7 +70,7 @@ export default function DiagramTypeViewer() {
           display: 'flex',
           flexDirection: 'column',
           backgroundColor: 'gray',
-          border: 1,
+          border: 0,
           padding: 0,
           margin: 0,
           position: 'relative',
@@ -82,7 +82,7 @@ export default function DiagramTypeViewer() {
           onClick={handleClick}
           sx={{// Paper
             position: 'absolute',
-            border: 1,
+            border: 0,
             padding: 0,
             margin: 0,
             top: '0px', // Сдвиг от верхнего края

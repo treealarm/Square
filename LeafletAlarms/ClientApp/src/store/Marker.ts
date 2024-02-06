@@ -376,3 +376,9 @@ export interface IGetDiagramDTO {
 export interface IGetDiagramTypesDTO {
   dgr_types: IDiagramTypeDTO[];
 }
+
+export interface IGetDiagramTypesByFilterDTO {
+  filter: string;
+  start_id: string;
+  forward: boolean;
+}

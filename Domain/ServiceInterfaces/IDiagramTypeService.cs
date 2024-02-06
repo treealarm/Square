@@ -14,5 +14,6 @@ namespace Domain.ServiceInterfaces
     public Task DeleteAsync(string id);
     public Task<Dictionary<string, DiagramTypeDTO>> GetListByTypeNamesAsync(List<string> typeName);
     public Task<Dictionary<string, DiagramTypeDTO>> GetListByTypeIdsAsync(List<string> ids);
+    public Task<Dictionary<string, DiagramTypeDTO>> GetDiagramTypesByFilter(GetDiagramTypesByFilterDTO filter);
   }
 }

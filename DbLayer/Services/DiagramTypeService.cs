@@ -7,6 +7,7 @@ using Domain.OptionsModels;
 using Domain.Rights;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,72 @@ namespace DbLayer.Services
       return ConvertListDB2DTO(obj);
     }
 
+    async Task<Dictionary<string, DiagramTypeDTO>> IDiagramTypeService.GetDiagramTypesByFilter(GetDiagramTypesByFilterDTO filterDto)
+    {
+      List<DBDiagramType> obj = null;
+      int count = 100;
+      try
+      {
+        var builder = Builders<DBDiagramType>.Filter;
+        var filter = builder.Empty;
+
+        var filterPaging = builder.Empty;
+
+        if (!string.IsNullOrEmpty(filterDto.start_id))
+        {
+          if (filterDto.forward)
+            filterPaging = Builders<DBDiagramType>.Filter.Gt("_id", new ObjectId(filterDto.start_id));
+          else
+            filterPaging = Builders<DBDiagramType>.Filter.Lt("_id", new ObjectId(filterDto.start_id));
+        }
+
+        if (!string.IsNullOrEmpty(filterDto.filter))
+        {
+            var f1 = Builders<DBDiagramType>.Filter.Regex("name", new BsonRegularExpression(filterDto.filter));
+
+            if (filter == builder.Empty)
+            {
+              filter = f1;
+            }
+            else
+            {
+              filter |= f1;
+            }
+
+        }
+
+        if (filterPaging != builder.Empty)
+        {
+          filter = filter & filterPaging;
+        }
+
+
+        if (filterDto.forward)
+        {
+          obj = await _coll
+          .Find(filter)
+          .Limit(count)
+          .ToListAsync();
+        }
+        else
+        {
+          obj = await _coll
+                    .Find(filter)
+                    .SortByDescending(x => x.id)
+                    .Limit(count)
+                    .ToListAsync()
+                    ;
+
+          obj.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
+        }
+      }
+      catch (Exception)
+      {
+
+      }
+
+      return ConvertListDB2DTO(obj);
+    }
     async Task IDiagramTypeService.UpdateListAsync(List<DiagramTypeDTO> newObjs)
     {
       var dbUpdated = new Dictionary<DiagramTypeDTO, DBDiagramType>();

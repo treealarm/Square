@@ -1,4 +1,4 @@
-﻿import { IDiagramTypeDTO, IGetDiagramTypesDTO } from './Marker';
+﻿import { IDiagramTypeDTO, IGetDiagramTypesByFilterDTO, IGetDiagramTypesDTO } from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApiDiagramTypessRootString, ApplicationState } from './index';
@@ -6,10 +6,14 @@ import { ApiDiagramTypessRootString, ApplicationState } from './index';
 
 export interface DiagramTypeStates {
   cur_diagramtype: IDiagramTypeDTO | null;
+  diagramtypes: IDiagramTypeDTO[] | null;
+  filter: string | null;
 }
 
 const unloadedState: DiagramTypeStates = {
   cur_diagramtype: null,
+  diagramtypes: null,
+  filter:null
 };
 
 export const fetchDiagramTypeByName = createAsyncThunk<IGetDiagramTypesDTO, string>(
@@ -42,6 +46,27 @@ export const fetchDiagramTypeById = createAsyncThunk<IGetDiagramTypesDTO, string
     let body = JSON.stringify([id]);
 
     var fetched = await DoFetch(ApiDiagramTypessRootString + "/GetDiagramTypesById",
+      {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+    var json = await fetched.json() as Promise<IGetDiagramTypesDTO>;
+
+    return json;
+  }
+)
+
+export const fetchGetDiagramTypesByFilter = createAsyncThunk<IGetDiagramTypesDTO, IGetDiagramTypesByFilterDTO>(
+  'diagramtypes/GetDiagramTypesByFilter',
+  async (filter: IGetDiagramTypesByFilterDTO, { getState }) => {
+    const state: ApplicationState = getState() as ApplicationState;
+    const diagramTypeStates = state.diagramtypeStates as DiagramTypeStates;
+
+    let body = JSON.stringify(filter);
+
+    var fetched = await DoFetch(ApiDiagramTypessRootString + "/GetDiagramTypesByFilter",
       {
         method: "POST",
         headers: { "Content-type": "application/json" },
@@ -93,6 +118,21 @@ const diagramtypesSlice = createSlice({
           state.cur_diagramtype = null;
       })
       .addCase(fetchDiagramTypeById.rejected, (state, action) => {
+        const { requestId } = action.meta
+        state.cur_diagramtype = null;
+
+      })
+
+      .addCase(fetchGetDiagramTypesByFilter.pending, (state, action) => {
+        //state.parents = null;
+      })
+      .addCase(fetchGetDiagramTypesByFilter.fulfilled, (state, action) => {
+        const { requestId } = action.meta
+       
+        state.diagramtypes = action.payload.dgr_types;
+
+      })
+      .addCase(fetchGetDiagramTypesByFilter.rejected, (state, action) => {
         const { requestId } = action.meta
         state.cur_diagramtype = null;
 

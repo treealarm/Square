@@ -5,6 +5,7 @@ import {
 } from "@mui/material";
 import DiagramTypeViewer from "../diagramtypeeditor/DiagramTypeViewer";
 import { DiagramTypeProperties } from "../diagramtypeeditor/DiagramTypeProperties";
+import { DiagramTypeSearcher } from "../diagramtypeeditor/DiagramTypeSearcher";
 
 export function DiagramTypeEditor() {
 
@@ -23,13 +24,15 @@ export function DiagramTypeEditor() {
         overflow: 'auto',
         flex: 1
       }}>
-
-
-        <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
+        
+        <Grid item xs={3} sx={{ height: "100%", border:1 }}>
+          <DiagramTypeSearcher />
+        </Grid>
+        <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
           <DiagramTypeViewer/>
         </Grid>
 
-        <Grid item xs={3} sx={{ height: "100%"}}>
+        <Grid item xs={3} sx={{ height: "100%", border: 1 }}>
           <DiagramTypeProperties />
         </Grid>
       </Grid>

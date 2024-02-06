@@ -38,6 +38,15 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
+    [HttpPost()]
+    [Route("GetDiagramTypesByFilter")]
+    public async Task<GetDiagramTypesDTO> GetDiagramTypesByFilter(GetDiagramTypesByFilterDTO filter)
+    {
+      var dic = await _diagramTypeService.GetDiagramTypesByFilter(filter);
+      var retVal = new GetDiagramTypesDTO(dic.Values.ToList());
+      return retVal;
+    }
+
     [HttpGet()]
     [Route("CreateBasicTemplate")]
     public async Task<List<DiagramTypeDTO>> CreateBasicTemplate()
