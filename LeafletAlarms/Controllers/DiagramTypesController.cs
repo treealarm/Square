@@ -4,10 +4,11 @@ using Domain.ServiceInterfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using DbLayer.Services;
+using Domain.DiagramType;
 
 namespace LeafletAlarms.Controllers
 {
-  [Route("api/[controller]")]
+    [Route("api/[controller]")]
   [ApiController]
   public class DiagramTypesController : ControllerBase
   {
@@ -19,12 +20,22 @@ namespace LeafletAlarms.Controllers
       _diagramTypeService = diagramTypeService;
     }
 
-    [HttpGet()]
-    [Route("GetDiagramTypes")]
-    public async Task<List<DiagramTypeDTO>> GetDiagramTypes([FromQuery] List<string> diagram_ids)
+    [HttpPost()]
+    [Route("GetDiagramTypesByName")]
+    public async Task<GetDiagramTypesDTO> GetDiagramTypesByName(List<string> typeNames)
+    {      
+      var dic = await _diagramTypeService.GetListByTypeNamesAsync( typeNames );
+      var retVal = new GetDiagramTypesDTO(dic.Values.ToList());
+      return retVal;
+    }
+
+    [HttpPost()]
+    [Route("GetDiagramTypesById")]
+    public async Task<GetDiagramTypesDTO> GetDiagramTypesById(List<string> ids)
     {
-      var dic = await _diagramTypeService.GetListByTypeNamesAsync( diagram_ids );
-      return dic.Values.ToList();
+      var dic = await _diagramTypeService.GetListByTypeIdsAsync(ids);
+      var retVal = new GetDiagramTypesDTO(dic.Values.ToList());
+      return retVal;
     }
 
     [HttpGet()]

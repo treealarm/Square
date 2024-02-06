@@ -372,3 +372,7 @@ export interface IGetDiagramDTO {
   parents?: TreeMarker[];
   depth: number;
 }
+
+export interface IGetDiagramTypesDTO {
+  dgr_types: IDiagramTypeDTO[];
+}

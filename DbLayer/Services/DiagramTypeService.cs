@@ -2,6 +2,7 @@
 using DbLayer.Models.Diagrams;
 using Domain;
 using Domain.Diagram;
+using Domain.DiagramType;
 using Domain.OptionsModels;
 using Domain.Rights;
 using Domain.ServiceInterfaces;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class DiagramTypeService: IDiagramTypeService
+    public class DiagramTypeService: IDiagramTypeService
   {
     private readonly IMongoCollection<DBDiagramType> _coll;
     private readonly MongoClient _mongoClient;
@@ -66,6 +67,24 @@ namespace DbLayer.Services
       try
       {
         obj = await _coll.Find(s => typeNames.Contains(s.name)).ToListAsync();
+      }
+      catch (Exception)
+      {
+
+      }
+
+      return ConvertListDB2DTO(obj);
+    }
+
+    async Task<Dictionary<string, DiagramTypeDTO>> IDiagramTypeService.GetListByTypeIdsAsync(
+       List<string> ids
+     )
+    {
+      List<DBDiagramType> obj = null;
+
+      try
+      {
+        obj = await _coll.Find(s => ids.Contains(s.id)).ToListAsync();
       }
       catch (Exception)
       {

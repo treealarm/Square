@@ -1,4 +1,4 @@
-﻿using Domain.Diagram;
+﻿using Domain.DiagramType;
 using Domain.Rights;
 using System;
 using System.Collections.Generic;
@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 
 namespace Domain.ServiceInterfaces
 {
-  public interface IDiagramTypeService
+    public interface IDiagramTypeService
   {
     public Task UpdateListAsync(List<DiagramTypeDTO> obj2UpdateIn);
     public Task DeleteAsync(string id);
     public Task<Dictionary<string, DiagramTypeDTO>> GetListByTypeNamesAsync(List<string> typeName);
+    public Task<Dictionary<string, DiagramTypeDTO>> GetListByTypeIdsAsync(List<string> ids);
   }
 }

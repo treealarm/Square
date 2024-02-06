@@ -1,8 +1,10 @@
 ﻿import * as React from "react";
 
 import {
-  Box
+  Box, Grid, Toolbar
 } from "@mui/material";
+import DiagramTypeViewer from "../diagramtypeeditor/DiagramTypeViewer";
+import { DiagramTypeProperties } from "../diagramtypeeditor/DiagramTypeProperties";
 
 export function DiagramTypeEditor() {
 
@@ -12,8 +14,26 @@ export function DiagramTypeEditor() {
         width: '100%'
       }}
       >
-      Hello diagram editor
+        <Toolbar />
       </Box>
+
+      <Grid container sx={{
+        height: '100%',
+        width: '100%',
+        overflow: 'auto',
+        flex: 1
+      }}>
+
+
+        <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
+          <DiagramTypeViewer/>
+        </Grid>
+
+        <Grid item xs={3} sx={{ height: "100%"}}>
+          <DiagramTypeProperties />
+        </Grid>
+      </Grid>
+
     </Box>
   );
 }

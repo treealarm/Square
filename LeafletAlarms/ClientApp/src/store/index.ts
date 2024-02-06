@@ -10,6 +10,7 @@ import * as ObjLogicStates from './ObjLogicStates';
 import * as RightsStates from './RightsStates';
 import * as PanelsStates from './PanelsStates';
 import * as DiagramsStates from './DiagramsStates';
+import * as DiagramTypeStates from './DiagramTypeStates';
 // The top-level state object
 export interface ApplicationState {
   editState: EditStates.EditState | undefined;
@@ -24,6 +25,7 @@ export interface ApplicationState {
   rightsStates: RightsStates.ObjectRights | undefined;
   panelsStates: PanelsStates.PanelsStates | undefined;
   diagramsStates: DiagramsStates.DiagramsStates | undefined;
+  diagramtypeStates: DiagramTypeStates.DiagramTypeStates | undefined;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -41,7 +43,8 @@ export const reducers = {
   objLogicStates: ObjLogicStates.reducer,
   rightsStates: RightsStates.reducer,
   panelsStates: PanelsStates.reducer,
-  diagramsStates: DiagramsStates.reducer
+  diagramsStates: DiagramsStates.reducer,
+  diagramtypeStates: DiagramTypeStates.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
@@ -58,5 +61,6 @@ export const ApiStatesRootString = 'api/states';
 export const ApiLogicRootString = 'api/logic';
 export const ApiRightsRootString = 'api/rights';
 export const ApiDiagramsRootString = 'api/diagrams';
+export const ApiDiagramTypessRootString = 'api/diagramtypes';
 export const ApiDefaultPagingNum = 100;
 export const ApiDefaultMaxCountResult = 1000;
