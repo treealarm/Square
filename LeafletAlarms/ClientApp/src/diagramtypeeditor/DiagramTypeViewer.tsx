@@ -1,5 +1,5 @@
 ﻿import * as React from 'react';
-import { useCallback, useEffect, WheelEvent } from 'react';
+import { useEffect } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
 import { getExtraProp, IDiagramCoord, IDiagramTypeDTO } from '../store/Marker';
@@ -7,21 +7,19 @@ import { getExtraProp, IDiagramCoord, IDiagramTypeDTO } from '../store/Marker';
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramTypeStore from '../store/DiagramTypeStates';
 import { useState } from 'react';
-import { Box, ButtonGroup, IconButton, FormControl } from '@mui/material';
-import * as GuiStore from '../store/GUIStates';
+import { Box, ButtonGroup, IconButton } from '@mui/material';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import * as MarkersVisualStore from '../store/MarkersVisualStates';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import { SelectChangeEvent } from '@mui/material/Select';
+
 
 export default function DiagramTypeViewer() {
 
   const appDispatch = useAppDispatch();
   const [zoom, setZoom] = useState(1.0);
 
-  const diagramType = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
+  const diagramType: IDiagramTypeDTO = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
  
 
   var paper_width = 1000;
@@ -29,7 +27,7 @@ export default function DiagramTypeViewer() {
 
   useEffect(
     () => {
-      appDispatch<any>(DiagramTypeStore.fetchDiagramTypeByName(""));
+      //appDispatch<any>(DiagramTypeStore.fetchDiagramTypeByName(""));
     }, []);
 
 
@@ -41,7 +39,9 @@ export default function DiagramTypeViewer() {
 
   };
 
+  const handleClickRegion = (e: React.MouseEvent<HTMLDivElement>) => {
 
+  };
 
   if (diagramType == null) {
     return null;
@@ -89,10 +89,50 @@ export default function DiagramTypeViewer() {
             left: '65px', // Сдвиг от левого края
             height: paper_height * zoom + 'px',
             width: paper_width * zoom + 'px',
-            backgroundColor: 'yellow',
+            backgroundColor: 'lightgray',
           }}>
 
+          <Box
+            key={"box green"}
+            sx={{// Paper
+              border: 0,
+              width: 'fit-content', // Установите ширину равной содержимому
+              height: 'fit-content', // Установите высоту равной содержимому
+              position: 'relative',
+            }}>
+          <img
+            key={"img" + diagramType?.id}
+            src={diagramType?.src}
+            style={{
+              border: 0,
+              padding: 0,
+              margin: 0,
+              //width: '100%',
+             // height: '100%',
+             // objectFit: 'fill'
+            }}/>
 
+            {
+              diagramType?.regions?.map((region, index) =>
+                < Box
+                  onClick={handleClickRegion//() => { selectItem(diagram?.id) }
+                  }
+                  key={index.toString() + "boxitem"}
+                  sx={{
+                    position: 'absolute',
+                    top: region.geometry.top * 100 + '%',
+                    left: region.geometry.left * 100 + '%',
+                    width: region.geometry.width * 100 + '%',
+                    height: region.geometry.height * 100 + '%',
+                    backgroundColor: 'rgba(0, 255, 0, 0.5)',
+                    '&:hover': {
+                      cursor: 'pointer'
+                    },
+                  }} />               
+              )
+            }
+
+          </Box>
         </Box>
       </Box>
 
