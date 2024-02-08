@@ -31,7 +31,7 @@ export function DiagramTypeProperties() {
   }, []);
 
   function editMe(){
-    appDispatch(DiagramTypeStore.fetchDiagramTypeById(typeId));
+    //appDispatch(DiagramTypeStore.fetchDiagramTypeById(typeId));
   };
 
   const deleteMe = useCallback(
@@ -47,6 +47,9 @@ export function DiagramTypeProperties() {
     const { target: { id, value } } = e;
   };
 
+  function handleChangeSrc(e: any) {
+    const { target: { id, value } } = e;
+  };
   return (
     <Box sx={{
       width: '100%',
@@ -88,21 +91,38 @@ export function DiagramTypeProperties() {
         <ListItem>
           <TextField
             fullWidth
+            id="diagram_type_name_id"
             label='Id'
             size="small"
-            value={typeId ? typeId : ''}
-            onChange={handleChangeId }>
+            value={diagramType ? diagramType?.id : ""}
+            onChange={handleChangeId}
+            inputProps={{ readOnly: true }}> 
           </TextField>
         </ListItem>
 
         <ListItem>
-          <TextField size="small"
+          <TextField
             fullWidth
-            id="name" label='Name'
-            value={diagramType?.name}
-            onChange={handleChangeName} />
+            id="diagram_type_name_name"
+            label='Name'
+            size="small"
+            value={diagramType ? diagramType?.name : ""}
+            onChange={handleChangeName}
+                    >
+          </TextField>
         </ListItem>
 
+        <ListItem>
+          <TextField
+            fullWidth
+            id="diagram_type_name_src"
+            label='Src'
+            size="small"
+            value={diagramType ? diagramType?.src : ""}
+            onChange={handleChangeSrc}
+          >
+          </TextField>
+        </ListItem>
       </List>
     </Box>
   );

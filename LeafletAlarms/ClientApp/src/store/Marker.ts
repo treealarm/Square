@@ -381,4 +381,5 @@ export interface IGetDiagramTypesByFilterDTO {
   filter: string;
   start_id: string;
   forward: boolean;
+  count: number;
 }

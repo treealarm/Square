@@ -1,20 +1,17 @@
 ﻿import * as React from 'react';
 
-import { useEffect, useCallback, useState } from 'react';
-import { useDispatch, useSelector, useStore } from "react-redux";
+import {useCallback } from 'react';
+import { useSelector } from "react-redux";
 
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 import { ApplicationState } from '../store';
-import { IGetDiagramTypesByFilterDTO, TreeMarker, ViewOption } from '../store/Marker';
+import { IDiagramTypeDTO, IGetDiagramTypesByFilterDTO, TreeMarker } from '../store/Marker';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Toolbar, Tooltip, TextField } from '@mui/material';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -25,36 +22,68 @@ import { useAppDispatch } from '../store/configureStore';
 export function DiagramTypeSearcher() {
 
   const appDispatch = useAppDispatch();
-  const diagramtypes = useSelector((state: ApplicationState) => state?.diagramtypeStates?.diagramtypes);
+  const diagramtypes: IDiagramTypeDTO[] = useSelector((state: ApplicationState) => state?.diagramtypeStates?.diagramtypes);
   const diagramType = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
 
-  const [filter, set_filter] = React.useState("");
 
-  const handleSelect = useCallback((selected: TreeMarker) => () => {
-
+  const handleSelect = useCallback((selected: IDiagramTypeDTO) => () => {
+    appDispatch<any>(DiagramTypeStore.fetchDiagramTypeById(selected?.id));
   }, [diagramtypes]);
+
+  const [inputNameFilter, setInputValue] = React.useState("");
+  const countOnPage = 200;
+
+  let timeoutId:any = null;
+
+  React.useEffect(() => {
+    if (timeoutId != null) {
+      clearTimeout(timeoutId);
+    }
+      
+    timeoutId = setTimeout(() => {
+      var filterToApplay: IGetDiagramTypesByFilterDTO =
+      {
+        filter: inputNameFilter,
+        forward: true,
+        start_id: null,
+        count: countOnPage
+      };
+
+      appDispatch(DiagramTypeStore.fetchGetDiagramTypesByFilter(filterToApplay));
+    }, 1500);
+    return () => clearTimeout(timeoutId);
+  }, [inputNameFilter]);
 
   function handleChangeName(e: any) {
     const { target: { id, value } } = e;
-    set_filter(value);
-    var filterToApplay: IGetDiagramTypesByFilterDTO =
-    {
-      filter: value,
-      forward: true,
-      start_id: null
-    };
-    appDispatch(DiagramTypeStore.fetchGetDiagramTypesByFilter(filterToApplay));
+    setInputValue(value);
   };
 
   const OnNavigate = useCallback(
     (next: boolean, e: any) => {
-      if (next) {
 
+      var filterToApplay: IGetDiagramTypesByFilterDTO =
+      {
+        filter: inputNameFilter,
+        forward: next,
+        start_id: null,
+        count: countOnPage
+      };
+      
+      if (next) {
+        if (diagramtypes != null && diagramtypes.length > 0) {
+          const lastElement = diagramtypes[diagramtypes.length - 1];
+          filterToApplay.start_id = lastElement.id;
+        }        
       }
       else {
-
+        if (diagramtypes != null && diagramtypes.length > 0) {
+          const lastElement = diagramtypes[0];
+          filterToApplay.start_id = lastElement.id;
+        } 
       }
-    }, [])
+      appDispatch(DiagramTypeStore.fetchGetDiagramTypesByFilter(filterToApplay));
+    }, [diagramtypes])
 
   return (
     <Box sx={{
@@ -75,7 +104,7 @@ export function DiagramTypeSearcher() {
             <TextField size="small"
               fullWidth
               id="filter_name" label='Filter'
-              value={filter}
+              value={inputNameFilter ? inputNameFilter:""}
               onChange={handleChangeName} />
           </ListItem>
           <Box sx={{ flexGrow: 1 }} />
@@ -104,6 +133,7 @@ export function DiagramTypeSearcher() {
                 disablePadding
                 selected={diagramType?.id == dType?.id}
               >
+                <Tooltip title={dType.id}>
                 <ListItemButton
                   selected={diagramType?.id == dType?.id} role={undefined}
                   onClick={handleSelect(dType)}>
@@ -111,7 +141,8 @@ export function DiagramTypeSearcher() {
                     id={dType.id}
                     primary={dType.name}
                   />
-                </ListItemButton>
+                  </ListItemButton>
+                </Tooltip>
               </ListItem>
             )}
         </List>

@@ -98,7 +98,7 @@ namespace DbLayer.Services
     async Task<Dictionary<string, DiagramTypeDTO>> IDiagramTypeService.GetDiagramTypesByFilter(GetDiagramTypesByFilterDTO filterDto)
     {
       List<DBDiagramType> obj = null;
-      int count = 100;
+
       try
       {
         var builder = Builders<DBDiagramType>.Filter;
@@ -139,7 +139,8 @@ namespace DbLayer.Services
         {
           obj = await _coll
           .Find(filter)
-          .Limit(count)
+          .SortBy(x => x.id)
+          .Limit(filterDto.count)
           .ToListAsync();
         }
         else
@@ -147,7 +148,7 @@ namespace DbLayer.Services
           obj = await _coll
                     .Find(filter)
                     .SortByDescending(x => x.id)
-                    .Limit(count)
+                    .Limit(filterDto.count)
                     .ToListAsync()
                     ;
 
