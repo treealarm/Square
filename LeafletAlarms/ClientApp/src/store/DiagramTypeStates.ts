@@ -110,7 +110,7 @@ export const deleteDiagramTypes = createAsyncThunk<string[], string[]>(
 
     var fetched = await DoFetch(ApiDiagramTypessRootString + "/DeleteDiagramTypes",
       {
-        method: "POST",
+        method: "DELETE",
         headers: { "Content-type": "application/json" },
         body: body
       });
@@ -180,6 +180,9 @@ const diagramtypesSlice = createSlice({
           var index = state.diagramtypes.findIndex(e => e.id == newDiagram.id);
           if (index >= 0) {
             state.diagramtypes[index] = newDiagram;
+          }
+          else {
+            state.diagramtypes.push(newDiagram);
           }
         }          
       })

@@ -38,7 +38,7 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    [HttpPost()]
+    [HttpDelete()]
     [Route("DeleteDiagramTypes")]
     public async Task<List<string>> DeleteDiagramTypes(List<string> ids)
     {
