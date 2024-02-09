@@ -39,6 +39,14 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost()]
+    [Route("DeleteDiagramTypes")]
+    public async Task<List<string>> DeleteDiagramTypes(List<string> ids)
+    {
+      await _diagramTypeService.DeleteAsync(ids);
+      return ids;
+    }
+
+    [HttpPost()]
     [Route("GetDiagramTypesByFilter")]
     public async Task<GetDiagramTypesDTO> GetDiagramTypesByFilter(GetDiagramTypesByFilterDTO filter)
     {

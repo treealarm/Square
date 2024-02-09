@@ -21,6 +21,7 @@ namespace DbLayer.Services
   {
     private readonly IMongoCollection<DBDiagramType> _coll;
     private readonly MongoClient _mongoClient;
+
     public DiagramTypeService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
       _mongoClient = new MongoClient(
@@ -53,10 +54,10 @@ namespace DbLayer.Services
       }
     }
 
-    async Task IDiagramTypeService.DeleteAsync(string id)
+    async Task IDiagramTypeService.DeleteAsync(List<string> ids)
     {
-      await _coll.DeleteOneAsync(
-          x => x.id == id);
+      await _coll.DeleteManyAsync(
+          x => ids.Contains(x.id));
     }
 
     async Task<Dictionary<string, DiagramTypeDTO>> IDiagramTypeService.GetListByTypeNamesAsync(

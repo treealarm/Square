@@ -13,6 +13,7 @@ import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+import AddIcon from '@mui/icons-material/Add';
 
 import { useAppDispatch } from '../store/configureStore';
 import { DeepCopy, IDiagramTypeDTO, IDiagramTypeRegionDTO } from '../store/Marker';
@@ -34,12 +35,19 @@ export function DiagramTypeProperties() {
     appDispatch(DiagramTypeStore.updateDiagramTypes([copy]));    
   }, [diagramType]);
 
-  function editMe() {
-    //appDispatch(DiagramTypeStore.fetchDiagramTypeById(typeId));
+  function addNew() {
+    var copy: IDiagramTypeDTO =
+    {
+      id:null,
+      name: "new diagram",
+      src: "",
+      regions:[]
+    }
+    appDispatch(DiagramTypeStore.set_local_diagram(copy)); 
   };
   const deleteMe = useCallback(
     (e: any) => {
-
+      appDispatch(DiagramTypeStore.deleteDiagramTypes([diagramType.id]));
     }, [diagramType])
 
   function handleChangeName(e: any) {
@@ -127,11 +135,11 @@ export function DiagramTypeProperties() {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title={"Edit object"}>
+            <Tooltip title={"Add object"}>
               <IconButton aria-label="edit" size="medium"
-                onClick={(e: any) => editMe()} >
+                onClick={(e: any) => addNew()} >
 
-                <EditIcon fontSize="inherit" />
+                <AddIcon fontSize="inherit" />
 
               </IconButton>
             </Tooltip>
@@ -152,7 +160,7 @@ export function DiagramTypeProperties() {
 
             label='Id'
             size="small"
-            value={diagramType ? diagramType?.id : ""}
+            value={diagramType?.id ? diagramType.id : ""}
             inputProps={{ readOnly: true }}>
           </TextField>
         </ListItem>

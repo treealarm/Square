@@ -99,6 +99,28 @@ export const updateDiagramTypes = createAsyncThunk<IGetDiagramTypesDTO, IDiagram
     return json;
   }
 )
+
+export const deleteDiagramTypes = createAsyncThunk<string[], string[]>(
+  'diagramtypes/DeleteDiagramTypes',
+  async (diagramTypes2Delete: string[], { getState }) => {
+    const state: ApplicationState = getState() as ApplicationState;
+    const diagramTypeStates = state.diagramtypeStates as DiagramTypeStates;
+
+    let body = JSON.stringify(diagramTypes2Delete);
+
+    var fetched = await DoFetch(ApiDiagramTypessRootString + "/DeleteDiagramTypes",
+      {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+    var json = await fetched.json() as Promise<string[]>;
+
+    return json;
+  }
+)
+
 const diagramtypesSlice = createSlice({
   name: 'DiagramTypesStates',
   initialState: unloadedState,
@@ -112,7 +134,6 @@ const diagramtypesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchDiagramTypeByName.pending, (state, action) => {
-        //state.parents = null;
       })
       .addCase(fetchDiagramTypeByName.fulfilled, (state, action) => {
         const { requestId } = action.meta
@@ -126,9 +147,7 @@ const diagramtypesSlice = createSlice({
         state.cur_diagramtype = null;
       })
 
-      .addCase(fetchDiagramTypeById.pending, (state, action) => {
-        //state.parents = null;
-      })
+
       .addCase(fetchDiagramTypeById.fulfilled, (state, action) => {
         const { requestId } = action.meta
         if (action.payload?.dgr_types.length > 0)
@@ -141,12 +160,9 @@ const diagramtypesSlice = createSlice({
         state.cur_diagramtype = null;
       })
 
-      .addCase(fetchGetDiagramTypesByFilter.pending, (state, action) => {
-        //state.parents = null;
-      })
+
       .addCase(fetchGetDiagramTypesByFilter.fulfilled, (state, action) => {
-        const { requestId } = action.meta
-       
+        const { requestId } = action.meta       
         state.diagramtypes = action.payload.dgr_types;
       })
       .addCase(fetchGetDiagramTypesByFilter.rejected, (state, action) => {
@@ -155,8 +171,7 @@ const diagramtypesSlice = createSlice({
       })
 
       //updateDiagramTypes
-      .addCase(updateDiagramTypes.pending, (state, action) => {
-      })
+
       .addCase(updateDiagramTypes.fulfilled, (state, action) => {
         const { requestId } = action.meta
         if (action.payload?.dgr_types.length > 0) {
@@ -168,10 +183,17 @@ const diagramtypesSlice = createSlice({
           }
         }          
       })
-      .addCase(updateDiagramTypes.rejected, (state, action) => {
-        const { requestId } = action.meta
-        //state.cur_diagramtype = null;
-      })
+
+      // delete      //updateDiagramTypes
+
+      .addCase(deleteDiagramTypes.fulfilled, (state, action) => {
+          const { requestId } = action.meta
+        if (action.payload?.length > 0) {
+          state.cur_diagramtype = null;
+          var newArr = state.diagramtypes.filter(e => action.payload.indexOf(e.id) < 0);
+          state.diagramtypes = newArr;
+          }
+        })
   },
 })
 
