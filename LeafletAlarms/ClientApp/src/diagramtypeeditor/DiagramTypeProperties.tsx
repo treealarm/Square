@@ -9,11 +9,13 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Box, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/material';
 
+import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IDiagramTypeDTO } from '../store/Marker';
+import { DeepCopy, IDiagramTypeDTO, IDiagramTypeRegionDTO } from '../store/Marker';
 
 
 export function DiagramTypeProperties() {
@@ -35,11 +37,10 @@ export function DiagramTypeProperties() {
   function editMe() {
     //appDispatch(DiagramTypeStore.fetchDiagramTypeById(typeId));
   };
-
   const deleteMe = useCallback(
-    () => {
-    }, [])
+    (e: any) => {
 
+    }, [diagramType])
 
   function handleChangeName(e: any) {
     const { target: { id, value } } = e;
@@ -54,7 +55,29 @@ export function DiagramTypeProperties() {
     copy.src = value;
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
   };
-
+  function handleDeleteRegion(e: any) {
+    const { index } = e;
+    var copy = DeepCopy(diagramType);
+    copy.regions.splice(index, 1);
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));
+  }
+  function handleAddRegion(e: any) {
+    const { index } = e;
+    var copy = DeepCopy(diagramType);
+    var newRegion: IDiagramTypeRegionDTO = 
+    {
+      id: copy?.regions?.length.toString(),
+      geometry: {
+        left: 0,
+        top: 0,
+        width: 1,
+        height:0.5
+      }
+    }
+    copy.regions.push(newRegion);
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));
+  }
+  
   function handleChangeRegion(e: any) {
     const { target: { id, value } } = e;
 
@@ -114,7 +137,7 @@ export function DiagramTypeProperties() {
             </Tooltip>
 
             <Tooltip title={"Delete object"}>
-              <IconButton aria-label="delete" size="medium" onClick={(e: any) => deleteMe()}>
+              <IconButton aria-label="delete" size="medium" onClick={(e: any) => deleteMe(e)}>
                 <DeleteIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
@@ -155,6 +178,13 @@ export function DiagramTypeProperties() {
           >
           </TextField>
         </ListItem>
+        <ListItem id="diagram_type_name_src">
+        <Tooltip title={"add new property"}>
+          <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddRegion(e); }}>
+            <AddTaskIcon fontSize="inherit" />
+            </IconButton>
+        
+          </Tooltip></ListItem>
         {
           diagramType?.regions?.map((region, index) =>
             <div><Divider><br /></Divider>
@@ -168,7 +198,15 @@ export function DiagramTypeProperties() {
                   onChange={handleChangeRegion}
                 >
 
-                </TextField></ListItem>
+                </TextField>
+                <Tooltip title={"Delete region"}>
+                  <IconButton
+                    id={"deletereg:" + index.toString()} 
+                    aria-label="delete" size="medium" onClick={(e: any) => handleDeleteRegion({ index: index })}>
+                    <DeleteIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </ListItem>
               <ListItem id={"reg_geo" + index.toString()}>
 
                 <TextField

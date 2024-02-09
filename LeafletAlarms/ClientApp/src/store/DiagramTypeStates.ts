@@ -79,7 +79,7 @@ export const fetchGetDiagramTypesByFilter = createAsyncThunk<IGetDiagramTypesDTO
   }
 )
 
-export const updateDiagramTypes = createAsyncThunk<IDiagramTypeDTO[], IDiagramTypeDTO[]>(
+export const updateDiagramTypes = createAsyncThunk<IGetDiagramTypesDTO, IDiagramTypeDTO[]>(
   'diagramtypes/UpdateDiagramTypes',
   async (diagramsToUpdate: IDiagramTypeDTO[], { getState }) => {
     const state: ApplicationState = getState() as ApplicationState;
@@ -94,7 +94,7 @@ export const updateDiagramTypes = createAsyncThunk<IDiagramTypeDTO[], IDiagramTy
         body: body
       });
 
-    var json = await fetched.json() as Promise<IDiagramTypeDTO[]>;
+    var json = await fetched.json() as Promise<IGetDiagramTypesDTO>;
 
     return json;
   }
@@ -159,8 +159,14 @@ const diagramtypesSlice = createSlice({
       })
       .addCase(updateDiagramTypes.fulfilled, (state, action) => {
         const { requestId } = action.meta
-        if (action.payload?.length > 0)
-          state.cur_diagramtype = action.payload[0];
+        if (action.payload?.dgr_types.length > 0) {
+          var newDiagram = action.payload.dgr_types[0];
+          state.cur_diagramtype = newDiagram;
+          var index = state.diagramtypes.findIndex(e => e.id == newDiagram.id);
+          if (index >= 0) {
+            state.diagramtypes[index] = newDiagram;
+          }
+        }          
       })
       .addCase(updateDiagramTypes.rejected, (state, action) => {
         const { requestId } = action.meta
