@@ -47,6 +47,16 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
+    [HttpPost()]
+    [Route("UpdateDiagramTypes")]
+    public async Task<GetDiagramTypesDTO> UpdateDiagramTypes(List<DiagramTypeDTO> dgr_types)
+    {
+      await _diagramTypeService.UpdateListAsync(dgr_types);
+
+      var retVal = new GetDiagramTypesDTO(dgr_types);
+      return retVal;
+    }
+
     [HttpGet()]
     [Route("CreateBasicTemplate")]
     public async Task<List<DiagramTypeDTO>> CreateBasicTemplate()

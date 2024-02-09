@@ -79,13 +79,33 @@ export const fetchGetDiagramTypesByFilter = createAsyncThunk<IGetDiagramTypesDTO
   }
 )
 
+export const updateDiagramTypes = createAsyncThunk<IDiagramTypeDTO[], IDiagramTypeDTO[]>(
+  'diagramtypes/UpdateDiagramTypes',
+  async (diagramsToUpdate: IDiagramTypeDTO[], { getState }) => {
+    const state: ApplicationState = getState() as ApplicationState;
+    const diagramTypeStates = state.diagramtypeStates as DiagramTypeStates;
+
+    let body = JSON.stringify(diagramsToUpdate);
+
+    var fetched = await DoFetch(ApiDiagramTypessRootString + "/UpdateDiagramTypes",
+      {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+    var json = await fetched.json() as Promise<IDiagramTypeDTO[]>;
+
+    return json;
+  }
+)
 const diagramtypesSlice = createSlice({
   name: 'DiagramTypesStates',
   initialState: unloadedState,
   reducers: {
 
-    reset_diagram(state: DiagramTypeStates, action: PayloadAction<null>) {
-      state.cur_diagramtype = null;
+    set_local_diagram(state: DiagramTypeStates, action: PayloadAction<IDiagramTypeDTO>) {
+      state.cur_diagramtype = action.payload;
     }
   }
   ,
@@ -104,7 +124,6 @@ const diagramtypesSlice = createSlice({
       .addCase(fetchDiagramTypeByName.rejected, (state, action) => {
         const { requestId } = action.meta
         state.cur_diagramtype = null;
-
       })
 
       .addCase(fetchDiagramTypeById.pending, (state, action) => {
@@ -120,7 +139,6 @@ const diagramtypesSlice = createSlice({
       .addCase(fetchDiagramTypeById.rejected, (state, action) => {
         const { requestId } = action.meta
         state.cur_diagramtype = null;
-
       })
 
       .addCase(fetchGetDiagramTypesByFilter.pending, (state, action) => {
@@ -130,17 +148,28 @@ const diagramtypesSlice = createSlice({
         const { requestId } = action.meta
        
         state.diagramtypes = action.payload.dgr_types;
-
       })
       .addCase(fetchGetDiagramTypesByFilter.rejected, (state, action) => {
         const { requestId } = action.meta
         state.cur_diagramtype = null;
+      })
 
+      //updateDiagramTypes
+      .addCase(updateDiagramTypes.pending, (state, action) => {
+      })
+      .addCase(updateDiagramTypes.fulfilled, (state, action) => {
+        const { requestId } = action.meta
+        if (action.payload?.length > 0)
+          state.cur_diagramtype = action.payload[0];
+      })
+      .addCase(updateDiagramTypes.rejected, (state, action) => {
+        const { requestId } = action.meta
+        //state.cur_diagramtype = null;
       })
   },
 })
 
-export const { reset_diagram } = diagramtypesSlice.actions
+export const { set_local_diagram } = diagramtypesSlice.actions
 export const reducer = diagramtypesSlice.reducer
 
 

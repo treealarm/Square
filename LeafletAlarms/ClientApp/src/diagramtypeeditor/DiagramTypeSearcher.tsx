@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 import { ApplicationState } from '../store';
-import { IDiagramTypeDTO, IGetDiagramTypesByFilterDTO, TreeMarker } from '../store/Marker';
+import { DeepCopy, IDiagramTypeDTO, IGetDiagramTypesByFilterDTO, TreeMarker } from '../store/Marker';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -27,7 +27,9 @@ export function DiagramTypeSearcher() {
 
 
   const handleSelect = useCallback((selected: IDiagramTypeDTO) => () => {
-    appDispatch<any>(DiagramTypeStore.fetchDiagramTypeById(selected?.id));
+    //appDispatch(DiagramTypeStore.fetchDiagramTypeById(selected?.id));
+    var copy = DeepCopy(selected);
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));    
   }, [diagramtypes]);
 
   const [inputNameFilter, setInputValue] = React.useState("");

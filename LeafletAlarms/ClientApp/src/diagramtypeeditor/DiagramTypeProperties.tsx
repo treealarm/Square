@@ -13,7 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import { useAppDispatch } from '../store/configureStore';
-import { IDiagramTypeDTO } from '../store/Marker';
+import { DeepCopy, IDiagramTypeDTO } from '../store/Marker';
 
 
 export function DiagramTypeProperties() {
@@ -28,8 +28,9 @@ export function DiagramTypeProperties() {
   }, []);
 
   const handleSave = useCallback(() => {
-
-  }, []);
+    var copy = DeepCopy(diagramType);
+    appDispatch(DiagramTypeStore.updateDiagramTypes([copy]));    
+  }, [diagramType]);
 
   function editMe() {
     //appDispatch(DiagramTypeStore.fetchDiagramTypeById(typeId));
@@ -39,18 +40,51 @@ export function DiagramTypeProperties() {
     () => {
     }, [])
 
-  function handleChangeId(e: any) {
-    const { target: { id, value } } = e;
-    setTypeId(value);
-  };
 
   function handleChangeName(e: any) {
     const { target: { id, value } } = e;
+    var copy = DeepCopy(diagramType);
+    copy.name = value;
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));
   };
 
   function handleChangeSrc(e: any) {
     const { target: { id, value } } = e;
+    var copy = DeepCopy(diagramType);
+    copy.src = value;
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));
   };
+
+  function handleChangeRegion(e: any) {
+    const { target: { id, value } } = e;
+
+    var copy = DeepCopy(diagramType);
+
+    var val = id.split(':', 2);
+    var textId = val[0];
+    var index = val[1];
+
+    if (textId == "editreg_id") {
+      copy.regions[index].id = value;
+    }
+    else if (!isNaN(value)) {
+      if (textId == "editreg_left") {
+        copy.regions[index].geometry.left = value;
+      }
+      if (textId == "editreg_top") {
+        copy.regions[index].geometry.top = value;
+      }
+      if (textId == "editreg_width") {
+        copy.regions[index].geometry.width = value;
+      }
+      if (textId == "editreg_height") {
+        copy.regions[index].geometry.height = value;
+      }
+    }
+
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));
+  };
+
   return (
     <Box sx={{
       width: '100%',
@@ -96,7 +130,6 @@ export function DiagramTypeProperties() {
             label='Id'
             size="small"
             value={diagramType ? diagramType?.id : ""}
-            onChange={handleChangeId}
             inputProps={{ readOnly: true }}>
           </TextField>
         </ListItem>
@@ -104,7 +137,6 @@ export function DiagramTypeProperties() {
         <ListItem id="diagram_type_name_name">
           <TextField
             fullWidth
-
             label='Name'
             size="small"
             value={diagramType ? diagramType?.name : ""}
@@ -116,7 +148,6 @@ export function DiagramTypeProperties() {
         <ListItem id="diagram_type_name_src">
           <TextField
             fullWidth
-
             label='Src'
             size="small"
             value={diagramType ? diagramType?.src : ""}
@@ -129,44 +160,49 @@ export function DiagramTypeProperties() {
             <div><Divider><br /></Divider>
               <ListItem id={"reg_id" + index.toString()}>
                 <TextField
+                  id={"editreg_id:" + index.toString()}
                   fullWidth
-                label='id'
-                size="small"
-                value={region.id}
-                onChange={handleChangeSrc}
+                  label='id'
+                  size="small"
+                  value={region.id}
+                  onChange={handleChangeRegion}
                 >
-                  
+
                 </TextField></ListItem>
-            <ListItem id={"reg_geo" + index.toString()}>
-              
-              <TextField
-                label='left'
-                size="small"
-                value={region.geometry.left}
-                onChange={handleChangeSrc}
-              >
-              </TextField>
-              <TextField
-                label='top'
-                size="small"
-                value={region.geometry.top}
-                onChange={handleChangeSrc}
-              >
-              </TextField>
-              <TextField
-                label='width'
-                size="small"
-                value={region.geometry.width}
-                onChange={handleChangeSrc}
-              >
-              </TextField>
-              <TextField
-                label='height'
-                size="small"
-                value={region.geometry.height}
-                onChange={handleChangeSrc}
-              >
-              </TextField>
+              <ListItem id={"reg_geo" + index.toString()}>
+
+                <TextField
+                  id={"editreg_left:" + index.toString()}
+                  label='left'
+                  size="small"
+                  value={region.geometry.left}
+                  onChange={handleChangeRegion}
+                >
+                </TextField>
+                <TextField
+                  id={"editreg_top:" + index.toString()}
+                  label='top'
+                  size="small"
+                  value={region.geometry.top}
+                  onChange={handleChangeRegion}
+                >
+                </TextField>
+                <TextField
+                  id={"editreg_width:" + index.toString()}
+                  label='width'
+                  size="small"
+                  value={region.geometry.width}
+                  onChange={handleChangeRegion}
+                >
+                </TextField>
+                <TextField
+                  id={"editreg_height:" + index.toString()}
+                  label='height'
+                  size="small"
+                  value={region.geometry.height}
+                  onChange={handleChangeRegion}
+                >
+                </TextField>
               </ListItem>
             </div>
           )}
