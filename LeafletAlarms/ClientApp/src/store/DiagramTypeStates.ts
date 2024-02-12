@@ -1,7 +1,7 @@
 ﻿import { IDiagramTypeDTO, IGetDiagramTypesByFilterDTO, IGetDiagramTypesDTO } from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ApiDiagramTypessRootString, ApplicationState } from './index';
+import { ApiDiagramTypesRootString, ApplicationState } from './index';
 
 
 export interface DiagramTypeStates {
@@ -24,7 +24,7 @@ export const fetchDiagramTypeByName = createAsyncThunk<IGetDiagramTypesDTO, stri
 
     let body = JSON.stringify([name]);
 
-    var fetched = await DoFetch(ApiDiagramTypessRootString + "/GetDiagramTypesByName",
+    var fetched = await DoFetch(ApiDiagramTypesRootString + "/GetDiagramTypesByName",
       {
         method: "POST",
         headers: { "Content-type": "application/json" },
@@ -45,7 +45,7 @@ export const fetchDiagramTypeById = createAsyncThunk<IGetDiagramTypesDTO, string
 
     let body = JSON.stringify([id]);
 
-    var fetched = await DoFetch(ApiDiagramTypessRootString + "/GetDiagramTypesById",
+    var fetched = await DoFetch(ApiDiagramTypesRootString + "/GetDiagramTypesById",
       {
         method: "POST",
         headers: { "Content-type": "application/json" },
@@ -66,7 +66,7 @@ export const fetchGetDiagramTypesByFilter = createAsyncThunk<IGetDiagramTypesDTO
 
     let body = JSON.stringify(filter);
 
-    var fetched = await DoFetch(ApiDiagramTypessRootString + "/GetDiagramTypesByFilter",
+    var fetched = await DoFetch(ApiDiagramTypesRootString + "/GetDiagramTypesByFilter",
       {
         method: "POST",
         headers: { "Content-type": "application/json" },
@@ -87,7 +87,7 @@ export const updateDiagramTypes = createAsyncThunk<IGetDiagramTypesDTO, IDiagram
 
     let body = JSON.stringify(diagramsToUpdate);
 
-    var fetched = await DoFetch(ApiDiagramTypessRootString + "/UpdateDiagramTypes",
+    var fetched = await DoFetch(ApiDiagramTypesRootString + "/UpdateDiagramTypes",
       {
         method: "POST",
         headers: { "Content-type": "application/json" },
@@ -108,7 +108,7 @@ export const deleteDiagramTypes = createAsyncThunk<string[], string[]>(
 
     let body = JSON.stringify(diagramTypes2Delete);
 
-    var fetched = await DoFetch(ApiDiagramTypessRootString + "/DeleteDiagramTypes",
+    var fetched = await DoFetch(ApiDiagramTypesRootString + "/DeleteDiagramTypes",
       {
         method: "DELETE",
         headers: { "Content-type": "application/json" },

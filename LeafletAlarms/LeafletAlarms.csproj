@@ -57,6 +57,7 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\components\DiagramTypeEditor.tsx" />
+    <None Remove="ClientApp\src\components\FileUpload.tsx" />
     <None Remove="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramElement.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramGray.tsx" />
@@ -75,6 +76,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\DiagramTypeEditor.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\components\FileUpload.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramElement.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramGray.tsx" />

@@ -17,6 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import { useAppDispatch } from '../store/configureStore';
 import { DeepCopy, IDiagramTypeDTO, IDiagramTypeRegionDTO } from '../store/Marker';
+import FileUpload from '../components/FileUpload';
 
 
 export function DiagramTypeProperties() {
@@ -116,6 +117,9 @@ export function DiagramTypeProperties() {
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
   };
 
+  function onUploadSuccess(data: any) {
+
+  }
   return (
     <Box sx={{
       width: '100%',
@@ -185,6 +189,7 @@ export function DiagramTypeProperties() {
             onChange={handleChangeSrc}
           >
           </TextField>
+          <FileUpload key="file_upload" path="diagram_types" onUploadSuccess={onUploadSuccess} />
         </ListItem>
         <ListItem id="diagram_type_name_src">
         <Tooltip title={"add new property"}>
