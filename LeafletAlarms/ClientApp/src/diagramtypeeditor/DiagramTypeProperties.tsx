@@ -33,18 +33,18 @@ export function DiagramTypeProperties() {
 
   const handleSave = useCallback(() => {
     var copy = DeepCopy(diagramType);
-    appDispatch(DiagramTypeStore.updateDiagramTypes([copy]));    
+    appDispatch(DiagramTypeStore.updateDiagramTypes([copy]));
   }, [diagramType]);
 
   function addNew() {
     var copy: IDiagramTypeDTO =
     {
-      id:null,
+      id: null,
       name: "new diagram",
       src: "",
-      regions:[]
+      regions: []
     }
-    appDispatch(DiagramTypeStore.set_local_diagram(copy)); 
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));
   };
   const deleteMe = useCallback(
     (e: any) => {
@@ -73,20 +73,20 @@ export function DiagramTypeProperties() {
   function handleAddRegion(e: any) {
     const { index } = e;
     var copy = DeepCopy(diagramType);
-    var newRegion: IDiagramTypeRegionDTO = 
+    var newRegion: IDiagramTypeRegionDTO =
     {
       id: copy?.regions?.length.toString(),
       geometry: {
         left: 0,
         top: 0,
         width: 1,
-        height:0.5
+        height: 0.5
       }
     }
     copy.regions.push(newRegion);
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
   }
-  
+
   function handleChangeRegion(e: any) {
     const { target: { id, value } } = e;
 
@@ -119,6 +119,13 @@ export function DiagramTypeProperties() {
 
   function onUploadSuccess(data: any) {
 
+    if (data == null) {
+      return;
+    }
+
+    var copy = DeepCopy(diagramType);
+    copy.src = data;
+    appDispatch(DiagramTypeStore.set_local_diagram(copy));
   }
   return (
     <Box sx={{
@@ -181,6 +188,7 @@ export function DiagramTypeProperties() {
         </ListItem>
 
         <ListItem id="diagram_type_name_src">
+         
           <TextField
             fullWidth
             label='Src'
@@ -189,14 +197,16 @@ export function DiagramTypeProperties() {
             onChange={handleChangeSrc}
           >
           </TextField>
+          <Divider orientation='vertical'><br/></Divider>
           <FileUpload key="file_upload" path="diagram_types" onUploadSuccess={onUploadSuccess} />
+          
         </ListItem>
         <ListItem id="diagram_type_name_src">
-        <Tooltip title={"add new property"}>
-          <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddRegion(e); }}>
-            <AddTaskIcon fontSize="inherit" />
+          <Tooltip title={"add new property"}>
+            <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddRegion(e); }}>
+              <AddTaskIcon fontSize="inherit" />
             </IconButton>
-        
+
           </Tooltip></ListItem>
         {
           diagramType?.regions?.map((region, index) =>
@@ -214,7 +224,7 @@ export function DiagramTypeProperties() {
                 </TextField>
                 <Tooltip title={"Delete region"}>
                   <IconButton
-                    id={"deletereg:" + index.toString()} 
+                    id={"deletereg:" + index.toString()}
                     aria-label="delete" size="medium" onClick={(e: any) => handleDeleteRegion({ index: index })}>
                     <DeleteIcon fontSize="inherit" />
                   </IconButton>

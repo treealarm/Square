@@ -3,9 +3,9 @@ import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-import { useState } from "react";
 import { DoFetch } from "../store/Fetcher";
 import { ApiFileSystemRootString } from "../store/index";
+import { Tooltip } from '@mui/material';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -51,26 +51,27 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, path }) => {
         const data = await response.text();
         // Обработка успешного ответа
         console.log('Data received:', data);
-        onUploadSuccess(data);
+        onUploadSuccess('static_files/' + path + '/' + file.name);
       } catch (error) {
         // Обработка ошибок
         console.error('Error fetching data:', error);
+        onUploadSuccess(null);
       }
     }
   };
 
   return (
-    <div>
+    <Tooltip title={"File upload"}>
       <Button
         component="label"
         role={undefined}
         variant="contained"
         tabIndex={-1}
-        startIcon={<CloudUploadIcon />}
+        startIcon={<CloudUploadIcon />}        
       >
         <VisuallyHiddenInput type="file" onChange={handleFileChange} />
-      </Button>
-    </div>
+        </Button>
+    </Tooltip>
   );
 };
 

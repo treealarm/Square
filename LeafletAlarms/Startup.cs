@@ -18,6 +18,7 @@ using PubSubLib;
 using SharpCompress.Common;
 using Swashbuckle.AspNetCore.Filters;
 using System.Data;
+using System.IO;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -145,6 +146,15 @@ namespace LeafletAlarms
     {
       var options = Configuration.GetSection("RoutingSettings").Get<RoutingSettings>();
 
+      try
+      {
+        Directory.CreateDirectory(options.RootFolder);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+
       var dataDirectory = new DirectoryInfo(options.RootFolder);
 
       Console.WriteLine($"dataDirectory:{options.RootFolder}");
@@ -247,7 +257,24 @@ namespace LeafletAlarms
         .AllowAnyMethod()
         .AllowAnyHeader());
 
-      app.UseStaticFiles(); // For default.
+      //app.UseStaticFiles(); // For default.
+      var basePath = Path.Combine(GetRootFolder().FullName, "static_files");
+
+      try
+      {
+        Directory.CreateDirectory(basePath);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+
+      app.UseStaticFiles(new StaticFileOptions
+      {
+        FileProvider = new PhysicalFileProvider(
+           basePath),
+        RequestPath = "/static_files"
+      });
 
       var keycloak_json_folder = GetAlternativePublicFolder();
       var wwwrootFolder = Path.Combine(env.ContentRootPath, "wwwroot");

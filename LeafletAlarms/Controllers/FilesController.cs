@@ -14,6 +14,7 @@ namespace LeafletAlarms.Controllers
   [Route("api/[controller]")]
   public class FilesController  : ControllerBase
   {
+    private readonly string _imagesFolder = "static_files";
     private readonly IOptions<RoutingSettings> _routingSettings;
     public FilesController(  IOptions<RoutingSettings> routingSettings)
     {
@@ -35,7 +36,7 @@ namespace LeafletAlarms.Controllers
         basePath = dataDirectory.FullName;
       }
 
-      basePath = Path.Combine(basePath, path);
+      basePath = Path.Combine(basePath, _imagesFolder, path);
 
       string localName = Path.Combine(basePath, file);
 
@@ -81,7 +82,7 @@ namespace LeafletAlarms.Controllers
           basePath = dataDirectory.FullName;
         }
 
-        basePath = Path.Combine(basePath, path);
+        basePath = Path.Combine(basePath, _imagesFolder, path);
         try
         {
           Directory.CreateDirectory(basePath);

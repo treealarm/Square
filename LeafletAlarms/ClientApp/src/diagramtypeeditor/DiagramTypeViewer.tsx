@@ -7,7 +7,7 @@ import { getExtraProp, IDiagramCoord, IDiagramTypeDTO } from '../store/Marker';
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramTypeStore from '../store/DiagramTypeStates';
 import { useState } from 'react';
-import { Box, ButtonGroup, IconButton } from '@mui/material';
+import { Box, ButtonGroup, IconButton, Tooltip } from '@mui/material';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
@@ -20,27 +20,16 @@ export default function DiagramTypeViewer() {
   const [zoom, setZoom] = useState(1.0);
 
   const diagramType: IDiagramTypeDTO = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
- 
+
 
   var paper_width = 1000;
   var paper_height = 1000;
 
-  useEffect(
-    () => {
-      //appDispatch<any>(DiagramTypeStore.fetchDiagramTypeByName(""));
-    }, []);
+  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
-
-  const handleChange = (event: SelectChangeEvent) => {
-
-  };
-
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-
-  };
-
-  const handleClickRegion = (e: React.MouseEvent<HTMLDivElement>) => {
-
+  const handleImageLoad = (event: any) => {
+    const { naturalWidth, naturalHeight } = event.target;
+    setImageSize({ width: naturalWidth, height: naturalHeight });
   };
 
   if (diagramType == null) {
@@ -79,7 +68,6 @@ export default function DiagramTypeViewer() {
       >
         <Box
           key={"box yellow"}
-          onClick={handleClick}
           sx={{// Paper
             position: 'absolute',
             border: 0,
@@ -100,60 +88,60 @@ export default function DiagramTypeViewer() {
               height: 'fit-content', // Установите высоту равной содержимому
               position: 'relative',
             }}>
+          </Box>
           <img
             key={"img" + diagramType?.id}
             src={diagramType?.src}
+            onLoad={handleImageLoad}
             style={{
-              border: 0,
-              padding: 0,
-              margin: 0,
-              //width: '100%',
-             // height: '100%',
-             // objectFit: 'fill'
-            }}/>
+              width: zoom * imageSize.width + 'px', // Ширина в процентах от реальной ширины
+              height: zoom * imageSize.height + 'px', // Высота в процентах от реальной высоты
+              // Другие стили
+            }} />
 
-            {
-              diagramType?.regions?.map((region, index) =>
-                < Box
-                  onClick={handleClickRegion//() => { selectItem(diagram?.id) }
-                  }
-                  key={index.toString() + "boxitem"}
-                  sx={{
-                    position: 'absolute',
-                    top: region.geometry.top * 100 + '%',
-                    left: region.geometry.left * 100 + '%',
-                    width: region.geometry.width * 100 + '%',
-                    height: region.geometry.height * 100 + '%',
-                    backgroundColor: 'rgba(0, 255, 0, 0.5)',
-                    '&:hover': {
-                      cursor: 'pointer'
-                    },
-                  }} />               
-              )
-            }
+          {
+            diagramType?.regions?.map((region, index) =>
+              < Box
+                key={index.toString() + "boxitem"}
+                sx={{
+                  position: 'absolute',
+                  left: imageSize.width * region.geometry.left * zoom + 'px',
+                  top: imageSize.height * region.geometry.top * zoom + 'px',
 
-          </Box>
+                  width: imageSize.width * region.geometry.width * zoom + 'px',
+                  height: imageSize.height * region.geometry.height * zoom + 'px',
+                  backgroundColor: 'rgba(0, 255, 0, 0.5)',
+                  '&:hover': {
+                    cursor: 'pointer'
+                  },
+                }} />
+            )
+          }
+
+
         </Box>
       </Box>
 
-      <ButtonGroup variant="contained" orientation="vertical"
-        sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
-        <IconButton
-          onClick={(e: any) => setZoom(zoom + 0.1)}>
-          <ZoomInIcon fontSize="inherit"></ZoomInIcon>
-        </IconButton>
+      <Tooltip title={"Zoom " + zoom.toFixed(2)}>
+        <ButtonGroup variant="contained" orientation="vertical"
+          sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
 
-        <IconButton
-          onClick={(e: any) => setZoom(zoom - 0.1)}>
-          <ZoomOutIcon fontSize="inherit" />
-        </IconButton>
-        <IconButton
-          onClick={(e: any) => setZoom(1)}>
-          <RestartAltIcon fontSize="inherit" />
-        </IconButton>
+          <IconButton
+            onClick={(e: any) => setZoom(zoom + 0.1)}>
+            <ZoomInIcon fontSize="inherit"></ZoomInIcon>
+          </IconButton>
 
-      </ButtonGroup>
+          <IconButton
+            onClick={(e: any) => setZoom(zoom - 0.1)}>
+            <ZoomOutIcon fontSize="inherit" />
+          </IconButton>
+          <IconButton
+            onClick={(e: any) => setZoom(1)}>
+            <RestartAltIcon fontSize="inherit" />
+          </IconButton>
 
+        </ButtonGroup>
+      </Tooltip>
     </Box>
   );
 }
