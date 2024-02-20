@@ -25,6 +25,7 @@ import { SearchMeOnMap } from './SearchMeOnMap';
 import { useAppDispatch } from '../store/configureStore';
 import EditOptions from './EditOptions';
 import { RequestRoute } from './RequestRoute';
+import { DiagramProperties } from '../diagrams/DiagramProperties';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -205,7 +206,9 @@ export function ObjectProperties() {
       <List dense>
         <ListItem>
           <ButtonGroup variant="contained" aria-label="properties pannel">
+
             <EditOptions />
+
             <Tooltip title={"Save object" }>
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
@@ -259,6 +262,8 @@ export function ObjectProperties() {
             value={objProps?.name}
             onChange={handleChangeName} />
         </ListItem>
+
+        <DiagramProperties/>
         <Divider><br></br></Divider>
         {
           objProps?.extra_props?.map((item, index) =>

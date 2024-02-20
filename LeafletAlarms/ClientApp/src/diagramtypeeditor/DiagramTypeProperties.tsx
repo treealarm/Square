@@ -11,7 +11,6 @@ import { Box, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/
 
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -202,7 +201,7 @@ export function DiagramTypeProperties() {
           
         </ListItem>
         <ListItem id="diagram_type_name_src">
-          <Tooltip title={"add new property"}>
+          <Tooltip title={"add new region"}>
             <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddRegion(e); }}>
               <AddTaskIcon fontSize="inherit" />
             </IconButton>

@@ -12,7 +12,6 @@ import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import * as PanelsStore from '../store/PanelsStates';
-import EditOptions from "../tree/EditOptions";
 
 export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
 
@@ -88,12 +87,6 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
             sx={{ flexGrow: 1, backgroundColor: color }}>
               <Typography sx={{ p: 2, fontWeight: 'bold' }}>{component[0].panelValue}</Typography>            
           </Box>
-          {
-            component[0].panelId == IPanelTypes.properties ?
-              <EditOptions />
-              :
-              <div/>
-          }
           
           <Box
             sx={{ flexGrow: 1 }}

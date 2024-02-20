@@ -114,11 +114,11 @@ export default function DiagramViewer() {
   };
 
   const handleWheelEvent = (e: WheelEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    var newZ = zoom + ((e.deltaY) / Math.abs(e.deltaY)) * -0.1
-    setZoom(newZ);
-    console.log("ZOOM", newZ)
+    //e.preventDefault();
+    //e.stopPropagation();
+    //var newZ = zoom + ((e.deltaY) / Math.abs(e.deltaY)) * -0.1
+    //setZoom(newZ);
+    //console.log("ZOOM", newZ)
   };
 
   function handleScrollCapture(event: any) {

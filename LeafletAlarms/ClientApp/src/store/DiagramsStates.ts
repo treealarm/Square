@@ -41,6 +41,9 @@ const diagramsSlice = createSlice({
     reset_diagram(state: DiagramsStates, action: PayloadAction<null>) {
       state.cur_diagram = null;
     },
+    set_local_diagram(state: DiagramsStates, action: PayloadAction<IGetDiagramDTO>) {
+      state.cur_diagram = action.payload;
+    },
     set_depth(state: DiagramsStates, action: PayloadAction<number>) {
       state.depth = action.payload;
     }
@@ -63,7 +66,7 @@ const diagramsSlice = createSlice({
   },
 })
 
-export const { reset_diagram, set_depth } = diagramsSlice.actions
+export const { reset_diagram, set_depth, set_local_diagram } = diagramsSlice.actions
 export const reducer = diagramsSlice.reducer
 
 
