@@ -1,4 +1,4 @@
-﻿import { IGetDiagramDTO} from './Marker';
+﻿import { IDiagramDTO, IGetDiagramDTO} from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApiDiagramsRootString, ApplicationState } from './index';
@@ -33,6 +33,28 @@ export const fetchDiagram = createAsyncThunk<IGetDiagramDTO, string>(
   }
 )
 
+export const updateDiagrams = createAsyncThunk<IDiagramDTO[], IDiagramDTO[]>(
+  'diagrams/UpdateDiagrams',
+  async (diagramsToUpdate: IDiagramDTO[], { getState }) => {
+    const state: ApplicationState = getState() as ApplicationState;
+    const diagramsStates = state.diagramsStates as DiagramsStates;
+
+    let body = JSON.stringify(diagramsToUpdate);
+
+    var fetched = await DoFetch(ApiDiagramsRootString + "/UpdateDiagrams",
+      {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+    var json = await fetched.json() as Promise<IDiagramDTO[]>;
+
+    return json;
+  }
+)
+
+
 const diagramsSlice = createSlice({
   name: 'DiagramStates',
   initialState: unloadedState,
@@ -60,8 +82,23 @@ const diagramsSlice = createSlice({
       })
       .addCase(fetchDiagram.rejected, (state, action) => {
         const { requestId } = action.meta
-        state.cur_diagram = null;
-        
+        state.cur_diagram = null;        
+      })
+
+    //updateDiagrams
+      .addCase(updateDiagrams.pending, (state, action) => {
+        //state.parents = null;
+      })
+      .addCase(updateDiagrams.fulfilled, (state: DiagramsStates, action) => {
+        const { requestId } = action.meta
+        const updated: IDiagramDTO[] = action.payload;
+        var newContent =
+          state.cur_diagram.content.filter(d => updated.find(ud => ud.id == d.id) == null);
+        state.cur_diagram.content = [...updated, ...newContent];
+      })
+      .addCase(updateDiagrams.rejected, (state, action) => {
+        const { requestId } = action.meta
+        //state.cur_diagram = null;
       })
   },
 })

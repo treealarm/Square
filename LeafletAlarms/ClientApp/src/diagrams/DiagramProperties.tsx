@@ -10,22 +10,49 @@ import { Box, Divider, TextField } from '@mui/material';
 
 
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IGetDiagramDTO } from '../store/Marker';
-import { useEffect } from 'react';
+import { DeepCopy, IDiagramDTO, IGetDiagramDTO } from '../store/Marker';
+import { useCallback, useEffect } from 'react';
 
+export interface ChildEvents {
+  clickSave: () => void;
+}
 
-export function DiagramProperties() {
+// Интерфейс для props дочернего компонента
+export interface IDiagramProperties {
+  events: ChildEvents;
+}
+export function DiagramProperties(props: IDiagramProperties) {
 
   const appDispatch = useAppDispatch();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const diagram: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
-  var curDiagram = diagram?.content?.find(e => e.id == selected_id);
+  const content: IDiagramDTO[] = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram?.content);
+  var curDiagram = content?.find(e => e.id == selected_id);
 
   const [selectedDiagram, setSelectedDiagram] = React.useState(curDiagram);
 
   useEffect(() => {
     setSelectedDiagram(curDiagram);
   }, [curDiagram]);
+
+
+  const handleSave = useCallback(() => {
+    if (selectedDiagram == null) {
+      return;
+    }
+    var copy = DeepCopy(content);
+    copy = copy.filter(d => d.id != selectedDiagram.id);
+    copy.push(DeepCopy(selectedDiagram));
+    appDispatch(DiagramsStore.updateDiagrams(copy));
+
+  }, [selectedDiagram, content]);
+
+  // Подписываемся на изменение props.events
+  useEffect(() => {
+    if (props.events)
+    {
+      props.events.clickSave = handleSave;
+    }
+  }, [props.events, handleSave]);
 
   function handleChangeType(e: any) {
     const { target: { id, value } } = e;
@@ -96,7 +123,7 @@ export function DiagramProperties() {
           <TextField
             id={"editreg_id:"}
             fullWidth
-            label='id'
+            label='Region id'
             size="small"
             value={selectedDiagram?.region_id != null ? selectedDiagram.region_id : ""}
             onChange={handleChangeRegion}

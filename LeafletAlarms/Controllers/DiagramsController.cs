@@ -1,6 +1,7 @@
 ﻿using DbLayer.Services;
 using Domain;
 using Domain.Diagram;
+using Domain.DiagramType;
 using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using LeafletAlarms.Services;
@@ -103,6 +104,14 @@ namespace LeafletAlarms.Controllers
       }
 
       return retVal;
+    }
+
+    [HttpPost()]
+    [Route("UpdateDiagrams")]
+    public async Task<List<DiagramDTO>> UpdateDiagrams(List<DiagramDTO> dgrs)
+    {
+      await _diagramService.UpdateListAsync(dgrs);
+      return dgrs;
     }
 
     private static FiguresDTO GetDiaFig()

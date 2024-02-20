@@ -137,7 +137,11 @@ export function ObjectProperties() {
 
   }, [propsUpdated]);
 
+  const childDiagramPropEvents = { clickSave: () => { } };
+
   const handleSave = useCallback(() => {
+
+    childDiagramPropEvents.clickSave();
     var copy = DeepCopy(objProps);
     if (copy == null) {
       return;
@@ -155,7 +159,7 @@ export function ObjectProperties() {
     // Stop edit mode.
     dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
 
-  }, [objProps]);
+  }, [objProps, childDiagramPropEvents.clickSave]);
 
   function editMe(props: IObjProps, editMode: boolean){
     dispatch<any>(EditStore.actionCreators.setFigureEditMode(editMode));
@@ -178,7 +182,7 @@ export function ObjectProperties() {
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [])
 
- 
+
     if (objProps == null || objProps == undefined) {
       return null;
   }
@@ -263,7 +267,7 @@ export function ObjectProperties() {
             onChange={handleChangeName} />
         </ListItem>
 
-        <DiagramProperties/>
+        <DiagramProperties events={childDiagramPropEvents} />
         <Divider><br></br></Divider>
         {
           objProps?.extra_props?.map((item, index) =>
