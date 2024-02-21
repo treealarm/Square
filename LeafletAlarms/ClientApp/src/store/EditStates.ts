@@ -5,6 +5,7 @@ import { AppThunkAction } from '.';
 export const PolygonTool = 'Polygon';
 export const CircleTool = 'Circle';
 export const PolylineTool = 'Polyline';
+export const DiagramTool = 'Diagram';
 
 export const Figures: Record<string, string> =
 {
@@ -13,6 +14,10 @@ export const Figures: Record<string, string> =
   Polygon: 'Create Polygon'
 };
 
+export const Diagrams: Record<string, string> =
+{
+  Diagram: 'Create Diagram'
+};
 
 export interface EditState {
   edit_mode: boolean;

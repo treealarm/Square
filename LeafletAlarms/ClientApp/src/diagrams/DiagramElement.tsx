@@ -4,7 +4,7 @@ import { ApplicationState } from '../store/index';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../store/configureStore';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
 import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
@@ -31,8 +31,48 @@ export default function DiagramElement(props: IDiagramElement) {
 
   const appDispatch = useAppDispatch();
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.stopPropagation();
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
+
+  const [coord, setCoord] = useState(diagram.geometry);
+
+  const handleMouseDown = (event: any) => {
+    event.stopPropagation();
+    setIsDragging(true);
+    const { clientX, clientY } = event;
+    const offsetX = clientX;
+    const offsetY = clientY;
+    setStartPoint({ x: offsetX, y: offsetY });
+  };
+
+  const handleMouseMove = (event: any) => {
+    event.stopPropagation();
+    if (!isDragging) return;
+
+    const { clientX, clientY } = event;
+    const curOffset = {
+      x: clientX - startPoint.x,
+      y: clientY - startPoint.y,
+    };
+
+    if (diagram.geometry != null) {
+      setCoord(
+        {
+          top: diagram.geometry.top + curOffset.y,
+          left: diagram.geometry.left + curOffset.x,
+          height: diagram.geometry.height,
+          width: diagram.geometry.width
+        });
+    }
+  };
+
+  const handleMouseUp = (event: any) => {
+    event.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
     selectItem(diagram?.id);
   };
 
@@ -42,50 +82,54 @@ export default function DiagramElement(props: IDiagramElement) {
       console.log("selecting diagram:", diagram_id);
     }, [objProps]);
 
+  useEffect(
+    () => {
+      if (diagram?.region_id != null) {
+        var parent_type: IDiagramTypeDTO = diagrams.dgr_types.find(t => t.name == parent.dgr_type);
 
-  if (diagram == null) {
-    return null;
-  }
+        if (parent_type != null) {
+          var region = parent_type.regions.find(r => r.id == diagram.region_id);
+
+          if (region != null) {
+            var w = parent_coord.width;
+            var h = parent_coord.height;
+            setCoord(
+              {
+                top: h * region.geometry.top,
+                left: w * region.geometry.left,
+                height: h * region.geometry.height,
+                width: w * region.geometry.width
+              });
+          }
+        }
+      }
+
+      if (coord == null) {
+        setCoord(
+          {
+            top: diagram.geometry.top,
+            left: diagram.geometry.left,
+            height: diagram.geometry.height,
+            width: diagram.geometry.width
+          });
+      }
+    }, [diagram, diagrams, coord]);
+
 
   var diagram_type: IDiagramTypeDTO = null;
 
   if (diagrams.dgr_types != null) {
     diagram_type = diagrams.dgr_types.find(t => t.name == diagram.dgr_type);
   }
+
+  if (diagram_type == null) {
+    console.log("no type");
+  }
   var zoom = props.zoom;
   var content = diagrams.content.filter(e => e.parent_id == diagram.id);
 
-  var coord: IDiagramCoord = diagram.geometry;
+  
 
-  if (diagram.region_id != null) {
-    var parent_type: IDiagramTypeDTO = diagrams.dgr_types.find(t => t.name == parent.dgr_type);
-
-    if (parent_type != null) {
-      var region = parent_type.regions.find(r => r.id == diagram.region_id);
-
-      if (region != null) {
-        var w = parent_coord.width;
-        var h = parent_coord.height;
-        coord =
-        {
-          top: h * region.geometry.top,
-          left: w * region.geometry.left,
-          height: h * region.geometry.height,
-          width: w * region.geometry.width
-        };
-      }
-    }
-  }
-
-  if (coord == null) {
-    coord =
-    {
-      top: diagram.geometry.top,
-      left: diagram.geometry.left,
-      height: diagram.geometry.height,
-      width: diagram.geometry.width
-    };
-  }
 
   var color = getColor(diagram);
   var shadow = null;
@@ -94,13 +138,19 @@ export default function DiagramElement(props: IDiagramElement) {
     shadow = '0 0 15px 0px rgba(0,0,0,0.9)';
   }
 
+  if (diagram == null) {
+    return null;
+  }
+
   return (
     <React.Fragment>
 
       <Box
         key={"box in element"}
-        onClick={handleClick//() => { selectItem(diagram?.id) }
-        }
+        onClick={handleClick}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
         sx={{// Main object
           boxShadow: shadow,
           padding: 0,
@@ -123,7 +173,7 @@ export default function DiagramElement(props: IDiagramElement) {
 
         <img
           key={"img" + diagram?.id}
-          src={diagram_type?.src}
+          src={diagram_type?.src != null ? diagram_type?.src : "svg/rack.svg"}
           style={{
             border: 0,
             padding: 0,

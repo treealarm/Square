@@ -26,6 +26,7 @@ import { useAppDispatch } from '../store/configureStore';
 import EditOptions from './EditOptions';
 import { RequestRoute } from './RequestRoute';
 import { DiagramProperties } from '../diagrams/DiagramProperties';
+import * as DiagramsStore from '../store/DiagramsStates';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -180,6 +181,7 @@ export function ObjectProperties() {
       let idsToDelete: string[] = [marker.id];
       dispatch<any>(MarkersStore.actionCreators.deleteMarker(idsToDelete));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+      dispatch(DiagramsStore.remove_ids_locally(idsToDelete));
     }, [])
 
 

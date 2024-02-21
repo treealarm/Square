@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DbLayer.Services;
+using Domain;
 using Domain.GeoDTO;
 using Domain.NonDto;
 using Domain.ServiceInterfaces;
@@ -29,7 +30,7 @@ namespace LeafletAlarms.Controllers
     private readonly RightsCheckerService _rightChecker;
     private readonly IOptions<RoutingSettings> _routingSettings;
     private readonly TracksUpdateService _trackUpdateService;
-    
+    private readonly IDiagramService _diagramService;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
@@ -38,7 +39,8 @@ namespace LeafletAlarms.Controllers
       ILevelService levelService,
       RightsCheckerService rightChecker,
       IOptions<RoutingSettings> routingSettings,
-      TracksUpdateService trackUpdateService
+      TracksUpdateService trackUpdateService,
+      IDiagramService diagramService
     )
     {
       _mapService = mapsService;
@@ -49,6 +51,7 @@ namespace LeafletAlarms.Controllers
       _rightChecker = rightChecker;
       _routingSettings = routingSettings;
       _trackUpdateService = trackUpdateService;
+      _diagramService = diagramService;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -580,7 +583,7 @@ namespace LeafletAlarms.Controllers
 
       await _geoService.RemoveAsync(listToDelete);
       await _mapService.RemoveAsync(listToDelete);
-
+      await _diagramService.RemoveAsync(listToDelete);
 
       var ret = CreatedAtAction(nameof(Delete), null, idsToDelete);
       return ret;

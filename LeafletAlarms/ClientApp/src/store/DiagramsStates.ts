@@ -68,6 +68,10 @@ const diagramsSlice = createSlice({
     },
     set_depth(state: DiagramsStates, action: PayloadAction<number>) {
       state.depth = action.payload;
+    },
+    remove_ids_locally(state: DiagramsStates, action: PayloadAction<string[]>) {
+      state.cur_diagram.content = state.cur_diagram.content.filter(
+        d => action.payload.find( id => id==d.id) == null);
     }
   }
   ,
@@ -103,7 +107,7 @@ const diagramsSlice = createSlice({
   },
 })
 
-export const { reset_diagram, set_depth, set_local_diagram } = diagramsSlice.actions
+export const { reset_diagram, set_depth, set_local_diagram, remove_ids_locally } = diagramsSlice.actions
 export const reducer = diagramsSlice.reducer
 
 

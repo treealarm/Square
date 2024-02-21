@@ -10,7 +10,7 @@ import { Box, Divider, TextField } from '@mui/material';
 
 
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IDiagramDTO, IGetDiagramDTO } from '../store/Marker';
+import { DeepCopy, IDiagramDTO } from '../store/Marker';
 import { useCallback, useEffect } from 'react';
 
 export interface ChildEvents {
@@ -39,11 +39,10 @@ export function DiagramProperties(props: IDiagramProperties) {
     if (selectedDiagram == null) {
       return;
     }
-    var copy = DeepCopy(content);
-    copy = copy.filter(d => d.id != selectedDiagram.id);
-    copy.push(DeepCopy(selectedDiagram));
-    appDispatch(DiagramsStore.updateDiagrams(copy));
-
+    //var copy = DeepCopy(content);
+    //copy = copy.filter(d => d.id != selectedDiagram.id);
+    //copy.push(DeepCopy(selectedDiagram));
+    appDispatch(DiagramsStore.updateDiagrams([DeepCopy(selectedDiagram)]));
   }, [selectedDiagram, content]);
 
   // Подписываемся на изменение props.events
@@ -112,7 +111,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             fullWidth
             label='Diagram type'
             size="small"
-            value={selectedDiagram ? selectedDiagram?.dgr_type : ""}
+            value={selectedDiagram?.dgr_type != null ? selectedDiagram?.dgr_type : ""}
             onChange={handleChangeType}
           >
           </TextField>

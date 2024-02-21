@@ -49,10 +49,10 @@ namespace DbLayer.Services
       }
     }
 
-    async Task IDiagramService.DeleteAsync(string id)
+    async Task IDiagramService.RemoveAsync(List<string> ids)
     {
       await _coll.DeleteOneAsync(
-          x => x.id == id);
+          x => ids.Contains(x.id));
     }
 
     async Task<Dictionary<string, DiagramDTO>> IDiagramService.GetListByIdsAsync(

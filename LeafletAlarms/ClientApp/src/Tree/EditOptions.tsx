@@ -1,22 +1,31 @@
 ﻿import * as React from 'react';
 
-import { Box, IconButton, Menu, MenuItem, Tooltip} from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import * as EditStore from '../store/EditStates';
-import { useDispatch, useSelector } from 'react-redux';
-import { IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
+import * as DiagramsStore from '../store/DiagramsStates';
+import { useSelector } from 'react-redux';
+import { useAppDispatch } from '../store/configureStore';
+import { IDiagramDTO, IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LineStringType, PointType, PolygonType, setExtraProp } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import AddIcon from '@mui/icons-material/Add';
 import { ApplicationState } from '../store';
 
 export default function EditOptions() {
 
-  const dispatch = useDispatch();
-  
+  const dispatch = useAppDispatch();
+
+  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
+  var figuresMenu = EditStore.Figures;
+
+  if (diagram != null) {
+    figuresMenu = EditStore.Diagrams;
+  }
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -45,7 +54,7 @@ export default function EditOptions() {
       dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
     }
-   
+
     if (item == EditStore.PolylineTool) {
       const copy: IObjProps = {
         id: null,
@@ -81,6 +90,28 @@ export default function EditOptions() {
       dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
       return;
     }
+
+    if (item == EditStore.DiagramTool) {
+      const copy: IDiagramDTO = {
+        id: null,
+        name: 'New Diagram',
+        parent_id: selected_id,
+        dgr_type: null,
+        geometry:
+        {
+          left: 0,
+          top: 0,
+          width: 100,
+          height:100
+        },
+        region_id:null
+      };
+
+      dispatch(DiagramsStore.updateDiagrams([copy]));
+      dispatch(DiagramsStore.fetchDiagram(selected_id));
+      return;
+    }
+
     dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
   };
 
@@ -91,31 +122,31 @@ export default function EditOptions() {
   return (
     <Box>
       <Tooltip title={"Create new object"}>
-      <IconButton onClick={handleClickListItem} style={{ textTransform: 'none' }}>
-        
-        <AddIcon fontSize="inherit" />       
+        <IconButton onClick={handleClickListItem} style={{ textTransform: 'none' }}>
+
+          <AddIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>
-          <Menu
-            id="lock-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'lock-button',
-              role: 'listbox',
-            }}
-          >
+      <Menu
+        id="lock-menu"
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'lock-button',
+          role: 'listbox',
+        }}
+      >
 
-            {Object.entries(EditStore.Figures).map((item, index) => (
-                  <MenuItem
-                    key={item[0]}
-                onClick={(event) => handleMenuItemClick(item[0], index)}>
-                {item[1]}
-                  </MenuItem>
-                ))}
-                
-            </Menu>
+        {Object.entries(figuresMenu).map((item, index) => (
+          <MenuItem
+            key={item[0]}
+            onClick={(event) => handleMenuItemClick(item[0], index)}>
+            {item[1]}
+          </MenuItem>
+        ))}
+
+      </Menu>
     </Box>
   );
 }

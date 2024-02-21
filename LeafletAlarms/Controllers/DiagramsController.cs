@@ -110,7 +110,9 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateDiagrams")]
     public async Task<List<DiagramDTO>> UpdateDiagrams(List<DiagramDTO> dgrs)
     {
+      await _mapService.UpdateHierarchyAsync(dgrs);
       await _diagramService.UpdateListAsync(dgrs);
+      //await _mapService.UpdatePropAsync(dgrs);
       return dgrs;
     }
 

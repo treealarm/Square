@@ -63,6 +63,7 @@
     <None Remove="ClientApp\src\diagrams\DiagramGray.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramParentsNavigator.tsx" />
     <None Remove="ClientApp\src\diagrams\DiagramProperties.tsx" />
+    <None Remove="ClientApp\src\diagrams\DrawRectangle.tsx" />
     <None Remove="ClientApp\src\diagramtypeeditor\DiagramTypeViewer.tsx" />
     <None Remove="ClientApp\src\store\DiagramTypeStates.ts" />
   </ItemGroup>
@@ -89,6 +90,7 @@
     <TypeScriptCompile Include="ClientApp\src\components\PanelIcon.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\TogglePanelButton.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\diagrams\DrawRectangle.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagramtypeeditor\DiagramTypeViewer.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>

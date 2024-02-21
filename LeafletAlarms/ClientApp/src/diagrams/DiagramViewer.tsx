@@ -2,7 +2,7 @@
 import { useCallback, useEffect, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { getExtraProp, IDiagramCoord, IDiagramDTO } from '../store/Marker';
+import { DeepCopy, getExtraProp, IDiagramCoord, IDiagramDTO } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
@@ -17,6 +17,7 @@ import DiagramGray from './DiagramGray';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import DrawRectangle from './DrawRectangle';
 
 export default function DiagramViewer() {
 
@@ -110,7 +111,7 @@ export default function DiagramViewer() {
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+    appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram.parent_id));
   };
 
   const handleWheelEvent = (e: WheelEvent) => {
@@ -159,6 +160,7 @@ export default function DiagramViewer() {
         position: 'relative',
       }}
     >
+      
       <Box
         key={"box transparent"}
         sx={{
@@ -188,6 +190,7 @@ export default function DiagramViewer() {
             width: paper_width * zoom + 'px',
             backgroundColor: 'yellow',
           }}>
+          
           <DiagramGray diagram={parent} zoom={zoom} />
 
           {
@@ -200,8 +203,8 @@ export default function DiagramViewer() {
                 z_index={2}
                 getColor={getColor}
                 key={index} />
-            )}
-
+            )
+          }
 
         </Box>
       </Box>
