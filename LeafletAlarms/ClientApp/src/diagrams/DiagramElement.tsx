@@ -79,7 +79,7 @@ export default function DiagramElement(props: IDiagramElement) {
           };
       }
       setCoord(newCoord);
-    }, [diagram, diagrams, coord]);
+    }, [diagram, diagrams]);
 
 
   var diagram_type: IDiagramTypeDTO = null;

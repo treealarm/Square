@@ -7,11 +7,16 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import { Box, Divider, TextField } from '@mui/material';
-
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IDiagramDTO } from '../store/Marker';
+import { DeepCopy, IGetDiagramDTO } from '../store/Marker';
 import { useCallback, useEffect } from 'react';
+
+import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
 
 export interface ChildEvents {
   clickSave: () => void;
@@ -25,8 +30,13 @@ export function DiagramProperties(props: IDiagramProperties) {
 
   const appDispatch = useAppDispatch();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const content: IDiagramDTO[] = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram?.content);
+  const cur_diagram: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
+  const content: IDiagramDTO[] = cur_diagram?.content;
   var curDiagram = content?.find(e => e.id == selected_id);
+
+  var parent = content?.find(e => e.id == curDiagram?.parent_id);
+  var parentType = cur_diagram?.dgr_types?.find(t => t.name == parent?.dgr_type);
+
 
   const [selectedDiagram, setSelectedDiagram] = React.useState(curDiagram);
 
@@ -64,14 +74,9 @@ export function DiagramProperties(props: IDiagramProperties) {
     const { target: { id, value } } = e;
 
     var copy = DeepCopy(selectedDiagram);
+    var textId = id;
 
-    var val = id.split(':', 2);
-    var textId = val[0];
-
-    if (textId == "editreg_id") {
-      copy.region_id = value;
-    }
-    else if (!isNaN(value)) {
+    if (!isNaN(value)) {
       if (textId == "editreg_left") {
         copy.geometry.left = value;
       }
@@ -86,6 +91,14 @@ export function DiagramProperties(props: IDiagramProperties) {
       }
     }
 
+    setSelectedDiagram(copy);
+  };
+
+  function handleChangeRegionId(e: any) {
+    const { target: { name, value } } = e;
+
+    var copy = DeepCopy(selectedDiagram);
+    copy.region_id = value;
     setSelectedDiagram(copy);
   };
 
@@ -119,23 +132,31 @@ export function DiagramProperties(props: IDiagramProperties) {
         </ListItem>
 
         <ListItem id={"reg_id"}>
-          <TextField
-            id={"editreg_id:"}
-            fullWidth
-            label='Region id'
-            size="small"
-            value={selectedDiagram?.region_id != null ? selectedDiagram.region_id : ""}
-            onChange={handleChangeRegion}
-          >
 
-          </TextField>
+          <FormControl fullWidth>
+            <InputLabel id="editreg_id_label">Region id</InputLabel>
+            <Select
+              labelId="editreg_id_label"
+              name={"editreg_id"}
+              value={selectedDiagram?.region_id != null ? selectedDiagram.region_id : ""}
+              label="Region id"
+              onChange={handleChangeRegionId}
+              size="small"
+            >
+              {
+                parentType?.regions.map((region, index) =>
+                  <MenuItem value={region?.id}>{ region?.id}</MenuItem>
+                )}
+
+            </Select>
+          </FormControl>
 
         </ListItem>
 
         <ListItem id={"reg_geo"}>
 
           <TextField
-            id={"editreg_left:"}
+            id={"editreg_left"}
             label='left'
             size="small"
             value={selectedDiagram.geometry.left}
@@ -143,7 +164,7 @@ export function DiagramProperties(props: IDiagramProperties) {
           >
           </TextField>
           <TextField
-            id={"editreg_top:"}
+            id={"editreg_top"}
             label='top'
             size="small"
             value={selectedDiagram.geometry.top}
@@ -151,7 +172,7 @@ export function DiagramProperties(props: IDiagramProperties) {
           >
           </TextField>
           <TextField
-            id={"editreg_width:"}
+            id={"editreg_width"}
             label='width'
             size="small"
             value={selectedDiagram.geometry.width}
@@ -159,7 +180,7 @@ export function DiagramProperties(props: IDiagramProperties) {
           >
           </TextField>
           <TextField
-            id={"editreg_height:"}
+            id={"editreg_height"}
             label='height'
             size="small"
             value={selectedDiagram.geometry.height}

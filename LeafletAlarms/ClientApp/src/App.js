@@ -27,7 +27,9 @@ const theme = createTheme({
       main: '#fff'      
     }    
   },
+  
   components: {
+
     MuiListItem: {
       styleOverrides: {
         root: {
@@ -44,10 +46,37 @@ const theme = createTheme({
           backgroundColor: 'white',
           '&.Mui-selected, &.Mui-selected:hover': {
             backgroundColor: 'lightgray',
+            '&:focus': {
+              border: '1px solid #000',
+            },
           },
         },
       },
     },
+
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          '&:focus': {
+            border: '1px solid #000',
+          },
+        },
+      },
+    },
+
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#aaa", // Бордер при наведении
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#aaa", // Бордер при фокусе
+          },
+        },
+      },
+    },
+
     MuiListItemButton: {
       styleOverrides: {
         root: {
