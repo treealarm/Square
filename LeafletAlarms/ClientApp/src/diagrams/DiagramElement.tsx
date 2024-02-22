@@ -31,45 +31,8 @@ export default function DiagramElement(props: IDiagramElement) {
 
   const appDispatch = useAppDispatch();
 
-  const [isDragging, setIsDragging] = useState(false);
-  const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
-
   const [coord, setCoord] = useState(diagram.geometry);
 
-  const handleMouseDown = (event: any) => {
-    event.stopPropagation();
-    setIsDragging(true);
-    const { clientX, clientY } = event;
-    const offsetX = clientX;
-    const offsetY = clientY;
-    setStartPoint({ x: offsetX, y: offsetY });
-  };
-
-  const handleMouseMove = (event: any) => {
-    event.stopPropagation();
-    if (!isDragging) return;
-
-    const { clientX, clientY } = event;
-    const curOffset = {
-      x: clientX - startPoint.x,
-      y: clientY - startPoint.y,
-    };
-
-    if (diagram.geometry != null) {
-      setCoord(
-        {
-          top: diagram.geometry.top + curOffset.y,
-          left: diagram.geometry.left + curOffset.x,
-          height: diagram.geometry.height,
-          width: diagram.geometry.width
-        });
-    }
-  };
-
-  const handleMouseUp = (event: any) => {
-    event.stopPropagation();
-    setIsDragging(false);
-  };
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -84,6 +47,8 @@ export default function DiagramElement(props: IDiagramElement) {
 
   useEffect(
     () => {
+      var newCoord = diagram.geometry;
+
       if (diagram?.region_id != null) {
         var parent_type: IDiagramTypeDTO = diagrams.dgr_types.find(t => t.name == parent.dgr_type);
 
@@ -93,26 +58,27 @@ export default function DiagramElement(props: IDiagramElement) {
           if (region != null) {
             var w = parent_coord.width;
             var h = parent_coord.height;
-            setCoord(
+            newCoord = 
               {
                 top: h * region.geometry.top,
                 left: w * region.geometry.left,
                 height: h * region.geometry.height,
                 width: w * region.geometry.width
-              });
+              };
           }
         }
       }
 
-      if (coord == null) {
-        setCoord(
+      if (newCoord == null) {
+        newCoord = 
           {
             top: diagram.geometry.top,
             left: diagram.geometry.left,
             height: diagram.geometry.height,
             width: diagram.geometry.width
-          });
+          };
       }
+      setCoord(newCoord);
     }, [diagram, diagrams, coord]);
 
 
@@ -148,9 +114,6 @@ export default function DiagramElement(props: IDiagramElement) {
       <Box
         key={"box in element"}
         onClick={handleClick}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
         sx={{// Main object
           boxShadow: shadow,
           padding: 0,
@@ -173,7 +136,7 @@ export default function DiagramElement(props: IDiagramElement) {
 
         <img
           key={"img" + diagram?.id}
-          src={diagram_type?.src != null ? diagram_type?.src : "svg/rack.svg"}
+          src={diagram_type?.src != null ? diagram_type?.src : "svg/black_square.svg"}
           style={{
             border: 0,
             padding: 0,
