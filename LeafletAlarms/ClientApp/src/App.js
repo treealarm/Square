@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes ,Route  } from 'react-router-dom';
 
 import { Layout } from "./components/Layout.tsx";
 import { Home } from "./components/Home.tsx";
-import { DiagramTypeEditor } from "./components/DiagramTypeEditor.tsx";
+import { DiagramTypeEditor } from "./diagramtypeeditor/DiagramTypeEditor.tsx";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 import * as RightsStore from './store/RightsStates.ts';
@@ -23,98 +23,15 @@ const theme = createTheme({
     }
   },
   palette: {
+    mode: 'light',
     primary: {
-      main: '#fff'
-    }    
+      main: '#3f51b5',
+    },
+    secondary: {
+      main: '#f50057',
+    },
   },
-  
-  components: {
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          color:'blue'
-        }
-      },
-    },
-    MuiListItem: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'white',
-          '&.Mui-selected, &.Mui-selected:hover': {
-            backgroundColor: 'lightgray',
-          },
-        },
-      },
-    },
-    MuiMenuItem: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'white',
-          '&.Mui-selected, &.Mui-selected:hover': {
-            backgroundColor: 'lightgray',
-            '&:focus': {
-              border: '1px solid #000',
-            },
-          },
-        },
-      },
-    },
 
-    MuiSelect: {
-      styleOverrides: {
-        root: {
-          '&:focus': {
-            border: '1px solid #000',
-          },
-        },
-      },
-    },
-
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#aaa", // Бордер при наведении
-          },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#aaa", // Бордер при фокусе
-          },
-        },
-      },
-    },
-
-    MuiListItemButton: {
-      styleOverrides: {
-        root: {
-          backgroundColor: 'white',
-          '&.Mui-selected, &.Mui-selected:hover': {
-            backgroundColor: 'lightgray',
-          },
-        },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#aaa"            
-          },
-          "& .MuiOutlinedInput-root.Mui-focused  .MuiOutlinedInput-notchedOutline":
-          {
-            borderColor: "#aaa",
-          },
-          "& .MuiInputLabel-root.Mui-focused": { color: 'black' }
-        },
-      },
-    },
-    MuiTabs: {
-      styleOverrides: {
-        indicator: {
-          height: 4
-        }
-      }
-    }
-  },
 });
 
 export default () => {

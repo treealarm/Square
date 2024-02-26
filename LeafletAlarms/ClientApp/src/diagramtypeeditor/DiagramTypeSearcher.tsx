@@ -24,12 +24,9 @@ export function DiagramTypeSearcher() {
   const appDispatch = useAppDispatch();
   const diagramtypes: IDiagramTypeDTO[] = useSelector((state: ApplicationState) => state?.diagramtypeStates?.diagramtypes);
   const diagramType = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
-  const localFilter = useSelector((state: ApplicationState) => state?.diagramtypeStates?.filter);
-
-  const [inputNameFilter, setInputValue] = React.useState(localFilter);
+  const localFilter = useSelector((state: ApplicationState) => state?.diagramtypeStates?.localFilter);
 
   const handleSelect = useCallback((selected: IDiagramTypeDTO) => () => {
-    //appDispatch(DiagramTypeStore.fetchDiagramTypeById(selected?.id));
     var copy = DeepCopy(selected);
     appDispatch(DiagramTypeStore.set_local_diagram(copy));    
   }, [diagramtypes]);
@@ -38,9 +35,6 @@ export function DiagramTypeSearcher() {
 
   let timeoutId:any = null;
 
-  React.useEffect(() => {
-    setInputValue(localFilter);
-  }, [localFilter]);
 
   React.useEffect(() => {
     if (timeoutId != null) {
@@ -50,7 +44,7 @@ export function DiagramTypeSearcher() {
     timeoutId = setTimeout(() => {
       var filterToApplay: IGetDiagramTypesByFilterDTO =
       {
-        filter: inputNameFilter,
+        filter: localFilter,
         forward: true,
         start_id: null,
         count: countOnPage
@@ -59,11 +53,11 @@ export function DiagramTypeSearcher() {
       appDispatch(DiagramTypeStore.fetchGetDiagramTypesByFilter(filterToApplay));
     }, 1500);
     return () => clearTimeout(timeoutId);
-  }, [inputNameFilter]);
+  }, [localFilter]);
 
   function handleChangeName(e: any) {
     const { target: { id, value } } = e;
-    setInputValue(value);
+    appDispatch(DiagramTypeStore.set_local_filter(value));
   };
 
   const OnNavigate = useCallback(
@@ -71,7 +65,7 @@ export function DiagramTypeSearcher() {
 
       var filterToApplay: IGetDiagramTypesByFilterDTO =
       {
-        filter: inputNameFilter,
+        filter: localFilter,
         forward: next,
         start_id: null,
         count: countOnPage
@@ -111,7 +105,7 @@ export function DiagramTypeSearcher() {
             <TextField size="small"
               fullWidth
               id="filter_name" label='Filter'
-              value={inputNameFilter ? inputNameFilter:""}
+              value={localFilter ? localFilter :""}
               onChange={handleChangeName} />
           </ListItem>
           <Box sx={{ flexGrow: 1 }} />

@@ -77,7 +77,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\DiagramTypeEditor.tsx" />
+    <TypeScriptCompile Include="ClientApp\src\diagramtypeeditor\DiagramTypeEditor.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\FileUpload.tsx" />
     <TypeScriptCompile Include="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
     <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramElement.tsx" />

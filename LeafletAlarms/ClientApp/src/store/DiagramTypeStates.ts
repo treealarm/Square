@@ -7,13 +7,15 @@ import { ApiDiagramTypesRootString, ApplicationState } from './index';
 export interface DiagramTypeStates {
   cur_diagramtype: IDiagramTypeDTO | null;
   diagramtypes: IDiagramTypeDTO[] | null;
-  filter: string | null;
+  localFilter: string | null;
+  result: string | null;
 }
 
 const unloadedState: DiagramTypeStates = {
   cur_diagramtype: null,
   diagramtypes: null,
-  filter:null
+  localFilter: null,
+  result: null
 };
 
 export const fetchDiagramTypeByName = createAsyncThunk<IGetDiagramTypesDTO, string>(
@@ -130,7 +132,10 @@ const diagramtypesSlice = createSlice({
       state.cur_diagramtype = action.payload;
     },
     set_local_filter(state: DiagramTypeStates, action: PayloadAction<string>) {
-      state.filter = action.payload;
+      state.localFilter = action.payload;
+    },
+    set_result(state: DiagramTypeStates, action: PayloadAction<string>) {
+      state.result = action.payload;
     }
   }
   ,
@@ -203,7 +208,7 @@ const diagramtypesSlice = createSlice({
   },
 })
 
-export const { set_local_diagram, set_local_filter } = diagramtypesSlice.actions
+export const { set_local_diagram, set_local_filter, set_result } = diagramtypesSlice.actions
 export const reducer = diagramtypesSlice.reducer
 
 

@@ -68,6 +68,7 @@ export default function DiagramTypeViewer() {
       >
         <Box
           key={"box yellow"}
+          bgcolor="primary.light" 
           sx={{// Paper
             position: 'absolute',
             border: 0,
@@ -77,7 +78,7 @@ export default function DiagramTypeViewer() {
             left: '65px', // Сдвиг от левого края
             height: paper_height * zoom + 'px',
             width: paper_width * zoom + 'px',
-            backgroundColor: 'lightgray',
+            
           }}>
 
           <Box

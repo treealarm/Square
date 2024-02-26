@@ -17,7 +17,6 @@ import DiagramGray from './DiagramGray';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import DrawRectangle from './DrawRectangle';
 
 export default function DiagramViewer() {
 
@@ -179,6 +178,7 @@ export default function DiagramViewer() {
         <Box
           key={"box yellow"}
           onClick={handleClick}
+          bgcolor="primary.light"
           sx={{// Paper
             position: 'absolute',
             border: 0,
@@ -188,7 +188,7 @@ export default function DiagramViewer() {
             left: '65px', // Сдвиг от левого края
             height: paper_height * zoom + 'px',
             width: paper_width * zoom + 'px',
-            backgroundColor: 'yellow',
+            
           }}>
           
           <DiagramGray diagram={parent} zoom={zoom} />

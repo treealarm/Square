@@ -34,6 +34,9 @@ export function DiagramProperties(props: IDiagramProperties) {
   const appDispatch = useAppDispatch();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const cur_diagram: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
+  const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
+  const cur_diagramtype = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
+
   const content: IDiagramDTO[] = cur_diagram?.content;
   var curDiagram = content?.find(e => e.id == selected_id);
 
@@ -48,6 +51,28 @@ export function DiagramProperties(props: IDiagramProperties) {
     setSelectedDiagram(curDiagram);
   }, [curDiagram]);
 
+  useEffect(() => {
+    if (result == 'OK') {
+      appDispatch(DiagramTypeStore.set_result(null)); 
+      var copy = DeepCopy(selectedDiagram);
+      copy.dgr_type = cur_diagramtype?.name;
+      setSelectedDiagram(copy);
+      var newType = cur_diagram.dgr_types.find(dt => dt.name == copy.dgr_type);
+
+      if (newType == null) {
+        // Add type if not exist
+        var cur_diagram_copy = DeepCopy(cur_diagram);
+        cur_diagram_copy.dgr_types.push(DeepCopy(cur_diagramtype));
+        appDispatch(DiagramsStore.set_local_diagram(cur_diagram_copy));
+      }
+    }
+  }, [result, selectedDiagram, cur_diagramtype]);
+
+  function handleEditDiagramClick() {
+    appDispatch(DiagramTypeStore.set_local_filter(selectedDiagram?.dgr_type));
+    appDispatch(DiagramTypeStore.set_result('EDIT_TYPE'));
+    navigate("/editdiagram");
+  }
 
   const handleSave = useCallback(() => {
     if (selectedDiagram == null) {
@@ -105,12 +130,6 @@ export function DiagramProperties(props: IDiagramProperties) {
     copy.region_id = value;
     setSelectedDiagram(copy);
   };
-
-  function handleEditDiagramClick() {    
-    appDispatch(DiagramTypeStore.set_local_filter(selectedDiagram?.dgr_type));
-    
-    navigate("/editdiagram"); 
-  }
 
   if (selectedDiagram == null) {
     return null;
