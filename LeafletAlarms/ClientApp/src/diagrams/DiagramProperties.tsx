@@ -4,19 +4,22 @@ import { useSelector } from "react-redux";
 
 import { ApplicationState } from '../store';
 import * as DiagramsStore from '../store/DiagramsStates';
+import * as DiagramTypeStore from '../store/DiagramTypeStates'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Divider, TextField } from '@mui/material';
+import { Box, Button, Divider, TextField, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Select from '@mui/material/Select';
+import Link from '@mui/material/Link';
 
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IGetDiagramDTO } from '../store/Marker';
+import { DeepCopy, IGetDiagramDTO, IGetDiagramTypesByFilterDTO } from '../store/Marker';
 import { useCallback, useEffect } from 'react';
 
-import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
+import { IDiagramDTO } from '../store/Marker';
+import { useNavigate } from 'react-router-dom';
 
 export interface ChildEvents {
   clickSave: () => void;
@@ -39,6 +42,7 @@ export function DiagramProperties(props: IDiagramProperties) {
 
 
   const [selectedDiagram, setSelectedDiagram] = React.useState(curDiagram);
+  let navigate = useNavigate();
 
   useEffect(() => {
     setSelectedDiagram(curDiagram);
@@ -102,6 +106,12 @@ export function DiagramProperties(props: IDiagramProperties) {
     setSelectedDiagram(copy);
   };
 
+  function handleEditDiagramClick() {    
+    appDispatch(DiagramTypeStore.set_local_filter(selectedDiagram?.dgr_type));
+    
+    navigate("/editdiagram"); 
+  }
+
   if (selectedDiagram == null) {
     return null;
   }
@@ -128,7 +138,12 @@ export function DiagramProperties(props: IDiagramProperties) {
             onChange={handleChangeType}
           >
           </TextField>
+          <Divider><br></br></Divider>
 
+          <Link component="button" onClick={() => { handleEditDiagramClick(); }}>
+            {'select'}
+          </Link >
+           
         </ListItem>
 
         <ListItem id={"reg_id"}>

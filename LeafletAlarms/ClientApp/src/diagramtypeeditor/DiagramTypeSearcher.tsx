@@ -24,7 +24,9 @@ export function DiagramTypeSearcher() {
   const appDispatch = useAppDispatch();
   const diagramtypes: IDiagramTypeDTO[] = useSelector((state: ApplicationState) => state?.diagramtypeStates?.diagramtypes);
   const diagramType = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
+  const localFilter = useSelector((state: ApplicationState) => state?.diagramtypeStates?.filter);
 
+  const [inputNameFilter, setInputValue] = React.useState(localFilter);
 
   const handleSelect = useCallback((selected: IDiagramTypeDTO) => () => {
     //appDispatch(DiagramTypeStore.fetchDiagramTypeById(selected?.id));
@@ -32,10 +34,13 @@ export function DiagramTypeSearcher() {
     appDispatch(DiagramTypeStore.set_local_diagram(copy));    
   }, [diagramtypes]);
 
-  const [inputNameFilter, setInputValue] = React.useState("");
   const countOnPage = 200;
 
   let timeoutId:any = null;
+
+  React.useEffect(() => {
+    setInputValue(localFilter);
+  }, [localFilter]);
 
   React.useEffect(() => {
     if (timeoutId != null) {

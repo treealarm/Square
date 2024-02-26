@@ -128,6 +128,9 @@ const diagramtypesSlice = createSlice({
 
     set_local_diagram(state: DiagramTypeStates, action: PayloadAction<IDiagramTypeDTO>) {
       state.cur_diagramtype = action.payload;
+    },
+    set_local_filter(state: DiagramTypeStates, action: PayloadAction<string>) {
+      state.filter = action.payload;
     }
   }
   ,
@@ -200,7 +203,7 @@ const diagramtypesSlice = createSlice({
   },
 })
 
-export const { set_local_diagram } = diagramtypesSlice.actions
+export const { set_local_diagram, set_local_filter } = diagramtypesSlice.actions
 export const reducer = diagramtypesSlice.reducer
 
 

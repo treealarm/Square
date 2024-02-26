@@ -24,12 +24,18 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#fff'      
+      main: '#fff'
     }    
   },
   
   components: {
-
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color:'blue'
+        }
+      },
+    },
     MuiListItem: {
       styleOverrides: {
         root: {
