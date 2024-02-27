@@ -33,15 +33,15 @@ export function DiagramProperties(props: IDiagramProperties) {
 
   const appDispatch = useAppDispatch();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const cur_diagram: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
+  const getDiagramDto: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
   const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
   const cur_diagramtype = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
 
-  const content: IDiagramDTO[] = cur_diagram?.content;
+  const content: IDiagramDTO[] = getDiagramDto?.content;
   var curDiagram = content?.find(e => e.id == selected_id);
 
   var parent = content?.find(e => e.id == curDiagram?.parent_id);
-  var parentType = cur_diagram?.dgr_types?.find(t => t.name == parent?.dgr_type);
+  var parentType = getDiagramDto?.dgr_types?.find(t => t.name == parent?.dgr_type);
 
 
   const [selectedDiagram, setSelectedDiagram] = React.useState(curDiagram);
@@ -57,11 +57,16 @@ export function DiagramProperties(props: IDiagramProperties) {
       var copy = DeepCopy(selectedDiagram);
       copy.dgr_type = cur_diagramtype?.name;
       setSelectedDiagram(copy);
-      var newType = cur_diagram.dgr_types.find(dt => dt.name == copy.dgr_type);
+      
+      var newType = getDiagramDto.dgr_types?.find(dt => dt.name == copy.dgr_type);
 
       if (newType == null) {
         // Add type if not exist
-        var cur_diagram_copy = DeepCopy(cur_diagram);
+        var cur_diagram_copy = DeepCopy(getDiagramDto);
+
+        if (cur_diagram_copy.dgr_types == null) {
+          cur_diagram_copy.dgr_types = [];
+        }
         cur_diagram_copy.dgr_types.push(DeepCopy(cur_diagramtype));
         appDispatch(DiagramsStore.set_local_diagram(cur_diagram_copy));
       }

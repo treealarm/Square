@@ -17,7 +17,7 @@ import { useAppDispatch } from "../store/configureStore";
 export function DiagramTypeEditor() {
 
   const appDispatch = useAppDispatch();
-  const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.localFilter);
+  const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
   let navigate = useNavigate();
 
   function onClickOk() {
