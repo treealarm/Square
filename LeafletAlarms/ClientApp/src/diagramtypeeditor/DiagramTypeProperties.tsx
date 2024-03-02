@@ -24,8 +24,6 @@ export function DiagramTypeProperties() {
   const appDispatch = useAppDispatch();
   const diagramType: IDiagramTypeDTO = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
 
-  const [typeId, setTypeId] = React.useState(diagramType?.id);
-
   useEffect(() => {
 
   }, []);
@@ -137,7 +135,7 @@ export function DiagramTypeProperties() {
     }}>
 
       <List dense>
-        <ListItem>
+        <ListItem id="diagram_type_prop_pan">
           <ButtonGroup variant="contained" aria-label="properties pannel">
             <Tooltip title={"Save object"}>
               <IconButton aria-label="save" size="medium" onClick={handleSave}>

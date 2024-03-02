@@ -66,6 +66,11 @@ const diagramsSlice = createSlice({
     set_local_diagram(state: DiagramsStates, action: PayloadAction<IGetDiagramDTO>) {
       state.cur_diagram = action.payload;
     },
+    update_single_diagram(state: DiagramsStates, action: PayloadAction<IDiagramDTO>) {
+      var newContent = state.cur_diagram.content.filter(d => d.id != action.payload.id);
+      newContent.push(action.payload);
+      state.cur_diagram.content = newContent;
+    },
     set_depth(state: DiagramsStates, action: PayloadAction<number>) {
       state.depth = action.payload;
     },
@@ -107,7 +112,7 @@ const diagramsSlice = createSlice({
   },
 })
 
-export const { reset_diagram, set_depth, set_local_diagram, remove_ids_locally } = diagramsSlice.actions
+export const { reset_diagram, set_depth, set_local_diagram, remove_ids_locally, update_single_diagram } = diagramsSlice.actions
 export const reducer = diagramsSlice.reducer
 
 

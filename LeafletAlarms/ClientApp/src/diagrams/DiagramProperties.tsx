@@ -32,6 +32,7 @@ export interface IDiagramProperties {
 export function DiagramProperties(props: IDiagramProperties) {
 
   const appDispatch = useAppDispatch();
+  let navigate = useNavigate();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const getDiagramDto: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
   const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
@@ -43,51 +44,54 @@ export function DiagramProperties(props: IDiagramProperties) {
   var parent = content?.find(e => e.id == curDiagram?.parent_id);
   var parentType = getDiagramDto?.dgr_types?.find(t => t.name == parent?.dgr_type);
 
+  //let timeoutId: any = null;
 
-  const [selectedDiagram, setSelectedDiagram] = React.useState(curDiagram);
-  let navigate = useNavigate();
+  //React.useEffect(() => {
+  //  if (timeoutId != null) {
+  //    clearTimeout(timeoutId);
+  //  }
 
-  useEffect(() => {
-    setSelectedDiagram(curDiagram);
-  }, [curDiagram]);
+  //  timeoutId = setTimeout(() => {
+  //    appDispatch(DiagramsStore.update_single_diagram(copy));
+  //  }, 1500);
+  //  return () => clearTimeout(timeoutId);
+  //}, [curDiagram]);
 
   useEffect(() => {
     if (result == 'OK') {
+      
       appDispatch(DiagramTypeStore.set_result(null)); 
-      var copy = DeepCopy(selectedDiagram);
+      var copy = DeepCopy(curDiagram);
       copy.dgr_type = cur_diagramtype?.name;
-      setSelectedDiagram(copy);
       
       var newType = getDiagramDto.dgr_types?.find(dt => dt.name == copy.dgr_type);
-
+      var cur_diagram_copy = DeepCopy(getDiagramDto);
+      var newContent = cur_diagram_copy.content?.filter(e => e.id != copy.id);
+      newContent.push(copy);
+      cur_diagram_copy.content = newContent;
       if (newType == null) {
-        // Add type if not exist
-        var cur_diagram_copy = DeepCopy(getDiagramDto);
-
+        // Add type if not exist  
         if (cur_diagram_copy.dgr_types == null) {
           cur_diagram_copy.dgr_types = [];
         }
-        cur_diagram_copy.dgr_types.push(DeepCopy(cur_diagramtype));
-        appDispatch(DiagramsStore.set_local_diagram(cur_diagram_copy));
+        cur_diagram_copy.dgr_types.push(DeepCopy(cur_diagramtype));        
       }
+      appDispatch(DiagramsStore.set_local_diagram(cur_diagram_copy));
     }
-  }, [result, selectedDiagram, cur_diagramtype]);
+  }, [result, curDiagram, cur_diagramtype, getDiagramDto]);
 
   function handleEditDiagramClick() {
-    appDispatch(DiagramTypeStore.set_local_filter(selectedDiagram?.dgr_type));
+    appDispatch(DiagramTypeStore.set_local_filter(curDiagram?.dgr_type));
     appDispatch(DiagramTypeStore.set_result('EDIT_TYPE'));
     navigate("/editdiagram");
   }
 
   const handleSave = useCallback(() => {
-    if (selectedDiagram == null) {
+    if (curDiagram == null) {
       return;
     }
-    //var copy = DeepCopy(content);
-    //copy = copy.filter(d => d.id != selectedDiagram.id);
-    //copy.push(DeepCopy(selectedDiagram));
-    appDispatch(DiagramsStore.updateDiagrams([DeepCopy(selectedDiagram)]));
-  }, [selectedDiagram, content]);
+    appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
+  }, [curDiagram, content]);
 
   // Подписываемся на изменение props.events
   useEffect(() => {
@@ -99,15 +103,15 @@ export function DiagramProperties(props: IDiagramProperties) {
 
   function handleChangeType(e: any) {
     const { target: { id, value } } = e;
-    var copy = DeepCopy(selectedDiagram);
+    var copy = DeepCopy(curDiagram);
     copy.dgr_type = value;
-    setSelectedDiagram(copy);
+    appDispatch(DiagramsStore.update_single_diagram(copy));
   };
 
   function handleChangeRegion(e: any) {
     const { target: { id, value } } = e;
 
-    var copy = DeepCopy(selectedDiagram);
+    var copy = DeepCopy(curDiagram);
     var textId = id;
 
     if (!isNaN(value)) {
@@ -125,18 +129,18 @@ export function DiagramProperties(props: IDiagramProperties) {
       }
     }
 
-    setSelectedDiagram(copy);
+    appDispatch(DiagramsStore.update_single_diagram(copy));
   };
 
   function handleChangeRegionId(e: any) {
     const { target: { name, value } } = e;
 
-    var copy = DeepCopy(selectedDiagram);
+    var copy = DeepCopy(curDiagram);
     copy.region_id = value;
-    setSelectedDiagram(copy);
+    appDispatch(DiagramsStore.update_single_diagram(copy));
   };
 
-  if (selectedDiagram == null) {
+  if (curDiagram == null) {
     return null;
   }
   return (
@@ -158,7 +162,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             fullWidth
             label='Diagram type'
             size="small"
-            value={selectedDiagram?.dgr_type != null ? selectedDiagram?.dgr_type : ""}
+            value={curDiagram?.dgr_type != null ? curDiagram?.dgr_type : ""}
             onChange={handleChangeType}
           >
           </TextField>
@@ -177,7 +181,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             <Select
               labelId="editreg_id_label"
               name={"editreg_id"}
-              value={selectedDiagram?.region_id != null ? selectedDiagram.region_id : ""}
+              value={curDiagram?.region_id != null ? curDiagram.region_id : ""}
               label="Region id"
               onChange={handleChangeRegionId}
               size="small"
@@ -198,7 +202,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_left"}
             label='left'
             size="small"
-            value={selectedDiagram.geometry.left}
+            value={curDiagram.geometry.left}
             onChange={handleChangeRegion}
           >
           </TextField>
@@ -206,7 +210,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_top"}
             label='top'
             size="small"
-            value={selectedDiagram.geometry.top}
+            value={curDiagram.geometry.top}
             onChange={handleChangeRegion}
           >
           </TextField>
@@ -214,7 +218,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_width"}
             label='width'
             size="small"
-            value={selectedDiagram.geometry.width}
+            value={curDiagram.geometry.width}
             onChange={handleChangeRegion}
           >
           </TextField>
@@ -222,7 +226,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_height"}
             label='height'
             size="small"
-            value={selectedDiagram.geometry.height}
+            value={curDiagram.geometry.height}
             onChange={handleChangeRegion}
           >
           </TextField>

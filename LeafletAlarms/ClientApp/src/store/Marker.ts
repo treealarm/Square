@@ -1,4 +1,7 @@
 ﻿export function DeepCopy<T>(a: T): T {
+  if (a == null) {
+    return null;
+  }
   return JSON.parse(JSON.stringify(a));
 }
 

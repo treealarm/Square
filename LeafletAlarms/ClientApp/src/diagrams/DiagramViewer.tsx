@@ -2,7 +2,7 @@
 import { useCallback, useEffect, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { DeepCopy, getExtraProp, IDiagramCoord, IDiagramDTO } from '../store/Marker';
+import { getExtraProp, IDiagramCoord, IDiagramDTO } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';

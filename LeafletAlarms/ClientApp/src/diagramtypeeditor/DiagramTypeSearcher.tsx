@@ -5,14 +5,14 @@ import { useSelector } from "react-redux";
 
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 import { ApplicationState } from '../store';
-import { DeepCopy, IDiagramTypeDTO, IGetDiagramTypesByFilterDTO, TreeMarker } from '../store/Marker';
+import { DeepCopy, IDiagramTypeDTO, IGetDiagramTypesByFilterDTO } from '../store/Marker';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
-import { Box, Toolbar, Tooltip, TextField } from '@mui/material';
+import { Box, Toolbar, Tooltip, TextField, Divider } from '@mui/material';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -27,9 +27,10 @@ export function DiagramTypeSearcher() {
   const localFilter = useSelector((state: ApplicationState) => state?.diagramtypeStates?.localFilter);
 
   const handleSelect = useCallback((selected: IDiagramTypeDTO) => () => {
+    
     var copy = DeepCopy(selected);
     appDispatch(DiagramTypeStore.set_local_diagram(copy));    
-  }, [diagramtypes]);
+  }, [diagramtypes, diagramType]);
 
   const countOnPage = 200;
 
@@ -93,21 +94,24 @@ export function DiagramTypeSearcher() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
-        <Toolbar variant="dense">
+      <Box sx={{ flexGrow: 1}}>
+        <Toolbar variant="dense" >
 
           <Tooltip title="Go to previous page">
             <IconButton onClick={(e: any) => OnNavigate(false, e)}>
               <ArrowBackIcon />
             </IconButton>
           </Tooltip>
-          <ListItem>
+          <Divider><br /></Divider>
+          <Tooltip title="Filter">
+          
             <TextField size="small"
+              sx={{ margin: 3 }}
               fullWidth
               id="filter_name" label='Filter'
               value={localFilter ? localFilter :""}
               onChange={handleChangeName} />
-          </ListItem>
+          </Tooltip>
           <Box sx={{ flexGrow: 1 }} />
 
           <Tooltip title="Go to next page">
