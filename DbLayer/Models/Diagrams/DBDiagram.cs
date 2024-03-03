@@ -18,5 +18,7 @@ namespace DbLayer.Models.Diagrams
     [BsonIgnoreIfNull]
     public DBDiagramCoord geometry { get; set; }
     public string region_id { get; set; }
+    public string background_img { get; set; }
+    
   }
 }

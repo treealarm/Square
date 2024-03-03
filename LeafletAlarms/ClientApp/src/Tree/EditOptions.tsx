@@ -97,6 +97,7 @@ export default function EditOptions() {
         name: 'New Diagram',
         parent_id: selected_id,
         dgr_type: null,
+        background_img:null,
         geometry:
         {
           left: 0,

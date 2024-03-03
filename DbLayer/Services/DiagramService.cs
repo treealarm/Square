@@ -117,6 +117,7 @@ namespace DbLayer.Services
         id = dto.id,
         dgr_type = dto.dgr_type,
         region_id = dto.region_id,
+        background_img = dto.background_img,
         geometry = new DBDiagramCoord(),
       };
 
@@ -140,6 +141,7 @@ namespace DbLayer.Services
           id = dbObj.id,
           dgr_type = dbObj.dgr_type,
           geometry = new DiagramCoordDTO(),
+          background_img = dbObj.background_img,
           region_id = dbObj.region_id
         };
 

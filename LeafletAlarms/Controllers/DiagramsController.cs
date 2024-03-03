@@ -6,6 +6,9 @@ using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson.IO;
+using Pipelines.Sockets.Unofficial.Arenas;
+using System.Text.Json;
 
 namespace LeafletAlarms.Controllers
 {
@@ -61,6 +64,19 @@ namespace LeafletAlarms.Controllers
       markers[parent_id] = markerParent[parent_id];
 
       var diagrams = await _diagramService.GetListByIdsAsync(markers.Keys.ToList());
+
+      if (!diagrams.TryGetValue(parent_id, out var diagram))
+      {
+        var parentMarker = markerParent[parent_id];
+        diagrams[parent_id] = new DiagramDTO()
+        {
+          id = parentMarker.id,
+          parent_id = parentMarker.parent_id,
+          name = parentMarker.name,
+          external_type = parentMarker.external_type
+        };
+      }
+
       var props = await _mapService.GetPropsAsync(markers.Keys.ToList());
 
       HashSet<string> dgrTypes = new HashSet<string>();

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { getExtraProp, IDiagramCoord, IDiagramDTO } from '../store/Marker';
+import { getExtraProp, IDiagramCoord, IDiagramDTO, IGetDiagramDTO } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
@@ -23,13 +23,43 @@ export default function DiagramViewer() {
   const appDispatch = useAppDispatch();
   const [zoom, setZoom] = useState(1.0);
 
-  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const diagram: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
   const depth = useSelector((state: ApplicationState) => state?.diagramsStates.depth);
   const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
   const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.alarmed_objects);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
+  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+
   var parent = diagram.content.find(e => e.id == diagram.parent_id);
+
+
+  var paper_width =
+    parseFloat(
+      getExtraProp(parent, "__paper_width", '1000'));
+  var paper_height = parseFloat(
+    getExtraProp(parent, "__paper_height", '1000'));
+
+
+  var background_img = getExtraProp(parent, "__background_img", null);
+
+  const [currentPaperProps, setCurrentPaperProps] = useState({
+    paper_width: paper_width,
+    paper_height: paper_height,
+    background_img: background_img
+  });
+
+  useEffect(
+    () => {
+      var curPaperProps =
+      {
+        paper_width: paper_width,
+        paper_height: paper_height,
+        background_img: background_img
+      }
+      setCurrentPaperProps(curPaperProps);
+
+    }, [objProps, diagram.content, paper_width, paper_height]);
 
   useEffect(
     () => {
@@ -41,12 +71,7 @@ export default function DiagramViewer() {
       appDispatch<any>(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
     }, [diagram?.content]);
 
-  var paper_width =
-    parseFloat(
-      getExtraProp(parent, "__paper_width", '1000'));
-  var paper_height = parseFloat(
-    getExtraProp(parent, "__paper_height", '1000'));
-  //var __is_diagram = getExtraProp(objProps, "__is_diagram", "0");
+
 
   function hexToRgba(hex: string, alpha: number): string {
 
@@ -137,8 +162,8 @@ export default function DiagramViewer() {
   {
     left: 0,
     top: 0,
-    width: paper_width,
-    height: paper_height
+    width: currentPaperProps?.paper_width,
+    height: currentPaperProps?.paper_height
   }
 
   if (parent != null && parent.geometry != null && parent.geometry.width > 0 && parent.geometry.height > 0) {
@@ -186,11 +211,27 @@ export default function DiagramViewer() {
             margin: 0,
             top: '0px', // Сдвиг от верхнего края
             left: '65px', // Сдвиг от левого края
-            height: paper_height * zoom + 'px',
-            width: paper_width * zoom + 'px',
+            height: currentPaperProps?.paper_height * zoom + 'px',
+            width: currentPaperProps?.paper_width * zoom + 'px',
             
           }}>
+
+          {
+            (currentPaperProps?.background_img != null) &&
+              <img
+                key={"img_background" + parent?.id}
+              src={currentPaperProps?.background_img}
+                style={{
+                  border: 0,
+                  padding: 0,
+                  margin: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'fill'
+                }} />
+          }
           
+
           <DiagramGray diagram={parent} zoom={zoom} />
 
           {

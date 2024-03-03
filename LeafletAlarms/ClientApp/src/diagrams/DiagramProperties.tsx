@@ -20,6 +20,7 @@ import { useCallback, useEffect } from 'react';
 
 import { IDiagramDTO } from '../store/Marker';
 import { useNavigate } from 'react-router-dom';
+import FileUpload from '../components/FileUpload';
 
 export interface ChildEvents {
   clickSave: () => void;
@@ -90,10 +91,11 @@ export function DiagramProperties(props: IDiagramProperties) {
     if (curDiagram == null) {
       return;
     }
+    //TODO Must refetch content since other properties updated
     appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
   }, [curDiagram, content]);
 
-  // Подписываемся на изменение props.events
+  //subscribe to props.events changes
   useEffect(() => {
     if (props.events)
     {
@@ -108,6 +110,12 @@ export function DiagramProperties(props: IDiagramProperties) {
     appDispatch(DiagramsStore.update_single_diagram(copy));
   };
 
+  function handleChangeBackgroundImg(e: any) {
+    const { target: { id, value } } = e;
+    var copy = DeepCopy(curDiagram);
+    copy.background_img = value;
+    appDispatch(DiagramsStore.update_single_diagram(copy));
+  }
   function handleChangeRegion(e: any) {
     const { target: { id, value } } = e;
 
@@ -140,7 +148,22 @@ export function DiagramProperties(props: IDiagramProperties) {
     appDispatch(DiagramsStore.update_single_diagram(copy));
   };
 
-  if (curDiagram == null) {
+  function onUploadSuccess(data: any) {
+
+    if (data == null) {
+      return;
+    }
+
+    var copy = DeepCopy(curDiagram);
+    copy.background_img = data;
+    appDispatch(DiagramsStore.update_single_diagram(copy));
+  }
+
+  if (curDiagram == null
+    ||
+    (curDiagram.geometry == null && curDiagram.dgr_type == null))
+  {
+    // lets consider it as a parent - regular object, not diagram
     return null;
   }
   return (
@@ -196,6 +219,20 @@ export function DiagramProperties(props: IDiagramProperties) {
 
         </ListItem>
 
+        <ListItem id="curDiagram_background_img">
+          <TextField
+            fullWidth
+            label='background image'
+            size="small"
+            value={curDiagram?.background_img == null ? "" : curDiagram?.background_img}
+            onChange={handleChangeBackgroundImg}
+          >
+          </TextField>
+          <Divider orientation='vertical'><br /></Divider>
+          <FileUpload key="file_upload" path="diagram_background" onUploadSuccess={onUploadSuccess} />
+        </ListItem>
+      </List>
+
         <ListItem id={"reg_geo"}>
 
           <TextField
@@ -231,7 +268,7 @@ export function DiagramProperties(props: IDiagramProperties) {
           >
           </TextField>
         </ListItem>
-      </List>
+
     </Box>
   );
 }
