@@ -3,11 +3,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 
-import { useSelector } from 'react-redux';
-
 import * as DiagramsStore from '../store/DiagramsStates';
 import { TreeMarker } from '../store/Marker';
-import { ApplicationState } from '../store';
 import { useAppDispatch } from '../store/configureStore';
 
 interface IDiagramParentsNavigator {

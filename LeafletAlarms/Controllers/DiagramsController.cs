@@ -35,12 +35,44 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpGet()]
+    [Route("GetDiagramById")]
+    public async Task<DiagramDTO> GetDiagramById(string diagram_id)
+    {
+      var retVal = new DiagramDTO();
+
+      if (string.IsNullOrEmpty(diagram_id))
+      {
+        return retVal;
+      }
+
+      var diagrams = await _diagramService.GetListByIdsAsync(new List<string>() { diagram_id });
+
+      if (diagrams.TryGetValue(diagram_id, out var value))
+      {
+        retVal = value;
+      }
+      var marker = await _mapService.GetAsync(diagram_id);    
+
+      var props = await _mapService.GetPropsAsync(new List<string>() { diagram_id });
+      retVal.id = marker.id;
+      retVal.name = marker.name;
+      retVal.parent_id = marker.parent_id;
+      retVal.external_type = marker.external_type;
+
+      if (props.TryGetValue(diagram_id, out var valueProps))
+      {
+        retVal.extra_props = valueProps.extra_props;
+      }     
+
+      return retVal;
+    }
+
+    [HttpGet()]
     [Route("GetDiagramByParent")]
     public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id, int depth = 1)
     {
       var retVal = new GetDiagramDTO()
       {
-        parent_id = parent_id,
         depth = depth
       };
 
@@ -65,18 +97,6 @@ namespace LeafletAlarms.Controllers
 
       var diagrams = await _diagramService.GetListByIdsAsync(markers.Keys.ToList());
 
-      if (!diagrams.TryGetValue(parent_id, out var diagram))
-      {
-        var parentMarker = markerParent[parent_id];
-        diagrams[parent_id] = new DiagramDTO()
-        {
-          id = parentMarker.id,
-          parent_id = parentMarker.parent_id,
-          name = parentMarker.name,
-          external_type = parentMarker.external_type
-        };
-      }
-
       var props = await _mapService.GetPropsAsync(markers.Keys.ToList());
 
       HashSet<string> dgrTypes = new HashSet<string>();
@@ -98,9 +118,30 @@ namespace LeafletAlarms.Controllers
         if (!string.IsNullOrEmpty(kvp.Value.dgr_type))
         {
           dgrTypes.Add(kvp.Value.dgr_type);
-        }        
+        }
       }
-      
+
+      if (!diagrams.TryGetValue(parent_id, out var diagram))
+      {
+        var parentMarker = markerParent[parent_id];
+        retVal.parent = new DiagramDTO()
+        {
+          id = parentMarker.id,
+          parent_id = parentMarker.parent_id,
+          name = parentMarker.name,
+          external_type = parentMarker.external_type,
+        };
+
+        if (props.TryGetValue(parentMarker.id, out var value))
+        {
+          retVal.parent.extra_props = value.extra_props;
+        }
+      }
+      else
+      {
+        retVal.parent = diagrams[parent_id];
+      }
+
       retVal.content = diagrams.Values.ToList();
 
       if (dgrTypes.Count > 0)
@@ -130,186 +171,6 @@ namespace LeafletAlarms.Controllers
       await _diagramService.UpdateListAsync(dgrs);
       //await _mapService.UpdatePropAsync(dgrs);
       return dgrs;
-    }
-
-    private static FiguresDTO GetDiaFig()
-    {
-      var figs = new FiguresDTO();
-      var fig = new FigureGeoDTO();
-      figs.figs.Add(fig);
-
-      fig.id = "222200000000000000000001";
-      fig.name = "Diagram";
-      var geo = new GeometryPolygonDTO();
-
-      fig.geometry = geo;
-      fig.geometry.type = "Polygon";
-
-      fig.extra_props = new List<ObjExtraPropertyDTO>()
-      {
-        new ObjExtraPropertyDTO()
-        {
-          prop_name = "__paper_width",
-          str_val = "1000"
-        },
-        new ObjExtraPropertyDTO()
-        {
-          prop_name = "__paper_height",
-          str_val = "1000"
-        }
-        ,
-        new ObjExtraPropertyDTO()
-        {
-          prop_name = "__is_diagram",
-          str_val = "1"
-        }
-      };
-
-      geo.coord.Add(new Geo2DCoordDTO()
-      {
-        Lat = 55.7566737398449,
-        Lon = 37.60722931951715
-      });
-
-      geo.coord.Add(new Geo2DCoordDTO()
-      {
-        Lat = 55.748852242908995,
-        Lon = 37.60259563134112
-      });
-
-      geo.coord.Add(new Geo2DCoordDTO()
-      {
-        Lat = 55.75203896803514,
-        Lon = 37.618727730916895
-      });
-
-      return figs;
-    }
-
-    [HttpGet()]
-    [Route("CreateBasicTemplate")]
-    public async Task<List<DiagramDTO>> CreateBasicTemplate()
-    {
-      var retVal1 = new List<DiagramDTO>();
-
-      var figs = GetDiaFig();
-      var container_diagram = GetDiaFig().figs.First();
-      await _trackUpdateService.UpdateFigures(figs);
-
-      var rack0 = new DiagramDTO()
-      {
-        id = "222200000000000000000002",
-        parent_id = container_diagram.id,
-        name = "Name",
-        dgr_type = "rack0",
-        geometry = new DiagramCoordDTO()
-        {
-          left = 50,
-          top = 10,
-          width = 200,
-          height = 500
-        }
-      };
-
-      rack0.extra_props = new List<ObjExtraPropertyDTO>()
-      {
-        new ObjExtraPropertyDTO()
-        {
-          prop_name = "__paper_width",
-          str_val = "1000"
-        },
-        new ObjExtraPropertyDTO()
-        {
-          prop_name = "__paper_height",
-          str_val = "1000"
-        }
-        ,
-        new ObjExtraPropertyDTO()
-        {
-          prop_name = "__is_diagram",
-          str_val = "1"
-        }
-      };
-
-      retVal1.Add(rack0 );
-
-      var rack1 = new DiagramDTO()
-      {
-        id = "222200000000000000000003",
-        parent_id = container_diagram.id,
-        name = "Name1",
-        dgr_type = "rack1",
-        geometry = new DiagramCoordDTO()
-        {
-          left = 300,
-          top = 10,
-          width = 200,
-          height = 500
-        }
-      };
-      retVal1.Add(rack1 );
-
-      var cisco1 = new DiagramDTO()
-      {
-        id = "222200000000000000000004",
-        parent_id = rack0.id,
-        name = "Cisco1",
-        dgr_type = "cisco",
-        region_id = "1",
-      };
-      retVal1.Add(cisco1);
-
-      var cisco2 = new DiagramDTO()
-      {
-        id = "222200000000000000000005",
-        parent_id = rack0.id,
-        name = "Cisco2",
-        dgr_type = "cisco",
-        region_id = "2",
-      };
-      retVal1.Add(cisco2);
-
-      var cisco3 = new DiagramDTO()
-      {
-        id = "222200000000000000000006",
-        parent_id = rack1.id,
-        name = "Cisco3",
-        dgr_type = "cisco",
-        region_id = "2",
-        geometry = new DiagramCoordDTO()
-        {
-          left = 10,
-          top = 10,
-          width = 162,
-          height = 31
-        }
-      };
-      retVal1.Add(cisco3);
-
-      var port1 = new DiagramDTO()
-      {
-        id = "222200000000000000000007",
-        parent_id = cisco3.id,
-        name = "port1",
-        dgr_type = "port",
-        region_id = "port1",
-      };
-      retVal1.Add(port1);
-
-      var port2 = new DiagramDTO()
-      {
-        id = "222200000000000000000008",
-        parent_id = cisco3.id,
-        name = "port2",
-        dgr_type = "port",
-        region_id = "port2",
-      };
-      retVal1.Add(port2);
-
-      await _diagramService.UpdateListAsync( retVal1 );
-      await _mapService.UpdateHierarchyAsync(retVal1);
-      await _mapService.UpdatePropNotDeleteAsync(retVal1);
-      return retVal1;
     }
   }
 }

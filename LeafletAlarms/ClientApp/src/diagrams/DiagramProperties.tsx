@@ -42,8 +42,8 @@ export function DiagramProperties(props: IDiagramProperties) {
   const content: IDiagramDTO[] = getDiagramDto?.content;
   var curDiagram = content?.find(e => e.id == selected_id);
 
-  var parent = content?.find(e => e.id == curDiagram?.parent_id);
-  var parentType = getDiagramDto?.dgr_types?.find(t => t.name == parent?.dgr_type);
+  var parentDiagram = content?.find(e => e.id == curDiagram?.parent_id);
+  var parentType = getDiagramDto?.dgr_types?.find(t => t.name == parentDiagram?.dgr_type);
 
   //let timeoutId: any = null;
 
@@ -88,12 +88,17 @@ export function DiagramProperties(props: IDiagramProperties) {
   }
 
   const handleSave = useCallback(() => {
-    if (curDiagram == null) {
-      return;
+    if (curDiagram != null) {
+      appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
+    }
+    else {
+      if (selected_id == getDiagramDto?.parent?.id) {
+        appDispatch(DiagramsStore.getParentDiagram(getDiagramDto.parent.id));
+      }      
     }
     //TODO Must refetch content since other properties updated
-    appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
-  }, [curDiagram, content]);
+    
+  }, [curDiagram, content, selected_id, getDiagramDto?.parent]);
 
   //subscribe to props.events changes
   useEffect(() => {

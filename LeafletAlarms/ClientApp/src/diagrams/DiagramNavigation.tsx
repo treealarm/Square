@@ -35,7 +35,7 @@ export default function DiagramNavigation() {
       appDispatch<any>(DiagramsStore.reset_diagram());
     }, [diagram]);
 
-  if (__is_diagram != '1' && diagram?.parent_id == null) {
+  if (__is_diagram != '1' && diagram?.parent == null) {
     return null;
   }
 
@@ -50,7 +50,7 @@ export default function DiagramNavigation() {
     >
       <React.Fragment />
       {
-        diagram?.parent_id == null ?
+        diagram?.parent == null ?
           <React.Fragment /> :
           <Tooltip title={"Resurface from the diagram"}>
             <IconButton aria-label="search" size="medium" onClick={(e: any) => Resurface()}>
@@ -59,7 +59,7 @@ export default function DiagramNavigation() {
           </Tooltip>
       }
 
-      <DiagramParentsNavigator parent_list={diagram?.parents} parent_id={diagram?.parent_id} />
+      <DiagramParentsNavigator parent_list={diagram?.parents} parent_id={diagram?.parent?.id} />
 
       <Tooltip title={"Dive into the diagram"}>
         <IconButton aria-label="search" size="medium" onClick={(e: any) => setDiagram(objProps?.id)}>

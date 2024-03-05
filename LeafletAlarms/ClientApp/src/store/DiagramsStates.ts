@@ -54,6 +54,22 @@ export const updateDiagrams = createAsyncThunk<IDiagramDTO[], IDiagramDTO[]>(
   }
 )
 
+export const getParentDiagram = createAsyncThunk<IDiagramDTO, string>(
+  'diagrams/getParentDiagram',
+  async (diagram_id: string, { getState }) => {
+
+    var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagramById?diagram_id=" +
+      diagram_id,
+      {
+        method: "GET",
+        headers: { "Content-type": "application/json" }
+      });
+
+    var json = await fetched.json() as Promise<IDiagramDTO>;
+
+    return json;
+  }
+)
 
 const diagramsSlice = createSlice({
   name: 'DiagramStates',
@@ -108,6 +124,11 @@ const diagramsSlice = createSlice({
       .addCase(updateDiagrams.rejected, (state, action) => {
         const { requestId } = action.meta
         //state.cur_diagram = null;
+      })
+    //getDiagramById
+      .addCase(getParentDiagram.fulfilled, (state: DiagramsStates, action) => {
+        const { requestId } = action.meta
+        state.cur_diagram.parent = action.payload;
       })
   },
 })

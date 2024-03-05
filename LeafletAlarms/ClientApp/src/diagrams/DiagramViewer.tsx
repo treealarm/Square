@@ -7,7 +7,7 @@ import { getExtraProp, IDiagramCoord, IDiagramDTO, IGetDiagramDTO } from '../sto
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
 import { useState } from 'react';
-import { Box, ButtonGroup, IconButton, FormControl } from '@mui/material';
+import { Box, ButtonGroup, IconButton } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
@@ -29,28 +29,23 @@ export default function DiagramViewer() {
   const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.alarmed_objects);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
-  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
-
-  var parent = diagram.content.find(e => e.id == diagram.parent_id);
-
-
-  var paper_width =
-    parseFloat(
-      getExtraProp(parent, "__paper_width", '1000'));
-  var paper_height = parseFloat(
-    getExtraProp(parent, "__paper_height", '1000'));
-
-
-  var background_img = getExtraProp(parent, "__background_img", null);
 
   const [currentPaperProps, setCurrentPaperProps] = useState({
-    paper_width: paper_width,
-    paper_height: paper_height,
-    background_img: background_img
+    paper_width: 0,
+    paper_height: 0,
+    background_img: null
   });
 
   useEffect(
     () => {
+      var paper_width =
+        parseFloat(
+          getExtraProp(diagram?.parent, "__paper_width", '1000'));
+      var paper_height = parseFloat(
+        getExtraProp(diagram?.parent, "__paper_height", '1000'));
+
+      var background_img = getExtraProp(diagram?.parent, "__background_img", null);
+
       var curPaperProps =
       {
         paper_width: paper_width,
@@ -59,7 +54,7 @@ export default function DiagramViewer() {
       }
       setCurrentPaperProps(curPaperProps);
 
-    }, [objProps, diagram.content, paper_width, paper_height]);
+    }, [diagram?.parent]);
 
   useEffect(
     () => {
@@ -131,11 +126,11 @@ export default function DiagramViewer() {
 
   const handleChange = (event: SelectChangeEvent) => {
     appDispatch<any>(DiagramsStore.set_depth(event.target.value as any as number));
-    appDispatch<any>(DiagramsStore.fetchDiagram(diagram.parent_id));
+    appDispatch<any>(DiagramsStore.fetchDiagram(diagram.parent.id));
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram.parent_id));
+    appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram?.parent?.id));
   };
 
   const handleWheelEvent = (e: WheelEvent) => {
@@ -156,7 +151,7 @@ export default function DiagramViewer() {
   if (diagram == null) {
     return null;
   }
-  var content = diagram.content.filter(e => e.parent_id == diagram.parent_id);
+  var content = diagram.content.filter(e => e.parent_id == diagram?.parent?.id);
 
   var coord: IDiagramCoord = 
   {
@@ -166,9 +161,13 @@ export default function DiagramViewer() {
     height: currentPaperProps?.paper_height
   }
 
-  if (parent != null && parent.geometry != null && parent.geometry.width > 0 && parent.geometry.height > 0) {
-    coord = parent.geometry;
+  if (diagram?.parent != null &&
+    diagram.parent.geometry != null &&
+    diagram.parent.geometry.width > 0 &&
+    diagram.parent.geometry.height > 0) {
+    coord = diagram.parent.geometry;
   }
+
   return (
     <Box
       onWheel={handleWheelEvent}
@@ -219,7 +218,7 @@ export default function DiagramViewer() {
           {
             (currentPaperProps?.background_img != null) &&
               <img
-                key={"img_background" + parent?.id}
+              key={"img_background" + diagram?.parent?.id}
               src={currentPaperProps?.background_img}
                 style={{
                   border: 0,
@@ -232,13 +231,13 @@ export default function DiagramViewer() {
           }
           
 
-          <DiagramGray diagram={parent} zoom={zoom} />
+          <DiagramGray diagram={diagram?.parent} zoom={zoom} />
 
           {
             content.map((dgr, index) =>
               <DiagramElement
                 diagram={dgr}
-                parent={parent}
+                parent={diagram?.parent}
                 parent_coord={coord}
                 zoom={zoom}
                 z_index={2}
