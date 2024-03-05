@@ -85,7 +85,7 @@ export function DiagramProperties(props: IDiagramProperties) {
 
   useEffect(() => {
     if (getDiagramDto?.parent?.id != null && selected_id == getDiagramDto?.parent?.id) {
-      appDispatch(DiagramsStore.getParentDiagram(getDiagramDto.parent.id));
+      appDispatch(DiagramsStore.fetchSingleDiagram(getDiagramDto.parent.id));
     } 
   }, [propsUpdated]);
 

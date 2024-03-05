@@ -54,8 +54,8 @@ export const updateDiagrams = createAsyncThunk<IDiagramDTO[], IDiagramDTO[]>(
   }
 )
 
-export const getParentDiagram = createAsyncThunk<IDiagramDTO, string>(
-  'diagrams/getParentDiagram',
+export const fetchSingleDiagram = createAsyncThunk<IDiagramDTO, string>(
+  'diagrams/fetchSingleDiagram',
   async (diagram_id: string, { getState }) => {
 
     var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagramById?diagram_id=" +
@@ -125,10 +125,19 @@ const diagramsSlice = createSlice({
         const { requestId } = action.meta
         //state.cur_diagram = null;
       })
-    //getDiagramById
-      .addCase(getParentDiagram.fulfilled, (state: DiagramsStates, action) => {
+      //fetchSingleDiagram
+      .addCase(fetchSingleDiagram.fulfilled, (state: DiagramsStates, action) => {
         const { requestId } = action.meta
-        state.cur_diagram.parent = action.payload;
+        if (action.payload.id == state.cur_diagram.parent.id) {
+          state.cur_diagram.parent = action.payload;
+        }
+
+        const updated: IDiagramDTO = action.payload;
+        var index = state.cur_diagram.content.findIndex(d => updated.id == d.id);
+
+        if (index >= 0) {
+          state.cur_diagram.content[index] = updated;
+        }
       })
   },
 })
