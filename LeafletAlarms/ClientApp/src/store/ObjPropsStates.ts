@@ -8,7 +8,7 @@ import { IObjProps } from './Marker';
 
 export interface ObjPropsState {
   objProps: IObjProps;
-  updated: boolean;
+  updated: number;
 }
 
 // -----------------
@@ -108,7 +108,7 @@ export const actionCreators = {
 
 const unloadedState: ObjPropsState = {
   objProps: null,
-  updated: false
+  updated: 0
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
@@ -126,18 +126,18 @@ export const reducer: Reducer<ObjPropsState> = (state: ObjPropsState | undefined
         objProps: state.objProps
       };
     case 'SET_PROPS':
-      return { objProps: action.objProps, updated: false };
+      return { objProps: action.objProps, updated: state.updated };
     case 'SET_PROPS_LOCALLY':
-      return { objProps: action.objProps, updated: false };
+      return { objProps: action.objProps, updated: state.updated };
 
     case 'UPDATED_PROPS':
       return {
         ...state,
         objProps: action.objProps,
-        updated: true
+        updated: state.updated+1
       };
     case 'UPDATING_PROPS':
-      return { objProps: action.objProps, updated: false };
+      return { objProps: action.objProps, updated: state.updated };
     default:
       return state;
   }

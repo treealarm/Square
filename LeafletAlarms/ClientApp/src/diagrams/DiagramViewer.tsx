@@ -216,7 +216,7 @@ export default function DiagramViewer() {
           }}>
 
           {
-            (currentPaperProps?.background_img != null) &&
+            (currentPaperProps?.background_img != null && currentPaperProps?.background_img != '') &&
               <img
               key={"img_background" + diagram?.parent?.id}
               src={currentPaperProps?.background_img}

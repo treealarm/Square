@@ -45,6 +45,8 @@ export function DiagramProperties(props: IDiagramProperties) {
   var parentDiagram = content?.find(e => e.id == curDiagram?.parent_id);
   var parentType = getDiagramDto?.dgr_types?.find(t => t.name == parentDiagram?.dgr_type);
 
+  const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
+
   //let timeoutId: any = null;
 
   //React.useEffect(() => {
@@ -81,6 +83,12 @@ export function DiagramProperties(props: IDiagramProperties) {
     }
   }, [result, curDiagram, cur_diagramtype, getDiagramDto]);
 
+  useEffect(() => {
+    if (getDiagramDto?.parent?.id != null && selected_id == getDiagramDto?.parent?.id) {
+      appDispatch(DiagramsStore.getParentDiagram(getDiagramDto.parent.id));
+    } 
+  }, [propsUpdated]);
+
   function handleEditDiagramClick() {
     appDispatch(DiagramTypeStore.set_local_filter(curDiagram?.dgr_type));
     appDispatch(DiagramTypeStore.set_result('EDIT_TYPE'));
@@ -92,13 +100,11 @@ export function DiagramProperties(props: IDiagramProperties) {
       appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
     }
     else {
-      if (selected_id == getDiagramDto?.parent?.id) {
-        appDispatch(DiagramsStore.getParentDiagram(getDiagramDto.parent.id));
-      }      
+           
     }
     //TODO Must refetch content since other properties updated
     
-  }, [curDiagram, content, selected_id, getDiagramDto?.parent]);
+  }, [curDiagram, content]);
 
   //subscribe to props.events changes
   useEffect(() => {

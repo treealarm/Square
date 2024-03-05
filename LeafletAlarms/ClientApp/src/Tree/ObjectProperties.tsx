@@ -40,7 +40,6 @@ export function ObjectProperties() {
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
-  const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
 
   const [newPropName, setNewPropName] = React.useState('');
   
@@ -131,11 +130,9 @@ export function ObjectProperties() {
   };
 
   useEffect(() => {
-    if (propsUpdated) {
-      // Update figure.
+    if (objProps?.id != null) {
       dispatch<any>(MarkersStore.actionCreators.requestMarkersByIds([objProps.id]));
-    }
-
+    }      
   }, [propsUpdated]);
 
   const childDiagramPropEvents = { clickSave: () => { } };
