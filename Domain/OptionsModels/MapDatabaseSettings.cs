@@ -13,7 +13,7 @@ namespace Domain.OptionsModels
         public string ObjectsCollectionName { get; set; } = "Objects";
         public string GeoCollectionName { get; set; } = "Geometry";
         public string TracksCollectionName { get; set; } = "Tracks";
-        public string RoutsCollectionName { get; set; } = "Routs";
+        public string RoutesCollectionName { get; set; } = "Routes";
 
         public string PropCollectionName { get; set; } = "Properties";
         public string LevelCollectionName { get; set; } = "Levels";

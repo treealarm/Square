@@ -42,7 +42,7 @@ const pathOptionsTracksSelected = {
   dashArray: '5,10'
 }
 
-var pathOptionsRouts: any[] =
+var pathOptionsRoutes: any[] =
 [
     { color: "red" },
     { color: "blue" },
@@ -149,7 +149,7 @@ function CommonTrack(props: any) {
   let figure = props.marker as IGeoObjectDTO; 
 
   if (figure.location == null) {
-    // Can be not built rout.
+    // Can be not built route.
     return null;
   }
 
@@ -203,7 +203,7 @@ export function TrackViewer() {
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked);
-  const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
+  const routes = useSelector((state: ApplicationState) => state?.tracksStates?.routes);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
   const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
@@ -237,8 +237,8 @@ export function TrackViewer() {
       //  boundBox.ids.push(selected_id);
       //}
     }
-    // We request routs by selection for now.
-    //dispatch<any>(TracksStore.actionCreators.requestRouts(boundBox));
+    // We request routes by selection for now.
+    //dispatch<any>(TracksStore.actionCreators.requestRoutes(boundBox));
     appDispatch<any>(TracksStore.actionCreators.requestTracks(boundBox));
   }
 
@@ -286,13 +286,13 @@ export function TrackViewer() {
           </CommonTrack>
         )}
       {
-        searchFilter?.show_routs != false &&
-        routs?.map((rout, index) =>
+        searchFilter?.show_routes != false &&
+        routes?.map((route, index) =>
           <CommonTrack
-            key={rout?.id}
+            key={route?.id}
             hidden={false}
-            marker={rout?.figure}
-            pathOptions={pathOptionsRouts[index]}
+            marker={route?.figure}
+            pathOptions={pathOptionsRoutes[index]}
           >
           </CommonTrack>
         )}

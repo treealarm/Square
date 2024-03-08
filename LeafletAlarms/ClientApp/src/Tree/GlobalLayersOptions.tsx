@@ -31,7 +31,7 @@ export default function GlobalLayersOptions() {
         },
         search_id: "",
         show_objects: true,
-        show_routs: true,
+        show_routes: true,
         show_tracks: true
       };
     }
@@ -51,8 +51,8 @@ export default function GlobalLayersOptions() {
     if (selected_id == "show_tracks") {
       filter.show_tracks = event.target.checked;
     }
-    if (selected_id == "show_routs") {
-      filter.show_routs = event.target.checked;
+    if (selected_id == "show_routes") {
+      filter.show_routes = event.target.checked;
     }
 
     dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
@@ -61,7 +61,7 @@ export default function GlobalLayersOptions() {
   var checks = [
     { "id": "show_objects", "name": "Objects", "checked": searchFilter?.show_objects },
     { "id": "show_tracks", "name": "Tracks", "checked": searchFilter?.show_tracks },
-    { "id": "show_routs", "name": "Routs", "checked": searchFilter?.show_routs }
+    { "id": "show_routes", "name": "Routes", "checked": searchFilter?.show_routes }
   ];
 
   return (

@@ -292,10 +292,10 @@ namespace DbLayer.Services
 
       var res1 = await tracks.DeleteManyAsync(filter);
 
-      var routs = _mongoDB.GetCollection<BsonDocument>(
-          _geoStoreDBSettings.Value.RoutsCollectionName);
+      var routes = _mongoDB.GetCollection<BsonDocument>(
+          _geoStoreDBSettings.Value.RoutesCollectionName);
 
-      await routs.DeleteManyAsync(filter);
+      await routes.DeleteManyAsync(filter);
 
       var filter1 = Builders<BsonDocument>.Filter.In("_id", objIds);
 

@@ -21,7 +21,7 @@ namespace DbLayer.Services
 {
     public class RoutService : IRoutService
   {
-    private readonly IMongoCollection<DBRoutLine> _collRouts;
+    private readonly IMongoCollection<DBRoutLine> _collRoutes;
     private readonly MongoClient _mongoClient;
     private readonly ILevelService _levelService;
     public RoutService(
@@ -35,7 +35,7 @@ namespace DbLayer.Services
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
 
-      var filter = new BsonDocument("name", geoStoreDatabaseSettings.Value.RoutsCollectionName);
+      var filter = new BsonDocument("name", geoStoreDatabaseSettings.Value.RoutesCollectionName);
       var options = new ListCollectionNamesOptions { Filter = filter };
 
       try
@@ -51,7 +51,7 @@ namespace DbLayer.Services
 
 
           mongoDatabase.CreateCollection(
-            geoStoreDatabaseSettings.Value.RoutsCollectionName,
+            geoStoreDatabaseSettings.Value.RoutesCollectionName,
             createOptions);
         }
       }
@@ -61,9 +61,9 @@ namespace DbLayer.Services
       }
       
 
-      _collRouts =
+      _collRoutes =
         mongoDatabase.GetCollection<DBRoutLine>(
-          geoStoreDatabaseSettings.Value.RoutsCollectionName
+          geoStoreDatabaseSettings.Value.RoutesCollectionName
         );
 
       _levelService = levelService;
@@ -84,7 +84,7 @@ namespace DbLayer.Services
           { Name = "location" }
         );
 
-        _collRouts.Indexes.CreateOneAsync(indexModel);
+        _collRoutes.Indexes.CreateOneAsync(indexModel);
       }
 
       {
@@ -98,7 +98,7 @@ namespace DbLayer.Services
           { Name = "compound" }
         );
 
-        _collRouts.Indexes.CreateOneAsync(indexModel);
+        _collRoutes.Indexes.CreateOneAsync(indexModel);
       }
 
       {
@@ -112,7 +112,7 @@ namespace DbLayer.Services
           { Name = "mid" }
         );
 
-        _collRouts.Indexes.CreateOneAsync(indexModel);
+        _collRoutes.Indexes.CreateOneAsync(indexModel);
       }
     }
 
@@ -129,7 +129,7 @@ namespace DbLayer.Services
           list.Add( dbTrack );
         }
       }
-      await _collRouts.InsertManyAsync(list);
+      await _collRoutes.InsertManyAsync(list);
     }
 
     private DBRoutLine ConvertDTO2DB(RoutLineDTO track)
@@ -159,13 +159,13 @@ namespace DbLayer.Services
 
     public async Task DeleteManyAsync(List<string> ids)
     {
-      var result = await _collRouts.DeleteManyAsync(x => ids.Contains(x.meta.id));
+      var result = await _collRoutes.DeleteManyAsync(x => ids.Contains(x.meta.id));
     }
 
     public async Task<List<RoutLineDTO>> GetByIdsAsync(List<string> ids)
     {
       var dbTracks =
-        await _collRouts
+        await _collRoutes
         .Find(t => ids.Contains(t.id_start) || ids.Contains(t.id_end))
         .ToListAsync();
 
@@ -175,7 +175,7 @@ namespace DbLayer.Services
     public async Task<List<string>> GetProcessedIdsAsync(List<string> ids)
     {
       var dbTracks =
-        await _collRouts
+        await _collRoutes
         .AsQueryable<DBRoutLine>()
         .Where<DBRoutLine>(t => ids.Contains(t.id_end))
         
@@ -206,7 +206,7 @@ namespace DbLayer.Services
 
       return list;
     }
-    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
+    public async Task<List<RoutLineDTO>> GetRoutesByBox(BoxTrackDTO box)
     {
       int limit = 10000;
 
@@ -253,7 +253,7 @@ namespace DbLayer.Services
         filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
       }
 
-      var finder = _collRouts.Find(filter).Limit(limit);
+      var finder = _collRoutes.Find(filter).Limit(limit);
 
       if (box.sort < 0)
       {

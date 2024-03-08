@@ -32,7 +32,7 @@ export function RetroSearch() {
 
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
-  const routs = useSelector((state: ApplicationState) => state?.tracksStates?.routs);
+  const routes = useSelector((state: ApplicationState) => state?.tracksStates?.routes);
 
   function GetCopyOfSearchFilter(): SearchFilterGUI {
     let filter = DeepCopy(searchFilter);
@@ -132,7 +132,7 @@ export function RetroSearch() {
   const OnNavigate = useCallback(
     (next: boolean, e: any) => {
 
-      if (tracks == null  && routs == null) {
+      if (tracks == null  && routes == null) {
         return;
       }
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();      
@@ -153,8 +153,8 @@ export function RetroSearch() {
           });
         }
 
-        if (routs != null && routs.length > 0) {
-          routs.forEach(function (e: any) {
+        if (routes != null && routes.length > 0) {
+          routes.forEach(function (e: any) {
             var curTs = new Date(e.ts_start);
 
             if (curTs < minDate) {
@@ -187,8 +187,8 @@ export function RetroSearch() {
           });
         }
 
-        if (routs != null && routs.length > 0) {
-          routs.forEach(function (e: any) {
+        if (routes != null && routes.length > 0) {
+          routes.forEach(function (e: any) {
             var curTs = new Date(e.ts_end);
 
             if (curTs > maxDate) {
@@ -208,7 +208,7 @@ export function RetroSearch() {
 
       DoSearchTracks(filter);
 
-    }, [searchFilter, tracks, routs])
+    }, [searchFilter, tracks, routes])
 
 
   return (

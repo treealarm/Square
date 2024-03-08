@@ -60,7 +60,7 @@ export function WebSockClient() {
 
   const onTracksUpdated = useCallback(
     (track_ids: string[]) => {
-      // TODO update routs newly created.
+      // TODO update routes newly created.
       console.log("onTracksUpdated:", track_ids, " ", selected_track?.id);
     }, [selected_track]);
 

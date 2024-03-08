@@ -52,7 +52,7 @@ export function RequestRoute(props: IRequestRoute) {
           Profile: "bicycle",
           Coordinates: myFigure
         }
-        appDispatch<any>(TracksStore.actionCreators.requestRoutsByLine(routDto));
+        appDispatch<any>(TracksStore.actionCreators.requestRoutesByLine(routDto));
       }
       
 

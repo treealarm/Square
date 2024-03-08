@@ -118,8 +118,8 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
-    [Route("GetRoutsByTracksIds")]
-    public async Task<List<RoutLineDTO>> GetRoutsByTracksIds(List<string> ids)
+    [Route("GetRoutesByTracksIds")]
+    public async Task<List<RoutLineDTO>> GetRoutesByTracksIds(List<string> ids)
     {
       var geo = await _routService.GetByIdsAsync(ids);
 
@@ -129,8 +129,8 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost]
-    [Route("GetRoutsByBox")]
-    public async Task<List<RoutLineDTO>> GetRoutsByBox(BoxTrackDTO box)
+    [Route("GetRoutesByBox")]
+    public async Task<List<RoutLineDTO>> GetRoutesByBox(BoxTrackDTO box)
     {
       if (
         box.time_start == null &&
@@ -142,13 +142,13 @@ namespace LeafletAlarms.Controllers
       }
 
       await AddIdsByProperties(box);
-      var geo = await _routService.GetRoutsByBox(box);
+      var geo = await _routService.GetRoutesByBox(box);
       return geo;
     }
 
     [HttpPost]
-    [Route("InsertRouts")]
-    public async Task InsertRouts(List<RoutLineDTO> newObjs)
+    [Route("InsertRoutes")]
+    public async Task InsertRoutes(List<RoutLineDTO> newObjs)
     {
       if (newObjs.Count > 0)
       {

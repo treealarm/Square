@@ -170,7 +170,7 @@ export interface SearchFilterGUI {
 
   show_objects?: boolean;
   show_tracks?: boolean;
-  show_routs?: boolean;
+  show_routes?: boolean;
 
   applied?: boolean;
 }

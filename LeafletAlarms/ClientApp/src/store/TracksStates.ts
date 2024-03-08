@@ -6,7 +6,7 @@ import { BoxTrackDTO, IRoutDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } 
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface TracksState {
-  routs: IRoutLineDTO[];
+  routes: IRoutLineDTO[];
   tracks: ITrackPointDTO[]
   box: BoxTrackDTO; 
   selected_track: ITrackPointDTO;
@@ -16,20 +16,20 @@ export interface TracksState {
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface RequestRoutsAction {
+interface RequestRoutesAction {
   type: "REQUEST_ROUTS";
   box: BoxTrackDTO;
 }
 
-interface ReceiveRoutsAction {
+interface ReceiveRoutesAction {
   type: "RECEIVE_ROUTS";
   box: BoxTrackDTO;
-  routs: IRoutLineDTO[];
+  routes: IRoutLineDTO[];
 }
 
-interface ReceiveRoutsByIdAction {
+interface ReceiveRoutesByIdAction {
   type: "RECEIVE_ROUTS_BY_ID";
-  routs: IRoutLineDTO[];
+  routes: IRoutLineDTO[];
 }
 
 interface RequestTracksAction {
@@ -51,12 +51,12 @@ interface SelectTrackAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction =
-  | RequestRoutsAction
-  | ReceiveRoutsAction
+  | RequestRoutesAction
+  | ReceiveRoutesAction
   | RequestTracksAction
   | ReceiveTracksAction  
   | SelectTrackAction
-  | ReceiveRoutsByIdAction
+  | ReceiveRoutesByIdAction
   ;
 
 // ----------------
@@ -70,7 +70,7 @@ export const actionCreators = {
     getState
   ) => {
     let body = JSON.stringify([selected_track?.id]);
-    var request = ApiRouterRootString + "/GetRoutsByTracksIds";
+    var request = ApiRouterRootString + "/GetRoutesByTracksIds";
 
     var fetched = DoFetch(request, {
       method: "POST",
@@ -85,7 +85,7 @@ export const actionCreators = {
         return json as Promise<IRoutLineDTO[]>;
       })
       .then(data => {
-        dispatch({ type: "RECEIVE_ROUTS_BY_ID", routs: data });
+        dispatch({ type: "RECEIVE_ROUTS_BY_ID", routes: data });
       })
       .catch((error) => {
 
@@ -94,7 +94,7 @@ export const actionCreators = {
     dispatch({ type: "SELECT_TRACK", selected_track: selected_track });
   },
 
-  requestRouts: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (
+  requestRoutes: (box: BoxTrackDTO): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
@@ -109,7 +109,7 @@ export const actionCreators = {
       box.count = ApiDefaultMaxCountResult;
 
       let body = JSON.stringify(box);
-      var request = ApiRouterRootString + "/GetRoutsByBox";
+      var request = ApiRouterRootString + "/GetRoutesByBox";
 
       var fetched = DoFetch(request, {
         method: "POST",
@@ -124,17 +124,17 @@ export const actionCreators = {
           return json as Promise<IRoutLineDTO[]>;
         })
         .then(data => {
-          dispatch({ type: "RECEIVE_ROUTS", box: box, routs: data });
+          dispatch({ type: "RECEIVE_ROUTS", box: box, routes: data });
         })
         .catch((error) => {
           const emtyMarkers: IRoutLineDTO[] = [];
-          dispatch({ type: "RECEIVE_ROUTS", box: box, routs: emtyMarkers });
+          dispatch({ type: "RECEIVE_ROUTS", box: box, routes: emtyMarkers });
         });
 
       dispatch({ type: "REQUEST_ROUTS", box: box });
     }
   },
-  requestRoutsByLine: (routRequest: IRoutDTO): AppThunkAction<KnownAction> => (
+  requestRoutesByLine: (routRequest: IRoutDTO): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
@@ -155,7 +155,7 @@ export const actionCreators = {
         return json as Promise<IRoutLineDTO[]>;
       })
       .then(data => {
-        dispatch({ type: "RECEIVE_ROUTS_BY_ID", routs: data });
+        dispatch({ type: "RECEIVE_ROUTS_BY_ID", routes: data });
       })
       .catch((error) => {
         console.error(error);
@@ -209,7 +209,7 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: TracksState = {
-  routs: null,
+  routes: null,
   tracks: null,
   box: null,
   selected_track: null
@@ -230,7 +230,7 @@ export const reducer: Reducer<TracksState> = (
     case "RECEIVE_ROUTS_BY_ID":
     return {
       ...state,
-      routs: action.routs
+      routes: action.routes
     };
 
     case "SELECT_TRACK":
@@ -252,7 +252,7 @@ export const reducer: Reducer<TracksState> = (
         return {
           ...state,
           box: action.box,
-          routs: action.routs
+          routes: action.routes
         };
       }
       break;
