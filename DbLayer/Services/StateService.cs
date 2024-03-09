@@ -16,25 +16,52 @@ namespace DbLayer.Services
 {
     public class StateService: IStateService
   {
-    private readonly IMongoCollection<DBObjectState> _collState;
-    private readonly IMongoCollection<DBObjectStateDescription> _collStateDescr;
-    private readonly MongoClient _mongoClient;
+    private IMongoCollection<DBObjectState> _collState;
+    private IMongoCollection<DBObjectStateDescription> _collStateDescr;
+    private MongoClient _mongoClient;
+    private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
+    private IMongoCollection<DBObjectState> CollState 
+    { 
+      get
+      {
+        CreateCollections();
+        return _collState;
+      }
+    }
+
+    private IMongoCollection<DBObjectStateDescription> CollStateDescr
+    {
+      get
+      {
+        CreateCollections();
+        return _collStateDescr;
+      }
+    }
+
     public StateService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
+      CreateCollections();
+    }
+    private void CreateCollections()
+    {
+      if (_collState == null || _collStateDescr == null)
+      {
+        _mongoClient = new MongoClient(
+        _geoStoreDatabaseSettings.Value.ConnectionString);
 
-      var mongoDatabase = _mongoClient.GetDatabase(
-          geoStoreDatabaseSettings.Value.DatabaseName);
+        var mongoDatabase = _mongoClient.GetDatabase(
+            _geoStoreDatabaseSettings.Value.DatabaseName);
 
-      _collState =
-        mongoDatabase.GetCollection<DBObjectState>
-        (geoStoreDatabaseSettings.Value.StateCollectionName);
-      _collStateDescr =
-        mongoDatabase.GetCollection<DBObjectStateDescription>
-        (geoStoreDatabaseSettings.Value.StateDescrCollectionName);
+        _collState =
+          mongoDatabase.GetCollection<DBObjectState>
+          (_geoStoreDatabaseSettings.Value.StateCollectionName);
+        _collStateDescr =
+          mongoDatabase.GetCollection<DBObjectStateDescription>
+          (_geoStoreDatabaseSettings.Value.StateDescrCollectionName);
 
-      CreateIndexes();
+        CreateIndexes();
+      }
     }
 
     private void CreateIndexes()
@@ -52,13 +79,13 @@ namespace DbLayer.Services
           { Name = "state" }
         );
 
-        _collStateDescr.Indexes.CreateOneAsync(indexModel);
+        CollStateDescr?.Indexes.CreateOneAsync(indexModel);
       }
     }
 
     public async Task Init()
     {
-      var something = await _collStateDescr.AsQueryable().FirstOrDefaultAsync();
+      var something = await CollStateDescr?.AsQueryable().FirstOrDefaultAsync();
 
       if (something == null)
       {
@@ -133,12 +160,12 @@ namespace DbLayer.Services
 
       foreach (var updatedObj in objsToUpdate)
       {
-        await _collStateDescr.DeleteOneAsync(
+        await CollStateDescr?.DeleteOneAsync(
           x => x.state == updatedObj.state && x.external_type == updatedObj.external_type
         );
       }
 
-      await _collStateDescr.InsertManyAsync(objsToUpdate);
+      await CollStateDescr?.InsertManyAsync(objsToUpdate);
     }
 
     List<ObjectStateDTO> ConvertListStateDB2DTO(List<DBObjectState> dbo)
@@ -262,13 +289,13 @@ namespace DbLayer.Services
 
       if (string.IsNullOrEmpty(external_type))
       {
-        obj = await _collStateDescr
+        obj = await CollStateDescr?
         .Find(f1)
         .ToListAsync();
       }
       else
       {
-        obj = await _collStateDescr
+        obj = await CollStateDescr?
         .Find(t => t.external_type == external_type)
         .ToListAsync();
       }
@@ -328,13 +355,13 @@ namespace DbLayer.Services
 
             filter = filter & f1;
 
-            obj = await _collStateDescr
+            obj = await CollStateDescr?
             .Find(filter)
             .ToListAsync();
           }
           else
           {
-            obj = await _collStateDescr
+            obj = await CollStateDescr?
             .Find(s => s.external_type == external_type && states.Contains(s.state))
             .ToListAsync();
           }          
