@@ -81,8 +81,8 @@ namespace LogicMicroService
 
     public async override Task StartAsync(CancellationToken cancellationToken)
     {
-      await _pubsub.Subscribe("UpdateTrackPosition", OnUpdateTrackPosition);
-      await _pubsub.Subscribe("UpdateLogicProc", OnUpdateLogicProc); 
+      await _pubsub.Subscribe(Topics.UpdateTrackPosition, OnUpdateTrackPosition);
+      await _pubsub.Subscribe(Topics.UpdateLogicProc, OnUpdateLogicProc); 
 
       await base.StartAsync(cancellationToken);
     }
@@ -232,7 +232,7 @@ namespace LogicMicroService
 
     public async override Task StopAsync(CancellationToken cancellationToken)
     {
-      await _pubsub.Unsubscribe("UpdateTrackPosition", OnUpdateTrackPosition);
+      await _pubsub.Unsubscribe(Topics.UpdateTrackPosition, OnUpdateTrackPosition);
       await base.StopAsync(cancellationToken);
     }
   }

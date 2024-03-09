@@ -5,6 +5,7 @@ using LeafletAlarms.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PubSubLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace LeafletAlarms.Controllers
 
       var listIds = newObjs.Select(o => o.id).ToList();
 
-      _pubsub.PublishNoWait("UpdateLogicProc", JsonSerializer.Serialize(listIds));
+      _pubsub.PublishNoWait(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
 
       return CreatedAtAction(nameof(Update), newObjs);
     }
@@ -62,7 +63,7 @@ namespace LeafletAlarms.Controllers
 
       var listIds = new List<string>() { id };
 
-      _pubsub.PublishNoWait("UpdateLogicProc", JsonSerializer.Serialize(listIds));
+      _pubsub.PublishNoWait(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
 
       var ret = CreatedAtAction(nameof(Delete), null, id);
       return ret;

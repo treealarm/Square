@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Rewrite;
+using PubSubLib;
 
 namespace LeafletAlarms.Services
 {
@@ -94,7 +95,7 @@ namespace LeafletAlarms.Services
           ts_end = track_n.timestamp
         };
 
-        _pubsub.PublishNoWait("UpdateTrackPosition", JsonSerializer.Serialize(ev));
+        _pubsub.PublishNoWait(Topics.UpdateTrackPosition, JsonSerializer.Serialize(ev));
       }
       return trackPointsInserted.Select (t => t.id).ToList();
     }
