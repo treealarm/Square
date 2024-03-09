@@ -1,20 +1,9 @@
-﻿using Dapr;
-using DbLayer;
-using DbLayer.Services;
-using Domain;
+﻿using Domain;
 using Domain.ServiceInterfaces;
 using Domain.States;
-using Domain.StateWebSock;
-using Microsoft.Extensions.Hosting;
 using PubSubLib;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services
 {
@@ -182,6 +171,9 @@ namespace LeafletAlarms.Services
 
       if (blinkChanges.Count > 0)
       {
+        await _stateService.UpdateAlarmStatesAsync(
+          blinkChanges.Select(t => new AlarmState() { id = t.id, alarm = t.alarm || t.children_alarms > 0 }).ToList()
+          );
         _pubsub.PublishNoWait(Topics.OnBlinkStateChanged, JsonSerializer.Serialize(blinkChanges));
       }
     }

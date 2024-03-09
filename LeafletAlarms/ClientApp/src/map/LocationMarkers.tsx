@@ -215,7 +215,7 @@ export function LocationMarkers() {
   const markersStates = useSelector((state: ApplicationState) => state?.markersStates);
   const isChanging = useSelector((state: ApplicationState) => state?.markersStates?.isChanging);
   const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
-  const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.alarmed_objects);
+  const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates?.alarmed_objects);
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
@@ -254,7 +254,7 @@ export function LocationMarkers() {
       }
       var objArray2: string[] = [];
       markers.figs?.forEach(arr => objArray2.push(arr.id));
-      appDispatch<any>(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
+      appDispatch<any>(MarkersVisualStore.requestMarkersVisualStates(objArray2));
     }, [markers]);
 
    const mapEvents = useMapEvents({
@@ -340,7 +340,7 @@ export function LocationMarkers() {
       var vAlarmState = alarmedObjects.find(i => i.id == id);
 
       if (vAlarmState != null
-        && (vAlarmState.alarm || vAlarmState.children_alarms > 0)) {
+        && (vAlarmState.alarm)) {
         //const colorOptions = {
         //  fillColor: 'yellow',
         //  fillOpacity: 0.5,

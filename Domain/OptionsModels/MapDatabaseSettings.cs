@@ -19,6 +19,7 @@ namespace Domain.OptionsModels
         public string LevelCollectionName { get; set; } = "Levels";
         public string StateCollectionName { get; set; } = "States";
         public string StateDescrCollectionName { get; set; } = "StateDescrs";
+        public string StateAlarmsCollectionName { get; set; } = "StateAlarms";
         public string LogicCollectionName { get; set; } = "Logic";
         public string LogicProcessorCollectionName { get; set; } = "LogicProcessor";
         public string RightsCollectionName { get; set; } = "Rights";

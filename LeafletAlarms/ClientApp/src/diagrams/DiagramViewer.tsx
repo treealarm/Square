@@ -26,7 +26,7 @@ export default function DiagramViewer() {
   const diagram: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
   const depth = useSelector((state: ApplicationState) => state?.diagramsStates.depth);
   const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
-  const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.alarmed_objects);
+  const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates?.alarmed_objects);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
 
@@ -63,7 +63,7 @@ export default function DiagramViewer() {
       }
       var objArray2: string[] = [];
       diagram?.content?.forEach(arr => objArray2.push(arr.id));
-      appDispatch<any>(MarkersVisualStore.actionCreators.requestMarkersVisualStates(objArray2));
+      appDispatch<any>(MarkersVisualStore.requestMarkersVisualStates(objArray2));
     }, [diagram?.content]);
 
 
@@ -106,7 +106,7 @@ export default function DiagramViewer() {
       var vAlarmState = alarmedObjects.find(i => i.id == id);
 
       if (vAlarmState != null
-        && (vAlarmState.alarm || vAlarmState.children_alarms > 0)) {
+        && (vAlarmState.alarm)) {
 
         retColor = '#ff0000';
       }

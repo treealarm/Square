@@ -216,12 +216,12 @@ export interface ObjectStateDescriptionDTO {
 export interface AlarmObject {
   id: string;
   alarm: boolean;
-  children_alarms: number;
 }
 
 export interface MarkerVisualStateDTO {
   states: ObjectStateDTO[];
-  states_descr: ObjectStateDescriptionDTO[];  
+  states_descr: ObjectStateDescriptionDTO[]; 
+  alarmed_objects: AlarmObject[];
 }
 
 export interface IGeometryDTO {

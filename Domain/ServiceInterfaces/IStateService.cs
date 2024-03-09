@@ -17,5 +17,7 @@ namespace Domain.ServiceInterfaces
       string external_type,
       List<string> states
     );
+    public Task UpdateAlarmStatesAsync(List<AlarmState> alarms);
+    public Task<Dictionary<string, AlarmState>> GetAlarmStatesAsync(List<string> ids);
   }
 }

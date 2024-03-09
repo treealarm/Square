@@ -70,7 +70,7 @@ export function WebSockClient() {
       var received = JSON.parse(event.data);
 
       if (received.action == "set_visual_states") {
-        appDispatch<any>(MarkersVisualStore.actionCreators.updateMarkersVisualStates(received.data));
+        appDispatch<any>(MarkersVisualStore.updateMarkersVisualStates(received.data));
       }
 
       if (received.action == "set_ids2update") {
@@ -80,7 +80,7 @@ export function WebSockClient() {
         appDispatch<any>(MarkersStore.actionCreators.deleteMarkersLocally(received.data));
       }
       if (received.action == "set_alarm_states") {
-        appDispatch<any>(MarkersVisualStore.actionCreators.updateMarkersAlarmStates(received.data));
+        appDispatch<any>(MarkersVisualStore.updateMarkersAlarmStates(received.data));
       }
       if (received.action == "update_viewbox") {
         appDispatch<any>(MarkersStore.actionCreators.initiateUpdateAll());

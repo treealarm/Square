@@ -466,10 +466,23 @@ namespace LeafletAlarms.Services
 
     public async Task OnBlinkStateChanged(List<AlarmObject> alarms)
     {
+      var toUpdate = new List<AlarmState>();
+
+      lock (_locker)
+      {
+        foreach (var state in alarms)
+        {
+          if (_dicIds.Contains(state.id))
+          {
+            toUpdate.Add(new AlarmState() { id = state.id, alarm = state.alarm || state.children_alarms > 0});
+          }
+        }
+      }
+
       StateBaseDTO packet = new StateBaseDTO()
       {
         action = "set_alarm_states",
-        data = alarms
+        data = toUpdate
       };
 
       await SendPacket(packet);

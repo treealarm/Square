@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Domain
 {
@@ -11,9 +7,6 @@ namespace Domain
   {
     public static void CopyAllToAsJson<T, T1>(this T source, out T1 target)
     {
-      var type = typeof(T);
-      var type1 = typeof(T1);
-
       var json = JsonSerializer.Serialize(source);
 
       target = JsonSerializer.Deserialize<T1>(json);

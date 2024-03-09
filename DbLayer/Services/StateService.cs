@@ -1,15 +1,15 @@
 ﻿using DbLayer.Models;
+using DbLayer.Models.Diagrams;
+using Domain;
+using Domain.Diagram;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
@@ -18,8 +18,10 @@ namespace DbLayer.Services
   {
     private IMongoCollection<DBObjectState> _collState;
     private IMongoCollection<DBObjectStateDescription> _collStateDescr;
+    private IMongoCollection<DBAlarmState> _collAlarms;
     private MongoClient _mongoClient;
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
+    
     private IMongoCollection<DBObjectState> CollState 
     { 
       get
@@ -38,6 +40,15 @@ namespace DbLayer.Services
       }
     }
 
+    private IMongoCollection<DBAlarmState> CollAlarms
+    {
+      get
+      {
+        CreateCollections();
+        return _collAlarms;
+      }
+    }
+
     public StateService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
     {
       _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
@@ -45,7 +56,7 @@ namespace DbLayer.Services
     }
     private void CreateCollections()
     {
-      if (_collState == null || _collStateDescr == null)
+      if (_collState == null || _collStateDescr == null || _collAlarms == null)
       {
         _mongoClient = new MongoClient(
         _geoStoreDatabaseSettings.Value.ConnectionString);
@@ -56,9 +67,14 @@ namespace DbLayer.Services
         _collState =
           mongoDatabase.GetCollection<DBObjectState>
           (_geoStoreDatabaseSettings.Value.StateCollectionName);
+
         _collStateDescr =
           mongoDatabase.GetCollection<DBObjectStateDescription>
           (_geoStoreDatabaseSettings.Value.StateDescrCollectionName);
+
+        _collAlarms =
+          mongoDatabase.GetCollection<DBAlarmState>
+          (_geoStoreDatabaseSettings.Value.StateAlarmsCollectionName);
 
         CreateIndexes();
       }
@@ -147,7 +163,7 @@ namespace DbLayer.Services
         }
       }
 
-      var writeResult = await _collState.BulkWriteAsync(bulkWrites);
+      var writeResult = await CollState?.BulkWriteAsync(bulkWrites);
 
       foreach (var pair in dbUpdated)
       {
@@ -265,7 +281,7 @@ namespace DbLayer.Services
 
       try
       {
-        obj = await _collState.Find(s => ids.Contains(s.id)).ToListAsync();
+        obj = await CollState?.Find(s => ids.Contains(s.id)).ToListAsync();
       }
       catch (Exception)
       {
@@ -372,6 +388,38 @@ namespace DbLayer.Services
 
       }
       var retVal = ConvertListStateDescrDB2DTO(obj);
+      return retVal;
+    }
+
+    async Task IStateService.UpdateAlarmStatesAsync(List<AlarmState> alarms)
+    {
+      var bulkWrites = new List<WriteModel<DBAlarmState>>();
+
+      foreach (var item in alarms)
+      {
+        var updatedObj = item.CopyAll<AlarmState, DBAlarmState>();
+        var filter = Builders<DBAlarmState>.Filter.Eq(x => x.id, updatedObj.id);
+        var request = new ReplaceOneModel<DBAlarmState>(filter, updatedObj);
+        request.IsUpsert = true;
+        bulkWrites.Add(request);
+      }
+
+      var writeResult = await CollAlarms?.BulkWriteAsync(bulkWrites);
+    }
+
+    async Task<Dictionary<string,AlarmState>> IStateService.GetAlarmStatesAsync(List<string> ids)
+    {
+      var retVal = new  Dictionary<string, AlarmState>  ();
+      var list = await CollAlarms.Find(i => ids.Contains(i.id)).ToListAsync();
+
+      foreach (var item in list)
+      {
+        retVal.Add(item.id, new AlarmState()
+        {
+          id = item.id,
+          alarm = item.alarm
+        });
+      }
       return retVal;
     }
   }

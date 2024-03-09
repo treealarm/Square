@@ -1,149 +1,79 @@
-﻿import { createAction, createAsyncThunk, ThunkAction } from "@reduxjs/toolkit";
-import { Action, AnyAction, Reducer } from "redux";
-import { ApiStatesRootString, AppThunkAction } from "./";
+﻿import { ApiStatesRootString, ApplicationState } from './index';
 import { DoFetch } from "./Fetcher";
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AlarmObject, MarkerVisualStateDTO } from "./Marker";
 
 
 export interface MarkersVisualStates {
   visualStates: MarkerVisualStateDTO;
-  alarmed_objects: AlarmObject[];
-}
-
-interface SetMarkersVisualStates {
-  type: "SET_MARKERS_VISUAL_STATES";
-  visualStates: MarkerVisualStateDTO;
-}
-
-interface UpdateMarkersVisualStates {
-  type: "UPDATE_MARKERS_VISUAL_STATES";
-  visualStates: MarkerVisualStateDTO;
-}
-
-interface GetMarkersVisualStates {
-  type: "GET_MARKERS_VISUAL_STATES";
-  visualStates: MarkerVisualStateDTO;
-}
-
-interface UpdateMarkersAlarmStates {
-  type: "UPDATE_MARKERS_ALARM_STATES";
-  alarmed_objects: AlarmObject[];
-}
-
-type KnownAction =
-  | SetMarkersVisualStates
-  | UpdateMarkersVisualStates
-  | GetMarkersVisualStates
-  | UpdateMarkersAlarmStates
-  ;
-
-export const actionCreators = {
-  setMarkersVisualStates: (visualStates: MarkerVisualStateDTO): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    dispatch({ type: "SET_MARKERS_VISUAL_STATES", visualStates: visualStates });
-  }
-  ,
-    updateMarkersVisualStates: (visualStates: MarkerVisualStateDTO): AppThunkAction<KnownAction> => (
-      dispatch,
-      getState
-    ) => {
-    dispatch({ type: "UPDATE_MARKERS_VISUAL_STATES", visualStates: visualStates });
-  },
-  requestMarkersVisualStates: (ids: string[]): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
- {
-      let body = JSON.stringify(ids);
-      var request = ApiStatesRootString + "/GetVisualStates";
-
-      var fetched = DoFetch(request, {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: body
-      });
-
-      fetched
-        .then(response => {
-          if (!response.ok) throw response.statusText;
-          var json = response.json();
-          return json as Promise<MarkerVisualStateDTO>;
-        })
-        .then(data => {
-          dispatch({ type: "SET_MARKERS_VISUAL_STATES", visualStates: data});
-        })
-        .catch((error) => {
-
-        });
-    }
-  }
-    ,
-  updateMarkersAlarmStates: (alarmed_objects: AlarmObject[]): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    dispatch({ type: "UPDATE_MARKERS_ALARM_STATES", alarmed_objects: alarmed_objects });
-  }
 }
 
 const unloadedState: MarkersVisualStates = {
   visualStates: {
     states: [],
-    states_descr: []
-  },
-  alarmed_objects:[]
+    states_descr: [],
+    alarmed_objects: []
+  }
 };
 
-export const reducer: Reducer<MarkersVisualStates> = (
-  state: MarkersVisualStates | undefined,
-  incomingAction: Action
-): MarkersVisualStates => {
+export const requestMarkersVisualStates = createAsyncThunk <MarkerVisualStateDTO, string[]>(
+  'states/GetVisualStates',
+  async (ids: string[], { getState }) => {
+    const state: ApplicationState = getState() as ApplicationState;
 
-  if (state === undefined) {
-    return unloadedState;
+    let body = JSON.stringify(ids);
+    var request = ApiStatesRootString + "/GetVisualStates";
+
+    var fetched = await DoFetch(request, {
+      method: "POST",
+      headers: { "Content-type": "application/json" },
+      body: body
+    });
+
+    var json = await fetched.json() as Promise<MarkerVisualStateDTO>;  
+
+    return json;
   }
+)
 
-  const action = incomingAction as KnownAction;
-
-  switch (action.type) {
-    case "UPDATE_MARKERS_VISUAL_STATES":
+const stateSlice = createSlice({
+  name: 'StateStates',
+  initialState: unloadedState,
+  reducers: {
+    updateMarkersAlarmStates(state: MarkersVisualStates, action: PayloadAction<AlarmObject[]>) {
+      var newAlarms = state.visualStates.alarmed_objects.filter(a => action.payload.find(d => d.id == a.id) == null);
+      newAlarms = [... newAlarms, ...action.payload];
+      state.visualStates.alarmed_objects = newAlarms;
+    },
+    updateMarkersVisualStates(state: MarkersVisualStates, action: PayloadAction<MarkerVisualStateDTO>) {
       var newStates = state.visualStates.states
-        .filter(item => null == action.visualStates.states.find(i => i.id == item.id));
+        .filter(item => null == action.payload.states.find(i => i.id == item.id));
 
-      newStates = [...newStates, ...action.visualStates.states];
+      newStates = [...newStates, ...action.payload.states];
 
       var newDescrs = state.visualStates.states_descr
-        .filter(item => null == action.visualStates.states_descr.find(i => i.id == item.id));
-      newDescrs = [...newDescrs, ...action.visualStates.states_descr];
+        .filter(item => null == action.payload.states_descr.find(i => i.id == item.id));
+      newDescrs = [...newDescrs, ...action.payload.states_descr];
 
-      var newVisualStates: MarkerVisualStateDTO =
-      {
-        states: newStates,
-        states_descr: newDescrs
-      }
-      return {
-        ...state,
-        visualStates: newVisualStates
-      };
-    case "SET_MARKERS_VISUAL_STATES":
-      return {
-        ...state,
-        visualStates: action.visualStates
-      };
-
-    case "UPDATE_MARKERS_ALARM_STATES":
-      var newAlarms = state.alarmed_objects
-        .filter(item => null == action.alarmed_objects.find(i => i.id == item.id));
-
-      newAlarms = [...newAlarms, ...action.alarmed_objects];
-
-      return {
-        ...state,
-        alarmed_objects: newAlarms
-      };
+      state.visualStates.states = newStates;
+      state.visualStates.states_descr = newDescrs;      
     }
+  }
+  ,
+  extraReducers: (builder) => {
+    builder
+      .addCase(requestMarkersVisualStates.pending, (state, action) => {
+        //state.parents = null;
+      })
+      .addCase(requestMarkersVisualStates.fulfilled, (state, action) => {
+        const { requestId } = action.meta
+        state.visualStates = action.payload;
+      })
+      .addCase(requestMarkersVisualStates.rejected, (state, action) => {
+        const { requestId } = action.meta
+      })      
+  },
+})
 
-  return state;
-};
+export const { updateMarkersAlarmStates, updateMarkersVisualStates } = stateSlice.actions
+export const reducer = stateSlice.reducer

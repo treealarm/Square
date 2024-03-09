@@ -1,15 +1,9 @@
-﻿using DbLayer.Services;
-using Domain;
+﻿using Domain;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
 using LeafletAlarms.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
 {
@@ -75,6 +69,8 @@ namespace LeafletAlarms.Controllers
     {
       var objsToUpdate = await _mapService.GetAsync(objIds);
       var objStates = await _stateService.GetStatesAsync(objIds);
+      var alarmStates = await _stateService.GetAlarmStatesAsync(objIds);
+
       Dictionary<string, List<string>> mapExTypeToStates = new Dictionary<string, List<string>>();
 
       foreach (var objState in objStates)
@@ -91,7 +87,7 @@ namespace LeafletAlarms.Controllers
 
         if (objToUpdate.external_type == null)
         {
-          objToUpdate.external_type = String.Empty;
+          objToUpdate.external_type = string.Empty;
         }
 
         if (!mapExTypeToStates.TryGetValue(objToUpdate.external_type, out listOfStates))
@@ -105,6 +101,7 @@ namespace LeafletAlarms.Controllers
 
       MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
       vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
+      vStateDTO.alarmed_objects = alarmStates.Values.ToList();
 
       foreach (var pair in mapExTypeToStates)
       {
