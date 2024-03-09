@@ -2,19 +2,11 @@
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.Logic;
-using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
-using Microsoft.AspNetCore.Http;
-using OsmSharp.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LeafletAlarms.Services
 {

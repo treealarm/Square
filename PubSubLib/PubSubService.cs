@@ -15,8 +15,8 @@ namespace PubSubLib
     private object _locker = new object();
     private ConnectionMultiplexer redis;
 
-    private Dictionary<string, HashSet<Action<string, string>>> _topics =
-      new Dictionary<string, HashSet<Action<string, string>>>();
+    private Dictionary<string, HashSet<Func<string, string, Task>>> _topics =
+      new Dictionary<string, HashSet<Func<string, string, Task>>>();
 
     private static ConcurrentDictionary<string, RedisChannel> _channels 
       = new ConcurrentDictionary<string, RedisChannel>();
@@ -68,7 +68,7 @@ namespace PubSubLib
 
     void RedisHandler(RedisChannel channel, RedisValue message)
     {
-      List<Action<string, string>>? topicList = null;
+      List<Func<string, string, Task>>? topicList = null;
 
       lock (_locker)
       {
@@ -100,17 +100,17 @@ namespace PubSubLib
       }
     }
 
-    public async Task Subscribe(string channel, Action<string, string> handler)
+    public async Task Subscribe(string channel, Func<string, string, Task> handler)
     {
       int count = 0;
 
       lock (_locker)
       {
-        HashSet<Action<string, string>>? topic = null;
+        HashSet<Func<string, string,Task>>? topic = null;
 
         if (!_topics.TryGetValue(channel, out topic))
         {
-          topic = new HashSet<Action<string, string>>();
+          topic = new HashSet<Func<string, string, Task>>();
           _topics.Add(channel, topic);
         }
 
@@ -132,7 +132,7 @@ namespace PubSubLib
       }      
     }
 
-    public async Task Unsubscribe(string channel, Action<string, string> handler)
+    public async Task Unsubscribe(string channel, Func<string, string, Task> handler)
     {
       int count = 0;
 

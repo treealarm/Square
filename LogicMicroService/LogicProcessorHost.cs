@@ -46,7 +46,7 @@ namespace LogicMicroService
       _pubsub = pubsub;
     }
 
-    void OnUpdateTrackPosition(string channel, string message)
+    async Task OnUpdateTrackPosition(string channel, string message)
     {
       var ev = JsonSerializer.Deserialize<TracksUpdatedEvent>(message);
 
@@ -59,9 +59,10 @@ namespace LogicMicroService
       {
         _rangeToProcess.Add(ev);
       }
+      await Task.CompletedTask;
     }
 
-    void OnUpdateLogicProc(string channel, string message)
+    async Task OnUpdateLogicProc(string channel, string message)
     {
       var ids = JsonSerializer.Deserialize<List<string>>(message);
 
@@ -76,7 +77,8 @@ namespace LogicMicroService
         {
           _logicIdsToUpdate.Add(id);
         }
-      }      
+      }
+      await Task.CompletedTask;
     }
 
     public async override Task StartAsync(CancellationToken cancellationToken)

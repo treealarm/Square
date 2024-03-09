@@ -1,14 +1,17 @@
-﻿using DbLayer;
+﻿using Dapr;
+using DbLayer;
 using DbLayer.Services;
 using Domain;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
 using Microsoft.Extensions.Hosting;
+using PubSubLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +22,7 @@ namespace LeafletAlarms.Services
     private Task _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
 
-    private IStateConsumer _stateConsumer;
+    private IPubSubService _pubsub;
     private IMapService _mapService;
     private IStateService _stateService;
     private readonly IIdsQueue _stateIdsQueueService;
@@ -27,13 +30,13 @@ namespace LeafletAlarms.Services
     private Dictionary<string, AlarmObject> m_Hierarhy = new Dictionary<string, AlarmObject>();
 
     public HierarhyStateService(
-      IStateConsumer scService,
+      IPubSubService pubsub,
       IMapService mapService,
       IStateService stateService,
       IIdsQueue stateIdsQueueService
     )
     {
-      _stateConsumer = scService;
+      _pubsub = pubsub;
       _mapService = mapService;
       _stateService = stateService;
       _stateIdsQueueService = stateIdsQueueService;
@@ -182,7 +185,7 @@ namespace LeafletAlarms.Services
 
       if (blinkChanges.Count > 0)
       {
-        await _stateConsumer.OnBlinkStateChanged(blinkChanges);
+        _pubsub.PublishNoWait(Topics.OnBlinkStateChanged, JsonSerializer.Serialize(blinkChanges));
       }
     }
 

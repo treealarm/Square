@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace LeafletAlarms.Services
 {
-  public class ConsumerService : ITrackConsumer, IStateConsumer, IWebSockList
+  public class ConsumerService : ITrackConsumer, IWebSockList
   {
     private IStateService _stateService;
     private IGeoService _geoService;
@@ -34,12 +34,17 @@ namespace LeafletAlarms.Services
       _pubsub = pubsub;
       _pubsub.Subscribe(Topics.LogicTriggered, LogicTriggered);
       _pubsub.Subscribe(Topics.NewRoutBuilt, NewRoutBuilt);
+      _pubsub.Subscribe(Topics.OnStateChanged, OnStateChanged);
+      _pubsub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
+      
     }
 
     ~ConsumerService()
     {
       _pubsub.Unsubscribe(Topics.LogicTriggered, LogicTriggered);
       _pubsub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);
+      _pubsub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
+      _pubsub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
@@ -104,31 +109,46 @@ namespace LeafletAlarms.Services
       }
     }    
 
-    public async Task OnStateChanged(List<ObjectStateDTO> state)
+    public async Task OnStateChanged(string channel, string message)
     {
+      var state = JsonSerializer.Deserialize<List<ObjectStateDTO>>(message);
+
+      if (state == null)
+      {
+        return;
+      }
+
       foreach (var sock in StateSockets)
       {
         await sock.Value.OnStateChanged(state);
       }
     }
 
-    public async Task OnBlinkStateChanged(List<AlarmObject> state)
+    public async Task OnBlinkStateChanged(string channel, string message)
     {
+      var state = JsonSerializer.Deserialize<List<AlarmObject>>(message);
+
+      if (state == null)
+      {
+        return;
+      }
+
       foreach (var sock in StateSockets)
       {
         await sock.Value.OnBlinkStateChanged(state);
       }
     }
 
-    void LogicTriggered(string channel, string message)
+    async Task LogicTriggered(string channel, string message)
     {
       foreach (var sock in StateSockets)
       {
         sock.Value.LogicTriggered(message);
       }
+      await Task.CompletedTask;
     }
 
-    void NewRoutBuilt(string channel, string message)
+    async Task NewRoutBuilt(string channel, string message)
     {
       var routEnds = JsonSerializer.Deserialize<List<string>>(message);
 
@@ -141,6 +161,7 @@ namespace LeafletAlarms.Services
       {
         sock.Value.OnUpdateTracks(routEnds);
       }
+      await Task.CompletedTask;
     }
   }
 }
