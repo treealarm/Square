@@ -3,6 +3,7 @@ using Domain.GeoDTO;
 using Domain.Logic;
 using Domain.NonDto;
 using Domain.ServiceInterfaces;
+using Domain.StateWebSock;
 using PubSubLib;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -48,17 +49,32 @@ namespace LogicMicroService
 
     async Task OnUpdateTrackPosition(string channel, string message)
     {
-      var ev = JsonSerializer.Deserialize<TracksUpdatedEvent>(message);
+      var trackPointsInserted = JsonSerializer.Deserialize<List<TrackPointDTO>>(message);
 
-      if (ev == null)
+      if (trackPointsInserted == null)
       {
         return;
       }
 
-      lock (_locker)
+      var track_0 = trackPointsInserted.FirstOrDefault();
+      var track_n = trackPointsInserted.LastOrDefault();
+
+      if (track_0 != null && track_n != null)
       {
-        _rangeToProcess.Add(ev);
+        TracksUpdatedEvent ev = new TracksUpdatedEvent()
+        {
+          id_start = track_0.id,
+          id_end = track_n.id,
+          ts_start = track_0.timestamp,
+          ts_end = track_n.timestamp
+        };
+        lock (_locker)
+        {
+          _rangeToProcess.Add(ev);
+        }
       }
+
+      
       await Task.CompletedTask;
     }
 
@@ -83,7 +99,7 @@ namespace LogicMicroService
 
     public async override Task StartAsync(CancellationToken cancellationToken)
     {
-      await _pubsub.Subscribe(Topics.UpdateTrackPosition, OnUpdateTrackPosition);
+      await _pubsub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
       await _pubsub.Subscribe(Topics.UpdateLogicProc, OnUpdateLogicProc); 
 
       await base.StartAsync(cancellationToken);
@@ -234,7 +250,7 @@ namespace LogicMicroService
 
     public async override Task StopAsync(CancellationToken cancellationToken)
     {
-      await _pubsub.Unsubscribe(Topics.UpdateTrackPosition, OnUpdateTrackPosition);
+      await _pubsub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
       await base.StopAsync(cancellationToken);
     }
   }

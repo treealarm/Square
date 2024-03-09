@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace LeafletAlarms.Services
 {
-  public class ConsumerService : ITrackConsumer, IWebSockList
+  public class ConsumerService : IWebSockList
   {
     private IStateService _stateService;
     private IGeoService _geoService;
@@ -32,11 +32,13 @@ namespace LeafletAlarms.Services
       _mapService = mapService;
       _stateIdsQueueService = stateIdsQueueService;
       _pubsub = pubsub;
+
       _pubsub.Subscribe(Topics.LogicTriggered, LogicTriggered);
       _pubsub.Subscribe(Topics.NewRoutBuilt, NewRoutBuilt);
       _pubsub.Subscribe(Topics.OnStateChanged, OnStateChanged);
       _pubsub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
-      
+      _pubsub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+
     }
 
     ~ConsumerService()
@@ -45,6 +47,7 @@ namespace LeafletAlarms.Services
       _pubsub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);
       _pubsub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
       _pubsub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
+      _pubsub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
@@ -93,12 +96,20 @@ namespace LeafletAlarms.Services
       StateSockets.TryRemove(con.Connection.Id, out var sock);
     }
 
-    public void OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
+    public async Task OnUpdateTrackPosition(string channel, string message)
     {
+      var movedMarkers = JsonSerializer.Deserialize<List<TrackPointDTO>>(message);
+
+      if (movedMarkers == null)
+      {
+        return;
+      }
+
       foreach (var sock in StateSockets)
       {
         sock.Value.OnUpdateTrackPosition(movedMarkers);
       }
+      await Task.CompletedTask;
     }
 
     public void OnUpdateTracks(List<string> movedMarkers)

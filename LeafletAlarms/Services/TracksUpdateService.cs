@@ -15,7 +15,6 @@ namespace LeafletAlarms.Services
   {
     private readonly IMapService _mapService;
     private readonly ITrackService _tracksService;
-    private ITrackConsumer _stateService;
     private readonly IGeoService _geoService;
     private BaseMarkerDTO _tracksRootFolder;
     private const string TRACKS_ROOT_NAME = "__tracks";
@@ -26,13 +25,11 @@ namespace LeafletAlarms.Services
       IMapService mapsService,
       ITrackService tracksService,
       IGeoService geoService,
-      ITrackConsumer stateService,
       IPubSubService pubsub
     )
     {
       _mapService = mapsService;
       _tracksService = tracksService;
-      _stateService = stateService;
       _geoService = geoService;
       _pubsub = pubsub;
     }
@@ -80,23 +77,8 @@ namespace LeafletAlarms.Services
     {
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
 
-      _stateService.OnUpdateTrackPosition(trackPoints);
+      _pubsub.PublishNoWait(Topics.OnUpdateTrackPosition, JsonSerializer.Serialize(trackPoints));
 
-      var track_0 = trackPointsInserted.FirstOrDefault();
-      var track_n = trackPointsInserted.LastOrDefault();
-
-      if (track_0 != null && track_n != null)
-      {
-        TracksUpdatedEvent ev = new TracksUpdatedEvent()
-        {
-          id_start = track_0.id,
-          id_end = track_n.id,
-          ts_start = track_0.timestamp,
-          ts_end = track_n.timestamp
-        };
-
-        _pubsub.PublishNoWait(Topics.UpdateTrackPosition, JsonSerializer.Serialize(ev));
-      }
       return trackPointsInserted.Select (t => t.id).ToList();
     }
 

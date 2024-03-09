@@ -24,7 +24,6 @@ namespace LeafletAlarms.Controllers
   {
     private readonly IMapService _mapService;
     private readonly IGeoService _geoService;
-    private ITrackConsumer _stateService;
     private readonly ITrackService _tracksService;
     private readonly ILevelService _levelService;
     private readonly RightsCheckerService _rightChecker;
@@ -34,7 +33,6 @@ namespace LeafletAlarms.Controllers
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
-      ITrackConsumer stateService,
       ITrackService tracksService,
       ILevelService levelService,
       RightsCheckerService rightChecker,
@@ -44,7 +42,6 @@ namespace LeafletAlarms.Controllers
     )
     {
       _mapService = mapsService;
-      _stateService = stateService;
       _geoService = geoService;
       _tracksService = tracksService;
       _levelService = levelService;
