@@ -8,6 +8,7 @@ using Domain.StateWebSock;
 using Microsoft.Extensions.Hosting;
 using PubSubLib;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,21 +26,18 @@ namespace LeafletAlarms.Services
     private IPubSubService _pubsub;
     private IMapService _mapService;
     private IStateService _stateService;
-    private readonly IIdsQueue _stateIdsQueueService;
 
     private Dictionary<string, AlarmObject> m_Hierarhy = new Dictionary<string, AlarmObject>();
-
+    private ConcurrentDictionary<string,string> _idsUpdated = new ConcurrentDictionary<string,string>();
     public HierarhyStateService(
       IPubSubService pubsub,
       IMapService mapService,
-      IStateService stateService,
-      IIdsQueue stateIdsQueueService
+      IStateService stateService
     )
     {
       _pubsub = pubsub;
       _mapService = mapService;
-      _stateService = stateService;
-      _stateIdsQueueService = stateIdsQueueService;
+      _stateService = stateService;      
     }
 
     public async Task Init()
@@ -74,8 +72,7 @@ namespace LeafletAlarms.Services
       m_Hierarhy.Add(alarmObject.id, alarmObject);        
 
       // Add Id for new object, So if it is alarmed we support actual state.
-      _stateIdsQueueService.AddId(alarmObject.id);
-
+      _idsUpdated.TryAdd(alarmObject.id, string.Empty);
       return alarmObject;
     }
 
@@ -191,6 +188,7 @@ namespace LeafletAlarms.Services
 
     Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
+      _pubsub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 
@@ -199,6 +197,7 @@ namespace LeafletAlarms.Services
 
     Task IHostedService.StopAsync(CancellationToken cancellationToken)
     {
+      _pubsub.Unsubscribe(Topics.CheckStatesByIds, CheckStatesByIds);
       _cancellationToken.Cancel();
       _timer?.Wait();
 
@@ -214,14 +213,23 @@ namespace LeafletAlarms.Services
     {
       while (!_cancellationToken.IsCancellationRequested)
       {
-        List<string> objIds = _stateIdsQueueService.GetIds();
+        List<string> objIds = _idsUpdated.Keys.ToList();
 
         if (objIds.Count == 0)
         {
           await Task.Delay(1000);
           continue;
         }
-        
+
+        foreach (var key in objIds)
+        {
+          string val;
+          if (!_idsUpdated.TryRemove(key, out val))
+          {
+            Console.WriteLine("TryRemove error");
+          }
+        }
+
         try
         {
           int maxProcess = 10000;
@@ -236,6 +244,22 @@ namespace LeafletAlarms.Services
           Console.WriteLine(ex.ToString());
         }
       }
+    }
+
+    async Task CheckStatesByIds(string channel, string message)
+    {
+      var ids = JsonSerializer.Deserialize<List<string>>(message);
+
+      if (ids == null)
+      {
+        return;
+      }
+
+      foreach(var id in ids)
+      {
+        _idsUpdated.TryAdd(id, string.Empty);
+      }      
+      await Task.CompletedTask;
     }
   }
 }

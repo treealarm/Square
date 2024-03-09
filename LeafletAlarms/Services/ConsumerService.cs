@@ -14,7 +14,6 @@ namespace LeafletAlarms.Services
     private IGeoService _geoService;
     private ILevelService _levelService;
     private IMapService _mapService;
-    private IIdsQueue _stateIdsQueueService;
     private IPubSubService _pubsub;
 
     public ConsumerService(
@@ -22,7 +21,6 @@ namespace LeafletAlarms.Services
       IGeoService geoService,
       ILevelService levelService,
       IMapService mapService,
-      IIdsQueue stateIdsQueueService,
       IPubSubService pubsub
     )
     {
@@ -30,7 +28,6 @@ namespace LeafletAlarms.Services
       _geoService = geoService;
       _levelService = levelService;
       _mapService = mapService;
-      _stateIdsQueueService = stateIdsQueueService;
       _pubsub = pubsub;
 
       _pubsub.Subscribe(Topics.LogicTriggered, LogicTriggered);
@@ -62,7 +59,7 @@ namespace LeafletAlarms.Services
         _levelService,
         _stateService,
         _mapService,
-        _stateIdsQueueService
+        _pubsub
       );
 
       StateSockets.TryAdd(con.Connection.Id, stateWs);

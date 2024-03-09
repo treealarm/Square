@@ -85,7 +85,6 @@ namespace LeafletAlarms
       services.AddSingleton<IRightService, RightService>();
       services.AddSingleton<RightsCheckerService>();
 
-      services.AddSingleton<IIdsQueue, StateQueueForUpdate>();
       services.AddHostedService<HierarhyStateService>();
 
       services.AddSingleton<ConsumerService>(); // We must explicitly register Foo

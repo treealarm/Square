@@ -5,6 +5,7 @@ using Domain.Logic;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
+using PubSubLib;
 using System.Net.WebSockets;
 using System.Text.Json;
 
@@ -18,7 +19,7 @@ namespace LeafletAlarms.Services
     private IGeoService _geoService;
     private ILevelService _levelService;
     private IMapService _mapService;
-    private IIdsQueue _stateIdsQueueService;
+    private IPubSubService _pubsub;
 
     private Task _timer;
     private CancellationTokenSource _cancellationTokenSource
@@ -51,7 +52,7 @@ namespace LeafletAlarms.Services
       ILevelService levelService,
       IStateService stateService,
       IMapService mapService,
-      IIdsQueue stateIdsQueueService
+      IPubSubService pubsub
     )
     {
       _stateService = stateService;
@@ -60,7 +61,7 @@ namespace LeafletAlarms.Services
       _webSocket = webSocket;
       _levelService = levelService;
       _mapService = mapService;
-      _stateIdsQueueService = stateIdsQueueService;
+      _pubsub = pubsub;
       InitTimer();
     }
 
@@ -346,9 +347,9 @@ namespace LeafletAlarms.Services
           {
             _dicIds.Add(track.figure.id);
           }
-          _stateIdsQueueService.AddId(track.figure.id);
         }
       }
+      _pubsub.PublishNoWait(Topics.CheckStatesByIds, JsonSerializer.Serialize(toUpdate));
 
       if (toDelete.Count > 0)
       {
@@ -504,7 +505,7 @@ namespace LeafletAlarms.Services
           _dicIds.Add(item.Key);
         }
 
-        _stateIdsQueueService.AddIds(newIds.Select(i => i.Key).ToList());
+        _pubsub.PublishNoWait(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.Select(i => i.Key).ToList()));
       }
     }
 
@@ -523,8 +524,7 @@ namespace LeafletAlarms.Services
         {
           _dicIds.Add(item);
         }
-
-        _stateIdsQueueService.AddIds(newIds.ToList());
+        _pubsub.PublishNoWait(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.ToList()));
       }
     }
 
