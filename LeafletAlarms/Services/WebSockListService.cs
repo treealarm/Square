@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace LeafletAlarms.Services
 {
-  public class ConsumerService : IWebSockList
+  public class WebSockListService : IWebSockList
   {
     private IStateService _stateService;
     private IGeoService _geoService;
@@ -16,7 +16,7 @@ namespace LeafletAlarms.Services
     private IMapService _mapService;
     private IPubSubService _pubsub;
 
-    public ConsumerService(
+    public WebSockListService(
       IStateService stateService,
       IGeoService geoService,
       ILevelService levelService,
@@ -35,10 +35,9 @@ namespace LeafletAlarms.Services
       _pubsub.Subscribe(Topics.OnStateChanged, OnStateChanged);
       _pubsub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
       _pubsub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
-
     }
 
-    ~ConsumerService()
+    ~WebSockListService()
     {
       _pubsub.Unsubscribe(Topics.LogicTriggered, LogicTriggered);
       _pubsub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);

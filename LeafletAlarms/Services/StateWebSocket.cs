@@ -349,7 +349,7 @@ namespace LeafletAlarms.Services
           }
         }
       }
-      _pubsub.PublishNoWait(Topics.CheckStatesByIds, JsonSerializer.Serialize(toUpdate));
+      await _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(toUpdate));
 
       if (toDelete.Count > 0)
       {
@@ -518,7 +518,7 @@ namespace LeafletAlarms.Services
           _dicIds.Add(item.Key);
         }
 
-        _pubsub.PublishNoWait(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.Select(i => i.Key).ToList()));
+        _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.Select(i => i.Key).ToList()));
       }
     }
 
@@ -537,7 +537,7 @@ namespace LeafletAlarms.Services
         {
           _dicIds.Add(item);
         }
-        _pubsub.PublishNoWait(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.ToList()));
+        _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.ToList()));
       }
     }
 

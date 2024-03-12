@@ -123,7 +123,7 @@ namespace LeafletAlarms.Controllers
     {
       var geo = await _routService.GetByIdsAsync(ids);
 
-      _pubsub.PublishNoWait(Topics.OnRequestRoutes, JsonSerializer.Serialize(ids));
+      await _pubsub.Publish(Topics.OnRequestRoutes, JsonSerializer.Serialize(ids));
 
       return geo;
     }

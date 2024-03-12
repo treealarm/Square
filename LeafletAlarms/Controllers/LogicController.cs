@@ -41,7 +41,7 @@ namespace LeafletAlarms.Controllers
 
       var listIds = newObjs.Select(o => o.id).ToList();
 
-      _pubsub.PublishNoWait(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
+      await _pubsub.Publish(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
 
       return CreatedAtAction(nameof(Update), newObjs);
     }
@@ -63,7 +63,7 @@ namespace LeafletAlarms.Controllers
 
       var listIds = new List<string>() { id };
 
-      _pubsub.PublishNoWait(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
+      await _pubsub.Publish(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
 
       var ret = CreatedAtAction(nameof(Delete), null, id);
       return ret;

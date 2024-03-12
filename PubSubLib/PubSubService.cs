@@ -42,31 +42,21 @@ namespace PubSubLib
       redis = ConnectionMultiplexer.Connect(configuration);
     }
 
-    public void PublishNoWait(string channel, string message)
-    {
-      try
-      { 
-        ISubscriber sub = redis.GetSubscriber();
-        sub.PublishAsync(GetLiteralChannel(channel), message);
-      }
-      catch (Exception ex) { Console.WriteLine(ex.ToString()); }
-    }
-
     public async Task<long> Publish(string channel, string message)
     {
       try
       {
         ISubscriber sub = redis.GetSubscriber();
-        return await sub.PublishAsync(GetLiteralChannel(channel), message);
+        return await sub.PublishAsync(GetLiteralChannel(channel), message, CommandFlags.FireAndForget);
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
         Console.WriteLine(ex.ToString());
       }
       return 0;
     }
 
-    void RedisHandler(RedisChannel channel, RedisValue message)
+    private void RedisHandler(RedisChannel channel, RedisValue message)
     {
       List<Func<string, string, Task>>? topicList = null;
 

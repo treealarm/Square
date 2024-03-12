@@ -77,7 +77,7 @@ namespace LeafletAlarms.Services
     {
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
 
-      _pubsub.PublishNoWait(Topics.OnUpdateTrackPosition, JsonSerializer.Serialize(trackPoints));
+      await _pubsub.Publish(Topics.OnUpdateTrackPosition, JsonSerializer.Serialize(trackPoints));
 
       return trackPointsInserted.Select (t => t.id).ToList();
     }

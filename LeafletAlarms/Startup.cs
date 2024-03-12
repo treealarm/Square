@@ -80,15 +80,15 @@ namespace LeafletAlarms
       services.AddSingleton<IDiagramService, DiagramService>();
       
 
-      services.AddSingleton<ConsumerService>();
+      services.AddSingleton<WebSockListService>();
       
       services.AddSingleton<IRightService, RightService>();
       services.AddSingleton<RightsCheckerService>();
 
       services.AddHostedService<HierarhyStateService>();
 
-      services.AddSingleton<ConsumerService>(); // We must explicitly register Foo
-      services.AddSingleton<IWebSockList>(x => x.GetRequiredService<ConsumerService>()); // Forward requests to Foo
+      services.AddSingleton<WebSockListService>(); // We must explicitly register Foo
+      services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>()); // Forward requests to Foo
       services.AddSingleton<TracksUpdateService>();
       services.AddSingleton<StatesUpdateService>();
 

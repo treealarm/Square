@@ -143,7 +143,7 @@ namespace LogicMicroService
           await _mapService.UpdatePropNotDeleteAsync(updatedProps);
         }
 
-        _pubsub.PublishNoWait(Topics.LogicTriggered, JsonSerializer.Serialize(triggeredVal));
+        await _pubsub.Publish(Topics.LogicTriggered, JsonSerializer.Serialize(triggeredVal));
       }
     }
 

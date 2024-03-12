@@ -174,7 +174,7 @@ namespace LeafletAlarms.Services
         await _stateService.UpdateAlarmStatesAsync(
           blinkChanges.Select(t => new AlarmState() { id = t.id, alarm = t.alarm || t.children_alarms > 0 }).ToList()
           );
-        _pubsub.PublishNoWait(Topics.OnBlinkStateChanged, JsonSerializer.Serialize(blinkChanges));
+        await _pubsub.Publish(Topics.OnBlinkStateChanged, JsonSerializer.Serialize(blinkChanges));
       }
     }
 

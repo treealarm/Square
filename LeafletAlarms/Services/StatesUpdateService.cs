@@ -22,8 +22,8 @@ namespace LeafletAlarms.Services
     public async Task<bool> UpdateStates(List<ObjectStateDTO> newObjs)
     {
       await _stateService.UpdateStatesAsync(newObjs);
-      _pubsub.PublishNoWait(Topics.OnStateChanged, JsonSerializer.Serialize(newObjs));
-      _pubsub.PublishNoWait(Topics.CheckStatesByIds, JsonSerializer.Serialize(newObjs.Select(st => st.id).ToList()));
+      await _pubsub.Publish(Topics.OnStateChanged, JsonSerializer.Serialize(newObjs));
+      await _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(newObjs.Select(st => st.id).ToList()));
 
       return true;
     }
