@@ -19,7 +19,7 @@ namespace LeafletAlarms.Services
     private IGeoService _geoService;
     private ILevelService _levelService;
     private IMapService _mapService;
-    private IPubSubService _pubsub;
+    private IPubService _pub;
 
     private Task _timer;
     private CancellationTokenSource _cancellationTokenSource
@@ -52,7 +52,7 @@ namespace LeafletAlarms.Services
       ILevelService levelService,
       IStateService stateService,
       IMapService mapService,
-      IPubSubService pubsub
+      IPubService pub
     )
     {
       _stateService = stateService;
@@ -61,7 +61,7 @@ namespace LeafletAlarms.Services
       _webSocket = webSocket;
       _levelService = levelService;
       _mapService = mapService;
-      _pubsub = pubsub;
+      _pub = pub;
       InitTimer();
     }
 
@@ -349,7 +349,7 @@ namespace LeafletAlarms.Services
           }
         }
       }
-      await _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(toUpdate));
+      await _pub.Publish(Topics.CheckStatesByIds, toUpdate);
 
       if (toDelete.Count > 0)
       {
@@ -518,7 +518,7 @@ namespace LeafletAlarms.Services
           _dicIds.Add(item.Key);
         }
 
-        _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.Select(i => i.Key).ToList()));
+        _pub.Publish(Topics.CheckStatesByIds, newIds.Select(i => i.Key).ToList());
       }
     }
 
@@ -537,7 +537,7 @@ namespace LeafletAlarms.Services
         {
           _dicIds.Add(item);
         }
-        _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(newIds.ToList()));
+        _pub.Publish(Topics.CheckStatesByIds, newIds.ToList());
       }
     }
 

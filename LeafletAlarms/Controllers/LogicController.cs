@@ -20,14 +20,14 @@ namespace LeafletAlarms.Controllers
   public class LogicController : ControllerBase
   {
     private readonly ILogicService _logicService;
-    private IPubSubService _pubsub;
+    private IPubService _pub;
     public LogicController(
       ILogicService logicService,
-      IPubSubService pubsub
+      IPubService pubsub
     )
     {
       _logicService = logicService;
-      _pubsub = pubsub;
+      _pub = pubsub;
     }
 
     [HttpPost]
@@ -41,7 +41,7 @@ namespace LeafletAlarms.Controllers
 
       var listIds = newObjs.Select(o => o.id).ToList();
 
-      await _pubsub.Publish(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
+      await _pub.Publish(Topics.UpdateLogicProc, listIds);
 
       return CreatedAtAction(nameof(Update), newObjs);
     }
@@ -63,7 +63,7 @@ namespace LeafletAlarms.Controllers
 
       var listIds = new List<string>() { id };
 
-      await _pubsub.Publish(Topics.UpdateLogicProc, JsonSerializer.Serialize(listIds));
+      await _pub.Publish(Topics.UpdateLogicProc, listIds);
 
       var ret = CreatedAtAction(nameof(Delete), null, id);
       return ret;

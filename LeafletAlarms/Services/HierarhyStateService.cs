@@ -12,19 +12,22 @@ namespace LeafletAlarms.Services
     private Task _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
 
-    private IPubSubService _pubsub;
+    private IPubService _pub;
+    private ISubService _sub;
     private IMapService _mapService;
     private IStateService _stateService;
 
     private Dictionary<string, AlarmObject> m_Hierarhy = new Dictionary<string, AlarmObject>();
     private ConcurrentDictionary<string,string> _idsUpdated = new ConcurrentDictionary<string,string>();
     public HierarhyStateService(
-      IPubSubService pubsub,
+      IPubService pub,
+      ISubService sub,
       IMapService mapService,
       IStateService stateService
     )
     {
-      _pubsub = pubsub;
+      _pub = pub;
+      _sub = sub;
       _mapService = mapService;
       _stateService = stateService;      
     }
@@ -174,13 +177,13 @@ namespace LeafletAlarms.Services
         await _stateService.UpdateAlarmStatesAsync(
           blinkChanges.Select(t => new AlarmState() { id = t.id, alarm = t.alarm || t.children_alarms > 0 }).ToList()
           );
-        await _pubsub.Publish(Topics.OnBlinkStateChanged, JsonSerializer.Serialize(blinkChanges));
+        await _pub.Publish(Topics.OnBlinkStateChanged, blinkChanges);
       }
     }
 
     Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
-      _pubsub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
+      _sub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 
@@ -189,7 +192,7 @@ namespace LeafletAlarms.Services
 
     Task IHostedService.StopAsync(CancellationToken cancellationToken)
     {
-      _pubsub.Unsubscribe(Topics.CheckStatesByIds, CheckStatesByIds);
+      _sub.Unsubscribe(Topics.CheckStatesByIds, CheckStatesByIds);
       _cancellationToken.Cancel();
       _timer?.Wait();
 

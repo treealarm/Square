@@ -64,7 +64,8 @@ namespace LeafletAlarms
       
       services.AddSingleton<IUtilService, UtilService>();
 
-      services.AddSingleton<IPubSubService, PubSubService>();
+      services.AddSingleton<ISubService, SubService>();
+      services.AddSingleton<IPubService, PubService>();
 
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();

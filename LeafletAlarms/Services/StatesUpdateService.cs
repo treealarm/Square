@@ -8,22 +8,22 @@ namespace LeafletAlarms.Services
   public class StatesUpdateService
   {
     private readonly IStateService _stateService;
-    IPubSubService _pubsub;
+    IPubService _pub;
 
     public StatesUpdateService(
       IStateService stateService,
-      IPubSubService pubsub
+      IPubService pub
     )
     {
       _stateService = stateService;
-      _pubsub = pubsub;
+      _pub = pub;
     }
 
     public async Task<bool> UpdateStates(List<ObjectStateDTO> newObjs)
     {
       await _stateService.UpdateStatesAsync(newObjs);
-      await _pubsub.Publish(Topics.OnStateChanged, JsonSerializer.Serialize(newObjs));
-      await _pubsub.Publish(Topics.CheckStatesByIds, JsonSerializer.Serialize(newObjs.Select(st => st.id).ToList()));
+      await _pub.Publish(Topics.OnStateChanged, newObjs);
+      await _pub.Publish(Topics.CheckStatesByIds, newObjs.Select(st => st.id).ToList());
 
       return true;
     }

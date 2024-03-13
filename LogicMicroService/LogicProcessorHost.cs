@@ -15,7 +15,8 @@ namespace LogicMicroService
     private readonly ILogger<LogicProcessorHost> _logger;
 
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-    private IPubSubService _pubsub;
+    private IPubService _pub;
+    private ISubService _sub;
     private ILogicService _logicService;
     private IGeoService _geoService;
     private readonly IMapService _mapService;
@@ -31,7 +32,8 @@ namespace LogicMicroService
     private List<TracksUpdatedEvent> _rangeToProcess = new List<TracksUpdatedEvent>();
 
     public LogicProcessorHost(
-      IPubSubService pubsub,
+      IPubService pub,
+      ISubService sub,
       ILogicService logicService,
       IGeoService geoService,
       ITrackService tracksService,
@@ -44,7 +46,8 @@ namespace LogicMicroService
       _tracksService = tracksService;
       _logicService = logicService;
       _geoService = geoService;
-      _pubsub = pubsub;
+      _pub = pub;
+      _sub = sub;
     }
 
     async Task OnUpdateTrackPosition(string channel, string message)
@@ -99,8 +102,8 @@ namespace LogicMicroService
 
     public async override Task StartAsync(CancellationToken cancellationToken)
     {
-      await _pubsub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
-      await _pubsub.Subscribe(Topics.UpdateLogicProc, OnUpdateLogicProc); 
+      await _sub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+      await _sub.Subscribe(Topics.UpdateLogicProc, OnUpdateLogicProc); 
 
       await base.StartAsync(cancellationToken);
     }
@@ -143,7 +146,7 @@ namespace LogicMicroService
           await _mapService.UpdatePropNotDeleteAsync(updatedProps);
         }
 
-        await _pubsub.Publish(Topics.LogicTriggered, JsonSerializer.Serialize(triggeredVal));
+        await _pub.Publish(Topics.LogicTriggered, triggeredVal);
       }
     }
 
@@ -250,7 +253,9 @@ namespace LogicMicroService
 
     public async override Task StopAsync(CancellationToken cancellationToken)
     {
-      await _pubsub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+      await _sub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+      await _sub.Unsubscribe(Topics.UpdateLogicProc, OnUpdateLogicProc);
+
       await base.StopAsync(cancellationToken);
     }
   }

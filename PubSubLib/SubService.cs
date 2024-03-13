@@ -3,17 +3,16 @@ using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Collections.Concurrent;
-using System.Threading.Channels;
+using System.Text.Json;
 
 namespace PubSubLib
 {
-  public class PubSubService: IPubSubService
-  {  
-
-    private string redisConnectionString = "localhost:6379";
+  public class SubService: ISubService
+  { 
+    private string redisConnectionString;
 
     private object _locker = new object();
-    private ConnectionMultiplexer redis;
+    private ConnectionMultiplexer _redis;
 
     private Dictionary<string, HashSet<Func<string, string, Task>>> _topics =
       new Dictionary<string, HashSet<Func<string, string, Task>>>();
@@ -32,29 +31,17 @@ namespace PubSubLib
       }
       return redisChan;
     }
-    public PubSubService(IOptions<DaprSettings> daprSettings)
+    public SubService(IOptions<DaprSettings> daprSettings)
     {
       redisConnectionString = daprSettings.Value.reddis_endpoint;
 
       ConfigurationOptions configuration = new ConfigurationOptions();
       configuration.AbortOnConnectFail = false;
       configuration.EndPoints.Add(redisConnectionString);
-      redis = ConnectionMultiplexer.Connect(configuration);
+      _redis = ConnectionMultiplexer.Connect(configuration);
     }
 
-    public async Task<long> Publish(string channel, string message)
-    {
-      try
-      {
-        ISubscriber sub = redis.GetSubscriber();
-        return await sub.PublishAsync(GetLiteralChannel(channel), message, CommandFlags.FireAndForget);
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-      return 0;
-    }
+
 
     private void RedisHandler(RedisChannel channel, RedisValue message)
     {
@@ -112,7 +99,7 @@ namespace PubSubLib
       {
         try
         {
-          ISubscriber subScriber = redis.GetSubscriber();
+          ISubscriber subScriber = _redis.GetSubscriber();
           await subScriber.SubscribeAsync(GetLiteralChannel(channel), RedisHandler);
         }
         catch(Exception ex)
@@ -137,7 +124,7 @@ namespace PubSubLib
 
       if (count == 0)
       {
-        ISubscriber subScriber = redis.GetSubscriber();
+        ISubscriber subScriber = _redis.GetSubscriber();
         await subScriber.UnsubscribeAsync(GetLiteralChannel(channel), RedisHandler);
       }            
     }

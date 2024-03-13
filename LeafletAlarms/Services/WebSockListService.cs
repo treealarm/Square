@@ -14,36 +14,39 @@ namespace LeafletAlarms.Services
     private IGeoService _geoService;
     private ILevelService _levelService;
     private IMapService _mapService;
-    private IPubSubService _pubsub;
+    private ISubService _sub;
+    private IPubService _pub;
 
     public WebSockListService(
       IStateService stateService,
       IGeoService geoService,
       ILevelService levelService,
       IMapService mapService,
-      IPubSubService pubsub
+      ISubService sub,
+      IPubService pub
     )
     {
       _stateService = stateService;
       _geoService = geoService;
       _levelService = levelService;
       _mapService = mapService;
-      _pubsub = pubsub;
+      _sub = sub;
+      _pub = pub;
 
-      _pubsub.Subscribe(Topics.LogicTriggered, LogicTriggered);
-      _pubsub.Subscribe(Topics.NewRoutBuilt, NewRoutBuilt);
-      _pubsub.Subscribe(Topics.OnStateChanged, OnStateChanged);
-      _pubsub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
-      _pubsub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+      _sub.Subscribe(Topics.LogicTriggered, LogicTriggered);
+      _sub.Subscribe(Topics.NewRoutBuilt, NewRoutBuilt);
+      _sub.Subscribe(Topics.OnStateChanged, OnStateChanged);
+      _sub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
+      _sub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
     }
 
     ~WebSockListService()
     {
-      _pubsub.Unsubscribe(Topics.LogicTriggered, LogicTriggered);
-      _pubsub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);
-      _pubsub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
-      _pubsub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
-      _pubsub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+      _sub.Unsubscribe(Topics.LogicTriggered, LogicTriggered);
+      _sub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);
+      _sub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
+      _sub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
+      _sub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
@@ -58,7 +61,7 @@ namespace LeafletAlarms.Services
         _levelService,
         _stateService,
         _mapService,
-        _pubsub
+        _pub
       );
 
       StateSockets.TryAdd(con.Connection.Id, stateWs);

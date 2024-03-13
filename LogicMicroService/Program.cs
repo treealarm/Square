@@ -2,7 +2,6 @@ using DbLayer.Services;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using LogicMicroService;
-using Microsoft.Extensions.Configuration;
 using PubSubLib;
 
 IHost host = Host.CreateDefaultBuilder(args)
@@ -13,7 +12,8 @@ IHost host = Host.CreateDefaultBuilder(args)
       services.Configure<MapDatabaseSettings>(config.GetSection("MapDatabase"));
       services.Configure<DaprSettings>(config.GetSection("DaprSettings"));      
 
-      services.AddSingleton<IPubSubService, PubSubService>();
+      services.AddSingleton<ISubService, SubService>();
+      services.AddSingleton<IPubService, PubService>();
       services.AddSingleton<ILevelService, LevelService>();
       services.AddSingleton<ILogicService, LogicService>();
       services.AddSingleton<IMapService, MapService>();

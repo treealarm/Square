@@ -19,19 +19,19 @@ namespace LeafletAlarms.Services
     private BaseMarkerDTO _tracksRootFolder;
     private const string TRACKS_ROOT_NAME = "__tracks";
 
-    private IPubSubService _pubsub;
+    private IPubService _pub;
 
     public TracksUpdateService(
       IMapService mapsService,
       ITrackService tracksService,
       IGeoService geoService,
-      IPubSubService pubsub
+      IPubService pub
     )
     {
       _mapService = mapsService;
       _tracksService = tracksService;
       _geoService = geoService;
-      _pubsub = pubsub;
+      _pub = pub;
     }
 
     private async Task<BaseMarkerDTO> GetTracksRoot()
@@ -77,7 +77,7 @@ namespace LeafletAlarms.Services
     {
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
 
-      await _pubsub.Publish(Topics.OnUpdateTrackPosition, JsonSerializer.Serialize(trackPoints));
+      await _pub.Publish(Topics.OnUpdateTrackPosition, trackPoints);
 
       return trackPointsInserted.Select (t => t.id).ToList();
     }

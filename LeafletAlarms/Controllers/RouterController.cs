@@ -21,9 +21,9 @@ namespace LeafletAlarms.Controllers
     private ITrackRouter _router;
     private IRoutService _routService;
     private readonly IMapService _mapService;
-    private IPubSubService _pubsub;
+    private IPubService _pub;
     public RouterController(
-      IPubSubService pubsub,
+      IPubService pubsub,
       IRoutService routService,
       ITrackRouter router,
       IMapService mapService
@@ -32,7 +32,7 @@ namespace LeafletAlarms.Controllers
       _routService = routService;
       _router = router;
       _mapService = mapService;
-      _pubsub = pubsub;
+      _pub = pubsub;
     }
 
     private async Task AddIdsByProperties(BoxTrackDTO box)
@@ -123,7 +123,7 @@ namespace LeafletAlarms.Controllers
     {
       var geo = await _routService.GetByIdsAsync(ids);
 
-      await _pubsub.Publish(Topics.OnRequestRoutes, JsonSerializer.Serialize(ids));
+      await _pub.Publish(Topics.OnRequestRoutes, ids);
 
       return geo;
     }

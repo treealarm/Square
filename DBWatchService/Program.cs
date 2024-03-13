@@ -13,8 +13,7 @@ IHost host = Host.CreateDefaultBuilder(args)
       var config = context.Configuration;
       var mapSection = config.GetSection("MapDatabase");
       var secVal = mapSection.GetSection("DatabaseName").Value;
-      services.Configure<MapDatabaseSettings>(mapSection);
-      services.AddSingleton<IPubSubService, PubSubService>();
+      services.Configure<MapDatabaseSettings>(mapSection);      
     })
     .Build();
 
