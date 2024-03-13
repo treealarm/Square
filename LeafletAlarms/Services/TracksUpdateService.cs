@@ -1,13 +1,8 @@
 ﻿using Domain.GeoDTO;
-using Domain.NonDto;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Domain;
-using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Rewrite;
-using PubSubLib;
+using Domain.PubSubTopics;
 
 namespace LeafletAlarms.Services
 {

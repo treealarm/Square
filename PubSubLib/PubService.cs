@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Collections.Concurrent;
 using System.Text.Json;
-using System.Threading.Channels;
 
 namespace PubSubLib
 {

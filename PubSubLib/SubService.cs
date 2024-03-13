@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace PubSubLib
 {
-  public class SubService: ISubService
+  public class SubService: ISubService, IDisposable
   { 
     private string redisConnectionString;
 
@@ -31,6 +31,7 @@ namespace PubSubLib
       }
       return redisChan;
     }
+
     public SubService(IOptions<DaprSettings> daprSettings)
     {
       redisConnectionString = daprSettings.Value.reddis_endpoint;
@@ -40,8 +41,6 @@ namespace PubSubLib
       configuration.EndPoints.Add(redisConnectionString);
       _redis = ConnectionMultiplexer.Connect(configuration);
     }
-
-
 
     private void RedisHandler(RedisChannel channel, RedisValue message)
     {
@@ -127,6 +126,11 @@ namespace PubSubLib
         ISubscriber subScriber = _redis.GetSubscriber();
         await subScriber.UnsubscribeAsync(GetLiteralChannel(channel), RedisHandler);
       }            
+    }
+
+    public void Dispose()
+    {
+      _redis?.Dispose();
     }
   }
 }

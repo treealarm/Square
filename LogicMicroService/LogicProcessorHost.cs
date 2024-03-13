@@ -2,6 +2,7 @@ using Domain;
 using Domain.GeoDTO;
 using Domain.Logic;
 using Domain.NonDto;
+using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using PubSubLib;
