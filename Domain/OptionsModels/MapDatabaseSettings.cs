@@ -25,6 +25,7 @@ namespace Domain.OptionsModels
         public string RightsCollectionName { get; set; } = "Rights";
         public string DiagramTypeCollectionName { get; set; } = "DiagramType";
         public string DiagramCollectionName { get; set; } = "Diagram";
-    
+        public string EventsCollectionName { get; set; } = "Events";
+
   }
 }

@@ -18,20 +18,17 @@ namespace LeafletAlarms.Controllers
   {
     private readonly IDiagramTypeService _diagramTypeService;
     private readonly IDiagramService _diagramService;
-    private readonly IMapService _mapService;
-    private readonly TracksUpdateService _trackUpdateService;
+    private readonly IMapService _mapService;    
 
     public DiagramsController(
      IDiagramTypeService diagramTypeService,
      IDiagramService diagramService,
-     IMapService mapService,
-     TracksUpdateService trackUpdateService
+     IMapService mapService
     )
     {
       _diagramTypeService = diagramTypeService;
       _diagramService = diagramService;
       _mapService = mapService;
-      _trackUpdateService = trackUpdateService;
     }
 
     [HttpGet()]

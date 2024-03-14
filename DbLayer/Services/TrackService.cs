@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-    public class TrackService : ITrackService
+  public class TrackService : ITrackService
   {
     private readonly IMongoCollection<DBTrackPoint> _collFigures;
     private readonly MongoClient _mongoClient;
