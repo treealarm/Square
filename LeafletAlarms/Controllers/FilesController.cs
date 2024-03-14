@@ -1,13 +1,7 @@
 ﻿using Domain;
-using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
-using Itinero;
-using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
-using System.Net.Http.Headers;
 
 namespace LeafletAlarms.Controllers
 {

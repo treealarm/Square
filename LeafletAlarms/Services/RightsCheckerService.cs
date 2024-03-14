@@ -1,12 +1,6 @@
 ﻿using Domain.ServiceInterfaces;
 using LeafletAlarms.Authentication;
-using Microsoft.AspNetCore.Http;
-using OsmSharp.API;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using static Domain.Rights.ObjectRightValueDTO;
 
 namespace LeafletAlarms.Services

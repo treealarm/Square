@@ -1,17 +1,13 @@
-﻿using DbLayer.Services;
-using Domain;
+﻿using Domain;
 using Domain.GeoDTO;
 using Domain.NonDto;
 using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
-using Itinero;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using OsmSharp.API;
 using System.Net.Http.Headers;
 using System.Text.Json;
 

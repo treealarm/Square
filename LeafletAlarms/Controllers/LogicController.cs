@@ -1,17 +1,9 @@
 ﻿using Domain;
 using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
-using Itinero;
 using LeafletAlarms.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PubSubLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace LeafletAlarms.Controllers
 {

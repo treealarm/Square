@@ -3,26 +3,17 @@ using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
-using Itinero;
-using Itinero.Algorithms.Weights;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;
-using LeafletAlarmsRouter;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PubSubLib;
-using SharpCompress.Common;
 using Swashbuckle.AspNetCore.Filters;
-using System.Data;
-using System.IO;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace LeafletAlarms
@@ -69,8 +60,6 @@ namespace LeafletAlarms
 
       services.AddSingleton<IMapService, MapService>();
       services.AddSingleton<IGeoService, GeoService>();
-
-      services.AddSingleton<ITrackRouter, TrackRouter>();
       services.AddSingleton<ITrackService, TrackService>();
       services.AddSingleton<IRoutService, RoutService>();
       services.AddSingleton<ILevelService, LevelService>();

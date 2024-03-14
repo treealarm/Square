@@ -1,21 +1,17 @@
 ﻿using Domain.GeoDBDTO;
 using Domain;
-using Domain.GeoDTO;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using TrackSender.Models;
-using Itinero.LocalGeo;
 using System.Runtime.CompilerServices;
 
 namespace TrackSender

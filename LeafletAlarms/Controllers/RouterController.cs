@@ -4,12 +4,8 @@ using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
-using PubSubLib;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,19 +15,16 @@ namespace LeafletAlarms.Controllers
   [ApiController]
   public class RouterController : ControllerBase
   {
-    private ITrackRouter _router;
     private IRoutService _routService;
     private readonly IMapService _mapService;
     private IPubService _pub;
     public RouterController(
       IPubService pubsub,
       IRoutService routService,
-      ITrackRouter router,
       IMapService mapService
     )
     {
       _routService = routService;
-      _router = router;
       _mapService = mapService;
       _pub = pubsub;
     }
