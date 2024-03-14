@@ -79,10 +79,7 @@ namespace LeafletAlarms
       services.AddSingleton<ILogicProcessorService, FAKE_Service>();
       services.AddSingleton<IDiagramTypeService, DiagramTypeService>();
       services.AddSingleton<IDiagramService, DiagramService>();
-      
-
-      services.AddSingleton<WebSockListService>();
-      
+    
       services.AddSingleton<IRightService, RightService>();
       services.AddSingleton<RightsCheckerService>();
 
