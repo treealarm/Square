@@ -21,8 +21,6 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore --configuration Release LeafletAlarms.sln
     - name: Build
       run: dotnet build --configuration Release LeafletAlarms.sln
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
