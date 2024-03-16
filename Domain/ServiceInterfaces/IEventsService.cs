@@ -8,5 +8,6 @@ namespace Domain.ServiceInterfaces
   public interface IEventsService
   {
     Task<long> InsertManyAsync(List<EventDTO> newObjs);
+    Task<List<EventDTO>> GetEventsByFilter(SearchFilterDTO filter_in);
   }
 }

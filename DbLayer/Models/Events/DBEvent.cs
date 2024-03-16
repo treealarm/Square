@@ -8,9 +8,6 @@ namespace DbLayer.Models.Events
   internal class DBEvent
   {
     public DBEventMeta meta { get; set; } = new DBEventMeta();
-    public DateTime timestamp { get; set; }
-
-    [BsonIgnoreIfNull]
-    public List<DBObjExtraProperty> extra_props { get; set; }
+    public DateTime timestamp { get; set; }    
   }
 }

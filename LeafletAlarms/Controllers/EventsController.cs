@@ -1,4 +1,5 @@
 ﻿using DbLayer.Services;
+using Domain;
 using Domain.Diagram;
 using Domain.Events;
 using Domain.ServiceInterfaces;
@@ -24,6 +25,15 @@ namespace LeafletAlarms.Controllers
     {
       await _eventsService.InsertManyAsync(events);
       return events.Count;
+    }
+
+    [HttpPost]
+    [Route("GetByFilter")]
+    public async Task<List<EventDTO>> GetByFilter(
+      SearchFilterDTO filter
+    )
+    {
+      return await _eventsService.GetEventsByFilter(filter);
     }
   }
 }
