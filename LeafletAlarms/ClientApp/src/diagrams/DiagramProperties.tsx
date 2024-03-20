@@ -7,7 +7,7 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, Divider, TextField, Typography } from '@mui/material';
+import { Box, Divider, TextField } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';

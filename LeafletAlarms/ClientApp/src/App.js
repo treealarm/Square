@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes ,Route  } from 'react-router-dom';
 import { Layout } from "./components/Layout.tsx";
 import { Home } from "./components/Home.tsx";
 import { DiagramTypeEditor } from "./diagramtypeeditor/DiagramTypeEditor.tsx";
+import { EventViewer } from "./eventviewer/EventViewer.tsx";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 import * as RightsStore from './store/RightsStates.ts';
@@ -59,6 +60,8 @@ export default () => {
         <Routes>
           <Route path="/" exact element={<Layout> <Home /> </Layout>} />
           <Route path="/editdiagram" exact element={<Layout> <DiagramTypeEditor /> </Layout>} />
+          <Route path="/eventviewer" exact element={<Layout> <EventViewer /> </Layout>} />
+          
         </Routes>
       </Router>
        

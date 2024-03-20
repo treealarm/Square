@@ -1,17 +1,10 @@
 ﻿import * as React from "react";
-import { Box, Button, IconButton, Paper, styled, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Button, Paper, styled, Tooltip } from "@mui/material";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import UserService from "./UserService";
 import { ApplicationState } from "../store";
 
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  height: 10,
-  lineHeight: '10px',
-}));
 
 export function Login() {
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);

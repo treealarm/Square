@@ -11,14 +11,6 @@ import SignalCellularNodataIcon from '@mui/icons-material/SignalCellularNodata';
 
 const  REACT_APP_AUTH_SERVER_URL  = process.env.REACT_APP_AUTH_SERVER_URL;
 
-const Item = styled(Paper)(({ theme }) => ({
-  ...theme.typography.body2,
-  textAlign: 'center',
-  color: theme.palette.text.secondary,
-  height: 10,
-  lineHeight: '10px',
-}));
-
 //"wss://localhost:44307/push"
 var url = 'ws://';
 
