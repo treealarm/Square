@@ -5,12 +5,13 @@ import { useSelector } from "react-redux";
 import {
   Box, Button, ButtonGroup, Grid, Toolbar
 } from "@mui/material";
-import * as DiagramTypeStore from '../store/DiagramTypeStates'
+import * as EventsStore from '../store/EventsStates'
 
-import { ApplicationState } from "../store";
+import { ApiDefaultPagingNum, ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { EventProperties } from "./EventProperties";
 import EventTable from "./EventTable";
+import { SearchFilterDTO } from "../store/Marker";
 
 export function EventViewer() {
 
@@ -18,12 +19,36 @@ export function EventViewer() {
   const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
   let navigate = useNavigate();
 
+  const localFilter = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
+
+  let timeoutId: any = null;
+
+  React.useEffect(() => {
+    if (timeoutId != null) {
+      clearTimeout(timeoutId);
+    }
+
+    timeoutId = setTimeout(() => {
+      var filterDto: SearchFilterDTO = {
+        search_id: (new Date()).toISOString(),
+        property_filter: null,
+        time_start: null,
+        time_end: null,
+        forward: true,
+        count: ApiDefaultPagingNum
+      }
+
+      appDispatch(EventsStore.fetchEventsByFilter(filterDto));
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [localFilter]);
+
   function onClickOk() {
-    appDispatch(DiagramTypeStore.set_result('OK')); 
+
     navigate(-1);
   }
   function onClickCancel() {
-    appDispatch(DiagramTypeStore.set_result('CANCEL')); 
+
     navigate(-1);
   }
   return (

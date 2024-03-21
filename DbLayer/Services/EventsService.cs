@@ -10,6 +10,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace DbLayer.Services
 {
@@ -182,6 +183,19 @@ namespace DbLayer.Services
 
       return list.Count;
     }
+
+    private FilterDefinition<DBEvent> CreateOrAddFilter(FilterDefinition<DBEvent> filter, FilterDefinition<DBEvent> filter2add)
+    {
+      if (filter == null || filter == FilterDefinition<DBEvent>.Empty)
+      {
+        filter = filter2add;
+      }
+      else
+      {
+        filter = filter & filter2add;
+      }
+      return filter;
+    }
     public async Task<List<EventDTO>> GetEventsByFilter(SearchFilterDTO filter_in)
     {
       int limit = 10000;
@@ -193,10 +207,21 @@ namespace DbLayer.Services
 
       var builder = Builders<DBEvent>.Filter;
 
-      FilterDefinition<DBEvent> filter =
-        builder
-        .Where(t => t.timestamp >= filter_in.time_start
-          && t.timestamp <= filter_in.time_end);
+      FilterDefinition<DBEvent> filter = FilterDefinition <DBEvent>.Empty;
+
+      if (filter_in.time_start !=  null)
+      {
+        var fts = builder
+        .Where(t => t.timestamp >= filter_in.time_start);
+        filter = CreateOrAddFilter(filter, fts);
+      }
+
+      if (filter_in.time_end != null)
+      {
+        var fte = builder
+        .Where(t => t.timestamp <= filter_in.time_end);
+        filter = CreateOrAddFilter(filter, fte);
+      }
 
 
       if (!string.IsNullOrEmpty(filter_in.start_id))
@@ -210,7 +235,7 @@ namespace DbLayer.Services
           filterPaging = Builders<DBEvent>.Filter
             .Lt("meta._id", new ObjectId(filter_in.start_id));
 
-        filter = filter & filterPaging;
+        filter = CreateOrAddFilter(filter, filterPaging);
       }
 
 
@@ -235,7 +260,7 @@ namespace DbLayer.Services
               prop.str_val
               );
 
-          filter &= f1;
+          filter = CreateOrAddFilter(filter, f1);
         }
       }
 

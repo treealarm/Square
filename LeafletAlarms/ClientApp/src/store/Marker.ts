@@ -387,3 +387,14 @@ export interface IGetDiagramTypesByFilterDTO {
   forward: boolean;
   count: number;
 }
+
+export interface IEventMetaDTO {
+  id: string;
+  object_id: string;
+  event_name: string;
+}
+export interface IEventDTO {
+  meta: IEventMetaDTO;
+  timestamp: string;
+  extra_props?: ObjExtraPropertyDTO[];
+}

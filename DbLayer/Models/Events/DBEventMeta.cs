@@ -10,7 +10,7 @@ namespace DbLayer.Models.Events
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonIgnoreIfNull]
     public string id { get; set; } // unique event id
-    [BsonId]
+
     [BsonRepresentation(BsonType.ObjectId)]
     [BsonIgnoreIfNull]
     public string object_id { get; set; } // Object id

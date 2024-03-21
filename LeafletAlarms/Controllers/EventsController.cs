@@ -1,10 +1,6 @@
-﻿using DbLayer.Services;
-using Domain;
-using Domain.Diagram;
+﻿using Domain;
 using Domain.Events;
 using Domain.ServiceInterfaces;
-using LeafletAlarms.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeafletAlarms.Controllers
