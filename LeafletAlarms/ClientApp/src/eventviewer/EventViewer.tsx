@@ -29,9 +29,7 @@ export function EventViewer() {
     }
 
     timeoutId = setTimeout(() => {
-      var filterDto: SearchFilterDTO = DeepCopy(localFilter);
-      appDispatch(EventsStore.set_local_filter(filterDto));
-      appDispatch(EventsStore.fetchEventsByFilter(filterDto));
+      appDispatch(EventsStore.fetchEventsByFilter(localFilter));
     }, 1000);
     return () => clearTimeout(timeoutId);
   }, [localFilter]);

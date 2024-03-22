@@ -15,5 +15,6 @@ namespace Domain
     public string start_id { get; set; }
     public bool forward { get; set; }
     public int count { get; set; }
+    public Dictionary<string, string> sort { get; set; }
   }
 }
