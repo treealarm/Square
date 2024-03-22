@@ -1,4 +1,5 @@
 ﻿import * as React from 'react';
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -7,14 +8,17 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import { visuallyHidden } from '@mui/utils';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
+import { DeepCopy } from '../store/Marker';
 
 interface Column {
   id: string;
   label: string;
   minWidth?: number;
-  align?: 'right';
+  align?: 'right'|'left';
   format?: (value: number) => string;
 }
 
@@ -32,15 +36,17 @@ const columns: readonly Column[] = [
     id: 'timestamp',
     label: 'timestamp',
     minWidth: 170,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    align: 'left',
   },
 ];
 
 
 export default function EventViewer() {
+  type Order = 'asc' | 'desc';
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [order, setOrder] = React.useState<Record<string, Order>>({});
 
   const events = useSelector((state: ApplicationState) => state?.eventsStates?.events);
 
@@ -51,6 +57,14 @@ export default function EventViewer() {
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value);
     setPage(0);
+  };
+
+  const handleRequestSort = (id:string
+  ) => {
+    const isAsc = order[id] === 'asc' || order[id] == null;
+    var newOrder = DeepCopy(order);
+    newOrder[id] = isAsc ? 'desc' : 'asc';
+    setOrder(newOrder);
   };
 
   return (
@@ -74,7 +88,19 @@ export default function EventViewer() {
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
                 >
-                  {column.label}
+                  
+
+                  <TableSortLabel
+                    active={true}
+                    direction={order[column.id]}
+                    onClick={()=>handleRequestSort(column.id)}
+                  >
+                    {column.label}
+                    <Box component="span" sx={visuallyHidden}>
+                      {order[column.id] === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      </Box>
+                  </TableSortLabel>
+
                 </TableCell>
               ))}
             </TableRow>
@@ -95,7 +121,7 @@ export default function EventViewer() {
                         value = row.meta.event_name;
                       }
                       if (column.id == 'timestamp') {
-                        value = row.timestamp;
+                        value = new Date(row.timestamp).toLocaleDateString();
                       }
  
                       return (
