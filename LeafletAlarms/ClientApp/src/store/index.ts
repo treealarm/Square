@@ -12,6 +12,8 @@ import * as PanelsStates from './PanelsStates';
 import * as DiagramsStates from './DiagramsStates';
 import * as DiagramTypeStates from './DiagramTypeStates';
 import * as EventsStates from './EventsStates';
+
+
 // The top-level state object
 export interface ApplicationState {
   editState: EditStates.EditState | undefined;
@@ -55,17 +57,3 @@ export const reducers = {
 export interface AppThunkAction<TAction> {
     (dispatch: (action: TAction) => void, getState: () => ApplicationState): void;
 }
-
-
-export const ApiRootString = 'api/map';
-export const ApiTracksRootString = 'api/tracks';
-export const ApiRouterRootString = 'api/router';
-export const ApiStatesRootString = 'api/states';
-export const ApiLogicRootString = 'api/logic';
-export const ApiRightsRootString = 'api/rights';
-export const ApiDiagramsRootString = 'api/diagrams';
-export const ApiDiagramTypesRootString = 'api/diagramtypes';
-export const ApiFileSystemRootString = 'api/files';
-export const ApiEventsRootString = 'api/events';
-export const ApiDefaultPagingNum = 100;
-export const ApiDefaultMaxCountResult = 1000;

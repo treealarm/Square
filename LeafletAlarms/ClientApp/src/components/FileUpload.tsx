@@ -4,8 +4,8 @@ import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import { DoFetch } from "../store/Fetcher";
-import { ApiFileSystemRootString } from "../store/index";
 import { Tooltip } from '@mui/material';
+import { ApiFileSystemRootString } from "../store/constants";
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',

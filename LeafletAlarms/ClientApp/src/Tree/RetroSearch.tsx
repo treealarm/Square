@@ -3,7 +3,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { ApiDefaultPagingNum, ApplicationState } from '../store';
+import { ApplicationState } from '../store';
 import {
   Box, IconButton, List, ListItem, Tooltip
 } from '@mui/material';
@@ -20,6 +20,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAppDispatch } from '../store/configureStore';
 import { SearchApplyButton } from './SearchApplyButton';
+import { ApiDefaultPagingNum } from '../store/constants';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }

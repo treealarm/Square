@@ -10,7 +10,6 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace DbLayer.Services
 {
@@ -264,7 +263,8 @@ namespace DbLayer.Services
         }
       }
 
-      var finder = Coll.Find(filter).Limit(limit);
+      var finder = Coll.Find(filter)
+        .Limit(limit);
 
 
       var list = await finder

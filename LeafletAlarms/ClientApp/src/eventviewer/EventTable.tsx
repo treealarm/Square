@@ -10,9 +10,13 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
+
+import { useAppDispatch } from '../store/configureStore';
+import * as EventsStore from '../store/EventsStates'
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { DeepCopy } from '../store/Marker';
+import { DeepCopy, IEventDTO, SearchFilterDTO } from '../store/Marker';
+
 
 interface Column {
   id: string;
@@ -42,13 +46,15 @@ const columns: readonly Column[] = [
 
 
 export default function EventViewer() {
-  type Order = 'asc' | 'desc';
 
+  const appDispatch = useAppDispatch();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [order, setOrder] = React.useState<Record<string, Order>>({});
 
-  const events = useSelector((state: ApplicationState) => state?.eventsStates?.events);
+  const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events);
+  const filter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
+
+  var order = filter.sort;
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -62,9 +68,10 @@ export default function EventViewer() {
   const handleRequestSort = (id:string
   ) => {
     const isAsc = order[id] === 'asc' || order[id] == null;
-    var newOrder = DeepCopy(order);
-    newOrder[id] = isAsc ? 'desc' : 'asc';
-    setOrder(newOrder);
+    var newFilter = DeepCopy(filter);
+    newFilter.sort[id] = isAsc ? 'desc' : 'asc';
+    appDispatch(EventsStore.set_local_filter(newFilter));
+    appDispatch(EventsStore.fetchEventsByFilter(newFilter));
   };
 
   return (

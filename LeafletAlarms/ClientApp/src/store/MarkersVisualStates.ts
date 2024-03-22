@@ -1,7 +1,8 @@
-﻿import { ApiStatesRootString, ApplicationState } from './index';
+﻿import { ApplicationState } from './index';
 import { DoFetch } from "./Fetcher";
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { AlarmObject, MarkerVisualStateDTO } from "./Marker";
+import { ApiStatesRootString } from './constants';
 
 
 export interface MarkersVisualStates {

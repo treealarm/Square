@@ -1,7 +1,7 @@
-﻿import { ApiRightsRootString} from '.';
-import { IObjectRightsDTO, IRightValuesDTO } from './Marker';
+﻿import { IObjectRightsDTO, IRightValuesDTO } from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { ApiRightsRootString } from './constants';
 
 
 export interface ObjectRights {

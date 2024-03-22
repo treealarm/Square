@@ -1,7 +1,9 @@
-﻿import { IEventDTO, SearchFilterDTO } from './Marker';
+﻿import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+import { IEventDTO, SearchFilterDTO } from './Marker';
 import { DoFetch } from './Fetcher';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ApiEventsRootString, ApplicationState } from './index';
+import { ApiDefaultPagingNum, ApiEventsRootString } from './constants';
+
 
 
 export interface EventStates {
@@ -11,13 +13,21 @@ export interface EventStates {
 
 const unloadedState: EventStates = {
   events: null,
-  filter: null,
+  filter: {
+    search_id: (new Date()).toISOString(),
+    property_filter: null,
+    time_start: null,
+    time_end: null,
+    forward: true,
+    count: ApiDefaultPagingNum,
+    sort: {}
+  },
 };
 
 export const fetchEventsByFilter = createAsyncThunk<IEventDTO[], SearchFilterDTO>(
   'events/GetByFilter',
   async (filter: SearchFilterDTO, { getState }) => {
-    let body = JSON.stringify(filter);
+    let body = JSON.stringify(filter);   
 
     var fetched = await DoFetch(ApiEventsRootString + "/GetByFilter",
       {

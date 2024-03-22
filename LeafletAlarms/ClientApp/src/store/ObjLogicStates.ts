@@ -1,7 +1,8 @@
 ﻿import { Action, Reducer } from 'redux';
-import { ApiLogicRootString, AppThunkAction } from '.';
+import { AppThunkAction } from '.';
 import { IStaticLogicDTO } from './Marker';
 import { DoFetch } from './Fetcher';
+import { ApiLogicRootString } from './constants';
 // -----------------
 
 export interface ObjLogicState {

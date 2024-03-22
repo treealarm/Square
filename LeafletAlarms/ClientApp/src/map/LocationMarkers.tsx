@@ -5,7 +5,7 @@ import { useAppDispatch } from '../store/configureStore';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
-import { ApiDefaultMaxCountResult, ApplicationState } from '../store';
+import { ApplicationState } from '../store';
 import { BoundBox, getExtraProp, ICircle, ICommonFig, IGeometryDTO, IObjProps, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 
 
@@ -21,6 +21,7 @@ import {
 
 
 import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
+import { ApiDefaultMaxCountResult } from '../store/constants';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }

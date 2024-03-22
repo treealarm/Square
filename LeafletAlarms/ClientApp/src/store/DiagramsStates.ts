@@ -1,7 +1,8 @@
 ﻿import { IDiagramDTO, IGetDiagramDTO} from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ApiDiagramsRootString, ApplicationState } from './index';
+import { ApplicationState } from './index';
+import { ApiDiagramsRootString } from './constants';
 
 
 export interface DiagramsStates {

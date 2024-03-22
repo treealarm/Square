@@ -1,5 +1,6 @@
 import { Action, Reducer } from "redux";
-import { ApiRootString, AppThunkAction } from "./";
+import { AppThunkAction } from "./";
+import { ApiRootString } from "./constants";
 import { DoFetch } from "./Fetcher";
 import { BoundBox, IFigures } from "./Marker";
 // -----------------

@@ -7,11 +7,11 @@ import {
 } from "@mui/material";
 import * as EventsStore from '../store/EventsStates'
 
-import { ApiDefaultPagingNum, ApplicationState } from "../store";
+import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { EventProperties } from "./EventProperties";
 import EventTable from "./EventTable";
-import { SearchFilterDTO } from "../store/Marker";
+import { DeepCopy, SearchFilterDTO } from "../store/Marker";
 
 export function EventViewer() {
 
@@ -29,15 +29,8 @@ export function EventViewer() {
     }
 
     timeoutId = setTimeout(() => {
-      var filterDto: SearchFilterDTO = {
-        search_id: (new Date()).toISOString(),
-        property_filter: null,
-        time_start: null,
-        time_end: null,
-        forward: true,
-        count: ApiDefaultPagingNum
-      }
-
+      var filterDto: SearchFilterDTO = DeepCopy(localFilter);
+      appDispatch(EventsStore.set_local_filter(filterDto));
       appDispatch(EventsStore.fetchEventsByFilter(filterDto));
     }, 1000);
     return () => clearTimeout(timeoutId);

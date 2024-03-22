@@ -67,6 +67,7 @@
     <None Remove="ClientApp\src\diagramtypeeditor\DiagramTypeViewer.tsx" />
     <None Remove="ClientApp\src\eventviewer\EventTable.tsx" />
     <None Remove="ClientApp\src\eventviewer\EventViewer.tsx" />
+    <None Remove="ClientApp\src\store\constants.ts" />
     <None Remove="ClientApp\src\store\DiagramTypeStates.ts" />
     <None Remove="ClientApp\src\store\EventsStates.ts" />
   </ItemGroup>
@@ -100,6 +101,7 @@
     <TypeScriptCompile Include="ClientApp\src\eventviewer\EventViewer.tsx">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="ClientApp\src\store\constants.ts" />
     <TypeScriptCompile Include="ClientApp\src\store\EventsStates.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

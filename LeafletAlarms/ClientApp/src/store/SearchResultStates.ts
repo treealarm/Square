@@ -1,5 +1,6 @@
 ﻿import { Action, Reducer } from "redux";
-import { ApiTracksRootString, AppThunkAction } from "./";
+import { AppThunkAction } from "./";
+import { ApiTracksRootString } from "./constants";
 import { DoFetch } from "./Fetcher";
 import { GetTracksBySearchDTO, ITrackPointDTO, SearchFilterDTO } from "./Marker";
 

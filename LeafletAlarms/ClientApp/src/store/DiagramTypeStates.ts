@@ -1,7 +1,8 @@
 ﻿import { IDiagramTypeDTO, IGetDiagramTypesByFilterDTO, IGetDiagramTypesDTO } from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { ApiDiagramTypesRootString, ApplicationState } from './index';
+import { ApplicationState } from './index';
+import { ApiDiagramTypesRootString } from './constants';
 
 
 export interface DiagramTypeStates {

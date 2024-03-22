@@ -1,5 +1,6 @@
 import { Action, Reducer } from "redux";
-import { ApiDefaultMaxCountResult, ApiRouterRootString, ApiTracksRootString, AppThunkAction } from "./";
+import { AppThunkAction } from "./";
+import { ApiDefaultMaxCountResult, ApiRouterRootString, ApiTracksRootString } from "./constants";
 import { DoFetch } from "./Fetcher";
 import { BoxTrackDTO, IRoutDTO, IRoutLineDTO, ITrackPointDTO, SearchFilterGUI } from "./Marker";
 // -----------------
