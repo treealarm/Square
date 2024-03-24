@@ -9,6 +9,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
@@ -263,10 +264,35 @@ namespace DbLayer.Services
         }
       }
 
-      var finder = Coll.Find(filter)
-        .Limit(limit);
+      var finder = Coll.Find(filter);
 
+      List<SortDefinition<DBEvent>> sorts = new List<SortDefinition<DBEvent>>();
 
+      if (filter_in.sort != null && filter_in.sort.Count > 0)
+      {
+        const string sortAsc = "asc";
+        //var timestampName = $"{nameof(DBEvent.timestamp)}";
+
+        //if (filter_in.sort.ContainsKey(timestampName))
+        //{
+        //  if (filter_in.sort[timestampName] == sortAsc)
+        //  {
+            
+        //  }
+        //}
+        var keys = filter_in.sort.Keys.ToList();
+        keys.Sort();        
+
+        var sortDefinitionBuilder = new SortDefinitionBuilder<DBEvent>();
+        foreach (var key in keys)
+        {
+           var sort = key == sortAsc ? sortDefinitionBuilder.Ascending(key) : sortDefinitionBuilder.Descending(key);
+           sorts.Add(sort);
+        }
+        finder = finder.Sort(sortDefinitionBuilder.Combine(sorts.ToArray()));
+      }
+
+      finder = finder.Limit(limit);
       var list = await finder
         .ToListAsync();
 

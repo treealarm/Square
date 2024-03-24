@@ -175,7 +175,7 @@ export interface SearchFilterGUI {
   applied?: boolean;
 }
 
-type Order = 'asc' | 'desc';
+type Order = 'asc' | 'desc' | undefined;
 
 export interface SearchFilterDTO{
   time_start?: string;

@@ -33,7 +33,7 @@ const columns: readonly Column[] = [
     id: 'event_name',
     label: 'event_name',
     minWidth: 170,
-    align: 'right',
+    align: 'left',
     format: (value: number) => value.toLocaleString('en-US'),
   },  
   {
@@ -67,9 +67,18 @@ export default function EventViewer() {
 
   const handleRequestSort = (id:string
   ) => {
-    const isAsc = order[id] === 'asc' || order[id] == null;
     var newFilter = DeepCopy(filter);
-    newFilter.sort[id] = isAsc ? 'desc' : 'asc';
+
+    if (order[id] == undefined) {
+      newFilter.sort[id] = 'asc';
+    }
+    if (order[id] == 'asc') {
+      newFilter.sort[id] = 'desc';
+    }
+    if (order[id] == 'desc') {
+      delete newFilter.sort[id];
+    }
+
     appDispatch(EventsStore.set_local_filter(newFilter));
     appDispatch(EventsStore.fetchEventsByFilter(newFilter));
   };
@@ -98,9 +107,9 @@ export default function EventViewer() {
                   
 
                   <TableSortLabel
-                    active={true}
+                    active={order[column.id] != undefined}
                     direction={order[column.id]}
-                    onClick={()=>handleRequestSort(column.id)}
+                    onClick={() => handleRequestSort(column.id)}
                   >
                     {column.label}
                     <Box component="span" sx={visuallyHidden}>
