@@ -48,22 +48,12 @@ const columns: readonly Column[] = [
 export default function EventViewer() {
 
   const appDispatch = useAppDispatch();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events);
   const filter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
 
   var order = filter.sort;
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
 
   const handleRequestSort = (id:string
   ) => {
@@ -122,9 +112,9 @@ export default function EventViewer() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {events?.map((row) => {
+            {events?.map((row, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.meta.id}>
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.meta.id + ' ' + index}>
                     {columns.map((column) => {
                       var value = null;
                       if (column.id == 'id') {
@@ -137,7 +127,7 @@ export default function EventViewer() {
                         value = row.meta.event_name;
                       }
                       if (column.id == 'timestamp') {
-                        value = new Date(row.timestamp).toLocaleDateString();
+                        value = new Date(row.timestamp).toLocaleString();
                       }
  
                       return (
@@ -154,21 +144,6 @@ export default function EventViewer() {
           </TableBody>
         </Table>
       </TableContainer>
-
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={events?.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-        sx={{
-          display: 'flex',
-          minHeight: '70px',
-      } }
-        
-      />
     </Paper>
   );
 }

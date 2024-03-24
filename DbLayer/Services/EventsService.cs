@@ -157,6 +157,10 @@ namespace DbLayer.Services
         {
           ev.meta.id = ObjectId.GenerateNewId().ToString();
         }
+        if (string.IsNullOrEmpty(ev.meta.object_id))
+        {
+          ev.meta.object_id = null;
+        }
         var dbTrack = new DBEvent()
         {
           timestamp = ev.timestamp
@@ -277,7 +281,12 @@ namespace DbLayer.Services
         var sortDefinitionBuilder = new SortDefinitionBuilder<DBEvent>();
         foreach (var key in keys)
         {
-           var sort = key == sortAsc ? sortDefinitionBuilder.Ascending(key) : sortDefinitionBuilder.Descending(key);
+          var k = key;
+          if (k != "timestamp")
+          {
+            k = $"meta.{key}";
+          }
+           var sort = filter_in.sort[key] == sortAsc ? sortDefinitionBuilder.Ascending(k) : sortDefinitionBuilder.Descending(k);
            sorts.Add(sort);
         }
         finder = finder.Sort(sortDefinitionBuilder.Combine(sorts.ToArray()));
