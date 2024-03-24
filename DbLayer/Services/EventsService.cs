@@ -271,15 +271,6 @@ namespace DbLayer.Services
       if (filter_in.sort != null && filter_in.sort.Count > 0)
       {
         const string sortAsc = "asc";
-        //var timestampName = $"{nameof(DBEvent.timestamp)}";
-
-        //if (filter_in.sort.ContainsKey(timestampName))
-        //{
-        //  if (filter_in.sort[timestampName] == sortAsc)
-        //  {
-            
-        //  }
-        //}
         var keys = filter_in.sort.Keys.ToList();
         keys.Sort();        
 
