@@ -20,7 +20,7 @@ const unloadedState: EventStates = {
     time_end: null,
     forward: true,
     count: ApiDefaultPagingNum,
-    sort: {}
+    sort: []
   },
 };
 

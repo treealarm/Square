@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
+  public enum Order
+  {
+    asc,
+    desc  
+  }
+
+  public class SortDTO
+  {
+    public string key { get; set; }
+    public string order { get; set; }
+  }
+
   public class SearchFilterDTO
   {
     public DateTime? time_start { get; set; }
@@ -15,6 +27,6 @@ namespace Domain
     public string start_id { get; set; }
     public bool forward { get; set; }
     public int count { get; set; }
-    public Dictionary<string, string> sort { get; set; }
+    public List<SortDTO> sort { get; set; }
   }
 }

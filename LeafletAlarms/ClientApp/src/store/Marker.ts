@@ -176,7 +176,10 @@ export interface SearchFilterGUI {
 }
 
 type Order = 'asc' | 'desc' | undefined;
-
+export interface ISortPair {
+  key: string;
+  order: Order;
+}
 export interface SearchFilterDTO{
   time_start?: string;
   time_end?: string;
@@ -185,7 +188,7 @@ export interface SearchFilterDTO{
   start_id?: string;
   forward: boolean;
   count: number;
-  sort?: Record<string, Order>
+  sort?: ISortPair[];
 }
 
 

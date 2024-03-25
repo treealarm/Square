@@ -274,19 +274,18 @@ namespace DbLayer.Services
 
       if (filter_in.sort != null && filter_in.sort.Count > 0)
       {
-        const string sortAsc = "asc";
-        var keys = filter_in.sort.Keys.ToList();
+        var keys = filter_in.sort.Select(i=>i.key).ToList();
         keys.Sort();        
 
         var sortDefinitionBuilder = new SortDefinitionBuilder<DBEvent>();
-        foreach (var key in keys)
+        foreach (var kvp in filter_in.sort)
         {
-          var k = key;
+          var k = kvp.key;
           if (k != "timestamp")
           {
-            k = $"meta.{key}";
+            k = $"meta.{kvp.key}";
           }
-           var sort = filter_in.sort[key] == sortAsc ? sortDefinitionBuilder.Ascending(k) : sortDefinitionBuilder.Descending(k);
+           var sort = kvp.order == "asc" ? sortDefinitionBuilder.Ascending(k) : sortDefinitionBuilder.Descending(k);
            sorts.Add(sort);
         }
         finder = finder.Sort(sortDefinitionBuilder.Combine(sorts.ToArray()));

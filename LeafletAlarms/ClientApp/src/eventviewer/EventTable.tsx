@@ -58,19 +58,28 @@ export default function EventViewer() {
   const handleRequestSort = (id:string
   ) => {
     var newFilter = DeepCopy(filter);
+    var curOrder = newFilter?.sort.find(el => el.key == id);
 
-    if (order[id] == undefined) {
-      newFilter.sort[id] = 'asc';
+    if (curOrder == null) {
+      newFilter.sort.push(
+        {
+          key: id,
+          order: 'asc'
+        });
     }
-    if (order[id] == 'asc') {
-      newFilter.sort[id] = 'desc';
+    else if (curOrder.order == 'asc') {
+      curOrder.order = 'desc';
     }
-    if (order[id] == 'desc') {
-      delete newFilter.sort[id];
+    else if (curOrder.order == 'desc') {
+      newFilter.sort = newFilter?.sort.filter(el => el.key != id);
     }
 
     appDispatch(EventsStore.set_local_filter(newFilter));
     appDispatch(EventsStore.fetchEventsByFilter(newFilter));
+  };
+
+  const getOrderByKey = (id:string) => {
+    return order?.find(el => el.key == id);
   };
 
   return (
@@ -89,6 +98,7 @@ export default function EventViewer() {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
+
                 <TableCell
                   key={column.id}
                   align={column.align}
@@ -97,13 +107,13 @@ export default function EventViewer() {
                   
 
                   <TableSortLabel
-                    active={order[column.id] != undefined}
-                    direction={order[column.id]}
+                    active={getOrderByKey(column.id) != null}
+                    direction={getOrderByKey(column.id)?.order}
                     onClick={() => handleRequestSort(column.id)}
                   >
                     {column.label}
                     <Box component="span" sx={visuallyHidden}>
-                      {order[column.id] === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                      {getOrderByKey(column.id)?.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                       </Box>
                   </TableSortLabel>
 
