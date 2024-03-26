@@ -1,21 +1,13 @@
 ﻿using Domain.GeoDBDTO;
-using Grpc.Net.Client;
 using GrpcDaprClientLib;
 using LeafletAlarmsGrpc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using static LeafletAlarmsGrpc.TracksGrpcService;
 
 namespace GrpcTracksClient
 {
-  internal class UpdateTracks
+  internal class UpdateByGRPC
   {
-    static GrpcMover _client = new GrpcMover();
+    static GrpcUpdater _client = new GrpcUpdater();
     public static async Task Move()
     {
       var figs = new TrackPointsProto();

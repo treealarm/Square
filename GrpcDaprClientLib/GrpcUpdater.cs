@@ -1,15 +1,14 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
-using System.Threading.Channels;
-using static LeafletAlarmsGrpc.TracksGrpcService;
+using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace GrpcDaprClientLib
 {
-  public class GrpcMover : IDisposable
+  public class GrpcUpdater : IDisposable
   {
     private GrpcChannel? _channel = null;
-    private TracksGrpcServiceClient? _client = null;
+    private TreeAlarmsGrpcServiceClient? _client = null;
 
     public static string GetGrpcMainUrl()
     {
@@ -41,7 +40,7 @@ namespace GrpcDaprClientLib
       }
 
       _channel = GrpcChannel.ForAddress(GRPC_DST);
-      _client = new TracksGrpcServiceClient(_channel);
+      _client = new TreeAlarmsGrpcServiceClient(_channel);
     }
 
     public bool IsConnected()
@@ -93,6 +92,17 @@ namespace GrpcDaprClientLib
       {
         await _client.UpdateStatesAsync(states);
       }
+    }
+
+    public async Task<bool?> AddEvents(EventsProto events)
+    {
+      if (_client == null)
+      {
+        return null;
+      }
+
+      var result = await _client.UpdateEventsAsync(events);
+      return result.Value;
     }
   }
 }

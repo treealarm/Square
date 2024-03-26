@@ -1,15 +1,6 @@
-﻿
-using Dapr.Client;
-using Grpc.Net.Client;
-using GrpcTracksClient;
-using LeafletAlarmsGrpc;
-using System.Runtime.CompilerServices;
-using static LeafletAlarmsGrpc.TracksGrpcService;
+﻿using GrpcTracksClient;
 
-
-
-
-var taskTrack = UpdateTracks.Move();
+var taskTrack = UpdateByGRPC.Move();
 
 
 
@@ -21,7 +12,8 @@ while (true)
     var tasks = new List<Task>
     {
       MoveObject.Move(),
-      StateObject.Change()      
+      StateObject.Change(),
+      EventAdd.Add()
     };
 
     Task.WaitAll(tasks.ToArray());

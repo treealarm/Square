@@ -7,10 +7,11 @@ option csharp_namespace = "LeafletAlarmsGrpc";
 
 package tracks;
 
-service TracksGrpcService {
+service TreeAlarmsGrpcService {
 	rpc UpdateFigures (ProtoFigures) returns (ProtoFigures);
 	rpc UpdateStates (ProtoObjectStates) returns (google.protobuf.BoolValue);
 	rpc UpdateTracks (TrackPointsProto) returns (google.protobuf.BoolValue);	
+	rpc UpdateEvents (EventsProto) returns (google.protobuf.BoolValue);	
 }
 
 
@@ -80,4 +81,24 @@ message TrackPointProto
 message TrackPointsProto
 {
 	repeated TrackPointProto tracks = 1;
+}
+
+message EventMetaProto
+{
+  string id = 1;
+	string object_id = 2;
+  string event_name = 3;
+}
+
+message EventProto
+{
+  EventMetaProto meta = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  repeated ProtoObjExtraProperty extra_props = 3;
+
+}
+
+message EventsProto
+{
+	repeated EventProto events = 1;
 }

@@ -1,13 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using Grpc.Net.Client;
 using GrpcDaprClientLib;
 using LeafletAlarmsGrpc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static LeafletAlarmsGrpc.TracksGrpcService;
 
 namespace GrpcTracksClient
 {
@@ -15,7 +8,7 @@ namespace GrpcTracksClient
   {
     public static async Task Change()
     {
-      using var client = new GrpcMover();
+      using var client = new GrpcUpdater();
       client.Connect(null);
       var states = new ProtoObjectStates();
 

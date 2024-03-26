@@ -1,16 +1,12 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
-using Domain.GeoDTO;
 using Domain.States;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;

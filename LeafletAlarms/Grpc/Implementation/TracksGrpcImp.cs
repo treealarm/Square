@@ -1,21 +1,12 @@
-﻿using DbLayer.Services;
-using Domain;
-using Domain.GeoDBDTO;
-using Domain.GeoDTO;
-using Domain.ServiceInterfaces;
-using Domain.States;
-using Domain.StateWebSock;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
-using StackExchange.Redis;
-using System.Text.Json;
-using static LeafletAlarmsGrpc.TracksGrpcService;
+using Microsoft.Extensions.Logging;
+using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
-  public class TracksGrpcImp: TracksGrpcServiceBase
+  public class TracksGrpcImp: TreeAlarmsGrpcServiceBase
   {
     private readonly ILogger<TracksGrpcImp> _logger;
     private readonly GRPCServiceProxy _proxy;
@@ -41,6 +32,11 @@ namespace LeafletAlarms.Grpc.Implementation
     public override async Task<BoolValue> UpdateTracks(TrackPointsProto request, ServerCallContext context)
     {
       return await _proxy.UpdateTracks(request);
+    }
+
+    public override async Task<BoolValue> UpdateEvents(EventsProto request, ServerCallContext context)
+    {
+      return await _proxy.UpdateEvents(request);
     }
   }
 }

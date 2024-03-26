@@ -1,8 +1,6 @@
 ﻿using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
-using PubSubLib;
-using System.Text.Json;
 
 namespace LeafletAlarms.Services
 {

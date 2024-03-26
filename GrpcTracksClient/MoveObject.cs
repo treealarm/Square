@@ -1,21 +1,6 @@
-﻿using Dapr.Client;
-using Domain.GeoDBDTO;
-using Google.Protobuf.WellKnownTypes;
-using Grpc.Net.Client;
-using GrpcDaprClientLib;
-using GrpcDaprLib;
+﻿using GrpcDaprClientLib;
 using LeafletAlarmsGrpc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using ValhallaLib;
-using static Dapr.Client.Autogen.Grpc.v1.Dapr;
-using static LeafletAlarmsGrpc.TracksGrpcService;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GrpcTracksClient
 {
@@ -72,7 +57,7 @@ namespace GrpcTracksClient
 
       try
       {
-        await MoveDapr();
+        await Move2();
       }
       catch (Exception ex)
       {
@@ -82,7 +67,7 @@ namespace GrpcTracksClient
       Task.WaitAll(grpcTask);
     }
 
-    public static async Task MoveDapr()
+    public static async Task Move2()
     {
       var figs = new ProtoFigures();
       var fig = new ProtoFig();
@@ -127,7 +112,7 @@ namespace GrpcTracksClient
         Lon = 37.618727730916895
       });
 
-      using var daprClient = new DaprMover();
+      using var client = new GrpcUpdater();
 
       double step = 0.001;
 
@@ -147,7 +132,7 @@ namespace GrpcTracksClient
           try
           {
             var reply =
-            await daprClient.Move(figs);
+            await client.Move(figs);
             //Console.WriteLine("Fig DAPR: " + reply?.ToString());
           }
           catch (Exception ex)
@@ -200,7 +185,7 @@ namespace GrpcTracksClient
         Lon = 37.621130
       };
 
-      using var client = new GrpcMover();
+      using var client = new GrpcUpdater();
       client.Connect(null);
       var step = 0.0001;
 
@@ -370,7 +355,7 @@ namespace GrpcTracksClient
     private static bool _working = true;
     private static async Task CarFigureSender()
     {
-      using var client = new GrpcMover();
+      using var client = new GrpcUpdater();
       client.Connect(null);
 
       while (_working)

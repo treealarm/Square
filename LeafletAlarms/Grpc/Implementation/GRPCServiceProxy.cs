@@ -4,10 +4,11 @@ using Domain.States;
 using Domain.StateWebSock;
 using Domain;
 using Google.Protobuf.WellKnownTypes;
-using Grpc.Core;
 using LeafletAlarms.Services;
-using StackExchange.Redis;
 using LeafletAlarmsGrpc;
+using Domain.ServiceInterfaces;
+using Microsoft.Extensions.Logging;
+using Domain.Events;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
@@ -16,15 +17,18 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly ILogger<GRPCServiceProxy> _logger;
     private readonly TracksUpdateService _trackUpdateService;
     private readonly StatesUpdateService _statesUpdateService;
+    private readonly IEventsService _eventsService;
     public GRPCServiceProxy(
       ILogger<GRPCServiceProxy> logger,
       TracksUpdateService trackUpdateService,
-      StatesUpdateService statesUpdateService
+      StatesUpdateService statesUpdateService,
+      IEventsService eventsService
     )
     {
       _logger = logger;
       _trackUpdateService = trackUpdateService;
       _statesUpdateService = statesUpdateService;
+      _eventsService = eventsService;
     }
     private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
     {
@@ -213,6 +217,38 @@ namespace LeafletAlarms.Grpc.Implementation
       await _trackUpdateService.AddTracks(tracks);
       ret.Value = true;
       return ret;
+    }
+
+    public async Task<BoolValue> UpdateEvents(EventsProto request)
+    {
+      var list = new List<EventDTO>();
+
+      foreach(var ev in request.Events)
+      {
+        var pEvent = new EventDTO();
+
+        pEvent.timestamp = ev.Timestamp.ToDateTime();
+        pEvent.meta = new EventMetaDTO();
+
+        pEvent.meta.id = ev.Meta.Id;
+        pEvent.meta.object_id = ev.Meta.ObjectId;
+        pEvent.meta.event_name = ev.Meta.EventName;
+
+        pEvent.extra_props = new List<ObjExtraPropertyDTO>();
+
+        foreach (var e in ev.ExtraProps)
+        {
+          pEvent.extra_props.Add(new ObjExtraPropertyDTO()
+          {
+            prop_name = e.PropName,
+            str_val = e.StrVal,
+            visual_type = e.VisualType
+          });
+        }
+        list.Add(pEvent);
+      }
+      var count = await _eventsService.InsertManyAsync(list);
+      return new BoolValue() { Value = count == list.Count};
     }
   }
 }
