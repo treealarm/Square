@@ -1,12 +1,7 @@
 ﻿using LeafletAlarmsGrpc;
 using System.Web;
-using System;
 using System.Text.Json;
-using System.Net;
 using System.Net.Http.Headers;
-using static Google.Rpc.Context.AttributeContext.Types;
-using System.Text;
-using Microsoft.Extensions.Logging;
 
 namespace ValhallaLib
 {
