@@ -20,13 +20,11 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAppDispatch } from '../store/configureStore';
 import { SearchApplyButton } from './SearchApplyButton';
-import { ApiDefaultPagingNum } from '../store/constants';
+import { ApiDefaultPagingNum, INPUT_DATETIME_FORMAT } from '../store/constants';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
 }
-
-const INPUT_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
 export function RetroSearch() {
   const dispatch = useAppDispatch();
@@ -226,7 +224,7 @@ export function RetroSearch() {
             value={dayjs(searchFilter?.time_start)}
             onChange={handleChange1}
             views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
-            format={INPUT_FORMAT}
+            format={INPUT_DATETIME_FORMAT}
           />
 
           <Tooltip title={"Shift begin time to next track"}>
@@ -241,7 +239,7 @@ export function RetroSearch() {
             label="end"
             value={dayjs(searchFilter?.time_end)}
             onChange={handleChange2}
-            format={INPUT_FORMAT}
+            format={INPUT_DATETIME_FORMAT}
           />
 
           <Tooltip title={"Shift begin time to previous track"}>

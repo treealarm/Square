@@ -1,4 +1,7 @@
-﻿export const ApiRootString = 'api/map';
+﻿
+export const INPUT_DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
+
+export const ApiRootString = 'api/map';
 export const ApiTracksRootString = 'api/tracks';
 export const ApiRouterRootString = 'api/router';
 export const ApiStatesRootString = 'api/states';

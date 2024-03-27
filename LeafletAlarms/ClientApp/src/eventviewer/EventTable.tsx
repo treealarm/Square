@@ -76,7 +76,8 @@ export default function EventViewer() {
     }
 
     appDispatch(EventsStore.set_local_filter(newFilter));
-    appDispatch(EventsStore.fetchEventsByFilter(newFilter));
+    // fetch will be called from parent viewer in timeout
+    //appDispatch(EventsStore.fetchEventsByFilter(newFilter));
   };
 
   const handleSelect = (row: IEventDTO
@@ -105,7 +106,7 @@ export default function EventViewer() {
       position: 'relative',
     }}>
       <TableContainer >
-        <Table stickyHeader aria-label="sticky table">
+        <Table stickyHeader aria-label="sticky table" size="small">
           <TableHead>
             <TableRow>
               {columns.map((column) => (
