@@ -51,6 +51,7 @@ export default function EventViewer() {
 
   const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events);
   const filter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
+  const selected_event: IEventDTO = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event);
 
   var order = filter.sort;
 
@@ -78,6 +79,16 @@ export default function EventViewer() {
     appDispatch(EventsStore.fetchEventsByFilter(newFilter));
   };
 
+  const handleSelect = (row: IEventDTO
+  ) => {
+    if (selected_event?.meta.id == row?.meta.id) {
+      appDispatch(EventsStore.set_selected_event(null));
+    }
+    else {
+      appDispatch(EventsStore.set_selected_event(DeepCopy(row)));
+    }
+    
+  };
   const getOrderByKey = (id:string) => {
     return order?.find(el => el.key == id);
   };
@@ -124,7 +135,10 @@ export default function EventViewer() {
           <TableBody>
             {events?.map((row, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.meta.id + ' ' + index}>
+                  <TableRow
+                    onClick={() => handleSelect(row)}
+                    selected={selected_event != null && selected_event?.meta.id == row?.meta.id }
+                    hover role="checkbox" tabIndex={-1} key={row.meta.id + ' ' + index}>
                     {columns.map((column) => {
                       var value = null;
                       if (column.id == 'id') {

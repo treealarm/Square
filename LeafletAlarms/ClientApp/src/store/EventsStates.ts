@@ -9,6 +9,7 @@ import { ApiDefaultPagingNum, ApiEventsRootString } from './constants';
 export interface EventStates {
   events: IEventDTO[] | null;
   filter: SearchFilterDTO;
+  selected_event: IEventDTO|null;
 }
 
 const unloadedState: EventStates = {
@@ -22,6 +23,7 @@ const unloadedState: EventStates = {
     count: ApiDefaultPagingNum,
     sort: []
   },
+  selected_event: null
 };
 
 export const fetchEventsByFilter = createAsyncThunk<IEventDTO[], SearchFilterDTO>(
@@ -50,6 +52,9 @@ const eventsSlice = createSlice({
     set_local_filter(state: EventStates, action: PayloadAction<SearchFilterDTO>) {
       state.filter = action.payload;
     },
+    set_selected_event(state: EventStates, action: PayloadAction<IEventDTO|null>) {
+      state.selected_event = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -66,7 +71,7 @@ const eventsSlice = createSlice({
   },
 })
 
-export const { set_local_filter } = eventsSlice.actions
+export const { set_local_filter, set_selected_event } = eventsSlice.actions
 export const reducer = eventsSlice.reducer
 
 
