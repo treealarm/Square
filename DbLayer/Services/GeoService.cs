@@ -24,14 +24,14 @@ namespace DbLayer.Services
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;
     private readonly ILevelService _levelService;
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
     public GeoService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
-      ILevelService levelService
+      ILevelService levelService,
+      IMongoClient mongoClient
     )
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);

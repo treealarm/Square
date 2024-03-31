@@ -17,28 +17,30 @@ namespace DbLayer.Services
   public class EventsService: IEventsService
   {
     private IMongoCollection<DBEvent> _coll;
-    private MongoClient _mongoClient;
+    private IMongoClient _mongoClient;
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
     private IMongoCollection<DBEvent> Coll
     {
       get
       {
-        CreateCollections();
+        if (_coll == null)
+        {
+          CreateCollections();
+        }        
         return _coll;
       }
     }
     public EventsService(
-      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
+      IMongoClient mongoClient
     )
     {
       _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
+      _mongoClient = mongoClient;
       CreateCollections();
     }
     private void CreateCollections()
     {
-      _mongoClient = new MongoClient(
-       _geoStoreDatabaseSettings.Value.ConnectionString);
-
       var mongoDatabase = _mongoClient.GetDatabase(
           _geoStoreDatabaseSettings.Value.DatabaseName);
 

@@ -20,12 +20,13 @@ namespace DbLayer.Services
     public class DiagramTypeService: IDiagramTypeService
   {
     private readonly IMongoCollection<DBDiagramType> _coll;
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
 
-    public DiagramTypeService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    public DiagramTypeService(
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
+      IMongoClient mongoClient)
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);

@@ -12,16 +12,17 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-    public class FAKE_Service: ILogicProcessorService
+  public class FAKE_Service: ILogicProcessorService
   {
     private IMongoCollection<DB__FAKE> _collection;
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
     private readonly IMongoDatabase _mongoDatabase;
     private string _tableName;
-    public FAKE_Service(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    public FAKE_Service(
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
+      IMongoClient mongoClient)
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       _mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);

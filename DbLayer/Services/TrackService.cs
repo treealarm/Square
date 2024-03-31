@@ -20,15 +20,15 @@ namespace DbLayer.Services
   public class TrackService : ITrackService
   {
     private readonly IMongoCollection<DBTrackPoint> _collFigures;
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
     private readonly ILevelService _levelService;
     public TrackService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
-      ILevelService levelService
+      ILevelService levelService,
+      IMongoClient mongoClient
     )
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);

@@ -21,16 +21,15 @@ namespace DbLayer.Services
 
     private readonly IMongoCollection<DBMarkerProperties> _propCollection;
 
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
     private readonly IMongoDatabase _mongoDB;
     private readonly IOptions<MapDatabaseSettings> _geoStoreDBSettings;   
 
     public MapService(
-        IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+        IOptions<MapDatabaseSettings> geoStoreDatabaseSettings, IMongoClient mongoClient)
     {
       _geoStoreDBSettings = geoStoreDatabaseSettings;
-      _mongoClient = new MongoClient(
-          geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       _mongoDB = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);

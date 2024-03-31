@@ -3,12 +3,15 @@ using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using Google.Api;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
@@ -42,13 +45,15 @@ namespace LeafletAlarms
 
       services.ConfigureJWT();
 
-      
-      services.Configure<MapDatabaseSettings>(Configuration.GetSection("MapDatabase"));
+      var mapDbSection = Configuration.GetSection("MapDatabase");
+      services.Configure<MapDatabaseSettings>(mapDbSection);
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
       services.Configure<DaprSettings>(Configuration.GetSection("DaprSettings"));
 
-      //services.AddOptions
 
+      services.AddSingleton<IMongoClient>(s =>
+          new MongoClient(mapDbSection.Get<MapDatabaseSettings>().ConnectionString)
+      );
 
       services.AddHostedService<InitHostedService>();
 

@@ -1,7 +1,5 @@
 ﻿using DbLayer.Models;
-using DbLayer.Models.Diagrams;
 using Domain;
-using Domain.Diagram;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.States;
@@ -19,7 +17,7 @@ namespace DbLayer.Services
     private IMongoCollection<DBObjectState> _collState;
     private IMongoCollection<DBObjectStateDescription> _collStateDescr;
     private IMongoCollection<DBAlarmState> _collAlarms;
-    private MongoClient _mongoClient;
+    private IMongoClient _mongoClient;
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
     
     private IMongoCollection<DBObjectState> CollState 
@@ -49,18 +47,18 @@ namespace DbLayer.Services
       }
     }
 
-    public StateService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    public StateService(
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
+      IMongoClient mongoClient)
     {
       _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
+      _mongoClient = mongoClient;
       CreateCollections();
     }
     private void CreateCollections()
     {
       if (_collState == null || _collStateDescr == null || _collAlarms == null)
       {
-        _mongoClient = new MongoClient(
-        _geoStoreDatabaseSettings.Value.ConnectionString);
-
         var mongoDatabase = _mongoClient.GetDatabase(
             _geoStoreDatabaseSettings.Value.DatabaseName);
 

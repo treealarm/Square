@@ -15,7 +15,7 @@ namespace DbLayer.Services
   public class LevelService : ILevelService
   {
     private readonly IMongoCollection<DBLevel> _collection;
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
     private object _locker = new object();
     private List<DBLevel> _cash = null;
     private async Task<List<DBLevel>> GetCash()
@@ -27,10 +27,11 @@ namespace DbLayer.Services
       return _cash;
     }
 
-    public LevelService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings)
+    public LevelService(
+      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
+      IMongoClient mongoClient)
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);

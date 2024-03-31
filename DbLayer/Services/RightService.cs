@@ -16,11 +16,10 @@ namespace DbLayer.Services
     public class RightService: IRightService
   {
     private readonly IMongoCollection<DBObjectRights> _coll;
-    private readonly MongoClient _mongoClient;
-    public  RightService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings) 
+    private readonly IMongoClient _mongoClient;
+    public  RightService(IOptions<MapDatabaseSettings> geoStoreDatabaseSettings, IMongoClient mongoClient) 
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);

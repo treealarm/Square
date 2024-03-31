@@ -12,25 +12,22 @@ using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static DbLayer.Models.DBRoutLine;
-using static Domain.StateWebSock.RoutLineDTO;
 
 namespace DbLayer.Services
 {
     public class RoutService : IRoutService
   {
     private readonly IMongoCollection<DBRoutLine> _collRoutes;
-    private readonly MongoClient _mongoClient;
+    private readonly IMongoClient _mongoClient;
     private readonly ILevelService _levelService;
     public RoutService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
-      ILevelService levelService
+      ILevelService levelService,
+      IMongoClient mongoClient
     )
     {
-      _mongoClient = new MongoClient(
-        geoStoreDatabaseSettings.Value.ConnectionString);
+      _mongoClient = mongoClient;
 
       var mongoDatabase = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
