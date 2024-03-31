@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
+using System;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -54,6 +55,7 @@ namespace LeafletAlarms
       services.AddSingleton<IMongoClient>(s =>
           new MongoClient(mapDbSection.Get<MapDatabaseSettings>().ConnectionString)
       );
+
 
       services.AddHostedService<InitHostedService>();
 

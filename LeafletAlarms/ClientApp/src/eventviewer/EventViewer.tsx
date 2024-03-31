@@ -80,42 +80,44 @@ export function EventViewer() {
       }}
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Toolbar sx={{ justifyContent: "left", backgroundColor: 'lightgray' }}>
-          <Box>
+          <Toolbar sx={{ justifyContent: "left", backgroundColor: 'lightgray' }}>
+            <Box>
               <ButtonGroup>
                 <Tooltip title={"First events page"}>
                   <IconButton onClick={(e: any) => OnNavigate(false, e)}>
                     <FirstPageIcon />
                   </IconButton>
                 </Tooltip>
-              <Tooltip title={"Prev events page"}>
-                <IconButton onClick={(e: any) => OnNavigate(false, e)}>
+                <Tooltip title={"Prev events page"}>
+                  <IconButton onClick={(e: any) => OnNavigate(false, e)}>
                     <NavigateBeforeIcon />
-                </IconButton>
+                  </IconButton>
                 </Tooltip>
                 <Tooltip title={"Next events page"}>
                   <IconButton onClick={(e: any) => OnNavigate(true, e)}>
                     <NavigateNextIcon />
                   </IconButton>
                 </Tooltip>
-            </ButtonGroup>
+              </ButtonGroup>
 
-            <DateTimePicker
-              label="begin"
-              value={dayjs(searchFilter?.time_start)}
-              onChange={handleChange1}
-              views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
-              format={INPUT_DATETIME_FORMAT}
-            />
-            <DateTimePicker
-              label="end"
-              value={dayjs(searchFilter?.time_end)}
-              onChange={handleChange2}
-              format={INPUT_DATETIME_FORMAT}
-            />
-          </Box>
+              <DateTimePicker
+                label="begin"
+                value={dayjs(searchFilter?.time_start)}
+                onChange={handleChange1}
+                views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
+                format={INPUT_DATETIME_FORMAT}
+                slotProps={{ textField: { size: 'small' } }}
+              />
+              <DateTimePicker
+                label="end"
+                value={dayjs(searchFilter?.time_end)}
+                onChange={handleChange2}
+                format={INPUT_DATETIME_FORMAT}
+                slotProps={{ textField: { size: 'small' } }}
+              />
+            </Box>
           </Toolbar>
-          </LocalizationProvider>
+        </LocalizationProvider>
       </Box>
 
       <Grid container sx={{

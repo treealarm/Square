@@ -19,9 +19,21 @@ namespace DbLayer.Services
 {
   public class TrackService : ITrackService
   {
-    private readonly IMongoCollection<DBTrackPoint> _collFigures;
+    private IMongoCollection<DBTrackPoint> _collFigures;
     private readonly IMongoClient _mongoClient;
     private readonly ILevelService _levelService;
+    private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
+    IMongoCollection<DBTrackPoint> Coll
+    {
+      get
+      {
+        if (_collFigures == null)
+        {
+          CreateCollections();
+        }
+        return _collFigures;
+      }
+    }
     public TrackService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
       ILevelService levelService,
@@ -29,13 +41,17 @@ namespace DbLayer.Services
     )
     {
       _mongoClient = mongoClient;
+      _levelService = levelService;
+      _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
+      CreateCollections();
+    }
 
+    private void CreateCollections()
+    {
       var mongoDatabase = _mongoClient.GetDatabase(
-          geoStoreDatabaseSettings.Value.DatabaseName);
+        _geoStoreDatabaseSettings.Value.DatabaseName);
 
-      
-
-      var filter = new BsonDocument("name", geoStoreDatabaseSettings.Value.TracksCollectionName);
+      var filter = new BsonDocument("name", _geoStoreDatabaseSettings.Value.TracksCollectionName);
       var options = new ListCollectionNamesOptions { Filter = filter };
 
       try
@@ -51,25 +67,23 @@ namespace DbLayer.Services
             new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
 
           mongoDatabase.CreateCollection(
-          geoStoreDatabaseSettings.Value.TracksCollectionName,
-          createOptions);
+            _geoStoreDatabaseSettings.Value.TracksCollectionName,
+            createOptions);
         }
-      }
-      catch ( Exception ex )
-      {
-        Console.WriteLine( ex.ToString() );
-      }
-
-      _collFigures =
+        _collFigures =
         mongoDatabase.GetCollection<DBTrackPoint>(
-          geoStoreDatabaseSettings.Value.TracksCollectionName
+          _geoStoreDatabaseSettings.Value.TracksCollectionName
         );
 
-      _levelService = levelService;
 
-      CreateIndexes();
+
+        CreateIndexes();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }      
     }
-
     private void CreateIndexes()
     {
       {
@@ -163,7 +177,7 @@ namespace DbLayer.Services
 
       if (list.Count > 0)
       {
-        await _collFigures.InsertManyAsync(list);
+        await Coll.InsertManyAsync(list);
       }
 
       return DBListToDTO(list);
@@ -198,7 +212,7 @@ namespace DbLayer.Services
       Log(filter);
 
       var dbTrack =
-        await _collFigures
+        await Coll
           .Find(filter)
           .SortByDescending(t => t.timestamp)
           .FirstOrDefaultAsync();
@@ -209,7 +223,7 @@ namespace DbLayer.Services
     public async Task<TrackPointDTO> GetByIdAsync(string id)
     {
       var dbTrack =
-        await _collFigures.Find(t => t.meta.id == id)
+        await Coll.Find(t => t.meta.id == id)
           .FirstOrDefaultAsync();
 
       return ConvertDB2DTO(dbTrack);
@@ -271,7 +285,7 @@ namespace DbLayer.Services
             f = filter & builder.Where(t => t.meta.figure.id == id);
           }
 
-          var track = await _collFigures.Find(f).FirstOrDefaultAsync();
+          var track = await Coll.Find(f).FirstOrDefaultAsync();
 
           if (track != null)
           {
@@ -281,7 +295,7 @@ namespace DbLayer.Services
       }
       else
       {
-        dbTracks = await _collFigures
+        dbTracks = await Coll
           .Find(filter)
           .Limit(10000)
           .ToListAsync()
@@ -398,7 +412,7 @@ namespace DbLayer.Services
         }
       }
 
-      var finder = _collFigures.Find(filter).Limit(limit);
+      var finder = Coll.Find(filter).Limit(limit);
 
       if (box.sort < 0)
       {
@@ -473,7 +487,7 @@ namespace DbLayer.Services
         }
       }
 
-      var finder = _collFigures.Find(filter).Limit(limit);
+      var finder = Coll.Find(filter).Limit(limit);
 
       Log(filter);
 

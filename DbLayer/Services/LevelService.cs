@@ -53,9 +53,9 @@ namespace DbLayer.Services
       {
         obj = await _collection.AsQueryable().ToListAsync();
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-
+        Console.WriteLine(ex.ToString());
       }
 
       return obj;

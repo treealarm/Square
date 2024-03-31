@@ -41,9 +41,15 @@ namespace LeafletAlarms.Services
     {
       _logger.LogInformation(
               "Timed Hosted Service is working.");
-
-      await _levelService.Init();
-      await _stateService.Init();
+      try
+      {
+        await _levelService.Init();
+        await _stateService.Init();
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
       var curDate = DateTime.Now;
 
       while (!_cancellationToken.IsCancellationRequested)
