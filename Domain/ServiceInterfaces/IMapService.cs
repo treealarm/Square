@@ -37,7 +37,7 @@ namespace Domain.ServiceInterfaces
     Task<List<ObjPropsDTO>> GetPropByValuesAsync(
       ObjPropsSearchDTO propFilter,
       string start_id,
-      bool forward,
+      int forward,
       int count
     );
     Task UpdatePropNotDeleteAsync(IEnumerable<BaseMarkerDTO> updatedObj);

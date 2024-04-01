@@ -410,7 +410,7 @@ namespace DbLayer.Services
     public async Task<List<ObjPropsDTO>> GetPropByValuesAsync(
       ObjPropsSearchDTO propFilter,
       string start_id,
-      bool forward,
+      int forward,
       int count
     )
     {
@@ -424,7 +424,7 @@ namespace DbLayer.Services
 
       if (!string.IsNullOrEmpty(start_id))
       {
-        if (forward)
+        if (forward > 0)
           filterPaging = Builders<DBMarkerProperties>.Filter.Gt("_id", new ObjectId(start_id));
         else
           filterPaging = Builders<DBMarkerProperties>.Filter.Lt("_id", new ObjectId(start_id));
@@ -466,7 +466,7 @@ namespace DbLayer.Services
       }
 
 
-      if (forward)
+      if (forward > 0)
       {
         retObjProps = await _propCollection
         .Find(filter)

@@ -15,11 +15,11 @@ export interface EventStates {
 const unloadedState: EventStates = {
   events: null,
   filter: {
-    search_id: (new Date()).toISOString(),
+    search_id: null,
     property_filter: null,
     time_start: null,
     time_end: null,
-    forward: true,
+    forward: 0,
     count: ApiDefaultPagingNum,
     sort: []
   },

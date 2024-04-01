@@ -14,11 +14,12 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class EventsService: IEventsService
+  public class EventsService: IEventsService, IDisposable
   {
     private IMongoCollection<DBEvent> _coll;
     private IMongoClient _mongoClient;
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
+    private TableCursors<DBEvent> _cursors = new TableCursors<DBEvent>();
     private IMongoCollection<DBEvent> Coll
     {
       get
@@ -204,6 +205,30 @@ namespace DbLayer.Services
     }
     public async Task<List<EventDTO>> GetEventsByFilter(SearchFilterDTO filter_in)
     {
+      var storedCursor = _cursors.Get(filter_in.search_id, filter_in.GetHashCode());
+
+      if (storedCursor != null)
+      {
+        if(filter_in.forward > 0)
+        {
+          List<DBEvent> prevList = null;
+          if (storedCursor.Cursor?.Current !=null)
+          {
+            prevList = storedCursor.Cursor.Current.ToList();
+          }
+          bool available = await storedCursor.Cursor.MoveNextAsync();
+
+          if (!available)
+          {
+            return DBListToDTO(prevList);
+          }
+          return DBListToDTO(storedCursor.Cursor.Current.ToList());
+        }
+        else
+        {
+          _cursors.Remove(filter_in.search_id);
+        }
+      }
       int limit = 10000;
 
       if (filter_in.count > 0)
@@ -229,24 +254,6 @@ namespace DbLayer.Services
         filter = CreateOrAddFilter(filter, fte);
       }
 
-
-      if (!string.IsNullOrEmpty(filter_in.start_id))
-      {
-        FilterDefinition<DBEvent> filterPaging = null;
-
-        if (filter_in.forward)
-          filterPaging = Builders<DBEvent>.Filter
-            .Gt("meta._id", new ObjectId(filter_in.start_id));
-        else
-          filterPaging = Builders<DBEvent>.Filter
-            .Lt("meta._id", new ObjectId(filter_in.start_id));
-
-        filter = CreateOrAddFilter(filter, filterPaging);
-      }
-
-
-      var dbObjects = new List<DBEvent>();
-
       if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
       {
         foreach (var prop in filter_in.property_filter.props)
@@ -270,7 +277,11 @@ namespace DbLayer.Services
         }
       }
 
-      var finder = Coll.Find(filter);
+      var options = new FindOptions()
+      {
+        BatchSize = limit
+      };
+      var finder = Coll.Find(filter, options);
 
       List<SortDefinition<DBEvent>> sorts = new List<SortDefinition<DBEvent>>();
 
@@ -293,13 +304,26 @@ namespace DbLayer.Services
         finder = finder.Sort(sortDefinitionBuilder.Combine(sorts.ToArray()));
       }
 
-      finder = finder.Limit(limit);
-      var list = await finder
-        .ToListAsync();
+      if (string.IsNullOrEmpty(filter_in.search_id))
+      {
+        finder = finder.Limit(limit);
+        return DBListToDTO(await finder.ToListAsync());
+      }
+      var newCursor = await finder.ToCursorAsync();      
+      bool available2 = await newCursor.MoveNextAsync();
 
-      dbObjects.AddRange(list);
+      if (!available2)
+      {
+        newCursor.Dispose();
+        return new List<EventDTO>();
+      }
+      _cursors.Add(filter_in.search_id, filter_in.GetHashCode(), newCursor);
+      return DBListToDTO(newCursor.Current.ToList());
+    }
 
-      return DBListToDTO(dbObjects);
+    public void Dispose()
+    {
+      _cursors.Dispose();
     }
   }
 }

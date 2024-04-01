@@ -251,7 +251,7 @@ namespace LeafletAlarms.Controllers
 
         if (!string.IsNullOrEmpty(filter.start_id))
         {
-          if (filter.forward)
+          if (filter.forward > 0)
           {
             filter.start_id = propsObjs.LastOrDefault().id;
           }
@@ -381,7 +381,7 @@ namespace LeafletAlarms.Controllers
         var props = await _mapService.GetPropByValuesAsync(
           box.property_filter,
           null,
-          true,
+          1,
           1000
         );
         ids = props.Select(i => i.id).ToList();

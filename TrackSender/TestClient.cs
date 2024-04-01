@@ -150,7 +150,7 @@ namespace TrackSender
         SearchFilterDTO filter = new SearchFilterDTO();
         filter.count = count;
         filter.start_id = start_id;
-        filter.forward = true;
+        filter.forward = 1;
         filter.property_filter = new ObjPropsSearchDTO();
         filter.property_filter.props = new List<KeyValueDTO>();
         filter.property_filter.props.Add(new KeyValueDTO()

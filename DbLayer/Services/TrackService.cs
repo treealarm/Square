@@ -451,7 +451,7 @@ namespace DbLayer.Services
       {
         FilterDefinition<DBTrackPoint> filterPaging = null;
 
-        if (filter_in.forward)
+        if (filter_in.forward > 0)
           filterPaging = Builders<DBTrackPoint>.Filter
             .Gt("meta._id", new ObjectId(filter_in.start_id));
         else

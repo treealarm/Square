@@ -50,8 +50,10 @@ const columns: readonly Column[] = [
   },
 ];
 
-
-export default function EventViewer() {
+interface IEventTableProps {
+  setLocalFilter: (newFilter: SearchFilterDTO) => any;
+}
+export default function EventTable(props: IEventTableProps) {
 
   const appDispatch = useAppDispatch();
 
@@ -81,7 +83,7 @@ export default function EventViewer() {
       newFilter.sort = newFilter?.sort.filter(el => el.key != id);
     }
 
-    appDispatch(EventsStore.set_local_filter(newFilter));
+    props.setLocalFilter(newFilter);
     // fetch will be called from parent viewer in timeout
     //appDispatch(EventsStore.fetchEventsByFilter(newFilter));
   };

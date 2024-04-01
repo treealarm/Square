@@ -45,7 +45,7 @@ namespace LogicMicroService
         var props = await mapService.GetPropByValuesAsync(
           property_filter,
           null,
-          true,
+          1,
           1000
         );
 

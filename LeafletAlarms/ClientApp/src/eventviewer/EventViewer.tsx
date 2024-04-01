@@ -22,15 +22,21 @@ import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
+import { useId } from "react";
 
+function uuidv4() {
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+  );
+}
 export function EventViewer() {
 
   const appDispatch = useAppDispatch();
-
+  const guid = useId();
   const searchFilter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
 
   let timeoutId: any = null;
-
+  
   React.useEffect(() => {
     if (timeoutId != null) {
       clearTimeout(timeoutId);
@@ -42,17 +48,22 @@ export function EventViewer() {
     return () => clearTimeout(timeoutId);
   }, [searchFilter]);
 
-  const handleRequestFilter = (id: string
-  ) => {
-    var newFilter = DeepCopy(searchFilter);
+  function setLocalFilter(newFilter: SearchFilterDTO) {
+
+    var idFromStorage = sessionStorage.getItem("ID_KEY");
+    if (idFromStorage == null) {
+      idFromStorage = uuidv4();
+      sessionStorage.setItem("ID_KEY", idFromStorage);
+    }
+    newFilter.search_id = idFromStorage;
     appDispatch(EventsStore.set_local_filter(newFilter));
-  };
+  }
 
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
       var newFilter = DeepCopy(searchFilter);
       newFilter.time_start = newValue.toISOString();
-      appDispatch(EventsStore.set_local_filter(newFilter));
+      setLocalFilter(newFilter);
     }
     catch (err) {
 
@@ -63,14 +74,26 @@ export function EventViewer() {
     try {
       var newFilter = DeepCopy(searchFilter);
       newFilter.time_end = newValue.toISOString();
-      appDispatch(EventsStore.set_local_filter(newFilter));
+      setLocalFilter(newFilter);
     }
     catch (err) {
 
     }
   };
-  const OnNavigate = (next: boolean, e: any) => {
+  const OnNavigate = (next: number, e: any) => {
 
+    var newFilter = DeepCopy(searchFilter);
+
+    if (next < 0) {
+      newFilter.forward = -1;
+    }
+    if (next > 0) {
+      newFilter.forward = 1;
+    }
+    if (next == 0) {
+      newFilter.forward = 0;
+    }
+    setLocalFilter(newFilter);
   }
 
   return (
@@ -84,17 +107,13 @@ export function EventViewer() {
             <Box>
               <ButtonGroup>
                 <Tooltip title={"First events page"}>
-                  <IconButton onClick={(e: any) => OnNavigate(false, e)}>
+                  <IconButton onClick={(e: any) => OnNavigate(0, e)}>
                     <FirstPageIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title={"Prev events page"}>
-                  <IconButton onClick={(e: any) => OnNavigate(false, e)}>
-                    <NavigateBeforeIcon />
-                  </IconButton>
-                </Tooltip>
+
                 <Tooltip title={"Next events page"}>
-                  <IconButton onClick={(e: any) => OnNavigate(true, e)}>
+                  <IconButton onClick={(e: any) => OnNavigate(1, e)}>
                     <NavigateNextIcon />
                   </IconButton>
                 </Tooltip>
@@ -128,7 +147,7 @@ export function EventViewer() {
       }}>
 
         <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
-          <EventTable />
+          <EventTable setLocalFilter={setLocalFilter} />
         </Grid>
 
         <Grid item xs={3} sx={{ height: "100%", border: 1 }}>

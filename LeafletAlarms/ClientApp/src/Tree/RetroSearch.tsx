@@ -102,7 +102,7 @@ export function RetroSearch() {
       property_filter: filter.property_filter,
       time_start: filter.time_start,
       time_end: filter.time_end,
-      forward: true,
+      forward: 1,
       count: ApiDefaultPagingNum
     }
 

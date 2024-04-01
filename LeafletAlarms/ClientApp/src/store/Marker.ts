@@ -186,7 +186,7 @@ export interface SearchFilterDTO{
   property_filter?: ObjPropsSearchDTO;
   search_id: string;
   start_id?: string;
-  forward: boolean;
+  forward: number;
   count: number;
   sort?: ISortPair[];
 }

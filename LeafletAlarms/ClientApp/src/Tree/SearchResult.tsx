@@ -48,7 +48,7 @@ export function SearchResult() {
     (next: boolean, e: any) => {
 
       let filter = DeepCopy(searchStates.filter);
-      filter.forward = next;
+      filter.forward = next ? 1: -1;
       filter.start_id = null;
 
       if (next) {
