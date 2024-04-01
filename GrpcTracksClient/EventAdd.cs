@@ -23,6 +23,7 @@ namespace GrpcTracksClient
 
           newEv.Meta = new EventMetaProto();
           newEv.Meta.EventName = i.ToString() + "_" + j.ToString();
+          newEv.Meta.EventPriority = i % 2;
           newEv.ExtraProps.Add(new ProtoObjExtraProperty()
           {
             PropName = "event_name",

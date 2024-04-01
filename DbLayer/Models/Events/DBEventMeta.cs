@@ -15,6 +15,7 @@ namespace DbLayer.Models.Events
     [BsonIgnoreIfNull]
     public string object_id { get; set; } // Object id
     public string event_name { get; set; }
+    public int event_priority { get; set; }
     [BsonIgnoreIfNull]
     public List<DBObjExtraProperty> extra_props { get; set; }
   }

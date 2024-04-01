@@ -398,6 +398,7 @@ export interface IEventMetaDTO {
   id: string;
   object_id: string;
   event_name: string;
+  event_priority: number;
 }
 export interface IEventDTO {
   meta: IEventMetaDTO;

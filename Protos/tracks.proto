@@ -88,6 +88,7 @@ message EventMetaProto
   string id = 1;
 	string object_id = 2;
   string event_name = 3;
+	int32 event_priority = 4;
 }
 
 message EventProto

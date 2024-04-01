@@ -37,6 +37,12 @@ const columns: readonly Column[] = [
     format: (value: number) => value.toLocaleString('en-US'),
   },  
   {
+    id: 'event_priority',
+    label: 'event_priority',
+    minWidth: 170
+  },
+  
+  {
     id: 'timestamp',
     label: 'timestamp',
     minWidth: 170,
@@ -151,6 +157,10 @@ export default function EventViewer() {
                       if (column.id == 'event_name') {
                         value = row.meta.event_name;
                       }
+                      if (column.id == 'event_priority') {
+                        value = row.meta.event_priority;
+                      }
+                      
                       if (column.id == 'timestamp') {
                         value = new Date(row.timestamp).toLocaleString();
                       }
