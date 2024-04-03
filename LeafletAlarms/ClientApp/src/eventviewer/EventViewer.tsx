@@ -22,7 +22,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
-import { useId } from "react";
+import { useEffect, useId } from "react";
 
 function uuidv4() {
   return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
@@ -37,7 +37,7 @@ export function EventViewer() {
 
   let timeoutId: any = null;
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (timeoutId != null) {
       clearTimeout(timeoutId);
     }
@@ -46,6 +46,19 @@ export function EventViewer() {
       appDispatch(EventsStore.fetchEventsByFilter(searchFilter));
     }, 1000);
     return () => clearTimeout(timeoutId);
+  }, [searchFilter]);
+
+  useEffect(() => {
+    // Just reserve cursor if exist.
+    const interval = setInterval(() => {
+      if (searchFilter?.forward != 0) {
+        appDispatch(EventsStore.reserveCursor(searchFilter?.search_id));
+      }     
+    }
+      , 30000);
+    return () => {
+      clearInterval(interval);
+    };
   }, [searchFilter]);
 
   function setLocalFilter(newFilter: SearchFilterDTO) {
@@ -80,19 +93,10 @@ export function EventViewer() {
 
     }
   };
-  const OnNavigate = (next: number, e: any) => {
+  const OnNavigate = (next: number) => {
 
     var newFilter = DeepCopy(searchFilter);
-
-    if (next < 0) {
-      newFilter.forward = -1;
-    }
-    if (next > 0) {
-      newFilter.forward = 1;
-    }
-    if (next == 0) {
-      newFilter.forward = 0;
-    }
+    newFilter.forward = next;   
     setLocalFilter(newFilter);
   }
 
@@ -107,13 +111,13 @@ export function EventViewer() {
             <Box>
               <ButtonGroup>
                 <Tooltip title={"First events page"}>
-                  <IconButton onClick={(e: any) => OnNavigate(0, e)}>
+                  <IconButton onClick={(e: any) => OnNavigate(0)}>
                     <FirstPageIcon />
                   </IconButton>
                 </Tooltip>
 
                 <Tooltip title={"Next events page"}>
-                  <IconButton onClick={(e: any) => OnNavigate(1, e)}>
+                  <IconButton onClick={(e: any) => OnNavigate(1)}>
                     <NavigateNextIcon />
                   </IconButton>
                 </Tooltip>

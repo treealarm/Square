@@ -1,6 +1,10 @@
 ﻿using MongoDB.Driver;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Timers;
 
 
 namespace DbLayer.Services
@@ -10,18 +14,21 @@ namespace DbLayer.Services
     public CursorsInfo(IAsyncCursor<T> cursor) 
     {
       _cursor = cursor;
-      RefreshTime();
+      ReserveSeconds(60);
     }
     private IAsyncCursor<T> _cursor;
     public IAsyncCursor<T> Cursor
     { get { return _cursor; } }
     public int setId { get; set; }
-    public void RefreshTime()
+    public void ReserveSeconds(int reserve_seconds)
     {
-      creationTime = DateTime.UtcNow;
+      ReservedTillUtc = DateTime.UtcNow + TimeSpan.FromSeconds(reserve_seconds);
     }
-    private DateTime creationTime { get; set; }
-
+    private DateTime ReservedTillUtc { get; set; }
+    public bool IsExpired()
+    {
+      return DateTime.UtcNow > ReservedTillUtc;
+    }
     public void Dispose()
     {
       if (_cursor != null)
@@ -34,17 +41,65 @@ namespace DbLayer.Services
   internal class TableCursors<T> : IDisposable
   {
     private ConcurrentDictionary<string, CursorsInfo<T>> _cursors = new ConcurrentDictionary<string, CursorsInfo<T>>();
+    private System.Timers.Timer _timer = new System.Timers.Timer(5000);
+    public TableCursors()
+    {
+      _timer.Elapsed += TimerElapsed;
+      _timer.AutoReset = true;
+      _timer.Start();
+    }
+    private void TimerElapsed(object sender, ElapsedEventArgs e)
+    {
+      CleanExpired();
+    }
+    public void CleanExpired()
+    {
+      var expiredKeys = new List<string>();
+
+      foreach (var kvp in  _cursors)
+      {
+        if(kvp.Value.IsExpired())
+        {
+          expiredKeys.Add(kvp.Key);
+        }
+      }
+
+      foreach (var k in expiredKeys)
+      {
+        if(_cursors.TryRemove(k, out var v))
+        {
+          v.Dispose();
+        }        
+      }
+    }
 
     public void Dispose()
     {
-      foreach (var kvp in  _cursors)
+      _timer.Stop();
+      _timer.Dispose();
+
+      foreach (var kvp in _cursors)
       {
         kvp.Value.Dispose();
       }
       _cursors.Clear();
     }
 
-    public CursorsInfo<T> Get(string id, int set_id)
+    public CursorsInfo<T> GetById(string id)
+    {
+      if (string.IsNullOrEmpty(id))
+      {
+        return null;
+      }
+
+      if (_cursors.TryGetValue(id, out var retVal))
+      {
+          return retVal;
+      }
+
+      return null;
+    }
+    public CursorsInfo<T> Get(string id, int search_hash)
     {
       if (string.IsNullOrEmpty(id))
       {
@@ -54,9 +109,8 @@ namespace DbLayer.Services
 
       if (_cursors.TryGetValue(id, out retVal))
       {
-        if (retVal.setId == set_id)
+        if (retVal.setId == search_hash)
         {
-          retVal.RefreshTime();
           return retVal;
         }
         _cursors.TryRemove(id, out retVal);

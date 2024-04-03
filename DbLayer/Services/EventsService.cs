@@ -209,24 +209,32 @@ namespace DbLayer.Services
 
       if (storedCursor != null)
       {
-        if(filter_in.forward > 0)
+        if (filter_in.forward == 0)
         {
+          // Home.
+          _cursors.Remove(filter_in.search_id);
+        } 
+        else
+        {
+          storedCursor.ReserveSeconds(60);
           List<DBEvent> prevList = null;
           if (storedCursor.Cursor?.Current !=null)
           {
             prevList = storedCursor.Cursor.Current.ToList();
           }
-          bool available = await storedCursor.Cursor.MoveNextAsync();
+
+          bool available = false;
+          // if not forward then just update time.
+          if (filter_in.forward > 0)
+          {
+            available = await storedCursor.Cursor.MoveNextAsync();
+          }          
 
           if (!available)
           {
             return DBListToDTO(prevList);
           }
           return DBListToDTO(storedCursor.Cursor.Current.ToList());
-        }
-        else
-        {
-          _cursors.Remove(filter_in.search_id);
         }
       }
       int limit = 10000;
@@ -324,6 +332,18 @@ namespace DbLayer.Services
     public void Dispose()
     {
       _cursors.Dispose();
+    }
+
+    public Task<long> ReserveCursor(string search_id)
+    {
+      var storedCursor = _cursors.GetById(search_id);
+
+      if (storedCursor != null)
+      {
+        storedCursor.ReserveSeconds(60);
+        return Task.FromResult(0L);
+      }
+      return Task.FromResult(-1L);
     }
   }
 }

@@ -44,6 +44,21 @@ export const fetchEventsByFilter = createAsyncThunk<IEventDTO[], SearchFilterDTO
   }
 )
 
+export const reserveCursor = createAsyncThunk<number, string>(
+  'events/ReserveCursor',
+  async (search_id: string, { getState }) => {
+    let body = JSON.stringify(search_id);
+
+    var fetched = await DoFetch(ApiEventsRootString + "/ReserveCursor?search_id=" + search_id,
+      {
+        method: "GET"
+      });
+
+    var json = await fetched.text() as unknown as Promise<number>;
+
+    return json;
+  }
+)
 
 const eventsSlice = createSlice({
   name: 'EventsStates',
@@ -67,6 +82,13 @@ const eventsSlice = createSlice({
       .addCase(fetchEventsByFilter.rejected, (state, action) => {
         const { requestId } = action.meta
         state.events = null;
+      })
+      //ReserveCursor
+      .addCase(reserveCursor.pending, (state, action) => {
+      })
+      .addCase(reserveCursor.fulfilled, (state, action) => {
+      })
+      .addCase(reserveCursor.rejected, (state, action) => {
       })
   },
 })
