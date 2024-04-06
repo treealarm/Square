@@ -262,6 +262,13 @@ namespace DbLayer.Services
         filter = CreateOrAddFilter(filter, fte);
       }
 
+      if (!string.IsNullOrEmpty(filter_in.start_id))
+      {
+        var fte = builder
+        .Where(t => t.meta.event_name.Contains(filter_in.start_id));
+        filter = CreateOrAddFilter(filter, fte);
+      }
+
       if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
       {
         foreach (var prop in filter_in.property_filter.props)
