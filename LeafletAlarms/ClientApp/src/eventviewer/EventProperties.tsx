@@ -34,6 +34,18 @@ export function EventProperties() {
 
       <List dense>
         {
+          selected_event?.meta?.extra_props?.map((item, index) =>
+            <ListItem key={index}>
+
+              <TextField size="small"
+                fullWidth
+                id={item.prop_name} label={item.prop_name}
+                value={item.str_val}
+                inputProps={{ readOnly: true }} />
+            </ListItem>
+          )
+        }
+        {
           selected_event?.extra_props?.map((item, index) =>
             <ListItem key={index}>
 

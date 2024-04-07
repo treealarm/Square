@@ -234,8 +234,18 @@ namespace LeafletAlarms.Grpc.Implementation
         pEvent.meta.object_id = ev.Meta.ObjectId;
         pEvent.meta.event_name = ev.Meta.EventName;
         pEvent.meta.event_priority = ev.Meta.EventPriority;
-        pEvent.extra_props = new List<ObjExtraPropertyDTO>();
+        pEvent.meta.extra_props = new List<ObjExtraPropertyDTO>();
 
+        foreach (var e in ev.Meta.ExtraProps)
+        {
+          pEvent.meta.extra_props.Add(new ObjExtraPropertyDTO()
+          {
+            prop_name = e.PropName,
+            str_val = e.StrVal,
+            visual_type = e.VisualType
+          });
+        }
+        pEvent.extra_props = new List<ObjExtraPropertyDTO>();
         foreach (var e in ev.ExtraProps)
         {
           pEvent.extra_props.Add(new ObjExtraPropertyDTO()

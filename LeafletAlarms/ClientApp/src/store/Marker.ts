@@ -399,6 +399,7 @@ export interface IEventMetaDTO {
   object_id: string;
   event_name: string;
   event_priority: number;
+  extra_props?: ObjExtraPropertyDTO[];
 }
 export interface IEventDTO {
   meta: IEventMetaDTO;

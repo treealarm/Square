@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.Json;
 
 namespace Domain
@@ -20,6 +21,11 @@ namespace Domain
       return target;
     }
 
+    private static bool IsSimpleType(Type type)
+    {
+      return type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(decimal) || type == typeof(DateTime);
+    }
+
     public static void CopyAllTo<T, T1>(this T source, T1 target)
     {
       var type = typeof(T);
@@ -31,6 +37,10 @@ namespace Domain
           .Where(targetProperty => sourceProperty.Name == targetProperty.Name)
           .Where(targetProperty => targetProperty.SetMethod != null))
         {
+          if (!IsSimpleType(sourceProperty.PropertyType))
+          {
+            continue;
+          }  
           targetProperty.SetValue(target, sourceProperty.GetValue(source, null), null);
         }
       }
@@ -40,6 +50,10 @@ namespace Domain
         foreach (var targetField in type1.GetFields()
           .Where(targetField => sourceField.Name == targetField.Name))
         {
+          if (!IsSimpleType(sourceField.FieldType))
+          {
+            continue;
+          }
           targetField.SetValue(target, sourceField.GetValue(source));
         }
       }

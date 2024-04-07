@@ -132,12 +132,12 @@ namespace DbLayer.Services
       }
 
       var dto = new EventDTO()
-      {
-        extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.extra_props),
+      {        
         timestamp = db_event.timestamp,
       };
       db_event.meta.CopyAllTo(dto.meta);
-
+      dto.meta.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.extra_props);
+      dto.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.extra_props);
       return dto;
     }
     private List<EventDTO> DBListToDTO(List<DBEvent> dbTracks)
@@ -170,7 +170,8 @@ namespace DbLayer.Services
         };
 
         ev.meta.CopyAllTo(dbTrack.meta);
-        dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB(ev.extra_props);
+        dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB(ev.meta.extra_props);
+        dbTrack.extra_props = ModelGate.ConvertExtraPropsToDB(ev.extra_props);
         list.Add(dbTrack);
       }
 

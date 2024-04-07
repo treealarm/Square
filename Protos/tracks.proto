@@ -89,6 +89,7 @@ message EventMetaProto
 	string object_id = 2;
   string event_name = 3;
 	int32 event_priority = 4;
+	repeated ProtoObjExtraProperty extra_props = 5;
 }
 
 message EventProto
