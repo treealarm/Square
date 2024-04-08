@@ -18,5 +18,7 @@ namespace DbLayer.Models.Events
     public int event_priority { get; set; }
     [BsonIgnoreIfNull]
     public List<DBObjExtraProperty> extra_props { get; set; }
+    [BsonIgnoreIfNull]
+    public List<DBObjExtraProperty> not_indexed_props { get; set; }
   }
 }

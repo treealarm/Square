@@ -90,14 +90,13 @@ message EventMetaProto
   string event_name = 3;
 	int32 event_priority = 4;
 	repeated ProtoObjExtraProperty extra_props = 5;
+	repeated ProtoObjExtraProperty not_indexed_props = 6;
 }
 
 message EventProto
 {
   EventMetaProto meta = 1;
   google.protobuf.Timestamp timestamp = 2;
-  repeated ProtoObjExtraProperty extra_props = 3;
-
 }
 
 message EventsProto

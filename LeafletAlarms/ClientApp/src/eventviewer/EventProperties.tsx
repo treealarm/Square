@@ -46,7 +46,7 @@ export function EventProperties() {
           )
         }
         {
-          selected_event?.extra_props?.map((item, index) =>
+          selected_event?.meta.not_indexed_props?.map((item, index) =>
             <ListItem key={index}>
 
               <TextField size="small"

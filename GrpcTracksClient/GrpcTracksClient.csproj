@@ -28,5 +28,14 @@
     <ProjectReference Include="..\GrpcDaprClientLib\GrpcDaprLib.csproj" />
     <ProjectReference Include="..\ValhallaLib\ValhallaLib.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="files\plate0.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="files\plate1.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

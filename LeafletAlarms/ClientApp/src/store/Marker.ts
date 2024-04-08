@@ -400,9 +400,9 @@ export interface IEventMetaDTO {
   event_name: string;
   event_priority: number;
   extra_props?: ObjExtraPropertyDTO[];
+  not_indexed_props?: ObjExtraPropertyDTO[];
 }
 export interface IEventDTO {
   meta: IEventMetaDTO;
   timestamp: string;
-  extra_props?: ObjExtraPropertyDTO[];
 }

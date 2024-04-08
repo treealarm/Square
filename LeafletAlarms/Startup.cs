@@ -89,6 +89,9 @@ namespace LeafletAlarms
       services.AddSingleton<StatesUpdateService>();
 
       services.AddSingleton<GRPCServiceProxy>();
+      services.AddSingleton<FileSystemService>();
+
+      
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();

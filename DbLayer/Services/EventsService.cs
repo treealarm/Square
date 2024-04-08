@@ -84,26 +84,26 @@ namespace DbLayer.Services
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
-                .Ascending(d => d.meta.id)
-                .Ascending(d => d.timestamp)
-                ;
-
-        var indexModel = new CreateIndexModel<DBEvent>(
-          keys, new CreateIndexOptions()
-          { Name = "combo" }
-        );
-
-        _coll.Indexes.CreateOneAsync(indexModel);
-      }
-      {
-        IndexKeysDefinition<DBEvent> keys =
-                new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.meta.id)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
           keys, new CreateIndexOptions()
           { Name = "mid" }
+        );
+
+        _coll.Indexes.CreateOneAsync(indexModel);
+      }
+
+      {
+        IndexKeysDefinition<DBEvent> keys =
+                new IndexKeysDefinitionBuilder<DBEvent>()
+                  .Ascending(d => d.meta.event_name)
+                ;
+
+        var indexModel = new CreateIndexModel<DBEvent>(
+          keys, new CreateIndexOptions()
+          { Name = "men" }
         );
 
         _coll.Indexes.CreateOneAsync(indexModel);
@@ -137,7 +137,7 @@ namespace DbLayer.Services
       };
       db_event.meta.CopyAllTo(dto.meta);
       dto.meta.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.extra_props);
-      dto.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.extra_props);
+      dto.meta.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.not_indexed_props);
       return dto;
     }
     private List<EventDTO> DBListToDTO(List<DBEvent> dbTracks)
@@ -171,7 +171,7 @@ namespace DbLayer.Services
 
         ev.meta.CopyAllTo(dbTrack.meta);
         dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB(ev.meta.extra_props);
-        dbTrack.extra_props = ModelGate.ConvertExtraPropsToDB(ev.extra_props);
+        dbTrack.meta.not_indexed_props = ModelGate.ConvertExtraPropsToDB(ev.meta.not_indexed_props);
         list.Add(dbTrack);
       }
 

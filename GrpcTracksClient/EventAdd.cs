@@ -31,18 +31,31 @@ namespace GrpcTracksClient
             StrVal = (i % 2).ToString()
           });
 
-          newEv.ExtraProps.Add(new ProtoObjExtraProperty()
+          newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
           {
             PropName = "event_name",
             StrVal = "lisa_alert"
           });
 
 
-          newEv.ExtraProps.Add(new ProtoObjExtraProperty()
+          newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
           {
             PropName = "event_descr",
             StrVal = "lisa_alert" + j.ToString()
           });
+
+          if (i <= 1)
+          {
+            var fileName = $"files/plate{i}.jpeg";
+            byte[] imageArray = File.ReadAllBytes(fileName);
+
+            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            {
+              PropName = "license_image",
+              StrVal = Convert.ToBase64String(imageArray),
+              VisualType = "base64image_fs"
+            });
+          }
 
           if (i % 2 == 0)
           {

@@ -18,17 +18,20 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly TracksUpdateService _trackUpdateService;
     private readonly StatesUpdateService _statesUpdateService;
     private readonly IEventsService _eventsService;
+    private readonly FileSystemService _fs;
     public GRPCServiceProxy(
       ILogger<GRPCServiceProxy> logger,
       TracksUpdateService trackUpdateService,
       StatesUpdateService statesUpdateService,
-      IEventsService eventsService
+      IEventsService eventsService,
+      FileSystemService fs
     )
     {
       _logger = logger;
       _trackUpdateService = trackUpdateService;
       _statesUpdateService = statesUpdateService;
       _eventsService = eventsService;
+      _fs = fs;
     }
     private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
     {
@@ -245,10 +248,27 @@ namespace LeafletAlarms.Grpc.Implementation
             visual_type = e.VisualType
           });
         }
-        pEvent.extra_props = new List<ObjExtraPropertyDTO>();
-        foreach (var e in ev.ExtraProps)
+        pEvent.meta.not_indexed_props = new List<ObjExtraPropertyDTO>();
+
+        foreach (var e in ev.Meta.NotIndexedProps)
         {
-          pEvent.extra_props.Add(new ObjExtraPropertyDTO()
+          if (e.VisualType == "base64image_fs")
+          {
+            var path = DateTime.UtcNow.ToShortDateString();
+            var fileName = Guid.NewGuid().ToString();
+            const string mainFolder = "events";
+            await _fs.Upload(mainFolder, path, fileName, Convert.FromBase64String(e.StrVal));
+
+            pEvent.meta.not_indexed_props.Add(new ObjExtraPropertyDTO()
+            {
+              prop_name = e.PropName,
+              str_val = Path.Combine(mainFolder, path, fileName),
+              visual_type = "image_fs"
+            });
+            continue;
+          }
+
+          pEvent.meta.not_indexed_props.Add(new ObjExtraPropertyDTO()
           {
             prop_name = e.PropName,
             str_val = e.StrVal,

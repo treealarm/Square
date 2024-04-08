@@ -1,7 +1,9 @@
 ﻿using Domain;
+using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Net.Mime;
 
 namespace LeafletAlarms.Controllers
 {
@@ -10,43 +12,49 @@ namespace LeafletAlarms.Controllers
   {
     private readonly string _imagesFolder = "static_files";
     private readonly IOptions<RoutingSettings> _routingSettings;
-    public FilesController(  IOptions<RoutingSettings> routingSettings)
+    private readonly FileSystemService _fs;
+    public FilesController(
+      IOptions<RoutingSettings> routingSettings,
+      FileSystemService fs)
     {
       _routingSettings = routingSettings;
+      _fs = fs;
     }
 
     [AllowAnonymous]
-    [HttpGet("GetFile/{path}/{file}")]
-    public async Task<FileResult> GetFile(string path, string file)
+    [HttpGet("GetStaticFile/{path}/{file}")]
+    public async Task<FileResult> GetStaticFile(string path, string file)
     {
       byte[] data = null;
 
-      var dataDirectory = new DirectoryInfo(_routingSettings.Value.RootFolder);
-
-      string basePath = AppDomain.CurrentDomain.BaseDirectory.ToString();
-
-      if (dataDirectory.Exists)
+      try
       {
-        basePath = dataDirectory.FullName;
+        data = await _fs.GetFile(_imagesFolder, path, file);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);      }
+
+      return data == null ?  File(data, MediaTypeNames.Application.Octet) :null;
+    }
+
+    [AllowAnonymous]
+    [HttpGet("GetFile/{folder}/{path}/{file}")]
+    public async Task<FileResult> GetFile(string folder, string path, string file)
+    {
+      byte[] data;
+
+      try
+      {
+        data = await _fs.GetFile(folder, path, file);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+        throw;
       }
 
-      basePath = Path.Combine(basePath, _imagesFolder, path);
-
-      string localName = Path.Combine(basePath, file);
-
-      if (System.IO.File.Exists(localName))
-      {
-        try
-        {
-          data = await System.IO.File.ReadAllBytesAsync(localName);
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine(ex.Message);
-        }
-      }
-
-      return data == null ?  File(data, "image/png") :null;
+      return File(data, MediaTypeNames.Application.Octet);
     }
 
     public class FileUploadModel
@@ -56,8 +64,8 @@ namespace LeafletAlarms.Controllers
     }
 
     [AllowAnonymous]
-    [HttpPost("upload")]
-    public async Task<ActionResult<string>> Upload(string path, IFormFile file)
+    [HttpPost("upload_static")]
+    public async Task<ActionResult<string>> UploadStaticFile(string path, IFormFile file)
     {
       try
       {
@@ -66,32 +74,11 @@ namespace LeafletAlarms.Controllers
         {
           return BadRequest("No file uploaded");
         }
-
-        var dataDirectory = new DirectoryInfo(_routingSettings.Value.RootFolder);
-
-        string basePath = AppDomain.CurrentDomain.BaseDirectory.ToString();
-
-        if (dataDirectory.Exists)
+        string filePath = string.Empty;
+        using (var item = new MemoryStream())
         {
-          basePath = dataDirectory.FullName;
-        }
-
-        basePath = Path.Combine(basePath, _imagesFolder, path);
-        try
-        {
-          Directory.CreateDirectory(basePath);
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine(ex.ToString());
-        }
-
-        string filePath = Path.Combine(basePath, file.FileName);
-
-        // Сохраняем файл на сервере
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-          await file.CopyToAsync(stream);
+          file.CopyTo(item);
+          filePath = await _fs.Upload(_imagesFolder, path, file.FileName, item.ToArray());
         }
 
         // Возвращаем успешный результат загрузки

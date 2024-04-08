@@ -36,7 +36,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess, path }) => {
       formData.append('file', file);
       try {
 
-          var response = await DoFetch(ApiFileSystemRootString + "/upload?path=" + encodeURIComponent(path),
+        var response = await DoFetch(ApiFileSystemRootString + "/upload_static?path=" + encodeURIComponent(path),
           {
             method: "POST",
             headers: {
