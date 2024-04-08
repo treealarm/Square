@@ -137,7 +137,7 @@ namespace DbLayer.Services
       };
       db_event.meta.CopyAllTo(dto.meta);
       dto.meta.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.extra_props);
-      dto.meta.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.not_indexed_props);
+      dto.meta.not_indexed_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.not_indexed_props);
       return dto;
     }
     private List<EventDTO> DBListToDTO(List<DBEvent> dbTracks)

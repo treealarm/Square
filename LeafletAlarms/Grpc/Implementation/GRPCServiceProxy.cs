@@ -221,6 +221,30 @@ namespace LeafletAlarms.Grpc.Implementation
       ret.Value = true;
       return ret;
     }
+    private async Task<ObjExtraPropertyDTO> ProcessProperty(ProtoObjExtraProperty e)
+    {
+      if (e.VisualType == "base64image_fs")
+      {
+        var path = DateTime.UtcNow.ToShortDateString();
+        var fileName = Guid.NewGuid().ToString();
+        const string mainFolder = "events";
+        await _fs.Upload(mainFolder, path, fileName, Convert.FromBase64String(e.StrVal));
+
+        return new ObjExtraPropertyDTO()
+        {
+          prop_name = e.PropName,
+          str_val = Path.Combine(mainFolder, path, fileName),
+          visual_type = "image_fs"
+        };       
+      }
+
+      return new ObjExtraPropertyDTO()
+      {
+        prop_name = e.PropName,
+        str_val = e.StrVal,
+        visual_type = e.VisualType
+      };
+    }
 
     public async Task<BoolValue> UpdateEvents(EventsProto request)
     {
@@ -241,39 +265,13 @@ namespace LeafletAlarms.Grpc.Implementation
 
         foreach (var e in ev.Meta.ExtraProps)
         {
-          pEvent.meta.extra_props.Add(new ObjExtraPropertyDTO()
-          {
-            prop_name = e.PropName,
-            str_val = e.StrVal,
-            visual_type = e.VisualType
-          });
+          pEvent.meta.extra_props.Add(await ProcessProperty(e));
         }
         pEvent.meta.not_indexed_props = new List<ObjExtraPropertyDTO>();
 
         foreach (var e in ev.Meta.NotIndexedProps)
         {
-          if (e.VisualType == "base64image_fs")
-          {
-            var path = DateTime.UtcNow.ToShortDateString();
-            var fileName = Guid.NewGuid().ToString();
-            const string mainFolder = "events";
-            await _fs.Upload(mainFolder, path, fileName, Convert.FromBase64String(e.StrVal));
-
-            pEvent.meta.not_indexed_props.Add(new ObjExtraPropertyDTO()
-            {
-              prop_name = e.PropName,
-              str_val = Path.Combine(mainFolder, path, fileName),
-              visual_type = "image_fs"
-            });
-            continue;
-          }
-
-          pEvent.meta.not_indexed_props.Add(new ObjExtraPropertyDTO()
-          {
-            prop_name = e.PropName,
-            str_val = e.StrVal,
-            visual_type = e.VisualType
-          });
+          pEvent.meta.not_indexed_props.Add(await ProcessProperty(e));
         }
         list.Add(pEvent);
       }
