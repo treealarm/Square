@@ -83,32 +83,38 @@ namespace LeafletAlarms.Grpc.Implementation
 
       foreach (var fig in request.Figs)
       {
-        var newFigDto = new FigureGeoDTO();
-        newFigDto.id = fig.Id;
-        newFigDto.name = fig.Name;
-        newFigDto.external_type = fig.ExternalType;
-        newFigDto.parent_id = fig.ParentId;
-        newFigDto.radius = fig.Radius;
-        newFigDto.zoom_level = fig.ZoomLevel;
-
-        if (fig.ExtraProps != null)
+        try
         {
-          newFigDto.extra_props = new List<ObjExtraPropertyDTO>();
+          var newFigDto = new FigureGeoDTO();
+          newFigDto.id = fig.Id;
+          newFigDto.name = fig.Name;
+          newFigDto.external_type = fig.ExternalType;
+          newFigDto.parent_id = fig.ParentId;
+          newFigDto.radius = fig.Radius;
+          newFigDto.zoom_level = fig.ZoomLevel;
+          newFigDto.geometry = CoordsFromProto2DTO(fig.Geometry);
 
-          foreach (var e in fig.ExtraProps)
+          if (fig.ExtraProps != null)
           {
-            newFigDto.extra_props.Add(new ObjExtraPropertyDTO()
+            newFigDto.extra_props = new List<ObjExtraPropertyDTO>();
+
+            foreach (var e in fig.ExtraProps)
             {
-              prop_name = e.PropName,
-              str_val = e.StrVal,
-              visual_type = e.VisualType
-            });
+              newFigDto.extra_props.Add(new ObjExtraPropertyDTO()
+              {
+                prop_name = e.PropName,
+                str_val = e.StrVal,
+                visual_type = e.VisualType
+              });
+            }
           }
+
+          figs.figs.Add(newFigDto);
         }
-
-        figs.figs.Add(newFigDto);
-
-        newFigDto.geometry = CoordsFromProto2DTO(fig.Geometry);
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.ToString());
+        }
       }
 
       await _trackUpdateService.UpdateFigures(figs);

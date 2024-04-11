@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import {
-  Box, Button, ButtonGroup, Grid, IconButton, Toolbar, Tooltip
+  Box, ToggleButton, ButtonGroup, Grid, IconButton, Toolbar, Tooltip
 } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
@@ -25,7 +25,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function uuidv4() {
   return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
@@ -37,7 +37,9 @@ export function EventViewer() {
   const appDispatch = useAppDispatch();
   //const guid = useId();
   //console.log("guid=", guid);
+  const [autoUpdate, setAutoUpdate] = useState(false);
   const searchFilter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
+  const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching);
 
   let timeoutId: any = null;
 
@@ -60,6 +62,21 @@ export function EventViewer() {
 
   useEffect(() => {
     // Just reserve cursor if exist.
+
+    if (!autoUpdate || isFetching) {
+      return;
+    }
+    const interval = setInterval(() => {
+      appDispatch(EventsStore.fetchEventsByFilter(searchFilter));
+    }
+      , 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [searchFilter, autoUpdate, isFetching]);
+
+  useEffect(() => {
+    // Autoupdate
     const interval = setInterval(() => {
       if (searchFilter?.forward != 0) {
         appDispatch(EventsStore.reserveCursor(searchFilter?.search_id));
@@ -113,6 +130,9 @@ export function EventViewer() {
 
   const OnNavigate = (next: number) => {
 
+    if (next == 0) {
+      setAutoUpdate(!autoUpdate);
+    }
     var newFilter = DeepCopy(searchFilter);
     newFilter.forward = next;
     setLocalFilter(newFilter);
@@ -134,14 +154,20 @@ export function EventViewer() {
                 spacing={2}
               >
                 <ButtonGroup>
-                  <Tooltip title={"First events page"}>
-                    <IconButton onClick={(e: any) => OnNavigate(0)}>
+                  <Tooltip title={"First events page " + (!autoUpdate ? "/ autoupdate on" : "/ autoupdate off")}>
+                    <ToggleButton
+                      sx={{ borderRadius: 1, border: 0 }}
+                      value="check"
+                      selected={autoUpdate}
+                      onClick={(e: any) => OnNavigate(0)}>
                       <FirstPageIcon />
-                    </IconButton>
+                    </ToggleButton >
                   </Tooltip>
                   <Divider orientation="vertical" variant="middle" flexItem><br /></Divider>
                   <Tooltip title={"Next events page"}>
-                    <IconButton onClick={(e: any) => OnNavigate(1)}>
+                    <IconButton
+                      sx={{ borderRadius: 1, border: 0 }}
+                      onClick={(e: any) => OnNavigate(1)}>
                       <NavigateNextIcon />
                     </IconButton>
                   </Tooltip>

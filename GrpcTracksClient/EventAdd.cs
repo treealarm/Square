@@ -13,6 +13,7 @@ namespace GrpcTracksClient
       
       for (int j = 0; j < 100000; j++)
       {
+        await Task.Delay(1000);
         var events = new EventsProto();       
 
         for (int i = 0; i < 100; i++)

@@ -9,7 +9,8 @@ import { ApiDefaultPagingNum, ApiEventsRootString } from './constants';
 export interface EventStates {
   events: IEventDTO[] | null;
   filter: SearchFilterDTO;
-  selected_event: IEventDTO|null;
+  selected_event: IEventDTO | null;
+  isFetching: boolean;
 }
 
 const unloadedState: EventStates = {
@@ -21,14 +22,18 @@ const unloadedState: EventStates = {
     time_end: null,
     forward: 0,
     count: ApiDefaultPagingNum,
-    sort: []
+    sort: [{ key: 'timestamp', order: 'desc' }]
   },
-  selected_event: null
+  selected_event: null,
+  isFetching: false
 };
 
 export const fetchEventsByFilter = createAsyncThunk<IEventDTO[], SearchFilterDTO>(
   'events/GetByFilter',
-  async (filter: SearchFilterDTO, { getState }) => {
+  async (filter: SearchFilterDTO, { getState, dispatch }) => {
+
+    //dispatch(setIsFetching(true));
+
     let body = JSON.stringify(filter);   
 
     var fetched = await DoFetch(ApiEventsRootString + "/GetByFilter",
@@ -73,13 +78,16 @@ const eventsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchEventsByFilter.pending, (state, action) => {
+      .addCase(fetchEventsByFilter.pending, (state: EventStates, action) => {
+        state.isFetching = true;
       })
-      .addCase(fetchEventsByFilter.fulfilled, (state, action) => {
+      .addCase(fetchEventsByFilter.fulfilled, (state: EventStates, action) => {
+        state.isFetching = false;
         const { requestId } = action.meta
         state.events = action.payload;
       })
-      .addCase(fetchEventsByFilter.rejected, (state, action) => {
+      .addCase(fetchEventsByFilter.rejected, (state: EventStates, action) => {
+        state.isFetching = false;
         const { requestId } = action.meta
         state.events = null;
       })
