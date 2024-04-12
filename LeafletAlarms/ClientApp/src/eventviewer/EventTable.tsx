@@ -181,7 +181,16 @@ export default function EventTable(props: IEventTableProps) {
                       }
                       
                       if (column.id == 'timestamp') {
-                        value = new Date(row.timestamp).toLocaleString();
+                        var d = new Date(row.timestamp);
+                        value = d.toLocaleString([],
+                          {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          }) + " [" + d.getMilliseconds() +"ms]";
                       }
  
                       return (
