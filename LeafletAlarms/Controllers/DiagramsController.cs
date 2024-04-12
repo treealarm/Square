@@ -1,14 +1,8 @@
-﻿using DbLayer.Services;
-using Domain;
+﻿using Domain;
 using Domain.Diagram;
-using Domain.DiagramType;
-using Domain.GeoDBDTO;
 using Domain.ServiceInterfaces;
-using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson.IO;
 using Pipelines.Sockets.Unofficial.Arenas;
-using System.Text.Json;
 
 namespace LeafletAlarms.Controllers
 {

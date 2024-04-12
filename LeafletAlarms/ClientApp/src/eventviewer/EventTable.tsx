@@ -15,7 +15,7 @@ import { useAppDispatch } from '../store/configureStore';
 import * as EventsStore from '../store/EventsStates'
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { DeepCopy, IEventDTO, SearchFilterDTO } from '../store/Marker';
+import { DeepCopy, IEventDTO, LogLevel, SearchFilterDTO } from '../store/Marker';
 
 
 interface Column {
@@ -102,6 +102,22 @@ export default function EventTable(props: IEventTableProps) {
     return order?.find(el => el.key == id);
   };
 
+  const getColor = (event_priority: number) => {
+    if (event_priority >= LogLevel.Error && event_priority <= LogLevel.Critical)
+      return "rgba(" + (event_priority * 50).toString() + ",170,170,155)";
+    if (event_priority >= LogLevel.Information && event_priority <= LogLevel.Warning)
+      return "rgba(170,170," + (event_priority * 85).toString() + ",155)";
+
+    return "rgba(170," + (event_priority * 50+200).toString() + ",170,155)";
+  };
+
+  const getPriority = (event_priority: number) => {
+
+    if (event_priority in LogLevel)
+      return LogLevel[event_priority];
+    return event_priority.toString();
+  }
+
   return (
     <Paper sx={{
       width: '100%',
@@ -145,6 +161,7 @@ export default function EventTable(props: IEventTableProps) {
             {events?.map((row, index) => {
                 return (
                   <TableRow
+                    sx={{ backgroundColor: getColor(row.meta.event_priority) }}
                     onClick={() => handleSelect(row)}
                     selected={selected_event != null && selected_event?.meta.id == row?.meta.id }
                     hover role="checkbox" tabIndex={-1} key={row.meta.id + ' ' + index}>
@@ -160,7 +177,7 @@ export default function EventTable(props: IEventTableProps) {
                         value = row.meta.event_name;
                       }
                       if (column.id == 'event_priority') {
-                        value = row.meta.event_priority;
+                        value = getPriority(row.meta.event_priority);
                       }
                       
                       if (column.id == 'timestamp') {

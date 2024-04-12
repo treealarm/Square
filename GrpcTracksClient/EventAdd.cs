@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using GrpcDaprClientLib;
 using LeafletAlarmsGrpc;
+using Microsoft.Extensions.Logging;
 
 namespace GrpcTracksClient
 {
@@ -8,6 +9,7 @@ namespace GrpcTracksClient
   {
     public static async Task Add()
     {
+      var rnd = new Random();
       using var client = new GrpcUpdater();
       client.Connect(null);
       
@@ -19,34 +21,30 @@ namespace GrpcTracksClient
         for (int i = 0; i < 100; i++)
         {
           var newEv = new EventProto();
-          events.Events.Add(newEv);
+          
           newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
 
           newEv.Meta = new EventMetaProto();
-          newEv.Meta.EventName = i.ToString() + "_" + j.ToString();
-          newEv.Meta.EventPriority = i % 2;
+          
+          newEv.Meta.EventPriority = rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
+          newEv.Meta.EventName = 
+            $"Camera #{i} sensor{j} event {((LogLevel)newEv.Meta.EventPriority).ToString()}";
 
           newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
           {
             PropName = "indexed_prop",
-            StrVal = (i % 2).ToString()
+            StrVal = $"you can search me {i}"
           });
-
-          newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
-          {
-            PropName = "event_name",
-            StrVal = "lisa_alert"
-          });
-
-
-          newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
-          {
-            PropName = "event_descr",
-            StrVal = "lisa_alert" + j.ToString()
-          });
+          
 
           if (i <= 1)
           {
+            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            {
+              PropName = "event_descr",
+              StrVal = $"plate recognized"
+            });
+
             var fileName = $"files/plate{i}.jpeg";
             byte[] imageArray = File.ReadAllBytes(fileName);
 
@@ -57,6 +55,14 @@ namespace GrpcTracksClient
               VisualType = "base64image_fs"
             });
           }
+          else
+          {
+            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            {
+              PropName = "event_descr",
+              StrVal = $"you can't search me"
+            });
+          }
 
           if (i % 2 == 0)
           {
@@ -65,7 +71,8 @@ namespace GrpcTracksClient
           else
           {
             newEv.Meta.ObjectId = "64270c0c7a71c8875738aaa6";
-          }          
+          }
+          events.Events.Add(newEv);
         }
         try
         {

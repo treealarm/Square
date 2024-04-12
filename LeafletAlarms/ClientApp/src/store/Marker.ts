@@ -394,6 +394,15 @@ export interface IGetDiagramTypesByFilterDTO {
   count: number;
 }
 
+export enum LogLevel {
+  Trace = 0,
+  Debug = 1,
+  Information = 2,
+  Warning = 3,
+  Error = 4,
+  Critical = 5,
+  None = 6,
+}
 export interface IEventMetaDTO {
   id: string;
   object_id: string;

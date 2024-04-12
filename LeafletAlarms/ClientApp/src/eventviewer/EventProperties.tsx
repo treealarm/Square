@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import * as EventsStore from '../store/EventsStates'
-
+import Divider from '@mui/material/Divider';
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -22,24 +22,23 @@ export function EventProperties() {
 
   const [images, setImg] = useState<Record<string, string>>({});
 
-  const fetchImage = async (path:string) => {
+  const fetchImage = async (path: string) => {
     var temp = DeepCopy(images);
-    const res = await DoFetch(ApiFileSystemRootString +"/GetFile/" + path);
+    const res = await DoFetch(ApiFileSystemRootString + "/GetFile/" + path);
     const imageBlob = await res.blob();
     const imageObjectURL = URL.createObjectURL(imageBlob);
     temp[path] = imageObjectURL;
     setImg(temp);
   };
 
-  useEffect(() => {    
-    selected_event?.meta.not_indexed_props?.map((item, index) =>
-    {
+  useEffect(() => {
+    selected_event?.meta.not_indexed_props?.map((item, index) => {
       if (item.visual_type == 'image_fs') {
         fetchImage(item.str_val)
-      }      
+      }
     });
   }, [selected_event]);
-  
+
   return (
     <Box sx={{
       width: '100%',
@@ -63,30 +62,38 @@ export function EventProperties() {
             </ListItem>
           )
         }
+        <Divider><br /></Divider>
         {
           selected_event?.meta.not_indexed_props?.map((item, index) =>
-            <ListItem key={index}>
+            <div>
 
-              {item.visual_type == 'image_fs' ?
-                <img
-                  key={"img" + item.str_val}
-                  src={images[item.str_val] != null ? images[item.str_val] : "svg/black_square.svg"}
-                  style={{
-                    border: 0,
-                    padding: 0,
-                    margin: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'fill'
-                  }} />
-                :
-                <TextField size="small"
-                  fullWidth
-                  id={item.prop_name} label={item.prop_name}
-                  value={item.str_val}
-                  inputProps={{ readOnly: true }} />
-              }
-            </ListItem>
+              <ListItem key={'image_fs' + index}>
+
+                {item.visual_type == 'image_fs' ?
+                  <div>
+                    <Divider><br /></Divider>
+                    <img
+                      title={item.prop_name + "=" + item.str_val}
+                      key={"img" + item.str_val}
+                      src={images[item.str_val] != null ? images[item.str_val] : "svg/black_square.svg"}
+                      style={{
+                        border: 0,
+                        padding: 0,
+                        margin: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'fill'
+                      }} />
+                  </div>
+                  :
+                  <TextField size="small"
+                    fullWidth
+                    id={item.prop_name} label={item.prop_name}
+                    value={item.str_val}
+                    inputProps={{ readOnly: true }} />
+                }
+              </ListItem>
+            </div>
           )
         }
       </List>
