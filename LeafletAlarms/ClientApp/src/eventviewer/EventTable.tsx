@@ -90,7 +90,7 @@ export default function EventTable(props: IEventTableProps) {
 
   const handleSelect = (row: IEventDTO
   ) => {
-    if (selected_event?.meta.id == row?.meta.id) {
+    if (selected_event?.id == row?.id) {
       appDispatch(EventsStore.set_selected_event(null));
     }
     else {
@@ -161,23 +161,23 @@ export default function EventTable(props: IEventTableProps) {
             {events?.map((row, index) => {
                 return (
                   <TableRow
-                    sx={{ backgroundColor: getColor(row.meta.event_priority) }}
+                    sx={{ backgroundColor: getColor(row.event_priority) }}
                     onClick={() => handleSelect(row)}
-                    selected={selected_event != null && selected_event?.meta.id == row?.meta.id }
-                    hover role="checkbox" tabIndex={-1} key={row.meta.id + ' ' + index}>
+                    selected={selected_event != null && selected_event?.id == row?.id }
+                    hover role="checkbox" tabIndex={-1} key={row.id + ' ' + index}>
                     {columns.map((column) => {
                       var value = null;
                       if (column.id == 'id') {
-                        value = row.meta.id;
+                        value = row.id;
                       }
                       if (column.id == 'object_id') {
-                        value = row.meta.object_id;
+                        value = row.object_id;
                       }
                       if (column.id == 'event_name') {
-                        value = row.meta.event_name;
+                        value = row.event_name;
                       }
                       if (column.id == 'event_priority') {
-                        value = getPriority(row.meta.event_priority);
+                        value = getPriority(row.event_priority);
                       }
                       
                       if (column.id == 'timestamp') {

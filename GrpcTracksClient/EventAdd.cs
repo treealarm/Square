@@ -26,9 +26,9 @@ namespace GrpcTracksClient
 
           newEv.Meta = new EventMetaProto();
           
-          newEv.Meta.EventPriority = rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
-          newEv.Meta.EventName = 
-            $"Camera #{i} sensor{j} event {((LogLevel)newEv.Meta.EventPriority).ToString()}";
+          newEv.EventPriority = rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
+          newEv.EventName = 
+            $"Camera #{i} sensor{j} event {((LogLevel)newEv.EventPriority).ToString()}";
 
           newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
           {
@@ -66,11 +66,11 @@ namespace GrpcTracksClient
 
           if (i % 2 == 0)
           {
-            newEv.Meta.ObjectId = "64270c097a71c88757377dcf";
+            newEv.ObjectId = "64270c097a71c88757377dcf";
           }
           else
           {
-            newEv.Meta.ObjectId = "64270c0c7a71c8875738aaa6";
+            newEv.ObjectId = "64270c0c7a71c8875738aaa6";
           }
           events.Events.Add(newEv);
         }

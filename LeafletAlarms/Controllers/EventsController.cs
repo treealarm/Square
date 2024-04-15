@@ -29,7 +29,8 @@ namespace LeafletAlarms.Controllers
       SearchFilterDTO filter
     )
     {
-      return await _eventsService.GetEventsByFilter(filter);
+      var retVal =  await _eventsService.GetEventsByFilter(filter);
+      return retVal;
     }
 
     [HttpGet]

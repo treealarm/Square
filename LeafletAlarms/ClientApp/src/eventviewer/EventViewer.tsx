@@ -104,6 +104,7 @@ export function EventViewer() {
     try {
       var newFilter = DeepCopy(searchFilter);
       newFilter.time_start = newValue.toISOString();
+      newFilter.forward = 0;// replace cursor
       setLocalFilter(newFilter);
     }
     catch (err) {
@@ -115,6 +116,7 @@ export function EventViewer() {
     try {
       var newFilter = DeepCopy(searchFilter);
       newFilter.time_end = newValue.toISOString();
+      newFilter.forward = 0;// replace cursor
       setLocalFilter(newFilter);
     }
     catch (err) {
@@ -124,6 +126,7 @@ export function EventViewer() {
   function handleChangeTextSearch(e: any) {
     const { target: { id, value } } = e;
     var newFilter = DeepCopy(searchFilter);
+    newFilter.forward = 0;// replace cursor
     newFilter.start_id = value;
     setLocalFilter(newFilter);
   };

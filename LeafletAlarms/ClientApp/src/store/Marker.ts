@@ -404,14 +404,14 @@ export enum LogLevel {
   None = 6,
 }
 export interface IEventMetaDTO {
-  id: string;
-  object_id: string;
-  event_name: string;
-  event_priority: number;
   extra_props?: ObjExtraPropertyDTO[];
   not_indexed_props?: ObjExtraPropertyDTO[];
 }
 export interface IEventDTO {
   meta: IEventMetaDTO;
   timestamp: string;
+  id: string;
+  object_id: string;
+  event_name: string;
+  event_priority: number;
 }

@@ -263,10 +263,10 @@ namespace LeafletAlarms.Grpc.Implementation
         pEvent.timestamp = ev.Timestamp.ToDateTime();
         pEvent.meta = new EventMetaDTO();
 
-        pEvent.meta.id = ev.Meta.Id;
-        pEvent.meta.object_id = ev.Meta.ObjectId;
-        pEvent.meta.event_name = ev.Meta.EventName;
-        pEvent.meta.event_priority = ev.Meta.EventPriority;
+        pEvent.id = ev.Id;
+        pEvent.object_id = ev.ObjectId;
+        pEvent.event_name = ev.EventName;
+        pEvent.event_priority = ev.EventPriority;
         pEvent.meta.extra_props = new List<ObjExtraPropertyDTO>();
 
         foreach (var e in ev.Meta.ExtraProps)

@@ -84,12 +84,12 @@ namespace DbLayer.Services
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
-                  .Ascending(d => d.meta.id)
+                  .Ascending(d => d.id)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
           keys, new CreateIndexOptions()
-          { Name = "mid" }
+          { Name = "id" }
         );
 
         _coll.Indexes.CreateOneAsync(indexModel);
@@ -98,12 +98,40 @@ namespace DbLayer.Services
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
-                  .Ascending(d => d.meta.event_name)
+                  .Ascending(d => d.object_id)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
           keys, new CreateIndexOptions()
-          { Name = "men" }
+          { Name = "oid" }
+        );
+
+        _coll.Indexes.CreateOneAsync(indexModel);
+      }
+
+      {
+        IndexKeysDefinition<DBEvent> keys =
+                new IndexKeysDefinitionBuilder<DBEvent>()
+                  .Ascending(d => d.event_name)
+                ;
+
+        var indexModel = new CreateIndexModel<DBEvent>(
+          keys, new CreateIndexOptions()
+          { Name = "en" }
+        );
+
+        _coll.Indexes.CreateOneAsync(indexModel);
+      }
+
+      {
+        IndexKeysDefinition<DBEvent> keys =
+                new IndexKeysDefinitionBuilder<DBEvent>()
+                  .Ascending(d => d.event_priority)
+                ;
+
+        var indexModel = new CreateIndexModel<DBEvent>(
+          keys, new CreateIndexOptions()
+          { Name = "epr" }
         );
 
         _coll.Indexes.CreateOneAsync(indexModel);
@@ -133,9 +161,9 @@ namespace DbLayer.Services
 
       var dto = new EventDTO()
       {        
-        timestamp = db_event.timestamp,
+        //timestamp = db_event.timestamp,
       };
-      db_event.meta.CopyAllTo(dto.meta);
+      db_event.CopyAllTo(dto);
       dto.meta.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.extra_props);
       dto.meta.not_indexed_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.not_indexed_props);
       return dto;
@@ -156,20 +184,20 @@ namespace DbLayer.Services
 
       foreach (var ev in events)
       {
-        if (string.IsNullOrEmpty(ev.meta.id))
+        if (string.IsNullOrEmpty(ev.id))
         {
-          ev.meta.id = ObjectId.GenerateNewId().ToString();
+          ev.id = ObjectId.GenerateNewId().ToString();
         }
-        if (string.IsNullOrEmpty(ev.meta.object_id))
+        if (string.IsNullOrEmpty(ev.object_id))
         {
-          ev.meta.object_id = null;
+          ev.object_id = null;
         }
         var dbTrack = new DBEvent()
         {
-          timestamp = ev.timestamp
+          //timestamp = ev.timestamp
         };
 
-        ev.meta.CopyAllTo(dbTrack.meta);
+        ev.CopyAllTo(dbTrack);
         dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB(ev.meta.extra_props);
         dbTrack.meta.not_indexed_props = ModelGate.ConvertExtraPropsToDB(ev.meta.not_indexed_props);
         list.Add(dbTrack);
@@ -266,7 +294,7 @@ namespace DbLayer.Services
       if (!string.IsNullOrEmpty(filter_in.start_id))
       {
         var fte = builder
-        .Where(t => t.meta.event_name.Contains(filter_in.start_id));
+        .Where(t => t.event_name.Contains(filter_in.start_id));
         filter = CreateOrAddFilter(filter, fte);
       }
 
@@ -310,10 +338,10 @@ namespace DbLayer.Services
         foreach (var kvp in filter_in.sort)
         {
           var k = kvp.key;
-          if (k != "timestamp")
-          {
-            k = $"meta.{kvp.key}";
-          }
+          //if (k != "timestamp")
+          //{
+          //  k = $"{"meta".kvp.key}";
+          //}
            var sort = kvp.order == "asc" ? sortDefinitionBuilder.Ascending(k) : sortDefinitionBuilder.Descending(k);
            sorts.Add(sort);
         }
