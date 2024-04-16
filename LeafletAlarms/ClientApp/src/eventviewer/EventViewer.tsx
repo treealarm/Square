@@ -12,6 +12,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import SearchIcon from '@mui/icons-material/Search';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 
 import * as EventsStore from '../store/EventsStates'
 
@@ -103,7 +104,7 @@ export function EventViewer() {
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
       var newFilter = DeepCopy(searchFilter);
-      newFilter.time_start = newValue.toISOString();
+      newFilter.time_start = newValue? newValue.toISOString() : null;
       newFilter.forward = 0;// replace cursor
       setLocalFilter(newFilter);
     }
@@ -115,13 +116,20 @@ export function EventViewer() {
   const handleChange2 = (newValue: Dayjs | null) => {
     try {
       var newFilter = DeepCopy(searchFilter);
-      newFilter.time_end = newValue.toISOString();
+      newFilter.time_end = newValue ? newValue.toISOString() : null;
       newFilter.forward = 0;// replace cursor
       setLocalFilter(newFilter);
     }
     catch (err) {
 
     }
+  };
+
+  function clearTextSearch() {
+    var newFilter = DeepCopy(searchFilter);
+    newFilter.forward = 0;// replace cursor
+    newFilter.start_id = "";
+    setLocalFilter(newFilter);
   };
   function handleChangeTextSearch(e: any) {
     const { target: { id, value } } = e;
@@ -150,11 +158,10 @@ export function EventViewer() {
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Toolbar sx={{ backgroundColor: 'lightgray', justifyContent: "center", }}>
-            <Box>
               <Stack
-                direction="row"
+                direction="row"                
                 divider={<Divider orientation="vertical" flexItem />}
-                spacing={2}
+                spacing={1}
               >
                 <ButtonGroup>
                   <Tooltip title={"First events page " + (!autoUpdate ? "/ autoupdate on" : "/ autoupdate off")}>
@@ -187,6 +194,11 @@ export function EventViewer() {
                         <SearchIcon />
                       </InputAdornment>
                     ),
+                    endAdornment: (
+                      <IconButton onClick={() => clearTextSearch()}>
+                        {searchFilter?.start_id?.length > 0 ? <ClearOutlinedIcon /> : ''}
+                      </IconButton>
+                    )
                   }}
                   variant="standard"
                   value={searchFilter?.start_id == null ? '' : searchFilter.start_id }
@@ -200,7 +212,12 @@ export function EventViewer() {
                   onChange={handleChange1}
                   views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
                   format={INPUT_DATETIME_FORMAT}
-                  slotProps={{ textField: { size: 'small' } }}
+                  slotProps={{
+                    textField: { size: 'small' },
+                    actionBar: {
+                      actions: ['accept','cancel','clear','today']
+                    }
+                  }}
                 />
 
                 <DateTimePicker
@@ -208,10 +225,15 @@ export function EventViewer() {
                   value={dayjs(searchFilter?.time_end)}
                   onChange={handleChange2}
                   format={INPUT_DATETIME_FORMAT}
-                  slotProps={{ textField: { size: 'small' } }}
+                  slotProps={{
+                    textField: { size: 'small' },
+                    actionBar: {
+                      actions: ['accept', 'cancel', 'clear', 'today']
+                    }
+                  }}
                 />
               </Stack>
-            </Box>
+
           </Toolbar>
         </LocalizationProvider>
 

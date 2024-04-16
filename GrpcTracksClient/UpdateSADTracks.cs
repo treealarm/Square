@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace GrpcTracksClient
 {
-  internal class UpdateByGRPC
+  internal class UpdateSADTracks
   {
     static GrpcUpdater _client = new GrpcUpdater();
     public static async Task Move()
@@ -31,16 +31,10 @@ namespace GrpcTracksClient
       track.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = "track_name",
-        StrVal = "lisa_alert"
+        StrVal = "sad"
       });
 
-      track.ExtraProps.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "track_name",
-        StrVal = "lisa_alert1"
-      });
-
-      while (true)
+      for (int j = 0; j < 100000; j++)
       {
         try
         {

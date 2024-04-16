@@ -174,7 +174,7 @@ namespace GrpcTracksClient
       fig.ExtraProps.Add(new ProtoObjExtraProperty()
       {
         PropName = "track_name",
-        StrVal = "lisa_alert2"
+        StrVal = "cloud"
       });
 
       Random random = new Random();
@@ -332,7 +332,10 @@ namespace GrpcTracksClient
               Lon = cur_coords.longitude //x
             });
 
-            AddFigToSend(fig);
+            if (AddFigToSend(fig) > 1000)
+            {
+              await Task.Delay(1500);
+            }
             await Task.Delay(500);
           }
           
@@ -345,13 +348,15 @@ namespace GrpcTracksClient
     }
 
     static List<ProtoFig> _figsToSend = new List<ProtoFig>();
-    private static void AddFigToSend(ProtoFig f)
+    private static int AddFigToSend(ProtoFig f)
     {
       lock (_figsToSend)
       {
         _figsToSend.Add(f);
+        return _figsToSend.Count;
       }
     }
+
     private static bool _working = true;
     private static async Task CarFigureSender()
     {

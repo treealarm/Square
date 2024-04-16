@@ -1,9 +1,5 @@
 ﻿using GrpcTracksClient;
 
-var taskTrack = UpdateByGRPC.Move();
-
-
-
 while (true)
 {
 
@@ -11,6 +7,7 @@ while (true)
   {
     var tasks = new List<Task>
     {
+      UpdateSADTracks.Move(),
       MoveObject.Move(),
       StateObject.Change(),
       EventAdd.Add()

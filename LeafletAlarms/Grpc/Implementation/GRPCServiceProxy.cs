@@ -57,6 +57,10 @@ namespace LeafletAlarms.Grpc.Implementation
       {
         var c = geometry.Coord.FirstOrDefault();
 
+        if ( c == null )
+        {
+          return null;
+        }
         var pointCoord = new GeometryCircleDTO();
         geo = pointCoord;
         pointCoord.coord = new Geo2DCoordDTO()
@@ -94,6 +98,11 @@ namespace LeafletAlarms.Grpc.Implementation
           newFigDto.zoom_level = fig.ZoomLevel;
           newFigDto.geometry = CoordsFromProto2DTO(fig.Geometry);
 
+          if (newFigDto.geometry == null )
+          {
+            Console.Error.WriteLine($"{newFigDto.name} geometry == null");
+            continue;
+          }
           if (fig.ExtraProps != null)
           {
             newFigDto.extra_props = new List<ObjExtraPropertyDTO>();
