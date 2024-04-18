@@ -3,7 +3,7 @@ using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
 using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
-namespace GrpcDaprClientLib
+namespace GrpcDaprLib
 {
   public class GrpcUpdater : IDisposable
   {

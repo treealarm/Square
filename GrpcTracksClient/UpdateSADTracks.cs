@@ -1,5 +1,5 @@
 ﻿using Domain.GeoDBDTO;
-using GrpcDaprClientLib;
+using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using System.Text.Json;
 

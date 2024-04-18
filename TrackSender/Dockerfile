@@ -7,7 +7,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["TrackSender/TrackSender.csproj", "TrackSender/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["Router/Router.csproj", "Router/"]
 RUN dotnet restore "TrackSender/TrackSender.csproj"
 COPY . .
 WORKDIR "/src/TrackSender"

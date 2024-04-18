@@ -253,23 +253,25 @@ namespace LeafletAlarms
         .AllowAnyMethod()
         .AllowAnyHeader());
 
-      //app.UseStaticFiles(); // For default.
-      var basePath = Path.Combine(GetRootFolder().FullName, "static_files");
+      app.UseStaticFiles(); // For default.Important to load index.html from wwwroot
+      var staticFilesPath = Path.Combine(GetRootFolder().FullName, "static_files");
 
       try
       {
-        Directory.CreateDirectory(basePath);
+        Directory.CreateDirectory(staticFilesPath);
       }
       catch (Exception ex)
       {
         Console.WriteLine(ex.ToString());
       }
 
-      app.UseStaticFiles(new StaticFileOptions
+      app.UseFileServer(new FileServerOptions
       {
-        FileProvider = new PhysicalFileProvider(
-           basePath),
-        RequestPath = "/static_files"
+        FileProvider = new CompositeFileProvider(
+        new PhysicalFileProvider(staticFilesPath)
+        ),
+        RequestPath = "/static_files",
+        EnableDirectoryBrowsing = true 
       });
 
       var keycloak_json_folder = GetAlternativePublicFolder();

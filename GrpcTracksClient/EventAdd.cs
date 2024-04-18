@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using GrpcDaprClientLib;
+using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using Microsoft.Extensions.Logging;
 

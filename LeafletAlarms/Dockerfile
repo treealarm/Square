@@ -3,37 +3,33 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8000
+EXPOSE 8002
 EXPOSE 5000
 
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS with-node
 RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y libpng-dev libjpeg-dev curl libxi6 build-essential libgl1-mesa-glx
-RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
-RUN apt-get install -y nodejs
+RUN apt-get install curl
+RUN curl -sL https://deb.nodesource.com/setup_20.x | bash
+RUN apt-get -y install nodejs
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-
-RUN apt-get update
-RUN apt-get install -y curl
-RUN apt-get install -y libpng-dev libjpeg-dev curl libxi6 build-essential libgl1-mesa-glx
-RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash -
-RUN apt-get install -y nodejs
-
+FROM with-node AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["LeafletAlarms/LeafletAlarms.csproj", "LeafletAlarms/"]
-COPY ["PubSubLib/PubSubLib.csproj", "PubSubLib/"]
 COPY ["DbLayer/DbLayer.csproj", "DbLayer/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["Router/Router.csproj", "Router/"]
-COPY ["GrpcTracksClient/GrpcTracksClient.csproj", "GrpcTracksClient/"]
+COPY ["GrpcDaprLib/GrpcDaprLib.csproj", "GrpcDaprLib/"]
+COPY ["LeafletAlarms/LeafletAlarms.csproj", "LeafletAlarms/"]
+COPY ["PubSubLib/PubSubLib.csproj", "PubSubLib/"]
+COPY ["ValhallaLib/ValhallaLib.csproj", "ValhallaLib/"]
 
 RUN dotnet restore "LeafletAlarms/LeafletAlarms.csproj"
 COPY . .
 WORKDIR "/src/LeafletAlarms"
-RUN dotnet build "LeafletAlarms.csproj" -c Release -o /app/build
+RUN dotnet build "LeafletAlarms.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "LeafletAlarms.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "LeafletAlarms.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

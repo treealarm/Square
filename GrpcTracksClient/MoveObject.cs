@@ -1,4 +1,4 @@
-﻿using GrpcDaprClientLib;
+﻿using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using ValhallaLib;
 
