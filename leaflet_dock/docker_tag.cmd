@@ -1,2 +1,2 @@
-docker tag routermicroservice:latest pruginkad/routermicroservice:latest
+docker tag grpctracksclient:latest pruginkad/grpctracksclient:latest
 docker tag leafletalarms:latest pruginkad/leafletalarms:latest

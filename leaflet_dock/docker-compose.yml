@@ -1,13 +1,16 @@
-version: '3.8'
-   
+ 
 services:
   leafletalarmsservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8000;http://+:5000
-      - Kestrel__Endpoints__gRPC__Url=http://*:5000
+      - ASPNETCORE_URLS=http://+:8000;http://+:${GRPC_MAIN_PORT}
+      - Kestrel__Endpoints__gRPC__Url=http://*:${GRPC_MAIN_PORT}
       - Kestrel__Endpoints__gRPC__Protocols=Http2
       - Kestrel__Endpoints__Http__Url=http://*:8000
+      #- REACT_APP_AUTH_SERVER_URL=http://localhost1:8080/
+    ports:
+      - "8000:8000"
+      - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
     image: pruginkad/leafletalarms:latest
     restart: unless-stopped
     depends_on:
@@ -15,28 +18,25 @@ services:
      - keycloakservice
      - redisservice
     volumes:
-      - ./leaflet_data/osm_data:/osm_data
       - ./leaflet_data:/leaflet_data
-    ports:
-      - "8000:8000"
-      - "5000:5000"
+    env_file:
+      - global.env
+      - .env
 
 
-  routermicroservice:
-    image: pruginkad/routermicroservice:latest
-    restart: unless-stopped
-    depends_on:
-     - mongoservice
+  grpctracksclient:
+    image: pruginkad/grpctracksclient:latest
     build:
       context: .
-    volumes:
-      - ./leaflet_data:/leaflet_data
+      dockerfile: GrpcTracksClient/Dockerfile
+    env_file:
+      - global.env
+      - .env
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:7177
-    ports:
-      - "7177:7177"
-
+      - VALHALLA_PORT:${VALHALLA_PORT}
+    depends_on:
+      - valhallaservice
+      - leafletalarmsservice
  
   mongoservice:
     image : mongo
@@ -93,6 +93,14 @@ services:
       - 8080:8080
     depends_on:
       - postgresservice
-# command2export realm:docker exec -ti leaflet-keycloak-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
+# command2export realm:docker exec -ti leaflet-keycloakservice-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
 # END keycloak
 
+  valhallaservice:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    restart: unless-stopped
+    container_name: valhalla_latest
+    ports:
+      - ${VALHALLA_PORT}:${VALHALLA_PORT}
+    volumes:
+      - ./leaflet_data/valhalla_custom_files/:/custom_files
