@@ -85,7 +85,6 @@ namespace DbLayer.Services
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.id)
-                  .Descending(d => d.id)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -93,13 +92,12 @@ namespace DbLayer.Services
           { Name = "id" }
         );
 
-        _coll.Indexes.CreateOneAsync(indexModel);
+        _coll.Indexes.CreateOne(indexModel);
       }
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.timestamp)
-                  .Descending(d => d.timestamp)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -107,14 +105,13 @@ namespace DbLayer.Services
           { Name = "ts" }
         );
 
-        _coll.Indexes.CreateOneAsync(indexModel);
+        _coll.Indexes.CreateOne(indexModel);
       }
 
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.object_id)
-                  .Descending(d => d.object_id)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -122,14 +119,13 @@ namespace DbLayer.Services
           { Name = "oid" }
         );
 
-        _coll.Indexes.CreateOneAsync(indexModel);
+        _coll.Indexes.CreateOne(indexModel);
       }
 
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.event_name)
-                  .Descending(d => d.event_name)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -137,14 +133,13 @@ namespace DbLayer.Services
           { Name = "en" }
         );
 
-        _coll.Indexes.CreateOneAsync(indexModel);
+        _coll.Indexes.CreateOne(indexModel);
       }
 
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.event_priority)
-                  .Descending(d => d.event_priority)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -152,7 +147,7 @@ namespace DbLayer.Services
           { Name = "epr" }
         );
 
-        _coll.Indexes.CreateOneAsync(indexModel);
+        _coll.Indexes.CreateOne(indexModel);
       }
 
       {
@@ -167,7 +162,7 @@ namespace DbLayer.Services
            { Name = "ep" }
          );
 
-        _coll.Indexes.CreateOneAsync(indexModel);
+        _coll.Indexes.CreateOne(indexModel);
       }
     }
     private EventDTO ConvertDB2DTO(DBEvent db_event)
