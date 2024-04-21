@@ -24,30 +24,6 @@ services:
     env_file:
       - .env
 
-  # routermicroservice:
-  #   image: ${DOCKER_REGISTRY-}routermicroservice
-  #   restart: unless-stopped
-  #   depends_on:
-  #    - mongoservice
-  #   build:
-  #     context: .
-  #     dockerfile: RouterMicroService/Dockerfile
-  #   volumes:
-  #    - ./leaflet_data:/leaflet_data
-  #   env_file:
-  #     - global.env
-
-  #tracksenderservice:
-  #  image: ${DOCKER_REGISTRY-}tracksenderservice
-  #  restart: "no"
-  #  depends_on:
-  #   - leafletalarmsservice
-  #  build:
-  #    context: .
-  #    dockerfile: TrackSender/Dockerfile
-  #  volumes:
-  #   - ./leaflet_data:/leaflet_data
-
   grpctracksclient:
     image: ${DOCKER_REGISTRY-}grpctracksclient
     build:

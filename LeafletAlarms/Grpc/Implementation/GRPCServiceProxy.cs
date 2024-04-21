@@ -240,7 +240,7 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       if (e.VisualType == "base64image_fs")
       {
-        var path = DateTime.UtcNow.ToShortDateString();
+        var path = DateTime.UtcNow.ToString("yyyyMMdd");
         var fileName = Guid.NewGuid().ToString();
         const string mainFolder = "events";
         await _fs.Upload(mainFolder, path, fileName, Convert.FromBase64String(e.StrVal));

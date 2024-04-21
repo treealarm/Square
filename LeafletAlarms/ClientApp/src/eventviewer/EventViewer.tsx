@@ -70,7 +70,7 @@ export function EventViewer() {
     const interval = setInterval(() => {
       appDispatch(EventsStore.fetchEventsByFilter(searchFilter));
     }
-      , 5000);
+      , 3000);
     return () => {
       clearInterval(interval);
     };

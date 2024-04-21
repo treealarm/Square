@@ -85,6 +85,7 @@ namespace DbLayer.Services
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.id)
+                  .Descending(d => d.id)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -94,11 +95,26 @@ namespace DbLayer.Services
 
         _coll.Indexes.CreateOneAsync(indexModel);
       }
+      {
+        IndexKeysDefinition<DBEvent> keys =
+                new IndexKeysDefinitionBuilder<DBEvent>()
+                  .Ascending(d => d.timestamp)
+                  .Descending(d => d.timestamp)
+                ;
+
+        var indexModel = new CreateIndexModel<DBEvent>(
+          keys, new CreateIndexOptions()
+          { Name = "ts" }
+        );
+
+        _coll.Indexes.CreateOneAsync(indexModel);
+      }
 
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.object_id)
+                  .Descending(d => d.object_id)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -113,6 +129,7 @@ namespace DbLayer.Services
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.event_name)
+                  .Descending(d => d.event_name)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(
@@ -127,6 +144,7 @@ namespace DbLayer.Services
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
                   .Ascending(d => d.event_priority)
+                  .Descending(d => d.event_priority)
                 ;
 
         var indexModel = new CreateIndexModel<DBEvent>(

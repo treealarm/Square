@@ -15,12 +15,12 @@ RUN apt-get -y install nodejs
 FROM with-node AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["DbLayer/DbLayer.csproj", "DbLayer/"]
-COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["GrpcDaprLib/GrpcDaprLib.csproj", "GrpcDaprLib/"]
+#COPY ["DbLayer/DbLayer.csproj", "DbLayer/"]
+#COPY ["Domain/Domain.csproj", "Domain/"]
+#COPY ["GrpcDaprLib/GrpcDaprLib.csproj", "GrpcDaprLib/"]
 COPY ["LeafletAlarms/LeafletAlarms.csproj", "LeafletAlarms/"]
-COPY ["PubSubLib/PubSubLib.csproj", "PubSubLib/"]
-COPY ["ValhallaLib/ValhallaLib.csproj", "ValhallaLib/"]
+#COPY ["PubSubLib/PubSubLib.csproj", "PubSubLib/"]
+#COPY ["ValhallaLib/ValhallaLib.csproj", "ValhallaLib/"]
 
 RUN dotnet restore "LeafletAlarms/LeafletAlarms.csproj"
 COPY . .
