@@ -23,5 +23,6 @@
 **/values.dev.yaml
 **/leaflet_dock
 **/leaflet_data
+**/non_docker_projects
 LICENSE
 README.md
