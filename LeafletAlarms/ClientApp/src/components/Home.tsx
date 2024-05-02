@@ -10,7 +10,6 @@ import {
 
 import { RetroSearch } from "../tree/RetroSearch";
 import { SearchResult } from "../tree/SearchResult";
-import { ObjectLogic } from "../logic/ObjectLogic";
 import { ObjectRights } from "../rights/ObjectRights";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
@@ -63,12 +62,6 @@ const RightPanel = () => {
     if (datum.panelId == IPanelTypes.search) {
       return [datum, (
         <RetroSearch />
-      )];
-    }
-
-    if (datum.panelId == IPanelTypes.logic) {
-      return [datum, (
-        <ObjectLogic />
       )];
     }
 

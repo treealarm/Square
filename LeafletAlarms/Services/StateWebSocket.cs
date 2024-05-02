@@ -1,12 +1,10 @@
 ﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
-using Domain.Logic;
 using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
-using PubSubLib;
 using System.Net.WebSockets;
 using System.Text.Json;
 
@@ -539,22 +537,6 @@ namespace LeafletAlarms.Services
           _dicIds.Add(item);
         }
         _pub.Publish(Topics.CheckStatesByIds, newIds.ToList());
-      }
-    }
-
-    public void LogicTriggered(string message)
-    {
-      var triggeredVal = JsonSerializer.Deserialize<LogicTriggered>(message);
-
-      lock (_locker)
-      {
-        foreach (var textObj in triggeredVal.LogicTextObjects)
-        {
-          if (_dicIds.Contains(textObj))
-          {
-            _setIdsToUpdate.Add(textObj);
-          }
-        }
       }
     }
   }

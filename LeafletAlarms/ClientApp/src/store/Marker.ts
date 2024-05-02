@@ -259,19 +259,6 @@ export interface ITrackPointDTO {
   extra_props?: ObjExtraPropertyDTO[];
 }
 
-export interface ILogicFigureLinkDTO {
-  id: string;
-  group_id: string;
-}
-
-export interface IStaticLogicDTO {
-  id?: string;
-  name?: string;
-  logic?: string;
-  figs?: ILogicFigureLinkDTO[];
-  property_filter?: ObjPropsSearchDTO;
-}
-
 export interface IObjectRightValueDTO{
   role: string;
   value: number;
@@ -307,7 +294,6 @@ export class IPanelTypes{
   static search: string = 'search';
   static track_props: string = 'track_props';
 
-  static logic: string = 'logic';
   static rights: string = 'rights';
 
   static panels: IPanelsStatesDTO[] = [
@@ -336,11 +322,6 @@ export class IPanelTypes{
     {
       panelId: IPanelTypes.track_props,
       panelValue: 'Track properties',
-      panelType: EPanelType.Right
-    },
-    {
-      panelId: IPanelTypes.logic,
-      panelValue: 'Logic',
       panelType: EPanelType.Right
     },
     {

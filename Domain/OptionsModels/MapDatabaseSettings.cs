@@ -20,8 +20,6 @@ namespace Domain.OptionsModels
         public string StateCollectionName { get; set; } = "States";
         public string StateDescrCollectionName { get; set; } = "StateDescrs";
         public string StateAlarmsCollectionName { get; set; } = "StateAlarms";
-        public string LogicCollectionName { get; set; } = "Logic";
-        public string LogicProcessorCollectionName { get; set; } = "LogicProcessor";
         public string RightsCollectionName { get; set; } = "Rights";
         public string DiagramTypeCollectionName { get; set; } = "DiagramType";
         public string DiagramCollectionName { get; set; } = "Diagram";

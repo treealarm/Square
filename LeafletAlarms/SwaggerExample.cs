@@ -44,48 +44,4 @@ namespace LeafletAlarms
       };
     }
   }
-
-  
-  public class StaticLogicDTOExample : IExamplesProvider<StaticLogicDTO>
-  {
-    public StaticLogicDTO GetExamples()
-    {
-      var figs = new List<LogicFigureLinkDTO>();
-
-      figs.Add(new LogicFigureLinkDTO()
-      {
-        group_id = "from",
-        id = "63712210d3461ffd39aae4c6"
-      });
-
-      figs.Add(new LogicFigureLinkDTO()
-      {
-        group_id = "to",
-        id = "6373a695ca6b610ed0884a94"
-      });      
-
-      return new StaticLogicDTO
-      {
-        logic = "from-to",
-        figs = figs        
-      };
-    }
-  }
-
-  public class StaticLogicDTOExampleList : IExamplesProvider<List<StaticLogicDTO>>
-  {
-    public List<StaticLogicDTO> GetExamples()
-    {
-      List<StaticLogicDTO> list = new List<StaticLogicDTO>();
-
-      var single = new StaticLogicDTOExample();
-
-      var logic = single.GetExamples();
-      list.Add(logic);
-      logic = single.GetExamples();
-      logic.logic = "to-from";
-      list.Add(logic);
-      return list;
-    }
-  }
 }

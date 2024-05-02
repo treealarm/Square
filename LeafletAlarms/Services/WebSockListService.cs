@@ -34,7 +34,6 @@ namespace LeafletAlarms.Services
       _sub = sub;
       _pub = pub;
 
-      _sub.Subscribe(Topics.LogicTriggered, LogicTriggered);
       _sub.Subscribe(Topics.NewRoutBuilt, NewRoutBuilt);
       _sub.Subscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
@@ -43,7 +42,6 @@ namespace LeafletAlarms.Services
 
     ~WebSockListService()
     {
-      _sub.Unsubscribe(Topics.LogicTriggered, LogicTriggered);
       _sub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);
       _sub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
@@ -148,15 +146,6 @@ namespace LeafletAlarms.Services
       {
         await sock.Value.OnBlinkStateChanged(state);
       }
-    }
-
-    async Task LogicTriggered(string channel, string message)
-    {
-      foreach (var sock in StateSockets)
-      {
-        sock.Value.LogicTriggered(message);
-      }
-      await Task.CompletedTask;
     }
 
     async Task NewRoutBuilt(string channel, string message)

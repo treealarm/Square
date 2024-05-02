@@ -15,8 +15,6 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PubSubLib", "PubSubLib\PubSubLib.csproj", "{C61F7B16-CD8B-4F86-8584-25E5F1024E3A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogicMicroService", "LogicMicroService\LogicMicroService.csproj", "{C98DECA6-98A9-4CB2-94AC-549C3979BF9A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcTracksClient", "GrpcTracksClient\GrpcTracksClient.csproj", "{3075C0B7-2B58-45F2-B946-C173A1F9D721}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ValhallaLib", "ValhallaLib\ValhallaLib.csproj", "{2BABDCAA-3F54-427E-842E-CDC3F1D17386}"
@@ -53,10 +51,6 @@ Global
 		{C61F7B16-CD8B-4F86-8584-25E5F1024E3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C61F7B16-CD8B-4F86-8584-25E5F1024E3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C61F7B16-CD8B-4F86-8584-25E5F1024E3A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C98DECA6-98A9-4CB2-94AC-549C3979BF9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C98DECA6-98A9-4CB2-94AC-549C3979BF9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C98DECA6-98A9-4CB2-94AC-549C3979BF9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C98DECA6-98A9-4CB2-94AC-549C3979BF9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3075C0B7-2B58-45F2-B946-C173A1F9D721}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3075C0B7-2B58-45F2-B946-C173A1F9D721}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3075C0B7-2B58-45F2-B946-C173A1F9D721}.Release|Any CPU.ActiveCfg = Release|Any CPU

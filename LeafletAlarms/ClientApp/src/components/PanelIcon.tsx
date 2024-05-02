@@ -40,12 +40,6 @@ export function PanelIcon(props: { panelId: string }) {
     );
   }
 
-  if (props.panelId == IPanelTypes.logic) {
-    return (
-      <SchemaIcon />
-    );
-  }
-
   if (props.panelId == IPanelTypes.rights) {
     return (
       <LockPersonIcon />

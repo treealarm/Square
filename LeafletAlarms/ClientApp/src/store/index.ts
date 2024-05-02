@@ -6,7 +6,6 @@ import * as GUIStates from './GUIStates';
 import * as MarkersVisualStates from './MarkersVisualStates';
 import * as TracksStates from './TracksStates';
 import * as SearchResultStates from './SearchResultStates';
-import * as ObjLogicStates from './ObjLogicStates';
 import * as RightsStates from './RightsStates';
 import * as PanelsStates from './PanelsStates';
 import * as DiagramsStates from './DiagramsStates';
@@ -24,7 +23,6 @@ export interface ApplicationState {
   markersVisualStates: MarkersVisualStates.MarkersVisualStates | undefined;
   tracksStates: TracksStates.TracksState | undefined;
   searchResultStates: SearchResultStates.SearchResultState | undefined
-  objLogicStates: ObjLogicStates.ObjLogicState | undefined;
   rightsStates: RightsStates.ObjectRights | undefined;
   panelsStates: PanelsStates.PanelsStates | undefined;
   diagramsStates: DiagramsStates.DiagramsStates | undefined;
@@ -44,7 +42,6 @@ export const reducers = {
   markersVisualStates: MarkersVisualStates.reducer,
   tracksStates: TracksStates.reducer,
   searchResultStates: SearchResultStates.reducer,
-  objLogicStates: ObjLogicStates.reducer,
   rightsStates: RightsStates.reducer,
   panelsStates: PanelsStates.reducer,
   diagramsStates: DiagramsStates.reducer,

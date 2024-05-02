@@ -11,8 +11,6 @@ namespace LeafletAlarms.Services
     private readonly IMapService _mapService;
     private readonly ITrackService _tracksService;
     private readonly IGeoService _geoService;
-    private BaseMarkerDTO _tracksRootFolder;
-    private const string TRACKS_ROOT_NAME = "__tracks";
 
     private IPubService _pub;
 
@@ -29,44 +27,6 @@ namespace LeafletAlarms.Services
       _pub = pub;
     }
 
-    private async Task<BaseMarkerDTO> GetTracksRoot()
-    {
-      if (_tracksRootFolder == null)
-      {
-        var list_of_roots = await _mapService.GetByNameAsync(TRACKS_ROOT_NAME);
-
-        if (list_of_roots.Count == 0)
-        {
-          _tracksRootFolder = new BaseMarkerDTO()
-          {
-            name = TRACKS_ROOT_NAME
-          };
-
-          await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { _tracksRootFolder });
-        }
-        else
-        {
-          _tracksRootFolder = list_of_roots.First().Value;
-        }
-
-        return _tracksRootFolder;
-      }
-
-      return _tracksRootFolder;
-    }
-
-    private async Task EnsureTracksRoot(BaseMarkerDTO marker)
-    {
-      // Set parents for moving objects, not for "tracks only".
-
-      if (string.IsNullOrEmpty(marker.parent_id) && 
-        !string.IsNullOrEmpty(marker.id)
-      )
-      {
-        var root = await GetTracksRoot();
-        marker.parent_id = root.id;
-      }
-    }
 
     private async Task<List<string>> DoUpdateTracks(List<TrackPointDTO> trackPoints)
     {
@@ -80,28 +40,6 @@ namespace LeafletAlarms.Services
     public async Task<List<string>> AddTracks(List<TrackPointDTO> movedMarkers)
     {      
       return await DoUpdateTracks(movedMarkers);
-    }
-
-    private async Task AddIdsByProperties(BoxDTO box)
-    {
-      List<string> ids = null;
-
-      if (box.property_filter != null && box.property_filter.props.Count > 0)
-      {
-        var props = await _mapService.GetPropByValuesAsync(
-          box.property_filter,
-          null,
-          1,
-          1000
-        );
-        ids = props.Select(i => i.id).ToList();
-
-        if (box.ids == null)
-        {
-          box.ids = new List<string>();
-        }
-        box.ids.AddRange(ids);
-      }
     }
 
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
