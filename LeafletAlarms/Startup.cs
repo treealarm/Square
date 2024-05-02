@@ -19,6 +19,7 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
 using System.Text.Json;
+using ValhallaLib;
 
 namespace LeafletAlarms
 {
@@ -90,7 +91,7 @@ namespace LeafletAlarms
       services.AddSingleton<GRPCServiceProxy>();
       services.AddSingleton<FileSystemService>();
 
-      
+      services.AddSingleton<ValhallaRouter>();
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();

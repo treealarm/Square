@@ -79,6 +79,7 @@
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
+    <ProjectReference Include="..\ValhallaLib\ValhallaLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -121,15 +122,6 @@
     <TypeScriptCompile Include="ClientApp\src\tree\TrackProps.tsx" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Protos\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="..\Protos\tracks.proto">
-      <Link>Protos\tracks.proto</Link>
-    </Protobuf>
-  </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->

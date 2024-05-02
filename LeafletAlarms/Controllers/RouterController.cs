@@ -3,9 +3,11 @@ using Domain.GeoDTO;
 using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
+using LeafletAlarmsGrpc;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using ValhallaLib;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,18 +17,21 @@ namespace LeafletAlarms.Controllers
   [ApiController]
   public class RouterController : ControllerBase
   {
+    private readonly ValhallaRouter _valhalla_router;
     private IRoutService _routService;
     private readonly IMapService _mapService;
     private IPubService _pub;
     public RouterController(
       IPubService pubsub,
       IRoutService routService,
-      IMapService mapService
+      IMapService mapService,
+      ValhallaRouter vrouter
     )
     {
       _routService = routService;
       _mapService = mapService;
       _pub = pubsub;
+      _valhalla_router = vrouter;
     }
 
     private async Task AddIdsByProperties(BoxTrackDTO box)
@@ -60,43 +65,38 @@ namespace LeafletAlarms.Controllers
 
       try
       {
-        HttpClient client = new HttpClient();
-        if (Startup.InDocker)
-        {
-          client.BaseAddress = new Uri(@"http://routermicroservice:7177");
-        }
-        else
-        {
-          client.BaseAddress = new Uri(@"http://localhost:7177");
-        }
-        client.DefaultRequestHeaders.Accept.Clear();
-        client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("application/json"));
-        HttpResponseMessage response =
-         await client.PostAsJsonAsync($"Router/GetSmartRoute", routData);
 
-        response.EnsureSuccessStatusCode();
+        var start = routData.Coordinates.FirstOrDefault();
+        var end = routData.Coordinates.LastOrDefault();
 
-        // Deserialize the updated product from the response body.
-        var s = await response.Content.ReadAsStringAsync();
+        var routRets = await _valhalla_router.GetRoute(
+          new ProtoCoord() { Lat = start.Lat, Lon = start.Lon },
+          new ProtoCoord() { Lat = end.Lat, Lon = end.Lon }
+        );
 
         try
         {
-          var routRets = JsonSerializer.Deserialize<List<List<Geo2DCoordDTO>>>(s);
+
+          var rcoord = new List<Geo2DCoordDTO>();
 
           foreach (var r in routRets)
           {
-            ret.Add(new RoutLineDTO()
+            rcoord.Add(new Geo2DCoordDTO()
             {
-              figure = new GeoObjectDTO()
-              {
-                location = new GeometryPolylineDTO()
-                {
-                  coord = r
-                }
-              }
+              Lat = r.Lat,
+              Lon = r.Lon
             });
           }
+          ret.Add(new RoutLineDTO()
+          {
+            figure = new GeoObjectDTO()
+            {
+              location = new GeometryPolylineDTO()
+              {
+                coord = rcoord
+              }
+            }
+          });
         }
         catch (Exception ex)
         {
