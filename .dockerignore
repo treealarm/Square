@@ -21,8 +21,13 @@
 **/obj
 **/secrets.dev.yaml
 **/values.dev.yaml
+LICENSE
+README.md
+!**/.gitignore
+!.git/HEAD
+!.git/config
+!.git/packed-refs
+!.git/refs/heads/**
 **/leaflet_dock
 **/leaflet_data
 **/non_docker_projects
-LICENSE
-README.md
