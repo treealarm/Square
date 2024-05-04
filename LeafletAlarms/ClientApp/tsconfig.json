@@ -1,0 +1,36 @@
+{
+  "compileOnSave": true,
+
+  "compilerOptions": {
+    "outDir": "tsout",
+
+    "target": "ES6",
+    "allowJs": true,
+    "sourceMap": true,
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ES6",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "noEmitOnError": true,
+    "strictNullChecks": false,
+    "jsx": "preserve",
+    "lib": [
+      "ES6",
+      "dom"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "skipLibCheck": false
+  },
+
+  "include": [
+    "src"
+  ]
+}
