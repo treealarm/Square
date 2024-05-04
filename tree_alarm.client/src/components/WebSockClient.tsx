@@ -9,7 +9,6 @@ import { useAppDispatch } from '../store/configureStore';
 import SignalCellular4BarIcon from '@mui/icons-material/SignalCellular4Bar';
 import SignalCellularNodataIcon from '@mui/icons-material/SignalCellularNodata';
 
-const  REACT_APP_AUTH_SERVER_URL  = process.env.REACT_APP_AUTH_SERVER_URL;
 
 //"wss://localhost:44307/push"
 var url = 'ws://';
@@ -171,7 +170,6 @@ export function WebSockClient() {
             style = {{ textTransform: 'none' }}
             size = "small"
           >
-            <h1>{REACT_APP_AUTH_SERVER_URL}</h1>
             {
               isConnected ?
                 <SignalCellular4BarIcon sx = {{m: 4}} color="success" />

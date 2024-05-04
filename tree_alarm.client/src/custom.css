@@ -1,5 +1,7 @@
 /* Provide sufficient contrast against white background */
 
+@import url("leaflet/dist/leaflet.css");
+
 a {
   color: #0366d6;
 }
@@ -9,7 +11,7 @@ code {
 }
 
 
-@import url("~leaflet/dist/leaflet.css");
+
 
 
 .leaflet-container {
