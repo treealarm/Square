@@ -19,6 +19,7 @@ WORKDIR /src
 #COPY ["Domain/Domain.csproj", "Domain/"]
 #COPY ["GrpcDaprLib/GrpcDaprLib.csproj", "GrpcDaprLib/"]
 COPY ["LeafletAlarms/LeafletAlarms.csproj", "LeafletAlarms/"]
+COPY ["tree_alarm.client/tree_alarm.client.esproj", "tree_alarm.client/"]
 #COPY ["PubSubLib/PubSubLib.csproj", "PubSubLib/"]
 #COPY ["ValhallaLib/ValhallaLib.csproj", "ValhallaLib/"]
 

@@ -1,31 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <TypeScriptTarget>ES6</TypeScriptTarget>
-    <TypeScriptOutDir>tsout</TypeScriptOutDir>
-    <TypeScriptSourceRoot></TypeScriptSourceRoot>
-    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
-  </PropertyGroup>
-
-  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <TypeScriptTarget>ES6</TypeScriptTarget>
-    <TypeScriptOutDir>tsout</TypeScriptOutDir>
-    <TypeScriptSourceRoot></TypeScriptSourceRoot>
-    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
-  </PropertyGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
-    <IsPackable>false</IsPackable>
-    <SpaRoot>ClientApp\</SpaRoot>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <SpaProxyServerUrl>http://localhost:8002</SpaProxyServerUrl>
-    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <SpaRoot>..\tree_alarm.client</SpaRoot>
+    <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
+    <SpaProxyServerUrl>http://localhost:8002</SpaProxyServerUrl>
+  </PropertyGroup>  
 
   <ItemGroup>
 
@@ -37,7 +20,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
+      <Version>8.*-*</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Data.Services.Client" Version="5.8.5" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.5.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
@@ -48,104 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Compile Remove="ClientApp\src\images\**" />
-    <Content Remove="$(SpaRoot)**" />
-    <Content Remove="ClientApp\src\images\**" />
-    <EmbeddedResource Remove="ClientApp\src\images\**" />
-    <None Remove="$(SpaRoot)**" />
-    <None Remove="ClientApp\src\images\**" />
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="ClientApp\src\components\DiagramTypeEditor.tsx" />
-    <None Remove="ClientApp\src\components\FileUpload.tsx" />
-    <None Remove="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
-    <None Remove="ClientApp\src\diagrams\DiagramElement.tsx" />
-    <None Remove="ClientApp\src\diagrams\DiagramGray.tsx" />
-    <None Remove="ClientApp\src\diagrams\DiagramParentsNavigator.tsx" />
-    <None Remove="ClientApp\src\diagrams\DiagramProperties.tsx" />
-    <None Remove="ClientApp\src\diagrams\DrawRectangle.tsx" />
-    <None Remove="ClientApp\src\diagramtypeeditor\DiagramTypeViewer.tsx" />
-    <None Remove="ClientApp\src\eventviewer\EventTable.tsx" />
-    <None Remove="ClientApp\src\eventviewer\EventViewer.tsx" />
-    <None Remove="ClientApp\src\store\constants.ts" />
-    <None Remove="ClientApp\src\store\DiagramTypeStates.ts" />
-    <None Remove="ClientApp\src\store\EventsStates.ts" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
     <ProjectReference Include="..\ValhallaLib\ValhallaLib.csproj" />
+    <ProjectReference Include="..\tree_alarm.client\tree_alarm.client.esproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\src\components\AccordionPanels.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagramtypeeditor\DiagramTypeEditor.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\FileUpload.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\ObjectPropertiesUpdater.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramElement.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramGray.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramNavigation.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramParentsNavigator.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramProperties.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DiagramViewer.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\MainToolbar.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\PanelIcon.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\PanelSwitch.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\components\TogglePanelButton.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagrams\DrawRectangle.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\diagramtypeeditor\DiagramTypeViewer.tsx">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="ClientApp\src\eventviewer\EventTable.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\eventviewer\EventViewer.tsx">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="ClientApp\src\store\constants.ts" />
-    <TypeScriptCompile Include="ClientApp\src\store\EventsStates.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="ClientApp\src\store\DiagramTypeStates.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="ClientApp\src\store\DiagramsStates.ts" />
-    <TypeScriptCompile Include="ClientApp\src\tree\FlyToMyLocationButton.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\tree\SearchApplyButton.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\tree\RequestRoute.tsx">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="ClientApp\src\tree\SearchMeOnMap.tsx" />
-    <TypeScriptCompile Include="ClientApp\src\tree\TrackProps.tsx" />
-  </ItemGroup>
-
-
-  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
-    <!-- Ensure Node.js is installed -->
-    <Exec Command="node --version" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-  </Target>
-
-  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
-
-    <!-- Include the newly-built files in the publish output -->
-    <ItemGroup>
-      <DistFiles Include="$(SpaRoot)build\**" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
 </Project>

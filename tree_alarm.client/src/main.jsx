@@ -1,4 +1,3 @@
-import './App.css';
 import './custom.css';
 import * as React from 'react';
 import { BrowserRouter } from 'react-router-dom';

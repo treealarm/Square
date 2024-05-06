@@ -9,7 +9,7 @@
       },
       "jsWebView2Debugging": true
     },
-    "LeafletAlarms": {
+    "TreeAlarm": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -17,6 +17,7 @@
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
         "VALHALLA_PORT": "8012"
       },
+      "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:8000;http://localhost:5000"
     },
     "Docker": {

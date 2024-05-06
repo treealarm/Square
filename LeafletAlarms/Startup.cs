@@ -308,7 +308,6 @@ namespace LeafletAlarms
       
 
       app.UseRouting();
-
       app.UseAuthorization();
 
       app.MapControllerRoute(
@@ -353,7 +352,7 @@ namespace LeafletAlarms
         
       });
 
-      app.MapFallbackToFile("index.html");
+      app.MapFallbackToFile("/index.html");
     }
     //End
   }
