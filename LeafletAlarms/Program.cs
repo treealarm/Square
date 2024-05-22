@@ -11,5 +11,4 @@ var app = builder.Build();
 startup.Configure(app, builder.Environment);
 
 app.MapGrpcService<TracksGrpcImp>();
-//app.MapGrpcService<TracksDaprImp>();
 app.Run();

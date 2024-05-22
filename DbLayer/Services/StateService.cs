@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-    public class StateService: IStateService
+  public class StateService: IStateService
   {
     private IMongoCollection<DBObjectState> _collState;
     private IMongoCollection<DBObjectStateDescription> _collStateDescr;

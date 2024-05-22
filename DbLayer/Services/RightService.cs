@@ -2,18 +2,15 @@
 using Domain.OptionsModels;
 using Domain.Rights;
 using Domain.ServiceInterfaces;
-using Domain.States;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-    public class RightService: IRightService
+  public class RightService: IRightService
   {
     private readonly IMongoCollection<DBObjectRights> _coll;
     private readonly IMongoClient _mongoClient;

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-    public class MapService : IMapService
+  public class MapService : IMapService
   {
     private readonly IMongoCollection<DBMarker> _markerCollection;
 

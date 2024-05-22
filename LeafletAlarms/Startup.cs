@@ -1,20 +1,18 @@
+using DataChangeLayer;
 using DbLayer.Services;
 using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.StateWebSock;
-using Google.Api;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
-using System;
 using System.Net;
 using System.Net.WebSockets;
 using System.Reflection;
@@ -92,10 +90,12 @@ namespace LeafletAlarms
       services.AddSingleton<FileSystemService>();
 
       services.AddSingleton<ValhallaRouter>();
+      services.AddSingleton<IDataChangeService, DataChangeService>();
+      
 
       services.AddHttpContextAccessor();
-      services.AddControllersWithViews();
-
+      services.AddControllers();
+      services.AddEndpointsApiExplorer();
       services.AddSwaggerGen(setUpAction =>
       {
         setUpAction.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -351,7 +351,7 @@ namespace LeafletAlarms
         }
         
       });
-
+      app.MapControllers();
       app.MapFallbackToFile("/index.html");
     }
     //End

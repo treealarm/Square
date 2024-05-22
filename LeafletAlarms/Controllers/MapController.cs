@@ -26,6 +26,7 @@ namespace LeafletAlarms.Controllers
     private readonly IOptions<RoutingSettings> _routingSettings;
     private readonly TracksUpdateService _trackUpdateService;
     private readonly IDiagramService _diagramService;
+    private readonly IDataChangeService _changeService;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
@@ -34,7 +35,8 @@ namespace LeafletAlarms.Controllers
       RightsCheckerService rightChecker,
       IOptions<RoutingSettings> routingSettings,
       TracksUpdateService trackUpdateService,
-      IDiagramService diagramService
+      IDiagramService diagramService,
+      IDataChangeService changeService
     )
     {
       _mapService = mapsService;
@@ -45,6 +47,7 @@ namespace LeafletAlarms.Controllers
       _routingSettings = routingSettings;
       _trackUpdateService = trackUpdateService;
       _diagramService = diagramService;
+      _changeService = changeService;
     }        
 
     [HttpGet("{id:length(24)}")]

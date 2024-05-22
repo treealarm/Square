@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DataChangeLayer\DataChangeLayer.csproj" />
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
@@ -40,5 +41,9 @@
     <ProjectReference Include="..\tree_alarm.client\tree_alarm.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 </Project>
