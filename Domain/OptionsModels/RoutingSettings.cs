@@ -18,9 +18,9 @@ namespace Domain
         return root_folder;
       }
     }
-    public string root_folder_win { get; set; }
-    public string RouteInstanse { get; set; }
-    public string root_folder { get; set; }
+    public string root_folder_win { get; set; } = default!;
+    public string RouteInstanse { get; set; } = default!;
+    public string root_folder { get; set; } = default!;
     bool InDocker()
     {
       return Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";

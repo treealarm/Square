@@ -271,7 +271,7 @@ export function LocationMarkers() {
          bounds = e.target.getBounds();
 
          RequestMarkersByBox(bounds);
-         console.log('LocationMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
+         //console.log('LocationMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
        },
         mousemove(e: L.LeafletMouseEvent) {
 

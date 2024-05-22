@@ -17,7 +17,7 @@ namespace Domain.Rights
       //,Delete = 4
       //,Add = 8
     }
-    public string role { get; set; }
+    public string role { get; set; } = default!;
     public ERightValue value { get; set; }
   }
 }

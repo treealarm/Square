@@ -9,7 +9,7 @@ namespace Domain
 {
   public class GetTracksBySearchDTO
   {
-    public List<TrackPointDTO> list { get; set; }
-    public string search_id { get; set; }
+    public List<TrackPointDTO> list { get; set; } = default!;
+    public string search_id { get; set; } = default!;
   }
 }

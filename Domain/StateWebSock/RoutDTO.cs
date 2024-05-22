@@ -9,8 +9,8 @@ namespace Domain.StateWebSock
 {
   public class RoutDTO
   {
-    public string InstanceName { get; set; }
-    public string Profile { get; set; }
-    public List<Geo2DCoordDTO> Coordinates { get; set; }
+    public string InstanceName { get; set; } = default!;
+    public string Profile { get; set; } = default!;
+    public List<Geo2DCoordDTO> Coordinates { get; set; } = default!;
   }
 }

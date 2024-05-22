@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Domain.DiagramType
 {
-    public record DiagramTypeDTO
-    {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string src { get; set; }
-        public List<DiagramTypeRegionDTO> regions { get; set; }
-    }
+  public record DiagramTypeDTO
+  {
+    public string id { get; set; } = default!;
+    public string name { get; set; } = default!;
+    public string src { get; set; } = default!;
+    public List<DiagramTypeRegionDTO> regions { get; set; } = default!;
+  }
 }

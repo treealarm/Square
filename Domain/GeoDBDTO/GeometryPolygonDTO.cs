@@ -9,7 +9,7 @@ namespace Domain.GeoDBDTO
 {
   public class GeometryPolygonDTO : GeometryDTO
   {
-    public new List<Geo2DCoordDTO> coord
+    public new List<Geo2DCoordDTO>? coord
     {
       get
       {
@@ -30,7 +30,7 @@ namespace Domain.GeoDBDTO
       return JsonSerializer.Serialize(this);
     }
 
-    public override Geo2DCoordDTO GetCentroid()
+    public override Geo2DCoordDTO? GetCentroid()
     {
       if (coord == null || coord.Count == 0)
       {

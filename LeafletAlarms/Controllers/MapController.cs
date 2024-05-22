@@ -15,7 +15,7 @@ namespace LeafletAlarms.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  [Authorize(AuthenticationSchemes = "Bearer")]
+  //[Authorize(AuthenticationSchemes = "Bearer")]
   public class MapController : ControllerBase
   {
     private readonly IMapService _mapService;
@@ -505,51 +505,13 @@ namespace LeafletAlarms.Controllers
       await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
       return CreatedAtAction(nameof(UpdateBase), updatedMarker);
     }
-    
+
     [HttpPost]
     [Route("UpdateProperties")]
     [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.power_user)]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
     {
-      if (string.IsNullOrEmpty(updatedMarker.id))
-      {
-        await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
-      }
-
-      var marker = await _mapService.GetAsync(updatedMarker.id);
-
-      if (marker is null)
-      {
-        return NotFound();
-      }
-
-      marker.name = updatedMarker.name;
-      marker.parent_id = updatedMarker.parent_id;
-
-      await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { marker });
-
-
-
-      await _mapService.UpdatePropAsync(updatedMarker);
-
-      ObjExtraPropertyDTO radius = null;
-      ObjExtraPropertyDTO zoom_level = null;
-      ObjExtraPropertyDTO geometry = null;
-
-      if (updatedMarker.extra_props != null)
-      {
-        radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
-        zoom_level = updatedMarker.extra_props.Where(p => p.prop_name == "zoom_level").FirstOrDefault();
-        geometry = updatedMarker.extra_props.Where(p => p.prop_name == "geometry").FirstOrDefault();
-      }
-
-      await _geoService.CreateOrUpdateGeoFromStringAsync(
-        updatedMarker.id,
-        geometry?.str_val,
-        radius?.str_val,
-        zoom_level?.str_val
-      );
-
+      await _changeService.UpdateProperties(updatedMarker);
 
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }

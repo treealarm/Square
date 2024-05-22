@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Rights
+﻿namespace Domain.Rights
 {
   public class RightValuesDTO
   {
-    public string RightName { get; set; }
+    public string RightName { get; set; } = default!;
     public int RightValue { get; set; }
   }
 }

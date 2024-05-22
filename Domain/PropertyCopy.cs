@@ -6,7 +6,7 @@ namespace Domain
 {
   public static class PropertyCopy
   {
-    public static void CopyAllToAsJson<T, T1>(this T source, out T1 target)
+    public static void CopyAllToAsJson<T, T1>(this T source, out T1? target)
     {
       var json = JsonSerializer.Serialize(source);
 

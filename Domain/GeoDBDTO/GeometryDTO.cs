@@ -10,14 +10,14 @@ namespace Domain.GeoDBDTO
 {
   public class GeometryDTOBase
   {
-    public virtual string type { get; set; }
+    public virtual string type { get; set; } = default!;
   }
   
   [JsonConverter(typeof(GeometryDTOConverter))]
   public class GeometryDTO: GeometryDTOBase
   {
-    protected object _coord;
-    protected string _type;
+    protected object? _coord = default!;
+    protected string _type = default!;
     public override string type 
     { 
       get
@@ -34,7 +34,7 @@ namespace Domain.GeoDBDTO
         _type = value;
       }
     }
-    public object coord
+    public object? coord
     {
       get
       {
@@ -46,22 +46,23 @@ namespace Domain.GeoDBDTO
       }
     }
 
-    public virtual List<Geo2DCoordDTO> GetCoordArray()
+    public virtual List<Geo2DCoordDTO>? GetCoordArray()
     {
       var retval = coord as List<Geo2DCoordDTO>;
 
       if (retval == null)
       {
+        Geo2DCoordDTO real_coord = coord as Geo2DCoordDTO ?? new Geo2DCoordDTO();
         retval = new List<Geo2DCoordDTO>()
         {
-          coord as Geo2DCoordDTO
+          real_coord
         };
       }
 
       return retval;
     }
 
-    public virtual Geo2DCoordDTO GetCentroid()
+    public virtual Geo2DCoordDTO? GetCentroid()
     {
       return null;
     }
@@ -91,9 +92,9 @@ namespace Domain.GeoDBDTO
     }
   }
 
-  public class GeometryDTOConverter : JsonConverter<GeometryDTO>
+  public class GeometryDTOConverter : JsonConverter<GeometryDTO?>
   {
-    public override GeometryDTO Read(
+    public override GeometryDTO? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
         JsonSerializerOptions options)
@@ -107,17 +108,17 @@ namespace Domain.GeoDBDTO
 
       var geoDto = JsonSerializer.Deserialize(readerString, typeof(GeometryDTOBase)) as GeometryDTOBase;
 
-      if (geoDto.type == "Point")
+      if (geoDto?.type == "Point")
       {
         return JsonSerializer.Deserialize(readerString, typeof(GeometryCircleDTO)) as GeometryDTO;
       }
 
-      if (geoDto.type == "Polygon")
+      if (geoDto?.type == "Polygon")
       {
         return JsonSerializer.Deserialize(readerString, typeof(GeometryPolygonDTO)) as GeometryDTO;
       }
 
-      if (geoDto.type == "LineString")
+      if (geoDto?.type == "LineString")
       {
         return JsonSerializer.Deserialize(readerString, typeof(GeometryPolylineDTO)) as GeometryDTO;
       }
@@ -126,11 +127,11 @@ namespace Domain.GeoDBDTO
 
     public override void Write(
         Utf8JsonWriter writer,
-        GeometryDTO geometry,
+        GeometryDTO? geometry,
         JsonSerializerOptions options) 
     {
-      var s = geometry.GetJson();
-      writer.WriteRawValue(s);
+      var s = geometry?.GetJson();
+      writer.WriteRawValue(s ?? string.Empty);
     }            
   }
 }

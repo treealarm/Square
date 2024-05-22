@@ -94,7 +94,7 @@ namespace LeafletAlarms
       
 
       services.AddHttpContextAccessor();
-      services.AddControllers();
+      services.AddControllersWithViews();
       services.AddEndpointsApiExplorer();
       services.AddSwaggerGen(setUpAction =>
       {
@@ -271,7 +271,7 @@ namespace LeafletAlarms
         new PhysicalFileProvider(staticFilesPath)
         ),
         RequestPath = "/static_files",
-        EnableDirectoryBrowsing = true 
+        EnableDirectoryBrowsing = true
       });
 
       var keycloak_json_folder = GetAlternativePublicFolder();

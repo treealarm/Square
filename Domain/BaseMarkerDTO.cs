@@ -2,9 +2,9 @@
 {
   public record BaseMarkerDTO
   {
-    public string id { get; set; }
-    public string parent_id { get; set; }
-    public string name { get; set; }
-    public string external_type { get; set; }
+    public string id { get; set; } = default!;
+    public string parent_id { get; set; } = default!;
+    public string name { get; set; } = default!;
+    public string external_type { get; set; } = default!;
   }
 }

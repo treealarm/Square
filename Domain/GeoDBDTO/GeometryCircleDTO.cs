@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Domain.GeoDBDTO
 {
@@ -16,7 +11,7 @@ namespace Domain.GeoDBDTO
     {
       this.coord = crd;
     }
-    public new Geo2DCoordDTO coord 
+    public new Geo2DCoordDTO? coord 
     { 
       get
       {
@@ -28,7 +23,7 @@ namespace Domain.GeoDBDTO
       }
     }
 
-    public override Geo2DCoordDTO GetCentroid()
+    public override Geo2DCoordDTO? GetCentroid()
     {
       return coord;
     }

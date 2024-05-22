@@ -6,9 +6,9 @@ namespace Domain.GeoDTO
 {
   public record FigureZoomedDTO: BaseMarkerDTO, IObjectProps
   {
-    public string zoom_level { get; set; }
+    public string zoom_level { get; set; } = default!;
 
     // Optional property to update/receive properties.
-    public List<ObjExtraPropertyDTO> extra_props { get; set; }
+    public List<ObjExtraPropertyDTO> extra_props { get; set; } = default!;
   }
 }

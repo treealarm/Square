@@ -1,5 +1,4 @@
-﻿using DbLayer.Models;
-using Domain;
+﻿using Domain;
 using Domain.GeoDBDTO;
 using Domain.GeoDTO;
 using Domain.OptionsModels;
@@ -223,7 +222,7 @@ namespace DbLayer.Services
         filter = filter & builder.Where(t => box.ids.Contains(t.id));
       }
 
-      Log(filter);
+      //Log(filter);
 
       try
       {

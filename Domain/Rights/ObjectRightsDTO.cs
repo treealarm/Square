@@ -8,7 +8,7 @@ namespace Domain.Rights
 {
   public class ObjectRightsDTO
   {
-    public string id { get; set; }
-    public List<ObjectRightValueDTO> rights { get; set; }
+    public string id { get; set; } = default!;
+    public List<ObjectRightValueDTO> rights { get; set; } = default!;
   }
 }

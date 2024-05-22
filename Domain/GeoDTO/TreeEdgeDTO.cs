@@ -17,16 +17,16 @@ namespace Domain.GeoDTO
 
     public float Weight2 { get; set; }
 
-    public Geo2DCoordDTO Shape { get; set; }
+    public Geo2DCoordDTO Shape { get; set; } = default!;
 
-    public HashSet<TreeEdgeDTO> Children  { get; set; }
+    public HashSet<TreeEdgeDTO> Children { get; set; } = default!;
 
     public override int GetHashCode()
     {
       return (int)EdgeId;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
       if ( obj is TreeEdgeDTO treeEdge)
       {
