@@ -9,18 +9,18 @@ namespace PubSubLib
 {
   public class PubService : IPubService
   {
-    private string redisConnectionString;
+    private string? redisConnectionString;
 
     private ConnectionMultiplexer _redis;
     private static ConcurrentDictionary<string, RedisChannel> _channels
       = new ConcurrentDictionary<string, RedisChannel>();
-    public PubService(IOptions<DaprSettings> daprSettings)
+    public PubService(IOptions<DaprSettings>? daprSettings)
     {
-      redisConnectionString = daprSettings.Value.reddis_endpoint;
+      redisConnectionString = daprSettings?.Value.reddis_endpoint;
 
       ConfigurationOptions configuration = new ConfigurationOptions();
       configuration.AbortOnConnectFail = false;
-      configuration.EndPoints.Add(redisConnectionString);
+      configuration.EndPoints.Add(redisConnectionString??string.Empty);
       _redis = ConnectionMultiplexer.Connect(configuration);
     }
 

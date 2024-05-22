@@ -15,7 +15,7 @@ namespace LeafletAlarms.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  //[Authorize(AuthenticationSchemes = "Bearer")]
+  [Authorize(AuthenticationSchemes = "Bearer")]
   public class MapController : ControllerBase
   {
     private readonly IMapService _mapService;

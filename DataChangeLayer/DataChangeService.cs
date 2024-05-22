@@ -30,15 +30,15 @@ namespace DataChangeLayer
         await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
       }
 
-      var marker = await _mapService.GetAsync(updatedMarker.id);
+      var marker = await _mapService.GetAsync(updatedMarker?.id);
 
       if (marker is null)
       {
         return null;
       }
 
-      marker.name = updatedMarker.name;
-      marker.parent_id = updatedMarker.parent_id;
+      marker.name = updatedMarker?.name;
+      marker.parent_id = updatedMarker?.parent_id;
 
       await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { marker });
 
@@ -50,7 +50,7 @@ namespace DataChangeLayer
       ObjExtraPropertyDTO? zoom_level = null;
       ObjExtraPropertyDTO? geometry = null;
 
-      if (updatedMarker.extra_props != null)
+      if (updatedMarker?.extra_props != null)
       {
         radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
         zoom_level = updatedMarker.extra_props.Where(p => p.prop_name == "zoom_level").FirstOrDefault();
@@ -58,7 +58,7 @@ namespace DataChangeLayer
       }
 
       await _geoService.CreateOrUpdateGeoFromStringAsync(
-        updatedMarker.id,
+        updatedMarker?.id,
         geometry?.str_val,
         radius?.str_val,
         zoom_level?.str_val

@@ -10,7 +10,7 @@ namespace Domain.ServiceInterfaces
   {
     Task<Dictionary<string, BaseMarkerDTO>> GetAsync(List<string> ids);
 
-    Task<BaseMarkerDTO> GetAsync(string id);
+    Task<BaseMarkerDTO> GetAsync(string? id);
     Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id);
     Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdAsync(
       string parent_id,
@@ -31,7 +31,7 @@ namespace Domain.ServiceInterfaces
     Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id);
     Task<ObjPropsDTO> GetPropAsync(string id);
     Task<Dictionary<string, ObjPropsDTO>> GetPropsAsync(List<string> ids);
-    Task UpdatePropAsync(ObjPropsDTO updatedObj);
+    Task UpdatePropAsync(ObjPropsDTO? updatedObj);
     Task UpdateHierarchyAsync(IEnumerable<BaseMarkerDTO> updatedObj);
     Task<long> RemoveAsync(List<string> ids);
     Task<List<ObjPropsDTO>> GetPropByValuesAsync(

@@ -9,7 +9,7 @@ namespace PubSubLib
 {
   public class SubService: ISubService, IDisposable
   { 
-    private string redisConnectionString;
+    private string? redisConnectionString;
 
     private object _locker = new object();
     private ConnectionMultiplexer _redis;
@@ -34,11 +34,11 @@ namespace PubSubLib
 
     public SubService(IOptions<DaprSettings> daprSettings)
     {
-      redisConnectionString = daprSettings.Value.reddis_endpoint;
+      redisConnectionString = daprSettings?.Value.reddis_endpoint;
 
       ConfigurationOptions configuration = new ConfigurationOptions();
       configuration.AbortOnConnectFail = false;
-      configuration.EndPoints.Add(redisConnectionString);
+      configuration.EndPoints.Add(redisConnectionString ?? string.Empty);
       _redis = ConnectionMultiplexer.Connect(configuration);
     }
 

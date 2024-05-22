@@ -2,7 +2,7 @@
 {
   public class AlarmState
   {
-    public string id { get; set; } = default!;
-    public bool alarm { get; set; } = default!;
+    public string? id { get; set; }
+    public bool? alarm { get; set; }
   }
 }

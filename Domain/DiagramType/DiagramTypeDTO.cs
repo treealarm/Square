@@ -4,9 +4,9 @@ namespace Domain.DiagramType
 {
   public record DiagramTypeDTO
   {
-    public string id { get; set; } = default!;
-    public string name { get; set; } = default!;
-    public string src { get; set; } = default!;
-    public List<DiagramTypeRegionDTO> regions { get; set; } = default!;
+    public string? id { get; set; }
+    public string? name { get; set; }
+    public string? src { get; set; }
+    public List<DiagramTypeRegionDTO>? regions { get; set; }
   }
 }

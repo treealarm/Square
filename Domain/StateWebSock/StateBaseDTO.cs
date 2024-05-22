@@ -2,7 +2,7 @@
 {
   public class StateBaseDTO
   {  
-    public string action { get; set; } = default!;
-    public object data { get; set; } = default!;
+    public string? action { get; set; }
+    public object? data { get; set; }
   }
 }

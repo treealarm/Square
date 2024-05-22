@@ -166,7 +166,7 @@ namespace LeafletAlarms.Services
         {
           var stateDescrs = await _stateService
                     .GetStateDescrAsync(objToUpdate.external_type, objState.states);
-          alarmedStateDescr = stateDescrs.Where(st => st.alarm).FirstOrDefault();
+          alarmedStateDescr = stateDescrs.Where(st => st.alarm == true).FirstOrDefault();
         }
 
         var alarmedList = await SetAlarm(objToUpdate, alarmedStateDescr != null);

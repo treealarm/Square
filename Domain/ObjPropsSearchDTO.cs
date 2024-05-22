@@ -4,6 +4,6 @@ namespace Domain
 {
   public class ObjPropsSearchDTO
   {
-    public List<KeyValueDTO> props { get; set; } = default!;
+    public List<KeyValueDTO>? props { get; set; }
   }
 }

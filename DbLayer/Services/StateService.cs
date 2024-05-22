@@ -265,7 +265,7 @@ namespace DbLayer.Services
           state = dbObj.state,
           state_color = dbObj.state_color,
           state_descr = dbObj.state_descr,
-          alarm = dbObj.alarm,
+          alarm = dbObj.alarm ?? false,
           external_type = dbObj.external_type
         };
         newObjs.Add(dto);

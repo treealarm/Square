@@ -5,7 +5,7 @@ namespace Domain
 {
   public record FigureGeoDTO : FigureZoomedDTO
   {
-    public GeometryDTO geometry { get; set; } = default!;
+    public GeometryDTO? geometry { get; set; }
     public double? radius { get; set; }
 
     public double? GetRadius()

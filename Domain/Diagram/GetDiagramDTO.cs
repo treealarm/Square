@@ -5,10 +5,10 @@ namespace Domain.Diagram
 {
     public record GetDiagramDTO
   {
-    public List<DiagramDTO> content { get; set; } = default!;
-    public List<DiagramTypeDTO> dgr_types { get; set; } = default!;
-    public DiagramDTO parent { get; set; } = default!;
-    public List<BaseMarkerDTO> parents { get; set; } = default!;
+    public List<DiagramDTO>? content { get; set; }
+    public List<DiagramTypeDTO>? dgr_types { get; set; }
+    public DiagramDTO? parent { get; set; }
+    public List<BaseMarkerDTO>? parents { get; set; }
     public int depth {  get; set; }
   }
 }

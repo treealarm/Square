@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Domain.ObjectInterfaces
 {
     public interface IObjectProps
     {
-        public List<ObjExtraPropertyDTO> extra_props { get; set; }
+        public List<ObjExtraPropertyDTO>? extra_props { get; set; }
     }
 }

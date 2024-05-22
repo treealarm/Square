@@ -167,7 +167,7 @@ namespace DbLayer.Services
       {
         var dbTrack = new DBTrackPoint()
         {
-          timestamp = track.timestamp          
+          timestamp = track.timestamp ?? DateTime.UtcNow          
         };
         dbTrack.meta.id = ObjectId.GenerateNewId().ToString();
         dbTrack.meta.figure = ModelGate.ConvertDTO2DB(track.figure);

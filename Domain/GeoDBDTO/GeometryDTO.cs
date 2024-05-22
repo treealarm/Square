@@ -10,15 +10,15 @@ namespace Domain.GeoDBDTO
 {
   public class GeometryDTOBase
   {
-    public virtual string type { get; set; } = default!;
+    public virtual string? type { get; set; }
   }
   
   [JsonConverter(typeof(GeometryDTOConverter))]
   public class GeometryDTO: GeometryDTOBase
   {
-    protected object? _coord = default!;
-    protected string _type = default!;
-    public override string type 
+    protected object? _coord;
+    protected string? _type;
+    public override string? type 
     { 
       get
       {
