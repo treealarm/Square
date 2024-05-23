@@ -2,8 +2,9 @@
 
 namespace Domain.ServiceInterfaces
 {
-  public interface IDataChangeService
+  public interface IMapUpdateService
   {
     public Task<ObjPropsDTO?> UpdateProperties(ObjPropsDTO updatedMarker);
+    public Task<FiguresDTO?> UpdateFigures(FiguresDTO statMarkers);
   }
 }

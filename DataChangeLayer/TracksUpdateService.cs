@@ -4,9 +4,9 @@ using Domain.StateWebSock;
 using Domain;
 using Domain.PubSubTopics;
 
-namespace LeafletAlarms.Services
+namespace DataChangeLayer
 {
-  public class TracksUpdateService
+  public class TracksUpdateService: ITracksUpdateService
   {
     private readonly IMapService _mapService;
     private readonly ITrackService _tracksService;
@@ -34,7 +34,7 @@ namespace LeafletAlarms.Services
 
       await _pub.Publish(Topics.OnUpdateTrackPosition, trackPoints);
 
-      return trackPointsInserted.Select (t => t.id).ToList();
+      return trackPointsInserted.Select (t => t.id!).ToList();
     }
 
     public async Task<List<string>> AddTracks(List<TrackPointDTO> movedMarkers)
@@ -42,35 +42,6 @@ namespace LeafletAlarms.Services
       return await DoUpdateTracks(movedMarkers);
     }
 
-    public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
-    {
-      if (
-        box.time_start == null &&
-        box.time_end == null
-      )
-      {
-        // We do not search without time diapason.
-        return new List<TrackPointDTO>();
-      }
-
-      //await AddIdsByProperties(box);
-
-      var trackPoints = await _tracksService.GetTracksByBox(box);
-
-      if (box.sort < 0)
-      {
-        trackPoints = trackPoints.OrderByDescending(f => f.timestamp).ToList();
-      }
-
-      return trackPoints;
-    }
-
-    public async Task<TrackPointDTO> GetTrackById(string id)
-    {
-      var trackPoint = await _tracksService.GetByIdAsync(id);
-
-      return trackPoint;
-    }
 
     public async Task<FiguresDTO> UpdateFigures(FiguresDTO statMarkers)
     {
@@ -84,9 +55,9 @@ namespace LeafletAlarms.Services
 
         foreach (var figure in statMarkers.figs)
         {
-          GeoObjectDTO circle;
+          GeoObjectDTO? circle;
 
-          updatedFigs.TryGetValue(figure.id, out circle);
+          updatedFigs.TryGetValue(figure.id!, out circle);
 
           var newPoint =
             new TrackPointDTO()

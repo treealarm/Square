@@ -3,26 +3,36 @@ using Domain.ServiceInterfaces;
 
 namespace DataChangeLayer
 {
-  public class DataChangeService: IDataChangeService
+  public class MapUpdateService: IMapUpdateService
   {
     private readonly IMapService _mapService;
     private readonly IGeoService _geoService;
     private readonly ITrackService _tracksService;
     private readonly ILevelService _levelService;
     private readonly IDiagramService _diagramService;
-    public DataChangeService(
+    private readonly ITracksUpdateService _trackUpdateService;
+    public MapUpdateService(
       IMapService mapService, 
       IGeoService geoService,
       ITrackService tracksService,
       ILevelService levelService,
-      IDiagramService diagramService)
+      IDiagramService diagramService,
+      ITracksUpdateService trackUpdateService)
     {
       _mapService = mapService;
       _geoService = geoService;
       _tracksService = tracksService;
       _levelService = levelService;
       _diagramService = diagramService;
+      _trackUpdateService = trackUpdateService;
     }
+
+    public async Task<FiguresDTO?> UpdateFigures(FiguresDTO statMarkers)
+    {
+      await _trackUpdateService.UpdateFigures(statMarkers);
+      return statMarkers;
+    }
+
     public async Task<ObjPropsDTO?> UpdateProperties(ObjPropsDTO updatedMarker)
     {
       if (string.IsNullOrEmpty(updatedMarker.id))

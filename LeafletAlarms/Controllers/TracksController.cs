@@ -22,11 +22,11 @@ namespace LeafletAlarms.Controllers
   [Authorize(AuthenticationSchemes = "Bearer")]
   public class TracksController : ControllerBase
   {
-    private TracksUpdateService _trackUpdateService;
+    private ITracksUpdateService _trackUpdateService;
     private readonly ITrackService _tracksService;
 
     public TracksController(
-      TracksUpdateService trackUpdateService,
+      ITracksUpdateService trackUpdateService,
       ITrackService tracksService
     )
     {
@@ -55,14 +55,14 @@ namespace LeafletAlarms.Controllers
     [Route("GetTracksByBox")]
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
-      return await _trackUpdateService.GetTracksByBox(box);
+      return await _tracksService.GetTracksByBox(box);
     }
 
     [HttpGet]
     [Route("GetTrackById")]
     public async Task<TrackPointDTO> GetTrackById(string id)
     {
-      return await _trackUpdateService.GetTrackById(id);
+      return await _tracksService.GetByIdAsync(id);
     }
 
     [HttpPost]

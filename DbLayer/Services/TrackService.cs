@@ -307,7 +307,7 @@ namespace DbLayer.Services
       return DBListToDTO(dbTracks);
     }
 
-    public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
+    private async Task<List<TrackPointDTO>> DoGetTracksByBox(BoxTrackDTO box)
     {
       int limit = 10000;
 
@@ -497,6 +497,28 @@ namespace DbLayer.Services
       dbObjects.AddRange(list);
 
       return DBListToDTO(dbObjects);
+    }
+    public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
+    {
+      if (
+        box.time_start == null &&
+        box.time_end == null
+      )
+      {
+        // We do not search without time diapason.
+        return new List<TrackPointDTO>();
+      }
+
+      //await AddIdsByProperties(box);
+
+      var trackPoints = await DoGetTracksByBox(box);
+
+      if (box.sort < 0)
+      {
+        trackPoints = trackPoints.OrderByDescending(f => f.timestamp).ToList();
+      }
+
+      return trackPoints;
     }
   }
 }

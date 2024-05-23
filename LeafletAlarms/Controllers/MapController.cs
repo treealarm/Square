@@ -24,9 +24,9 @@ namespace LeafletAlarms.Controllers
     private readonly ILevelService _levelService;
     private readonly RightsCheckerService _rightChecker;
     private readonly IOptions<RoutingSettings> _routingSettings;
-    private readonly TracksUpdateService _trackUpdateService;
+    private readonly ITracksUpdateService _trackUpdateService;
     private readonly IDiagramService _diagramService;
-    private readonly IDataChangeService _changeService;
+    private readonly IMapUpdateService _mapUpdateService;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
@@ -34,9 +34,9 @@ namespace LeafletAlarms.Controllers
       ILevelService levelService,
       RightsCheckerService rightChecker,
       IOptions<RoutingSettings> routingSettings,
-      TracksUpdateService trackUpdateService,
+      ITracksUpdateService trackUpdateService,
       IDiagramService diagramService,
-      IDataChangeService changeService
+      IMapUpdateService mapUpdateService
     )
     {
       _mapService = mapsService;
@@ -47,7 +47,7 @@ namespace LeafletAlarms.Controllers
       _routingSettings = routingSettings;
       _trackUpdateService = trackUpdateService;
       _diagramService = diagramService;
-      _changeService = changeService;
+      _mapUpdateService = mapUpdateService;
     }        
 
     [HttpGet("{id:length(24)}")]
@@ -511,7 +511,7 @@ namespace LeafletAlarms.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.power_user)]
     public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
     {
-      await _changeService.UpdateProperties(updatedMarker);
+      await _mapUpdateService.UpdateProperties(updatedMarker);
 
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }

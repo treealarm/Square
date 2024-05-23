@@ -15,13 +15,13 @@ namespace LeafletAlarms.Grpc.Implementation
   public class GRPCServiceProxy
   {
     private readonly ILogger<GRPCServiceProxy> _logger;
-    private readonly TracksUpdateService _trackUpdateService;
+    private readonly ITracksUpdateService _trackUpdateService;
     private readonly StatesUpdateService _statesUpdateService;
     private readonly IEventsService _eventsService;
     private readonly FileSystemService _fs;
     public GRPCServiceProxy(
       ILogger<GRPCServiceProxy> logger,
-      TracksUpdateService trackUpdateService,
+      ITracksUpdateService trackUpdateService,
       StatesUpdateService statesUpdateService,
       IEventsService eventsService,
       FileSystemService fs
