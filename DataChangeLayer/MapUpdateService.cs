@@ -77,5 +77,31 @@ namespace DataChangeLayer
 
       return updatedMarker;
     }
+    public async Task<HashSet<string>> Delete(List<string> ids)
+    {
+      HashSet<string> idsToDelete = new HashSet<string>();
+
+      foreach (var id in ids)
+      {
+        var marker = await _mapService.GetAsync(id);
+
+        if (marker is null)
+        {
+          continue;
+        }
+
+        var markers = await _mapService.GetAllChildren(id);
+        var bunchIds = markers.Select(m => m.id).ToHashSet();
+        idsToDelete.Add(marker.id!);
+        idsToDelete.UnionWith(bunchIds!);
+      }
+
+      var listToDelete = idsToDelete.ToList();
+
+      await _geoService.RemoveAsync(listToDelete);
+      await _mapService.RemoveAsync(listToDelete);
+      await _diagramService.RemoveAsync(listToDelete);
+      return idsToDelete;
+    }
   }
 }

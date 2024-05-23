@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Domain.ServiceInterfaces
 {
@@ -6,5 +7,6 @@ namespace Domain.ServiceInterfaces
   {
     public Task<ObjPropsDTO?> UpdateProperties(ObjPropsDTO updatedMarker);
     public Task<FiguresDTO?> UpdateFigures(FiguresDTO statMarkers);
+    public Task<HashSet<string>> Delete(List<string> ids);
   }
 }

@@ -24,8 +24,6 @@ namespace LeafletAlarms.Controllers
     private readonly ILevelService _levelService;
     private readonly RightsCheckerService _rightChecker;
     private readonly IOptions<RoutingSettings> _routingSettings;
-    private readonly ITracksUpdateService _trackUpdateService;
-    private readonly IDiagramService _diagramService;
     private readonly IMapUpdateService _mapUpdateService;
     public MapController(
       IMapService mapsService,
@@ -34,8 +32,6 @@ namespace LeafletAlarms.Controllers
       ILevelService levelService,
       RightsCheckerService rightChecker,
       IOptions<RoutingSettings> routingSettings,
-      ITracksUpdateService trackUpdateService,
-      IDiagramService diagramService,
       IMapUpdateService mapUpdateService
     )
     {
@@ -45,8 +41,6 @@ namespace LeafletAlarms.Controllers
       _levelService = levelService;
       _rightChecker = rightChecker;
       _routingSettings = routingSettings;
-      _trackUpdateService = trackUpdateService;
-      _diagramService = diagramService;
       _mapUpdateService = mapUpdateService;
     }        
 
@@ -490,26 +484,26 @@ namespace LeafletAlarms.Controllers
       return markerDto;
     }
 
-    [HttpPost]
-    [Route("UpdateOnlyProperties")]
-    public async Task<IActionResult> UpdateOnlyProperties(ObjPropsDTO updatedMarker)
-    {
-      await _mapService.UpdatePropAsync(updatedMarker);
-      return CreatedAtAction(nameof(UpdateOnlyProperties), updatedMarker);
-    }
+    //[HttpPost]
+    //[Route("UpdateOnlyProperties")]
+    //public async Task<IActionResult> UpdateOnlyProperties(ObjPropsDTO updatedMarker)
+    //{
+    //  await _mapService.UpdatePropAsync(updatedMarker);
+    //  return CreatedAtAction(nameof(UpdateOnlyProperties), updatedMarker);
+    //}
 
-    [HttpPost]
-    [Route("UpdateBase")]
-    public async Task<ActionResult<BaseMarkerDTO>> UpdateBase(BaseMarkerDTO updatedMarker)
-    {
-      await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
-      return CreatedAtAction(nameof(UpdateBase), updatedMarker);
-    }
+    //[HttpPost]
+    //[Route("UpdateBase")]
+    //public async Task<ActionResult<BaseMarkerDTO>> UpdateBase(BaseMarkerDTO updatedMarker)
+    //{
+    //  await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
+    //  return CreatedAtAction(nameof(UpdateBase), updatedMarker);
+    //}
 
     [HttpPost]
     [Route("UpdateProperties")]
     [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.power_user)]
-    public async Task<IActionResult> UpdateProperties(ObjPropsDTO updatedMarker)
+    public async Task<ActionResult<ObjPropsDTO>> UpdateProperties(ObjPropsDTO updatedMarker)
     {
       await _mapUpdateService.UpdateProperties(updatedMarker);
 
@@ -520,46 +514,24 @@ namespace LeafletAlarms.Controllers
     [HttpDelete]
     public async Task<IActionResult> Delete(List<string> ids)
     {
-      HashSet<string> idsToDelete = new HashSet<string>();
-
-      foreach(var id in ids)
-      {
-        var marker = await _mapService.GetAsync(id);
-
-        if (marker is null)
-        {
-          continue; ;
-        }
-
-        var markers = await _mapService.GetAllChildren(id);
-        var bunchIds = markers.Select(m => m.id).ToHashSet();
-        idsToDelete.Add(marker.id);
-        idsToDelete.UnionWith(bunchIds);        
-      }
-
-      var listToDelete = idsToDelete.ToList();
-
-      await _geoService.RemoveAsync(listToDelete);
-      await _mapService.RemoveAsync(listToDelete);
-      await _diagramService.RemoveAsync(listToDelete);
-
+      HashSet<string> idsToDelete = await _mapUpdateService.Delete(ids);
       var ret = CreatedAtAction(nameof(Delete), null, idsToDelete);
       return ret;
     }
 
-    [HttpPost]
-    [Route("UpdatePropNotDeleteAsync")]
-    public async Task<ActionResult<ObjPropsDTO>> UpdatePropNotDeleteAsync(ObjPropsDTO updatedObj)
-    {
-      await _mapService.UpdatePropNotDeleteAsync(new List<ObjPropsDTO>() { updatedObj });
-      return CreatedAtAction(nameof(UpdateFigures), updatedObj);
-    }
+    //[HttpPost]
+    //[Route("UpdatePropNotDeleteAsync")]
+    //public async Task<ActionResult<ObjPropsDTO>> UpdatePropNotDeleteAsync(ObjPropsDTO updatedObj)
+    //{
+    //  await _mapService.UpdatePropNotDeleteAsync(new List<ObjPropsDTO>() { updatedObj });
+    //  return CreatedAtAction(nameof(UpdateFigures), updatedObj);
+    //}
 
     [HttpPost]
     [Route("UpdateFigures")]
     public async Task<ActionResult<FiguresDTO>> UpdateFigures(FiguresDTO statMarkers)
     {
-      await _trackUpdateService.UpdateFigures(statMarkers);
+      await _mapUpdateService.UpdateFigures(statMarkers);
 
       return CreatedAtAction(nameof(UpdateFigures), statMarkers);
     }
