@@ -10,17 +10,13 @@ namespace LeafletAlarms.Controllers
   public class EventsController : ControllerBase
   {
     private readonly IEventsService _eventsService;
-    public EventsController(IEventsService eventsService)
+    private readonly IEventsUpdateService _eventsUpdateService;
+    public EventsController(
+      IEventsService eventsService, 
+      IEventsUpdateService eventsUpdateService)
     {
       _eventsService = eventsService;
-    }
-
-    [HttpPost()]
-    [Route("AddEvents")]
-    public async Task<long> AddEvents(List<EventDTO> events)
-    {
-      await _eventsService.InsertManyAsync(events);
-      return events.Count;
+      _eventsUpdateService = eventsUpdateService;
     }
 
     [HttpPost]
@@ -38,6 +34,13 @@ namespace LeafletAlarms.Controllers
     public async Task<long> ReserveCursor(string search_id)
     {
       return await _eventsService.ReserveCursor(search_id);
+    }
+
+    [HttpPost()]
+    [Route("AddEvents")]
+    public async Task<long> AddEvents(List<EventDTO> events)
+    {
+      return await _eventsUpdateService.AddEvents(events);
     }
   }
 }

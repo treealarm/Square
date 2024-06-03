@@ -93,7 +93,7 @@ namespace LeafletAlarms
       services.AddSingleton<IMapUpdateService, MapUpdateService>();
       services.AddSingleton<IDiagramUpdateService, DiagramUpdateService>();
       services.AddSingleton<IDiagramTypeUpdateService, DiagramTypeUpdateService>();
-      
+      services.AddSingleton<IEventsUpdateService, EventsUpdateService>();      
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();
