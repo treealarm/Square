@@ -12,17 +12,20 @@ namespace LeafletAlarms.Controllers
   {
     private readonly IDiagramTypeService _diagramTypeService;
     private readonly IDiagramService _diagramService;
-    private readonly IMapService _mapService;    
+    private readonly IMapService _mapService;
+    private readonly IDiagramUpdateService _diagramUpdateService;
 
     public DiagramsController(
      IDiagramTypeService diagramTypeService,
      IDiagramService diagramService,
-     IMapService mapService
+     IMapService mapService,
+     IDiagramUpdateService diagramUpdateService
     )
     {
       _diagramTypeService = diagramTypeService;
       _diagramService = diagramService;
       _mapService = mapService;
+      _diagramUpdateService = diagramUpdateService;
     }
 
     [HttpGet()]
@@ -158,10 +161,7 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateDiagrams")]
     public async Task<List<DiagramDTO>> UpdateDiagrams(List<DiagramDTO> dgrs)
     {
-      await _mapService.UpdateHierarchyAsync(dgrs);
-      await _diagramService.UpdateListAsync(dgrs);
-      //await _mapService.UpdatePropAsync(dgrs);
-      return dgrs;
+      return await _diagramUpdateService.UpdateDiagrams(dgrs);
     }
   }
 }

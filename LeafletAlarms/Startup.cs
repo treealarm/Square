@@ -91,6 +91,7 @@ namespace LeafletAlarms
 
       services.AddSingleton<ValhallaRouter>();
       services.AddSingleton<IMapUpdateService, MapUpdateService>();
+      services.AddSingleton<IDiagramUpdateService, DiagramUpdateService>();
       
 
       services.AddHttpContextAccessor();
