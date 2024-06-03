@@ -34,23 +34,6 @@ namespace LeafletAlarms.Controllers
       _tracksService = tracksService;
     }
 
-
-    [AllowAnonymous]
-    [HttpGet()]
-    [Route("GetHello")]
-    public  List<string> GetHello()
-    {
-      return new List<string>() { "Hello world" };
-    }
-
-    [HttpPost]
-    [Route("AddTracks")]
-    public async Task<ActionResult<List<string>>> AddTracks(List<TrackPointDTO> movedMarkers)
-    {
-      var retVal = await _trackUpdateService.AddTracks(movedMarkers);
-      return CreatedAtAction(nameof(AddTracks), retVal);
-    }
-
     [HttpPost]
     [Route("GetTracksByBox")]
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
@@ -76,6 +59,14 @@ namespace LeafletAlarms.Controllers
       retVal.list = await _tracksService.GetTracksByFilter(filter);        
 
       return CreatedAtAction(nameof(GetByFilter), retVal);
+    }
+
+    [HttpPost]
+    [Route("AddTracks")]
+    public async Task<ActionResult<List<string>>> AddTracks(List<TrackPointDTO> movedMarkers)
+    {
+      var retVal = await _trackUpdateService.AddTracks(movedMarkers);
+      return CreatedAtAction(nameof(AddTracks), retVal);
     }
   }
 }

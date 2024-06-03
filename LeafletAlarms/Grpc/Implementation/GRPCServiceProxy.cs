@@ -15,18 +15,18 @@ namespace LeafletAlarms.Grpc.Implementation
   {
     private readonly ITracksUpdateService _trackUpdateService;
     private readonly IStatesUpdateService _statesUpdateService;
-    private readonly IEventsService _eventsService;
+    private readonly IEventsUpdateService _eventsUpdateService;
     private readonly FileSystemService _fs;
     public GRPCServiceProxy(
       ITracksUpdateService trackUpdateService,
       IStatesUpdateService statesUpdateService,
-      IEventsService eventsService,
+      IEventsUpdateService eventsUpdateService,
       FileSystemService fs
     )
     {
       _trackUpdateService = trackUpdateService;
       _statesUpdateService = statesUpdateService;
-      _eventsService = eventsService;
+      _eventsUpdateService = eventsUpdateService;
       _fs = fs;
     }
     private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
@@ -286,7 +286,7 @@ namespace LeafletAlarms.Grpc.Implementation
         }
         list.Add(pEvent);
       }
-      var count = await _eventsService.InsertManyAsync(list);
+      var count = await _eventsUpdateService.AddEvents(list);
       return new BoolValue() { Value = count == list.Count};
     }
   }
