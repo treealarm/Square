@@ -6,8 +6,8 @@ namespace Domain.ServiceInterfaces
 {
   public interface IRightService
   {
-    public Task UpdateListAsync(List<ObjectRightsDTO> obj2UpdateIn);
-    public Task DeleteAsync(string id);
+    public Task<long> UpdateListAsync(List<ObjectRightsDTO> obj2UpdateIn);
+    public Task<long> DeleteAsync(string id);
     public Task<Dictionary<string, ObjectRightsDTO>> GetListByIdsAsync(List<string> ids);
   }
 }

@@ -11,13 +11,10 @@ namespace LeafletAlarms.Controllers
   public class FilesController  : ControllerBase
   {
     private readonly string _imagesFolder = "static_files";
-    private readonly IOptions<RoutingSettings> _routingSettings;
     private readonly FileSystemService _fs;
     public FilesController(
-      IOptions<RoutingSettings> routingSettings,
       FileSystemService fs)
     {
-      _routingSettings = routingSettings;
       _fs = fs;
     }
 

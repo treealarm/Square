@@ -14,43 +14,17 @@ namespace LeafletAlarms.Controllers
   public class RightsController: ControllerBase
   {
     private readonly IRightService _rightsService;
+    private readonly IRightUpdateService _rightUpdateService;
     private readonly KeyCloakConnectorService _kcService;
     public RightsController(
       IRightService rightsService,
-      KeyCloakConnectorService kcService
+      KeyCloakConnectorService kcService,
+      IRightUpdateService rightUpdateService
     )
     {
       _rightsService = rightsService;
       _kcService = kcService;
-    }
-
-    [HttpPost]
-    [Route("UpdateRights")]
-    public async Task<ActionResult<List<ObjectRightsDTO>>> Update(List<ObjectRightsDTO> newObjs)
-    {
-      await _rightsService.UpdateListAsync(newObjs);
-      return CreatedAtAction(nameof(Update), newObjs);
-    }
-
-    [HttpDelete("{id:length(24)}")]
-    public async Task<IActionResult> Delete(string id)
-    {
-      try
-      {
-        await _rightsService.DeleteAsync(id);
-      }
-      catch (Exception ex)
-      {
-        return StatusCode(
-          StatusCodes.Status500InternalServerError,
-          ex.Message
-        );
-      }
-
-      var listIds = new List<string>() { id };
-
-      var ret = CreatedAtAction(nameof(Delete), null, id);
-      return ret;
+      _rightUpdateService = rightUpdateService;
     }
 
     [HttpGet("{id:length(24)}")]
@@ -72,9 +46,7 @@ namespace LeafletAlarms.Controllers
     {
       var data = await _rightsService.GetListByIdsAsync(ids);
       return data.Values.ToList();
-    }
-
-    
+    }    
     
 
     [HttpGet()]
@@ -105,6 +77,35 @@ namespace LeafletAlarms.Controllers
         };
         ret.Add(element);
       }
+      return ret;
+    }
+
+    [HttpPost]
+    [Route("UpdateRights")]
+    public async Task<ActionResult<List<ObjectRightsDTO>>> Update(List<ObjectRightsDTO> newObjs)
+    {
+      await _rightUpdateService.Update(newObjs);
+      return CreatedAtAction(nameof(Update), newObjs);
+    }
+
+    [HttpDelete("{id:length(24)}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+      try
+      {
+        await _rightUpdateService.Delete(id);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(
+          StatusCodes.Status500InternalServerError,
+          ex.Message
+        );
+      }
+
+      var listIds = new List<string>() { id };
+
+      var ret = CreatedAtAction(nameof(Delete), null, id);
       return ret;
     }
   }

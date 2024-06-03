@@ -47,10 +47,11 @@ namespace DbLayer.Services
       }
     }
 
-    async Task IRightService.DeleteAsync(string id)
+    async Task<long> IRightService.DeleteAsync(string id)
     {
-      await _coll.DeleteOneAsync(
+      var result = await _coll.DeleteOneAsync(
           x => x.id == id);
+      return result.DeletedCount;
     }
 
     async Task<Dictionary<string, ObjectRightsDTO>> IRightService.GetListByIdsAsync(
@@ -71,7 +72,7 @@ namespace DbLayer.Services
       return ConvertListStateDB2DTO(obj);
     }
 
-    async Task IRightService.UpdateListAsync(List<ObjectRightsDTO> newObjs)
+    async Task<long> IRightService.UpdateListAsync(List<ObjectRightsDTO> newObjs)
     {
       var dbUpdated = new Dictionary<ObjectRightsDTO, DBObjectRights>();
       var bulkWrites = new List<WriteModel<DBObjectRights>>();
@@ -101,6 +102,7 @@ namespace DbLayer.Services
       {
         pair.Key.id = pair.Value.id;
       }
+      return writeResult.ModifiedCount;
     }
 
     DBObjectRights ConvertRightDTO2DB(ObjectRightsDTO dto)
