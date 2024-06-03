@@ -113,7 +113,7 @@ namespace DbLayer.Services
       }
     }
 
-    public async Task InsertManyAsync(List<RoutLineDTO> newObjs)
+    public async Task<long> InsertManyAsync(List<RoutLineDTO> newObjs)
     {
       List<DBRoutLine> list = new List<DBRoutLine>();
 
@@ -127,6 +127,7 @@ namespace DbLayer.Services
         }
       }
       await _collRoutes.InsertManyAsync(list);
+      return (long)newObjs.Count;
     }
 
     private DBRoutLine ConvertDTO2DB(RoutLineDTO track)

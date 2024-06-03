@@ -10,7 +10,7 @@ namespace Domain.ServiceInterfaces
 {
   public interface IRoutService
   {
-    Task InsertManyAsync(List<RoutLineDTO> newObjs);
+    Task<long> InsertManyAsync(List<RoutLineDTO> newObjs);
     Task<List<RoutLineDTO>> GetByIdsAsync(List<string> ids);
     Task<List<string>> GetProcessedIdsAsync(List<string> ids);
     Task<List<RoutLineDTO>> GetRoutesByBox(BoxTrackDTO box);

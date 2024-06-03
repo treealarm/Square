@@ -18,20 +18,23 @@ namespace LeafletAlarms.Controllers
   public class RouterController : ControllerBase
   {
     private readonly ValhallaRouter _valhalla_router;
-    private IRoutService _routService;
+    private readonly IRoutService _routService;
+    private readonly IRoutUpdateService _routUpdateService;
     private readonly IMapService _mapService;
-    private IPubService _pub;
+    private readonly IPubService _pub;
     public RouterController(
       IPubService pubsub,
       IRoutService routService,
       IMapService mapService,
-      ValhallaRouter vrouter
+      ValhallaRouter vrouter,
+      IRoutUpdateService routUpdateService
     )
     {
       _routService = routService;
       _mapService = mapService;
       _pub = pubsub;
       _valhalla_router = vrouter;
+      _routUpdateService = routUpdateService;
     }
 
     private async Task AddIdsByProperties(BoxTrackDTO box)
@@ -146,7 +149,7 @@ namespace LeafletAlarms.Controllers
     {
       if (newObjs.Count > 0)
       {
-        await _routService.InsertManyAsync(newObjs);
+        await _routUpdateService.InsertRoutes(newObjs);
       }
     }
   }
