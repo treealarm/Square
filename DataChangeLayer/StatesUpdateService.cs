@@ -1,10 +1,11 @@
-﻿using Domain.PubSubTopics;
+﻿
+using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
 
-namespace LeafletAlarms.Services
+namespace DataChangeLayer
 {
-  public class StatesUpdateService
+  public class StatesUpdateService: IStatesUpdateService
   {
     private readonly IStateService _stateService;
     IPubService _pub;
@@ -25,6 +26,11 @@ namespace LeafletAlarms.Services
       await _pub.Publish(Topics.CheckStatesByIds, newObjs.Select(st => st.id).ToList());
 
       return true;
+    }
+
+    public async Task<long> UpdateStateDescrs(List<ObjectStateDescriptionDTO> newObjs)
+    {
+      return await _stateService.UpdateStateDescrsAsync(newObjs);
     }
   }
 }

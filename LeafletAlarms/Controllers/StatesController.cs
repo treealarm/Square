@@ -13,11 +13,11 @@ namespace LeafletAlarms.Controllers
   {
     private readonly IStateService _stateService;
     private readonly IMapService _mapService;
-    private readonly StatesUpdateService _statesUpdateService;
+    private readonly IStatesUpdateService _statesUpdateService;
     public StatesController(
       IStateService stateService,
       IMapService mapService,
-      StatesUpdateService statesUpdateService
+      IStatesUpdateService statesUpdateService
     )
     {
       _stateService = stateService;
@@ -42,24 +42,6 @@ namespace LeafletAlarms.Controllers
     {
       var data = await _stateService.GetStatesAsync(ids);
       return data;
-    }
-
-    [HttpPost]
-    [Route("UpdateStates")]
-    public async Task<ActionResult<int>> UpdateStates(List<ObjectStateDTO> newObjs)
-    {
-      await _statesUpdateService.UpdateStates(newObjs);
-
-      return CreatedAtAction(nameof(UpdateStates), StatusCodes.Status200OK);
-    }
-
-    [HttpPost]
-    [Route("UpdateStateDescrs")]
-    public async Task<ActionResult<int>> UpdateStateDescrs(List<ObjectStateDescriptionDTO> newObjs)
-    {
-      await _stateService.UpdateStateDescrsAsync(newObjs);
-
-      return CreatedAtAction(nameof(UpdateStateDescrs), StatusCodes.Status200OK);
     }
 
     [HttpPost]
@@ -114,6 +96,22 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(GetVisualStates), vStateDTO);
     }
 
-    
+    [HttpPost]
+    [Route("UpdateStates")]
+    public async Task<ActionResult<int>> UpdateStates(List<ObjectStateDTO> newObjs)
+    {
+      await _statesUpdateService.UpdateStates(newObjs);
+
+      return CreatedAtAction(nameof(UpdateStates), StatusCodes.Status200OK);
+    }
+
+    [HttpPost]
+    [Route("UpdateStateDescrs")]
+    public async Task<ActionResult<int>> UpdateStateDescrs(List<ObjectStateDescriptionDTO> newObjs)
+    {
+      await _statesUpdateService.UpdateStateDescrs(newObjs);
+
+      return CreatedAtAction(nameof(UpdateStateDescrs), StatusCodes.Status200OK);
+    }
   }
 }

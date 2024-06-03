@@ -7,27 +7,23 @@ using Google.Protobuf.WellKnownTypes;
 using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
 using Domain.ServiceInterfaces;
-using Microsoft.Extensions.Logging;
 using Domain.Events;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
   public class GRPCServiceProxy
   {
-    private readonly ILogger<GRPCServiceProxy> _logger;
     private readonly ITracksUpdateService _trackUpdateService;
-    private readonly StatesUpdateService _statesUpdateService;
+    private readonly IStatesUpdateService _statesUpdateService;
     private readonly IEventsService _eventsService;
     private readonly FileSystemService _fs;
     public GRPCServiceProxy(
-      ILogger<GRPCServiceProxy> logger,
       ITracksUpdateService trackUpdateService,
-      StatesUpdateService statesUpdateService,
+      IStatesUpdateService statesUpdateService,
       IEventsService eventsService,
       FileSystemService fs
     )
     {
-      _logger = logger;
       _trackUpdateService = trackUpdateService;
       _statesUpdateService = statesUpdateService;
       _eventsService = eventsService;
@@ -35,7 +31,7 @@ namespace LeafletAlarms.Grpc.Implementation
     }
     private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
     {
-      var geo = new GeometryDTO();
+      GeometryDTO geo;
 
       if (geometry.Type == "Polygon" || geometry.Type == "LineString")
       {

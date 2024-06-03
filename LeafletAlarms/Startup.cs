@@ -84,7 +84,7 @@ namespace LeafletAlarms
       services.AddSingleton<WebSockListService>(); // We must explicitly register Foo
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>()); // Forward requests to Foo
       services.AddSingleton<ITracksUpdateService, TracksUpdateService>();
-      services.AddSingleton<StatesUpdateService>();
+      services.AddSingleton<IStatesUpdateService, StatesUpdateService>();
 
       services.AddSingleton<GRPCServiceProxy>();
       services.AddSingleton<FileSystemService>();

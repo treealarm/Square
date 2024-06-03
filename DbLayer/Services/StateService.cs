@@ -137,7 +137,7 @@ namespace DbLayer.Services
       await Task.Delay(0);
     }
 
-    public async Task UpdateStatesAsync(List<ObjectStateDTO> newObjs)
+    public async Task<long> UpdateStatesAsync(List<ObjectStateDTO> newObjs)
     {
       var dbUpdated = new Dictionary<ObjectStateDTO, DBObjectState>();
       var bulkWrites = new List<WriteModel<DBObjectState>>();
@@ -167,8 +167,9 @@ namespace DbLayer.Services
       {
         pair.Key.id = pair.Value.id;
       }
+      return writeResult.ModifiedCount;
     }
-    public async Task UpdateStateDescrsAsync(List<ObjectStateDescriptionDTO> newObjs)
+    public async Task<long> UpdateStateDescrsAsync(List<ObjectStateDescriptionDTO> newObjs)
     {
       var objsToUpdate = ConvertListStateDescrDTO2DB(newObjs);
 
@@ -180,6 +181,7 @@ namespace DbLayer.Services
       }
 
       await CollStateDescr?.InsertManyAsync(objsToUpdate);
+      return (long)objsToUpdate.Count;
     }
 
     List<ObjectStateDTO> ConvertListStateDB2DTO(List<DBObjectState> dbo)
