@@ -6,6 +6,7 @@ services:
      - mongoservice
      - keycloakservice
      - redisservice
+     - blinkservice
     build:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
@@ -52,6 +53,14 @@ services:
       - .env
     ports:
       - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
+
+  blinkservice:
+    image: ${DOCKER_REGISTRY-}blinkservice
+    build:
+      context: .
+      dockerfile: BlinkService/Dockerfile
+    env_file:
+      - global.env
   
   mongoservice:
     image : mongo

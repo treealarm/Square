@@ -37,7 +37,7 @@ namespace Domain
           underlyingType == typeof(Guid);
     }
 
-    public static void CopyAllTo<T, T1>(this T source, T1 target)
+    public static void CopyAllToJson<T, T1>(this T source, T1 target)
     {
       if (source == null)
       {
@@ -65,7 +65,7 @@ namespace Domain
       }
     }
 
-    public static void CopyAllTo1<T, T1>(this T source, T1 target)
+    public static void CopyAllTo<T, T1>(this T source, T1 target)
     {
       var type = typeof(T);
       var type1 = typeof(T1);

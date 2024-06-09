@@ -11,7 +11,8 @@
         "routermicroservice": "StartWithoutDebugging",
         "redisservice": "StartWithoutDebugging",
         "mongoservice": "StartWithoutDebugging",
-        "grpctracksclient": "StartDebugging"
+        "grpctracksclient": "StartDebugging",
+        "blinkservice": "StartDebugging"
       }
     }
   }

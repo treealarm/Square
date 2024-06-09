@@ -7,6 +7,9 @@
         "MapDatabase__ConnectionString": "mongodb://mongoservice:27017",
         "MapDatabase__DatabaseName": "MapStore"
       }
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
     }
   }
 }
