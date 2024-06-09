@@ -23,10 +23,49 @@ namespace Domain
 
     private static bool IsSimpleType(Type type)
     {
-      return type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(decimal) || type == typeof(DateTime);
+      // Проверка, является ли тип Nullable и если да, получить базовый тип
+      var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+
+      return
+          underlyingType.IsPrimitive ||
+          underlyingType.IsEnum ||
+          underlyingType == typeof(string) ||
+          underlyingType == typeof(decimal) ||
+          underlyingType == typeof(DateTime) ||
+          underlyingType == typeof(bool) ||
+          underlyingType == typeof(TimeSpan) ||
+          underlyingType == typeof(Guid);
     }
 
     public static void CopyAllTo<T, T1>(this T source, T1 target)
+    {
+      if (source == null)
+      {
+        throw new ArgumentNullException(nameof(source));
+      }
+
+      if (target == null)
+      {
+        throw new ArgumentNullException(nameof(target));
+      }
+
+      // Сериализация источника в JSON и десериализация в промежуточный объект
+      var json = JsonSerializer.Serialize(source);
+      var tempTarget = JsonSerializer.Deserialize<T1>(json);
+
+      if (tempTarget != null)
+      {
+        foreach (var property in typeof(T1).GetProperties())
+        {
+          if (property.CanWrite)
+          {
+            property.SetValue(target, property.GetValue(tempTarget));
+          }
+        }
+      }
+    }
+
+    public static void CopyAllTo1<T, T1>(this T source, T1 target)
     {
       var type = typeof(T);
       var type1 = typeof(T1);

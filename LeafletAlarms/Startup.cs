@@ -79,8 +79,6 @@ namespace LeafletAlarms
 
       services.AddSingleton<IEventsService, EventsService>();
 
-      services.AddHostedService<HierarhyStateService>();
-
       services.AddSingleton<WebSockListService>(); // We must explicitly register Foo
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>()); // Forward requests to Foo
       services.AddSingleton<ITracksUpdateService, TracksUpdateService>();

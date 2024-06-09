@@ -2,11 +2,11 @@
 using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
-using PubSubLib;
+using Microsoft.Extensions.Hosting;
 using System.Collections.Concurrent;
 using System.Text.Json;
 
-namespace LeafletAlarms.Services
+namespace BlinkService
 {
   public class HierarhyStateService : IHostedService, IDisposable
   {
