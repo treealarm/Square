@@ -463,7 +463,7 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public async Task OnBlinkStateChanged(List<AlarmObject> alarms)
+    public async Task OnBlinkStateChanged(List<AlarmState> alarms)
     {
       var toUpdate = new List<AlarmState>();
 
@@ -473,7 +473,7 @@ namespace LeafletAlarms.Services
         {
           if (_dicIds.Contains(state.id))
           {
-            toUpdate.Add(new AlarmState() { id = state.id, alarm = state.alarm || state.children_alarms > 0});
+            toUpdate.Add(state);
           }
         }
       }

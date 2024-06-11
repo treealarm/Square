@@ -32,5 +32,11 @@ namespace DataChangeLayer
     {
       return await _stateService.UpdateStateDescrsAsync(newObjs);
     }
+
+    public async Task UpdateAlarmStatesAsync(List<AlarmState> alarms)
+    {
+      await _stateService.UpdateAlarmStatesAsync(alarms);
+      await _pub.Publish(Topics.OnBlinkStateChanged, alarms);
+    }
   }
 }

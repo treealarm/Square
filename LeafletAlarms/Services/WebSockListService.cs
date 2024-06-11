@@ -135,7 +135,7 @@ namespace LeafletAlarms.Services
 
     public async Task OnBlinkStateChanged(string channel, string message)
     {
-      var state = JsonSerializer.Deserialize<List<AlarmObject>>(message);
+      var state = JsonSerializer.Deserialize<List<AlarmState>>(message);
 
       if (state == null)
       {

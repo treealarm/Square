@@ -13,10 +13,11 @@ namespace BlinkService
     private Task _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
 
-    private IPubService _pub;
-    private ISubService _sub;
-    private IMapService _mapService;
-    private IStateService _stateService;
+    private readonly IPubService _pub;
+    private readonly ISubService _sub;
+    private readonly IMapService _mapService;
+    private readonly IStateService _stateService;
+    private readonly IStatesUpdateService _stateUpdateService;
 
     private Dictionary<string, AlarmObject> m_Hierarhy = new Dictionary<string, AlarmObject>();
     private ConcurrentDictionary<string,string> _idsUpdated = new ConcurrentDictionary<string,string>();
@@ -24,13 +25,15 @@ namespace BlinkService
       IPubService pub,
       ISubService sub,
       IMapService mapService,
-      IStateService stateService
+      IStateService stateService,
+      IStatesUpdateService stateUpdateService
     )
     {
       _pub = pub;
       _sub = sub;
       _mapService = mapService;
-      _stateService = stateService;      
+      _stateService = stateService;   
+      _stateUpdateService = stateUpdateService;
     }
 
     public async Task Init()
@@ -57,7 +60,7 @@ namespace BlinkService
       if (alarmObject != null)
       {
         return alarmObject;
-      }
+      }     
 
       alarmObject = new AlarmObject();
       marker.CopyAllTo(alarmObject);
@@ -175,10 +178,14 @@ namespace BlinkService
 
       if (blinkChanges.Count > 0)
       {
-        await _stateService.UpdateAlarmStatesAsync(
-          blinkChanges.Select(t => new AlarmState() { id = t.id, alarm = t.alarm || t.children_alarms > 0 }).ToList()
-          );
-        await _pub.Publish(Topics.OnBlinkStateChanged, blinkChanges);
+        // Write alarm to DB/
+        await _stateUpdateService.UpdateAlarmStatesAsync(
+          blinkChanges.Select(t => new AlarmState() 
+            { 
+              id = t.id, 
+              alarm = t.alarm || t.children_alarms > 0 
+            }).ToList()
+          );        
       }
     }
 

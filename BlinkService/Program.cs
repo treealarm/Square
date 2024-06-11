@@ -1,4 +1,5 @@
-﻿using DbLayer.Services;
+﻿using DataChangeLayer;
+using DbLayer.Services;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +32,8 @@ namespace BlinkService
         services.AddSingleton<IPubService, PubService>();
         services.AddSingleton<IMapService, MapService>();
         services.AddSingleton<IStateService, StateService>();
-        
+        services.AddSingleton<IStatesUpdateService, StatesUpdateService>();
+
         services.AddHostedService<HierarhyStateService>();
       })
       .Build();
