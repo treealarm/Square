@@ -38,5 +38,10 @@ namespace DataChangeLayer
       await _stateService.UpdateAlarmStatesAsync(alarms);
       await _pub.Publish(Topics.OnBlinkStateChanged, alarms);
     }
+
+    public async Task DropStateAlarms()
+    {
+      await _stateService.DropStateAlarms();
+    }
   }
 }

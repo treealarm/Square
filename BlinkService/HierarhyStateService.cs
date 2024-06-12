@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using DataChangeLayer;
+using Domain;
 using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
@@ -189,22 +190,23 @@ namespace BlinkService
       }
     }
 
-    Task IHostedService.StartAsync(CancellationToken cancellationToken)
+    async Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
-      _sub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
+      await _stateUpdateService.DropStateAlarms();
+      await _sub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 
-      return Task.CompletedTask;
+      //return Task.CompletedTask;
     }
 
-    Task IHostedService.StopAsync(CancellationToken cancellationToken)
+    async Task IHostedService.StopAsync(CancellationToken cancellationToken)
     {
-      _sub.Unsubscribe(Topics.CheckStatesByIds, CheckStatesByIds);
+      await _sub.Unsubscribe(Topics.CheckStatesByIds, CheckStatesByIds);
       _cancellationToken.Cancel();
       _timer?.Wait();
 
-      return Task.CompletedTask;
+      //return Task.CompletedTask;
     }
 
     public void Dispose()

@@ -10,5 +10,6 @@ namespace Domain.ServiceInterfaces
     public Task<bool> UpdateStates(List<ObjectStateDTO> newObjs);
     public Task<long> UpdateStateDescrs(List<ObjectStateDescriptionDTO> newObjs);
     public Task UpdateAlarmStatesAsync(List<AlarmState> alarms);
+    public Task DropStateAlarms();
   }
 }

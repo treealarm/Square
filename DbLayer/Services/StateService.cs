@@ -422,5 +422,14 @@ namespace DbLayer.Services
       }
       return retVal;
     }
+    async Task IStateService.DropStateAlarms()
+    {
+      if (CollAlarms != null)
+      {
+        await _collAlarms
+        .Database
+        .DropCollectionAsync(_geoStoreDatabaseSettings.Value.StateAlarmsCollectionName);
+      }      
+    }
   }
 }
