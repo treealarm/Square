@@ -17,6 +17,5 @@ namespace DbLayer
 
     [BsonElement("name")]
     public string name { get; set; }
-    public string external_type { get; set; }
   }
 }

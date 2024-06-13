@@ -39,7 +39,6 @@ message ProtoFig {
 	string id = 5;
 	optional string parent_id = 6;
 	string name = 7;
-	optional string external_type = 8;	
 }
 
 message ProtoFigures {

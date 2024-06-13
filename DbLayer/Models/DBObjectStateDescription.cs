@@ -16,7 +16,5 @@ namespace DbLayer.Models
     public string state { get; set; }
     public string state_descr { get; set; }
     public string state_color { get; set; }
-    [BsonIgnoreIfNull]
-    public string external_type { get; set; }
   }
 }

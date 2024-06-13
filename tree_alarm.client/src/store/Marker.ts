@@ -216,7 +216,6 @@ export interface ObjectStateDescriptionDTO {
   state: string;
   state_descr: string;
   state_color: string;
-  external_type: string
 }
 
 export interface AlarmObject {

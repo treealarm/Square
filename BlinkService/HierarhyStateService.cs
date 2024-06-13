@@ -139,15 +139,18 @@ namespace BlinkService
       return blinkChanges;
     }
 
-
-    private async Task ProcessIds(List<string> objIds)
+    private async Task ProcessStates(List<ObjectStateDTO> objStates)
     {
       List<AlarmObject> blinkChanges = new List<AlarmObject>();
+      var objsToUpdate = await _mapService.GetAsync(objStates.Select(i => i.id).ToList());
+      var allStates = new HashSet<string>();
+      foreach (var objState in objStates)
+      {
+        allStates.UnionWith(objState.states);
+      }
 
-      var objStates = await _stateService.GetStatesAsync(objIds);
-      var objsToUpdate = await _mapService.GetAsync(objIds);
-
-      Dictionary<string, List<string>> mapExTypeToStates = new Dictionary<string, List<string>>();
+      var alarmedStateDescr = await _stateService
+                    .GetAlarmStatesDescr(allStates.ToList());
 
       foreach (var objState in objStates)
       {
@@ -159,21 +162,9 @@ namespace BlinkService
           continue;
         }
 
-        if (objToUpdate.external_type == null)
-        {
-          objToUpdate.external_type = string.Empty;
-        }
-
-        ObjectStateDescriptionDTO alarmedStateDescr = null;
-
-        if (objState.states.Count > 0)
-        {
-          var stateDescrs = await _stateService
-                    .GetStateDescrAsync(objToUpdate.external_type, objState.states);
-          alarmedStateDescr = stateDescrs.Where(st => st.alarm == true).FirstOrDefault();
-        }
-
-        var alarmedList = await SetAlarm(objToUpdate, alarmedStateDescr != null);
+        bool isAlarmed = objState.states.Any(s => alarmedStateDescr.ContainsKey(s));
+        
+        var alarmedList = await SetAlarm(objToUpdate, isAlarmed);
         blinkChanges.AddRange(alarmedList);
       }
 
@@ -181,19 +172,34 @@ namespace BlinkService
       {
         // Write alarm to DB/
         await _stateUpdateService.UpdateAlarmStatesAsync(
-          blinkChanges.Select(t => new AlarmState() 
-            { 
-              id = t.id, 
-              alarm = t.alarm || t.children_alarms > 0 
-            }).ToList()
-          );        
+          blinkChanges.Select(t => new AlarmState()
+          {
+            id = t.id,
+            alarm = t.alarm || t.children_alarms > 0
+          }).ToList()
+          );
       }
+    }
+    private async Task ProcessIds(List<string> objIds)
+    {
+      var objStates = await _stateService.GetStatesAsync(objIds);
+
+      await ProcessStates(objStates);
     }
 
     async Task IHostedService.StartAsync(CancellationToken cancellationToken)
     {
       await _stateUpdateService.DropStateAlarms();
+      var initialAlarmedStates = await _stateService.GetAlarmedStates(null);
       await _sub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
+
+      int maxProcess = 10000;
+
+      for (int i = 0; i < initialAlarmedStates.Count; i += maxProcess)
+      {
+        await ProcessStates(initialAlarmedStates.Skip(i).Take(maxProcess).ToList());
+      }
+
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 

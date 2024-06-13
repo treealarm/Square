@@ -1,4 +1,5 @@
 ﻿using DbLayer.Models;
+using DbLayer.Models.Diagrams;
 using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
@@ -83,7 +84,6 @@ namespace DbLayer.Services
       {
         IndexKeysDefinition<DBObjectStateDescription> keys =
                 new IndexKeysDefinitionBuilder<DBObjectStateDescription>()
-                .Ascending(d => d.external_type)
                 .Ascending(d => d.alarm)
                 .Ascending(d => d.state)
                 ;
@@ -176,7 +176,7 @@ namespace DbLayer.Services
       foreach (var updatedObj in objsToUpdate)
       {
         await CollStateDescr?.DeleteOneAsync(
-          x => x.state == updatedObj.state && x.external_type == updatedObj.external_type
+          x => x.state == updatedObj.state
         );
       }
 
@@ -240,8 +240,7 @@ namespace DbLayer.Services
           state = dbObj.state,
           state_color = dbObj.state_color.ToString(),
           state_descr = dbObj.state_descr,
-          alarm = dbObj.alarm,
-          external_type = dbObj.external_type
+          alarm = dbObj.alarm
         };
         newObjs.Add(dto);
       }
@@ -267,8 +266,7 @@ namespace DbLayer.Services
           state = dbObj.state,
           state_color = dbObj.state_color,
           state_descr = dbObj.state_descr,
-          alarm = dbObj.alarm ?? false,
-          external_type = dbObj.external_type
+          alarm = dbObj.alarm ?? false
         };
         newObjs.Add(dto);
       }
@@ -291,97 +289,18 @@ namespace DbLayer.Services
       return ConvertListStateDB2DTO(obj);
     }
 
-    Dictionary<string, List<ObjectStateDescriptionDTO>> _cashStateDescr = 
-      new Dictionary<string, List<ObjectStateDescriptionDTO>>();
-    public async Task<List<ObjectStateDescriptionDTO>> GetStateDescrByExternalTypeAsync(
-      string external_type
-    )
-    {
-      List<DBObjectStateDescription> obj = null;
-
-      var f1 = Builders<DBObjectStateDescription>.Filter.Exists(external_type, false)
-              | Builders<DBObjectStateDescription>.Filter.Eq(el => el.external_type, null)
-              | Builders<DBObjectStateDescription>.Filter.Eq(el => el.external_type, String.Empty);
-
-      if (string.IsNullOrEmpty(external_type))
-      {
-        obj = await CollStateDescr?
-        .Find(f1)
-        .ToListAsync();
-      }
-      else
-      {
-        obj = await CollStateDescr?
-        .Find(t => t.external_type == external_type)
-        .ToListAsync();
-      }
-
-      return ConvertListStateDescrDB2DTO(obj);
-    }
-
     public async Task<List<ObjectStateDescriptionDTO>> GetStateDescrAsync(
-      string external_type,
       List<string> states
     )
     {
-      var et = external_type;
-
-      if (string.IsNullOrEmpty(et))
-      {
-        et = string.Empty;
-      }
-
-      lock (_cashStateDescr)
-      {
-        if (_cashStateDescr.TryGetValue(et, out var list))
-        {
-          if (states == null || states.Count == 0)
-          {
-            return list;
-          }
-          return list.Where(s => states.Contains(s.state)).ToList();
-        }
-      }      
-
-      var temp = await GetStateDescrByExternalTypeAsync(external_type);
-
-      lock (_cashStateDescr)
-      {
-        _cashStateDescr[et] = temp;
-      }
-
       List<DBObjectStateDescription> obj = null;
 
       try
       {
-        if (states == null || states.Count == 0)
-        {
-          return await GetStateDescrByExternalTypeAsync(external_type);
-        }
-        else
-        {
-          if (string.IsNullOrEmpty(external_type))
-          {
-            var f1 = Builders<DBObjectStateDescription>.Filter.Exists(external_type, false)
-              | Builders<DBObjectStateDescription>.Filter.Eq(el => el.external_type, null)
-              | Builders<DBObjectStateDescription>.Filter.Eq(el => el.external_type, String.Empty);
+        obj = await CollStateDescr?
+        .Find(s => states.Contains(s.state))
+        .ToListAsync();
 
-            var builder = Builders<DBObjectStateDescription>.Filter;
-            var filter = builder.Where(el => states.Contains(el.state));            
-
-            filter = filter & f1;
-
-            obj = await CollStateDescr?
-            .Find(filter)
-            .ToListAsync();
-          }
-          else
-          {
-            obj = await CollStateDescr?
-            .Find(s => s.external_type == external_type && states.Contains(s.state))
-            .ToListAsync();
-          }          
-        }        
       }
       catch (Exception)
       {
@@ -430,6 +349,83 @@ namespace DbLayer.Services
         .Database
         .DropCollectionAsync(_geoStoreDatabaseSettings.Value.StateAlarmsCollectionName);
       }      
+    }
+
+    //Task<Dictionary<string, ObjectStateDescriptionDTO>> IStateService.GetAlarmStatesDescr(List<string> statesFilter)
+    //{
+    //  throw new NotImplementedException();
+    //}
+    public async Task<Dictionary<string, ObjectStateDescriptionDTO>> GetAlarmStatesDescr(List<string> states)
+    {
+      // TODO make states unique.
+
+      List<DBObjectStateDescription> obj = null;
+
+      try
+      {
+        if(states != null)
+        {
+          obj = await CollStateDescr
+            .Find(s => s.alarm == true && states.Contains(s.state))
+            .ToListAsync();
+        }
+        else
+        {
+          obj = await CollStateDescr?.Find(s => s.alarm == true).ToListAsync();
+        }        
+      }
+      catch (Exception)
+      {
+
+      }
+      var retVal = new Dictionary<string, ObjectStateDescriptionDTO>();
+
+      if (obj != null)
+      {
+        var list = ConvertListStateDescrDB2DTO(obj);
+
+        foreach (var state in list)
+        {
+          retVal[state.state] = state;
+        }
+      }      
+      return retVal;
+    }
+
+    public async Task<List<ObjectStateDTO>> GetAlarmedStates(List<string> statesFilter)
+    {     
+      var retVal = new List<ObjectStateDTO>();
+
+      var alarmedDescr = await GetAlarmStatesDescr(statesFilter);
+
+      var builder = Builders<DBObjectState>.Filter;
+      var filter = builder.Empty;
+
+      foreach (var state in alarmedDescr)
+      {
+        if (filter == builder.Empty)
+        {
+          filter = Builders<DBObjectState>.Filter.Where(x => x.states.Contains(state.Value.state));
+        }
+        else 
+        {
+          filter = filter | Builders<DBObjectState>.Filter.Where(x => x.states.Contains(state.Value.state));
+        }          
+      }
+
+      using (var cursor = await _collState.FindAsync(filter, new FindOptions<DBObjectState>() { BatchSize = 1000 }))
+      {
+        var available =  await cursor.MoveNextAsync();
+
+        while (available)
+        {
+          var states = cursor.Current.ToList();
+          retVal.AddRange(ConvertListStateDB2DTO(states));
+          available = await cursor.MoveNextAsync();
+        }
+      }
+
+      return retVal;
     }
   }
 }

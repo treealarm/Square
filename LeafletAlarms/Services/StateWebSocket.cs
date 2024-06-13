@@ -414,7 +414,7 @@ namespace LeafletAlarms.Services
       {
         List<string> objIds = toUpdate.Select(el => el.id).ToList();
         var objsToUpdate = await _mapService.GetAsync(objIds);
-        Dictionary<string, List<string>> mapExTypeToStates = new Dictionary<string, List<string>>();
+        HashSet<string> mapExTypeToStates = new HashSet<string>();
 
         foreach (var objState in toUpdate)
         {
@@ -426,30 +426,13 @@ namespace LeafletAlarms.Services
             continue;
           }
 
-          List<string> listOfStates;
-
-          if (objToUpdate.external_type == null)
-          {
-            objToUpdate.external_type = string.Empty;
-          }
-
-          if (!mapExTypeToStates.TryGetValue(objToUpdate.external_type, out listOfStates))
-          {
-            listOfStates = new List<string>();
-            mapExTypeToStates.Add(objToUpdate.external_type, listOfStates);
-          }
-
-          listOfStates.AddRange(objState.states);
+          mapExTypeToStates.UnionWith(objState.states);
         }
 
         MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
         vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
 
-        foreach (var pair in mapExTypeToStates)
-        {
-          var stateDescrs = await _stateService.GetStateDescrAsync(pair.Key, pair.Value);
-          vStateDTO.states_descr.AddRange(stateDescrs);
-        }
+        vStateDTO.states_descr.AddRange(await _stateService.GetStateDescrAsync(mapExTypeToStates.ToList()));
 
         StateBaseDTO packet = new StateBaseDTO()
         {

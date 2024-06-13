@@ -28,11 +28,10 @@ namespace LeafletAlarms.Controllers
     [HttpPost()]
     [Route("GetStateDescr")]
     public async Task<List<ObjectStateDescriptionDTO>> GetStateDescr(
-      string external_type,
       List<string> states
     )
     {
-      var data = await _stateService.GetStateDescrAsync(external_type, states);
+      var data = await _stateService.GetStateDescrAsync(states);
       return data;
     }
 
@@ -53,7 +52,7 @@ namespace LeafletAlarms.Controllers
       var objStates = await _stateService.GetStatesAsync(objIds);
       var alarmStates = await _stateService.GetAlarmStatesAsync(objIds);
 
-      Dictionary<string, List<string>> mapExTypeToStates = new Dictionary<string, List<string>>();
+      var setStateDescriptions = new HashSet<string>();
 
       foreach (var objState in objStates)
       {
@@ -65,31 +64,15 @@ namespace LeafletAlarms.Controllers
           continue;
         }
 
-        List<string> listOfStates;
-
-        if (objToUpdate.external_type == null)
-        {
-          objToUpdate.external_type = string.Empty;
-        }
-
-        if (!mapExTypeToStates.TryGetValue(objToUpdate.external_type, out listOfStates))
-        {
-          listOfStates = new List<string>();
-          mapExTypeToStates.Add(objToUpdate.external_type, listOfStates);
-        }
-
-        listOfStates.AddRange(objState.states);
+        setStateDescriptions.UnionWith(objState.states);
       }
 
       MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
       vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
       vStateDTO.alarmed_objects = alarmStates.Values.ToList();
 
-      foreach (var pair in mapExTypeToStates)
-      {
-        vStateDTO.states_descr.AddRange(
-          await _stateService.GetStateDescrAsync(pair.Key, pair.Value));
-      }
+      vStateDTO.states_descr.AddRange(
+          await _stateService.GetStateDescrAsync(setStateDescriptions.ToList()));
 
       vStateDTO.states = objStates;
 

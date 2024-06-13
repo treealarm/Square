@@ -51,7 +51,6 @@ namespace LeafletAlarms.Controllers
       retVal.id = marker.id;
       retVal.name = marker.name;
       retVal.parent_id = marker.parent_id;
-      retVal.external_type = marker.external_type;
 
       if (props.TryGetValue(diagram_id, out var valueProps))
       {
@@ -106,7 +105,6 @@ namespace LeafletAlarms.Controllers
         {
           kvp.Value.name = marker.name;
           kvp.Value.parent_id = marker.parent_id;
-          kvp.Value.external_type = marker.external_type;
         }
 
         if (!string.IsNullOrEmpty(kvp.Value.dgr_type))
@@ -122,8 +120,7 @@ namespace LeafletAlarms.Controllers
         {
           id = parentMarker.id,
           parent_id = parentMarker.parent_id,
-          name = parentMarker.name,
-          external_type = parentMarker.external_type,
+          name = parentMarker.name
         };
 
         if (props.TryGetValue(parentMarker.id, out var value))

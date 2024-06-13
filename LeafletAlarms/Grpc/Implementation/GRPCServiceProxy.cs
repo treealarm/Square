@@ -88,7 +88,6 @@ namespace LeafletAlarms.Grpc.Implementation
           var newFigDto = new FigureGeoDTO();
           newFigDto.id = fig.Id;
           newFigDto.name = fig.Name;
-          newFigDto.external_type = fig.ExternalType;
           newFigDto.parent_id = fig.ParentId;
           newFigDto.radius = fig.Radius;
           newFigDto.zoom_level = fig.ZoomLevel;
@@ -130,7 +129,6 @@ namespace LeafletAlarms.Grpc.Implementation
         {
           Id = resFig.id,
           ParentId = resFig.parent_id,
-          ExternalType = resFig.external_type,
           Name = resFig.name,
           Radius = resFig.radius.Value,
           ZoomLevel = resFig.zoom_level
