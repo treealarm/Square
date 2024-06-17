@@ -9,28 +9,25 @@ using System.Text.Json;
 
 namespace BlinkService
 {
-  public class HierarhyStateService : IHostedService, IDisposable
+  internal class HierarhyStateService : IHostedService, IDisposable
   {
     private Task _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
 
-    private readonly IPubService _pub;
     private readonly ISubService _sub;
     private readonly IMapService _mapService;
     private readonly IStateService _stateService;
     private readonly IStatesUpdateService _stateUpdateService;
 
-    private Dictionary<string, AlarmObject> m_Hierarhy = new Dictionary<string, AlarmObject>();
-    private ConcurrentDictionary<string,string> _idsUpdated = new ConcurrentDictionary<string,string>();
+    private Dictionary<string, AlarmObject> _hierarhy = new Dictionary<string, AlarmObject>();
+    private HashSet<string> _idsUpdated = new HashSet<string>();
     public HierarhyStateService(
-      IPubService pub,
       ISubService sub,
       IMapService mapService,
       IStateService stateService,
       IStatesUpdateService stateUpdateService
     )
     {
-      _pub = pub;
       _sub = sub;
       _mapService = mapService;
       _stateService = stateService;   
@@ -45,7 +42,7 @@ namespace BlinkService
     private AlarmObject GetAlarmObjectFromCash(string id)
     {
       AlarmObject alarmObject = null;
-      m_Hierarhy.TryGetValue(id, out alarmObject);
+      _hierarhy.TryGetValue(id, out alarmObject);
       return alarmObject;
     }
 
@@ -66,10 +63,14 @@ namespace BlinkService
       alarmObject = new AlarmObject();
       marker.CopyAllTo(alarmObject);
 
-      m_Hierarhy.Add(alarmObject.id, alarmObject);        
+      _hierarhy.Add(alarmObject.id, alarmObject);
 
       // Add Id for new object, So if it is alarmed we support actual state.
-      _idsUpdated.TryAdd(alarmObject.id, string.Empty);
+      {
+          lock (_idsUpdated)
+          _idsUpdated.Add(alarmObject.id);
+      }
+     
       return alarmObject;
     }
 
@@ -144,6 +145,7 @@ namespace BlinkService
       List<AlarmObject> blinkChanges = new List<AlarmObject>();
       var objsToUpdate = await _mapService.GetAsync(objStates.Select(i => i.id).ToList());
       var allStates = new HashSet<string>();
+
       foreach (var objState in objStates)
       {
         allStates.UnionWith(objState.states);
@@ -199,7 +201,7 @@ namespace BlinkService
       {
         await ProcessStates(initialAlarmedStates.Skip(i).Take(maxProcess).ToList());
       }
-
+      // Start timer after processing initial states.
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
 
@@ -224,21 +226,18 @@ namespace BlinkService
     {
       while (!_cancellationToken.IsCancellationRequested)
       {
-        List<string> objIds = _idsUpdated.Keys.ToList();
+        List<string> objIds;
+        {
+          lock (_idsUpdated)
+          objIds = _idsUpdated.ToList();
+          _idsUpdated.Clear();
+        }
+        
 
         if (objIds.Count == 0)
         {
           await Task.Delay(1000);
           continue;
-        }
-
-        foreach (var key in objIds)
-        {
-          string val;
-          if (!_idsUpdated.TryRemove(key, out val))
-          {
-            Console.WriteLine("TryRemove error");
-          }
         }
 
         try
@@ -261,15 +260,16 @@ namespace BlinkService
     {
       var ids = JsonSerializer.Deserialize<List<string>>(message);
 
-      if (ids == null)
+      if (ids == null || ids.Count == 0)
       {
         return;
       }
 
-      foreach(var id in ids)
       {
-        _idsUpdated.TryAdd(id, string.Empty);
-      }      
+        lock (_idsUpdated)
+        _idsUpdated.UnionWith(ids);
+      }
+    
       await Task.CompletedTask;
     }
   }
