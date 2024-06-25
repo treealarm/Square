@@ -17,10 +17,6 @@ import * as GuiStore from '../store/GUIStates';
 import * as L from 'leaflet';
 import { useAppDispatch } from '../store/configureStore';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
-
 interface ISearchMeOnMapProps {
   geometry: IGeometryDTO;
   text: string;

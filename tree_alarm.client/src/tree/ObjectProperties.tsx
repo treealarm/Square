@@ -27,6 +27,7 @@ import EditOptions from './EditOptions';
 import { RequestRoute } from './RequestRoute';
 import { DiagramProperties } from '../diagrams/DiagramProperties';
 import * as DiagramsStore from '../store/DiagramsStates';
+import { ControlSelector } from '../prop_controls/control_selector';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -37,7 +38,7 @@ export function ObjectProperties() {
   const dispatch = useAppDispatch();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const objProps: IObjProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
 
@@ -272,11 +273,11 @@ export function ObjectProperties() {
           objProps?.extra_props?.map((item, index) =>
             <ListItem key={index}>
 
-              <TextField size="small"
-                fullWidth
-                id={item.prop_name} label={item.prop_name}
-                value={item.str_val}
-                onChange={handleChangeProp} />
+              <ControlSelector 
+                prop_name={item.prop_name}
+                str_val={item.str_val}
+                visual_type={item.visual_type}
+                handleChangeProp={handleChangeProp} />
 
               <Tooltip title={"remove property"}>
                 <IconButton aria-label="delete" size="small" onClick={(e: any) => { handleRemoveProp(item.prop_name); }}>

@@ -198,7 +198,8 @@ namespace GrpcTracksClient
           propColor = new ProtoObjExtraProperty()
           {
             PropName = "__color",
-            StrVal = string.Empty
+            StrVal = string.Empty,
+            VisualType = "__clr"
           };
           fig.ExtraProps.Add(propColor);
         }
@@ -292,7 +293,8 @@ namespace GrpcTracksClient
           fig.ExtraProps.Add(new ProtoObjExtraProperty()
           {
             PropName = "__color",
-            StrVal = color
+            StrVal = color,
+            VisualType = "__clr"
           });
 
           
