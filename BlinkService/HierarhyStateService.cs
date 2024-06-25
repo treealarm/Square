@@ -1,10 +1,8 @@
-﻿using DataChangeLayer;
-using Domain;
+﻿using Domain;
 using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Microsoft.Extensions.Hosting;
-using System.Collections.Concurrent;
 using System.Text.Json;
 
 namespace BlinkService
@@ -34,9 +32,52 @@ namespace BlinkService
       _stateUpdateService = stateUpdateService;
     }
 
-    public async Task Init()
+    private async Task CheckStatesByIds(string channel, string message)
     {
-      await Task.Delay(0);
+      var ids = JsonSerializer.Deserialize<List<string>>(message);
+
+      if (ids == null || ids.Count == 0)
+      {
+        return;
+      }
+
+      {
+        lock (_idsUpdated)
+          _idsUpdated.UnionWith(ids);
+      }
+
+      await Task.CompletedTask;
+    }
+
+    async Task IHostedService.StartAsync(CancellationToken cancellationToken)
+    {
+      await _stateUpdateService.DropStateAlarms();
+      var initialAlarmedStates = await _stateService.GetAlarmedStates(null);
+      await _sub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
+
+      int maxProcess = 10000;
+
+      for (int i = 0; i < initialAlarmedStates.Count; i += maxProcess)
+      {
+        await ProcessStates(initialAlarmedStates.Skip(i).Take(maxProcess).ToList());
+      }
+      // Start timer after processing initial states.
+      _timer = new Task(() => DoWork(), _cancellationToken.Token);
+      _timer.Start();
+    }
+
+    async Task IHostedService.StopAsync(CancellationToken cancellationToken)
+    {
+      await _sub.Unsubscribe(Topics.CheckStatesByIds, CheckStatesByIds);
+      _cancellationToken.Cancel();
+      _timer?.Wait();
+
+      //return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose()
+    {
+      _timer?.Dispose();
     }
 
     private AlarmObject GetAlarmObjectFromCash(string id)
@@ -189,39 +230,6 @@ namespace BlinkService
       await ProcessStates(objStates);
     }
 
-    async Task IHostedService.StartAsync(CancellationToken cancellationToken)
-    {
-      await _stateUpdateService.DropStateAlarms();
-      var initialAlarmedStates = await _stateService.GetAlarmedStates(null);
-      await _sub.Subscribe(Topics.CheckStatesByIds, CheckStatesByIds);
-
-      int maxProcess = 10000;
-
-      for (int i = 0; i < initialAlarmedStates.Count; i += maxProcess)
-      {
-        await ProcessStates(initialAlarmedStates.Skip(i).Take(maxProcess).ToList());
-      }
-      // Start timer after processing initial states.
-      _timer = new Task(() => DoWork(), _cancellationToken.Token);
-      _timer.Start();
-
-      //return Task.CompletedTask;
-    }
-
-    async Task IHostedService.StopAsync(CancellationToken cancellationToken)
-    {
-      await _sub.Unsubscribe(Topics.CheckStatesByIds, CheckStatesByIds);
-      _cancellationToken.Cancel();
-      _timer?.Wait();
-
-      //return Task.CompletedTask;
-    }
-
-    public void Dispose()
-    {
-      _timer?.Dispose();
-    }
-
     private async void DoWork()
     {
       while (!_cancellationToken.IsCancellationRequested)
@@ -254,23 +262,6 @@ namespace BlinkService
           Console.WriteLine(ex.ToString());
         }
       }
-    }
-
-    async Task CheckStatesByIds(string channel, string message)
-    {
-      var ids = JsonSerializer.Deserialize<List<string>>(message);
-
-      if (ids == null || ids.Count == 0)
-      {
-        return;
-      }
-
-      {
-        lock (_idsUpdated)
-        _idsUpdated.UnionWith(ids);
-      }
-    
-      await Task.CompletedTask;
     }
   }
 }
