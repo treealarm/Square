@@ -271,7 +271,12 @@ export function ObjectProperties() {
         <Divider><br></br></Divider>
         {
           objProps?.extra_props?.map((item, index) =>
-            <ListItem key={index}>
+            <ListItem key={index}
+              sx={{  // Добавьте стили здесь
+                display: 'flex',  // Включить flexbox
+                alignItems: 'flex-start',  // Выровнять элементы по верхнему краю
+              }}
+            >
 
               <ControlSelector 
                 prop_name={item.prop_name}

@@ -1,11 +1,23 @@
 import * as React from 'react';
 import { TextField, Button, Box, Typography, InputAdornment, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { IControlSelector } from 'control_selector_common';
 
 const GeoEditor = ({ props }: { props: IControlSelector }) => {
   const [geometry, setGeometry] = React.useState(JSON.parse(props.str_val));
   const [editMode, setEditMode] = React.useState(false);
+
+  const handleChange = (newValue: string) => {
+    // ׁמחהאול סמבûעטו, סמגלוסעטלמו ס handleChangeProp
+    const event = {
+      target: {
+        id: props.prop_name,
+        value: newValue
+      }
+    };
+    props.handleChangeProp(event);
+  };
 
   // Handle coordinate change
   const handleCoordChange = (index: number, lat: number, lng: number) => {
@@ -15,7 +27,7 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
       )
       : [lat, lng];
     setGeometry({ ...geometry, coord: newCoords });
-    props.handleChangeProp({ target: { value: JSON.stringify({ ...geometry, coord: newCoords }) } });
+    handleChange(JSON.stringify({ ...geometry, coord: newCoords }));
   };
 
   // Handle adding a new coordinate (for lines and polygons)
@@ -23,7 +35,7 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
     if (geometry.type !== 'Point') {
       const newCoords = [...geometry.coord, [0, 0]];
       setGeometry({ ...geometry, coord: newCoords });
-      props.handleChangeProp({ target: { value: JSON.stringify({ ...geometry, coord: newCoords }) } });
+      handleChange(JSON.stringify({ ...geometry, coord: newCoords }));
     }
   };
 
@@ -32,7 +44,7 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
     if (geometry.type !== 'Point') {
       const newCoords = geometry.coord.filter((_: any, i: number) => i !== index);
       setGeometry({ ...geometry, coord: newCoords });
-      props.handleChangeProp({ target: { value: JSON.stringify({ ...geometry, coord: newCoords }) } });
+      handleChange(JSON.stringify({ ...geometry, coord: newCoords }));
     }
   };
 
@@ -61,7 +73,7 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
   };
 
   return (
-    <Box>
+    <Box width="100%">
       <TextField
         size="small"
         fullWidth
@@ -80,18 +92,18 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
                 <EditIcon />
               </IconButton>
             </InputAdornment>
-          )
+          ),
         }}
       />
       {editMode && (
         <Box mt={2}>
-          <Typography variant="h10">
+          <Typography variant="h6">
             Editing {geometry.type === 'Polygon' ? 'Polygon' : geometry.type === 'LineString' ? 'LineString' : 'Point'}
           </Typography>
           {renderCoords()}
           {geometry.type !== 'Point' && (
             <Button variant="contained" color="primary" onClick={handleAddCoord}>
-              Add Coordinate
+              Add Coord
             </Button>
           )}
         </Box>
@@ -116,24 +128,30 @@ const CoordInput = ({ index, lat, lng, onCoordChange, onRemoveCoord }: any) => {
     <Box display="flex" alignItems="center" my={1}>
       <TextField
         size="small"
-        label={`Latitude ${index + 1}`}
+        label={`Lat ${index}`}
         type="number"
         value={lat}
         onChange={handleLatChange}
-        style={{ marginRight: 8 }}
+        style={{ marginRight: 8, marginTop: 4 }}
+        inputProps={{ style: { fontSize: '0.875rem'} }}
       />
       <TextField
         size="small"
-        label={`Longitude ${index + 1}`}
+        label={`Lng ${index}`}
         type="number"
         value={lng}
         onChange={handleLngChange}
-        style={{ marginRight: 8 }}
+        style={{ marginRight: 8, marginTop: 4 }}
+        inputProps={{ style: { fontSize: '0.875rem'} }}
       />
       {onRemoveCoord && (
-        <Button variant="contained" color="secondary" onClick={() => onRemoveCoord(index)}>
-          Remove
-        </Button>
+        <IconButton
+          edge="end"
+          color="secondary"
+          onClick={() => onRemoveCoord(index)}
+        >
+          <DeleteIcon fontSize="small" />
+        </IconButton>
       )}
     </Box>
   );
