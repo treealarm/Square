@@ -453,7 +453,7 @@ namespace LeafletAlarms.Controllers
         var geometry = JsonSerializer.Serialize(geoPart.location);
 
         propDTO.extra_props.Add(
-          new ObjExtraPropertyDTO() { str_val = $"{geometry}", prop_name = "geometry" }
+          new ObjExtraPropertyDTO() { str_val = $"{geometry}", prop_name = "geometry", visual_type = "__geo" }
         );
 
         if (type == "Point")

@@ -1,13 +1,9 @@
 import * as React from 'react';
-import { TextField, Tooltip } from '@mui/material';
+import { TextField } from '@mui/material';
 import { MuiColorInput } from 'mui-color-input'
+import { IControlSelector } from 'control_selector_common'
+import renderGeoInput from './geo_input';
 
-export interface IControlSelector {
-  prop_name: string;
-  str_val: string;
-  visual_type: string|null;
-  handleChangeProp: (e: any) => void;
-}
 
 const renderTextField = (props: IControlSelector) => (
   <TextField
@@ -45,14 +41,15 @@ const renderColorInput = (props: IControlSelector) => {
   );
 };
 
+
+
 const controlMap: { [key: string]: (props: IControlSelector) => JSX.Element } = {
   __txt: renderTextField,
   __clr: renderColorInput,
+  __geo: renderGeoInput,
   // Add other control types here
 };
 export function ControlSelector(props: IControlSelector) {
-
-  const clr_ctrl = "__clr";
 
   const { visual_type } = props;
   const ControlComponent = controlMap[visual_type || '__txt'] || renderTextField;
