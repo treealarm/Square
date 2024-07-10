@@ -5,7 +5,7 @@ using Domain.States;
 
 namespace DataChangeLayer
 {
-  public class StatesUpdateService: IStatesUpdateService
+  internal class StatesUpdateService: IStatesUpdateService
   {
     private readonly IStateService _stateService;
     IPubService _pub;

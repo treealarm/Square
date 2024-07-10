@@ -30,10 +30,8 @@ namespace BlinkService
         );
         services.AddSingleton<ISubService, SubService>();
         services.AddSingleton<IPubService, PubService>();
-        services.AddSingleton<IMapService, MapService>();
-        services.AddSingleton<IStateService, StateService>();
-        services.AddSingleton<IStatesUpdateService, StatesUpdateService>();
-
+        DbLayer.ServicesConfigurator.ConfigureServices(services);
+        DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
         services.AddHostedService<HierarhyStateService>();
       })
       .Build();

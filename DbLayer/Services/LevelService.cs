@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class LevelService : ILevelService
+  internal class LevelService : ILevelService
   {
     private readonly IMongoCollection<DBLevel> _collection;
     private readonly IMongoClient _mongoClient;

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class RoutService : IRoutService
+  internal class RoutService : IRoutService
   {
     private readonly IMongoCollection<DBRoutLine> _collRoutes;
     private readonly IMongoClient _mongoClient;

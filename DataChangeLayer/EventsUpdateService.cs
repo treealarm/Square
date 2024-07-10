@@ -3,7 +3,7 @@ using Domain.ServiceInterfaces;
 
 namespace DataChangeLayer
 {
-  public class EventsUpdateService: IEventsUpdateService
+  internal class EventsUpdateService: IEventsUpdateService
   {
     private readonly IEventsService _eventsService;
     public EventsUpdateService(IEventsService eventsService)

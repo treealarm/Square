@@ -3,7 +3,7 @@ using Domain.ServiceInterfaces;
 
 namespace DataChangeLayer
 {
-  public class DiagramTypeUpdateService : IDiagramTypeUpdateService
+  internal class DiagramTypeUpdateService : IDiagramTypeUpdateService
   {
     private readonly IDiagramTypeService _diagramTypeService;
     public DiagramTypeUpdateService(

@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace DbLayer.Services
 {
-  public class UtilService: IUtilService
+  internal class UtilService: IUtilService
   {
     public int Compare(string id1, string id2)
     {

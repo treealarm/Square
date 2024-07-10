@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class RightService: IRightService
+  internal class RightService: IRightService
   {
     private readonly IMongoCollection<DBObjectRights> _coll;
     private readonly IMongoClient _mongoClient;

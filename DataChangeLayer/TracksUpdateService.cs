@@ -6,7 +6,7 @@ using Domain.PubSubTopics;
 
 namespace DataChangeLayer
 {
-  public class TracksUpdateService: ITracksUpdateService
+  internal class TracksUpdateService: ITracksUpdateService
   {
     private readonly IMapService _mapService;
     private readonly ITrackService _tracksService;

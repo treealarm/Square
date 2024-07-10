@@ -58,41 +58,23 @@ namespace LeafletAlarms
 
       services.AddHostedService<InitHostedService>();
 
-      
-      services.AddSingleton<IUtilService, UtilService>();
-
       services.AddSingleton<ISubService, SubService>();
-      services.AddSingleton<IPubService, PubService>();
+      services.AddSingleton<IPubService, PubService>(); 
 
-      services.AddSingleton<IMapService, MapService>();
-      services.AddSingleton<IGeoService, GeoService>();
-      services.AddSingleton<ITrackService, TrackService>();
-      services.AddSingleton<IRoutService, RoutService>();
-      services.AddSingleton<ILevelService, LevelService>();
-      services.AddSingleton<IStateService, StateService>();
+      DbLayer.ServicesConfigurator.ConfigureServices(services);
+      DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
 
-      services.AddSingleton<IDiagramTypeService, DiagramTypeService>();
-      services.AddSingleton<IDiagramService, DiagramService>();
-    
-      services.AddSingleton<IRightService, RightService>();
       services.AddSingleton<RightsCheckerService>();
-
-      services.AddSingleton<IEventsService, EventsService>();
 
       services.AddSingleton<WebSockListService>(); // We must explicitly register Foo
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>()); // Forward requests to Foo
-      services.AddSingleton<ITracksUpdateService, TracksUpdateService>();
-      services.AddSingleton<IStatesUpdateService, StatesUpdateService>();
+      
 
       services.AddSingleton<GRPCServiceProxy>();
       services.AddSingleton<FileSystemService>();
 
       services.AddSingleton<ValhallaRouter>();
-      services.AddSingleton<IMapUpdateService, MapUpdateService>();
-      services.AddSingleton<IDiagramUpdateService, DiagramUpdateService>();
-      services.AddSingleton<IDiagramTypeUpdateService, DiagramTypeUpdateService>();
-      services.AddSingleton<IEventsUpdateService, EventsUpdateService>();
-      services.AddSingleton<IRightUpdateService, RightUpdateService>();      
+           
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();
@@ -215,7 +197,7 @@ namespace LeafletAlarms
             FiguresDTO json = null;
             var s = File.ReadAllText(file2Import);
             json = JsonSerializer.Deserialize<FiguresDTO>(s);
-            var trackUpdate = app.Services.GetRequiredService<TracksUpdateService>();
+            var trackUpdate = app.Services.GetRequiredService<ITracksUpdateService>();
             await trackUpdate.UpdateFigures(json);
             FileInfo fileInfo = new FileInfo(file2Import);
             fileInfo.MoveTo(fileInfo.Directory.FullName + "\\" + "states_done.json");

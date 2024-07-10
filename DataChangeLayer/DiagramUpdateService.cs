@@ -4,15 +4,15 @@ using Domain.ServiceInterfaces;
 
 namespace DataChangeLayer
 {
-  public class DiagramUpdateService : IDiagramUpdateService
+  internal class DiagramUpdateService : IDiagramUpdateService
   {
     private readonly IMapService _mapService;
-    private readonly IDiagramService _diagramService;
+    private readonly IDiagramServiceInternal _diagramService;
 
     private IPubService _pub;
     public DiagramUpdateService(
      IMapService mapsService,
-     IDiagramService diagramService,
+     IDiagramServiceInternal diagramService,
      IPubService pub
    )
     {

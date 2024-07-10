@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class DiagramService : IDiagramService
+  internal class DiagramService : IDiagramService, IDiagramServiceInternal
   {
     private readonly IMongoCollection<DBDiagram> _coll;
     private readonly IMongoClient _mongoClient;
@@ -74,7 +74,7 @@ namespace DbLayer.Services
       return ConvertListDB2DTO(obj);
     }
 
-    async Task IDiagramService.UpdateListAsync(List<DiagramDTO> newObjs)
+    async Task IDiagramServiceInternal.UpdateListAsync(List<DiagramDTO> newObjs) 
     {
       var dbUpdated = new Dictionary<DiagramDTO, DBDiagram>();
       var bulkWrites = new List<WriteModel<DBDiagram>>();

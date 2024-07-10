@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-    public class GeoService : IGeoService
+  internal class GeoService : IGeoService
   {
     private readonly IMongoCollection<BsonDocument> _geoRawCollection;
     private readonly IMongoCollection<DBGeoObject> _geoCollection;

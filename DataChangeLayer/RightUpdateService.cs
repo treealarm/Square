@@ -4,7 +4,7 @@ using Domain.ServiceInterfaces;
 
 namespace DataChangeLayer
 {
-  public class RightUpdateService : IRightUpdateService
+  internal class RightUpdateService : IRightUpdateService
   {
     private readonly IRightService _rightsService;
     public RightUpdateService(

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class EventsService: IEventsService, IDisposable
+  internal class EventsService: IEventsService, IDisposable
   {
     private IMongoCollection<DBEvent> _coll;
     private IMongoClient _mongoClient;

@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace Domain.ServiceInterfaces
 {
-  public interface IDiagramService
+  internal interface IDiagramServiceInternal
   {
     public Task UpdateListAsync(List<DiagramDTO> obj2UpdateIn);
+  }
+  public interface IDiagramService
+  {
     public Task RemoveAsync(List<string> ids);
     public Task<Dictionary<string, DiagramDTO>> GetListByIdsAsync(List<string> ids);
   }

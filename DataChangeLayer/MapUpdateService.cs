@@ -3,7 +3,7 @@ using Domain.ServiceInterfaces;
 
 namespace DataChangeLayer
 {
-  public class MapUpdateService: IMapUpdateService
+  internal class MapUpdateService: IMapUpdateService
   {
     private readonly IMapService _mapService;
     private readonly IGeoService _geoService;

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  public class DiagramTypeService: IDiagramTypeService
+  internal class DiagramTypeService: IDiagramTypeService
   {
     private readonly IMongoCollection<DBDiagramType> _coll;
     private readonly IMongoClient _mongoClient;
