@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Domain.Diagram;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 
@@ -65,6 +67,57 @@ namespace Domain
       }
     }
 
+    public static T_DTO? ConvertDB2DTO<T_DB, T_DTO>(T_DB dbObj)
+       where T_DTO : new()
+    {
+      if (dbObj == null)
+      {
+        return default;
+      }
+
+      T_DTO result = new T_DTO();
+      dbObj.CopyAllTo(result);
+      return result;
+    }
+
+    public static Dictionary<string, T_DTO> ConvertListDB2DTO<T_DB, T_DTO>(List<T_DB> dbObjs)
+      where T_DTO : new()
+    {
+      var result = new Dictionary<string, T_DTO>();
+
+      foreach (var dbItem in dbObjs)
+      {
+        var idProperty = typeof(T_DB).GetProperty("id");
+        if (idProperty == null)
+        {
+          throw new InvalidOperationException($"Тип {typeof(T_DB).Name} не содержит свойства 'id'");
+        }
+
+        var idValue = idProperty.GetValue(dbItem)?.ToString();
+        if (idValue == null)
+        {
+          throw new InvalidOperationException($"Свойство 'id' в объекте {dbItem} имеет значение null");
+        }
+
+        result.Add(idValue, ConvertDB2DTO<T_DB, T_DTO>(dbItem)!);
+      }
+
+      return result;
+    }
+
+    public static T_DB? ConvertDTO2DB<T_DB,T_DTO>(T_DTO dto)
+       where T_DB : new()
+    {
+      if (dto == null)
+      {
+        return default;
+      }
+
+      var dbo = new T_DB();
+     
+      dto.CopyAllToJson(dbo);
+      return dbo;
+    }
     public static void CopyAllTo<T, T1>(this T source, T1 target)
     {
       var type = typeof(T);

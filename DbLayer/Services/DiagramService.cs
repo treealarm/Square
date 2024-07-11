@@ -52,7 +52,7 @@ namespace DbLayer.Services
 
     async Task IDiagramService.RemoveAsync(List<string> ids)
     {
-      await _coll.DeleteOneAsync(
+      await _coll.DeleteManyAsync(
           x => ids.Contains(x.id));
     }
 

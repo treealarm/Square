@@ -30,6 +30,11 @@ namespace DbLayer
 
       services.AddSingleton<IRightService, RightService>();
       services.AddSingleton<IEventsService, EventsService>();
+
+      services.AddSingleton<IntegrationService>();
+      services.AddSingleton<IIntegrationServiceInternal>(provider => provider.GetRequiredService<IntegrationService>());
+      services.AddSingleton<IIntegrationService>(provider => provider.GetRequiredService<IntegrationService>());
+
     }
   }
 }
