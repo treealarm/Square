@@ -10,10 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.15.2",
     "@mui/lab": "^5.0.0-alpha.158",
-    "@mui/material": "^5.15.2",
+    "@mui/material": "^5.16.6",
     "@mui/x-date-pickers": "^6.18.6",
+    "@mui/x-tree-view": "^7.12.0",
     "@reduxjs/toolkit": "^2.0.1",
     "dayjs": "^1.11.10",
     "keycloak-js": "^23.0.3",

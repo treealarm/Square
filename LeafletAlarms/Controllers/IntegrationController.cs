@@ -1,6 +1,5 @@
 ﻿using Domain.Integration;
 using Domain.ServiceInterfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeafletAlarms.Controllers
