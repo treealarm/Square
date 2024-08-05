@@ -6,12 +6,12 @@ namespace LeafletAlarms.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  public class IntegrationController : ControllerBase
+  public class IntegrationsController : ControllerBase
   {
     private readonly IIntegrationService _integrationService;
     private readonly IIntegrationUpdateService _integrationUpdateService;
 
-    public IntegrationController(
+    public IntegrationsController(
      IIntegrationService integrationService,
      IIntegrationUpdateService integrationUpdateService
     )
@@ -51,7 +51,7 @@ namespace LeafletAlarms.Controllers
     }
     [HttpGet()]
     [Route("GetByParent")]
-    public async Task<Dictionary<string, IntegrationDTO>> GetByParentIdsAsync(
+    public async Task<GetIntegrationsDTO> GetByParentAsync(
        string parent_id,
        string start_id,
        string end_id,
@@ -59,7 +59,13 @@ namespace LeafletAlarms.Controllers
      )
     {
       var ret_val = await _integrationService.GetByParentIdsAsync(new List<string>() { parent_id }, start_id, end_id, count);
-      return ret_val;
+
+      var ret = new GetIntegrationsDTO()
+      {
+        parent_id = string.IsNullOrEmpty(parent_id) ? "" : parent_id,
+        children = ret_val.Values.ToList()
+      };
+      return ret;
     }
   }
 }

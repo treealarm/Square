@@ -395,3 +395,13 @@ export interface IEventDTO {
   event_name: string;
   event_priority: number;
 }
+
+export interface IIntegrationDTO {
+  id: string;
+  parent_id?: string | null;
+  name: string;
+}
+export interface IGetIntegrationsDTO {
+  children: IIntegrationDTO[] | null;
+  parent_id?: string | null;
+}
