@@ -1,4 +1,4 @@
-﻿using DbLayer.Models.Diagrams;
+﻿using System;
 using DbLayer.Models.Integration;
 using Domain;
 using Domain.Diagram;
@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
@@ -94,6 +95,42 @@ namespace DbLayer.Services
       return PropertyCopy.ConvertListDB2DTO<DBIntegration, IntegrationDTO>(retVal);
     }
 
+    public async Task<Dictionary<string, bool>> GetHasChildrenAsync(List<string> parent_ids)
+    {
+      Dictionary<string, bool> retVal = new Dictionary<string, bool>();
+
+      try
+      {
+        // Фильтр по parent_ids
+        var filter = Builders<DBIntegration>.Filter.In(x => x.parent_id, parent_ids);
+
+        // Агрегирование для проверки наличия хотя бы одного дочернего элемента для каждого parent_id
+        var aggregation = await _coll.Aggregate()
+            .Match(filter) // Фильтрация документов по parent_ids
+            .Group(new BsonDocument
+            {
+            { "_id", "$parent_id" }, // Группировка по parent_id
+            { "count", new BsonDocument("$sum", 1) } // Подсчет количества документов в группе
+            })
+            .ToListAsync();
+
+        // Заполняем retVal на основе результатов агрегации
+        foreach (var parent_id in parent_ids)
+        {
+          // Проверяем, есть ли запись для текущего parent_id в результатах агрегации
+          var hasChildren = aggregation.Any(x => x["_id"].ToString() == parent_id);
+          retVal[parent_id] = hasChildren; // Записываем результат в словарь
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+
+
+      return retVal;
+    }
+
     async Task IIntegrationServiceInternal.UpdateListAsync(List<IntegrationDTO> obj2UpdateIn)
     {
       var dbUpdated = new Dictionary<IntegrationDTO, DBIntegration>();
@@ -112,6 +149,7 @@ namespace DbLayer.Services
 
         if (string.IsNullOrEmpty(updatedObj.id))
         {
+          updatedObj.id = ObjectId.GenerateNewId().ToString();
           var request = new InsertOneModel<DBIntegration>(updatedObj);
           bulkWrites.Add(request);
         }

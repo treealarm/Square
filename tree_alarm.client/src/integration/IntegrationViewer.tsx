@@ -11,13 +11,13 @@ import { TreeViewBaseItem, TreeViewItemId } from '@mui/x-tree-view/models';
 import * as IntegrationsStore from '../store/IntegrationsStates'
 import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
-import { IGetIntegrationsDTO, IIntegrationDTO } from './Marker';
+import { IGetIntegrationsDTO, IIntegrationExDTO, uuidv4 } from "../store/Marker";
 
 const MUI_X_PRODUCTS: TreeViewBaseItem[] = [
   {
     id: '',
     label: 'Root',
-    children: [{id: 'fake', label: 'fake'}],
+    children: [{ id: uuidv4(), label: uuidv4() }],
   }
 ];
 
@@ -30,7 +30,11 @@ export function IntegrationViewer() {
   const appDispatch = useAppDispatch();
   const expanded_integration: IGetIntegrationsDTO = useSelector((state: ApplicationState) => state?.integrationsStates?.integrations);
 
-  const transformChildren = (children: IIntegrationDTO[]): TreeViewBaseItem[] => {    
+  function getItemId(item) {
+    return item.internalId;
+  }
+
+  const transformChildren = (children: IIntegrationExDTO[]): TreeViewBaseItem[] => {    
 
     if(children == null)
     {
@@ -39,7 +43,7 @@ export function IntegrationViewer() {
     return children.map(child => ({
       id: child.id,
       label: child.name,
-      children: [] // ��� ������������� ����������, ���� ���� ��������� ����
+      children: child.has_children ? [{ id: uuidv4(), label: uuidv4() }]:[]
     }));
   };
 

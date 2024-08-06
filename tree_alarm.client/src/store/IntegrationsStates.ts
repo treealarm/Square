@@ -1,8 +1,8 @@
 ﻿import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { IGetIntegrationsDTO, IIntegrationDTO } from './Marker';
+import { IGetIntegrationsDTO, IIntegrationExDTO } from './Marker';
 import { DoFetch } from './Fetcher';
-import { ApiDefaultPagingNum, ApiIntegrationsRootString } from './constants';
+import { ApiIntegrationsRootString } from './constants';
 
 
 export interface IntegrationStates {

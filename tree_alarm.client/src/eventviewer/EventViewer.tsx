@@ -20,7 +20,7 @@ import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { EventProperties } from "./EventProperties";
 import EventTable from "./EventTable";
-import { DeepCopy, SearchFilterDTO } from "../store/Marker";
+import { DeepCopy, SearchFilterDTO, uuidv4 } from "../store/Marker";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -28,11 +28,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
 import { useEffect, useState } from "react";
 
-function uuidv4() {
-  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
-  );
-}
 export function EventViewer() {
 
   const appDispatch = useAppDispatch();

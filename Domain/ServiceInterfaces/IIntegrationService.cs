@@ -1,9 +1,5 @@
-﻿using Domain.Diagram;
-using Domain.Integration;
-using System;
+﻿using Domain.Integration;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.ServiceInterfaces
@@ -20,6 +16,9 @@ namespace Domain.ServiceInterfaces
       string start_id,
       string end_id,
       int count
+    );
+    public Task<Dictionary<string, bool>> GetHasChildrenAsync(
+      List<string> parent_ids
     );
   }
 }

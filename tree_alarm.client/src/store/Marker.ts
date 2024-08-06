@@ -5,6 +5,12 @@
   return JSON.parse(JSON.stringify(a));
 }
 
+export function uuidv4() {
+  return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+    (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+  );
+}
+
 export type LatLngPair = [number, number];
 
 export interface Marker {
@@ -401,7 +407,10 @@ export interface IIntegrationDTO {
   parent_id?: string | null;
   name: string;
 }
+export interface IIntegrationExDTO extends IIntegrationDTO {
+  has_children: boolean;
+}
 export interface IGetIntegrationsDTO {
-  children: IIntegrationDTO[] | null;
+  children: IIntegrationExDTO[] | null;
   parent_id?: string | null;
 }

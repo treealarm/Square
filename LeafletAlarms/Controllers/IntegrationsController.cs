@@ -60,11 +60,23 @@ namespace LeafletAlarms.Controllers
     {
       var ret_val = await _integrationService.GetByParentIdsAsync(new List<string>() { parent_id }, start_id, end_id, count);
 
+      var children_checker = await _integrationService.GetHasChildrenAsync(ret_val.Keys.ToList());
+
       var ret = new GetIntegrationsDTO()
       {
         parent_id = string.IsNullOrEmpty(parent_id) ? "" : parent_id,
-        children = ret_val.Values.ToList()
+        children = new List<IntegrationExDTO>()
       };
+
+      foreach (var item in ret_val.Values)
+      {
+        ret.children.Add(new IntegrationExDTO() {
+        id = item.id,
+        parent_id = item.parent_id,
+        name = item.name,
+        has_children = children_checker[item.id] == true
+        });
+      }
       return ret;
     }
   }
