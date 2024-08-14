@@ -1,31 +1,26 @@
 ﻿using Domain.Integration;
 using Domain.ServiceInterfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataChangeLayer
 {
-  internal class IntegrationUpdateService: IIntegrationUpdateService
+  internal class IntegrationLeafsUpdateService: IIntegrationLeafsUpdateService
   {
-    private readonly IIntegrationServiceInternal _integrationService;
+    private readonly IIntegrationLeafsServiceInternal _integrationService;
 
     private IPubService _pub;
-    public IntegrationUpdateService(
-      IIntegrationServiceInternal integrationService,
+    public IntegrationLeafsUpdateService(
+      IIntegrationLeafsServiceInternal integrationService,
       IPubService pub
     )
     {
       _integrationService = integrationService;
       _pub = pub;
     }
-    async Task IIntegrationUpdateService.UpdateListAsync(List<IntegrationDTO> obj2UpdateIn)
+    async Task IIntegrationLeafsUpdateService.UpdateListAsync(List<IntegrationLeafsDTO> obj2UpdateIn)
     {
       await _integrationService.UpdateListAsync(obj2UpdateIn);
     }
-    async Task IIntegrationUpdateService.RemoveAsync(List<string> ids)
+    async Task IIntegrationLeafsUpdateService.RemoveAsync(List<string> ids)
     {
       await _integrationService.RemoveAsync(ids);
     }

@@ -15,7 +15,7 @@ namespace DataChangeLayer
       services.AddSingleton<IRightUpdateService, RightUpdateService>();
       services.AddSingleton<IStatesUpdateService, StatesUpdateService>();
       services.AddSingleton<IIntegrationUpdateService, IntegrationUpdateService>();
-      
+      services.AddSingleton<IIntegrationLeafsUpdateService, IntegrationLeafsUpdateService>();
     }
    }
 }
