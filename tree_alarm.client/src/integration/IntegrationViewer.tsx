@@ -13,10 +13,6 @@ import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { IGetIntegrationsDTO, IIntegrationExDTO, uuidv4 } from "../store/Marker";
 
-const MUI_X_PRODUCTS: TreeViewBaseItem[] = [
-
-];
-
 function updateTreeData(tree: TreeViewBaseItem[], parentId: string, newChildren: TreeViewBaseItem[]): TreeViewBaseItem[] {
   return tree.map((node) => {
     if (node.id === parentId) {
@@ -57,7 +53,7 @@ function getChildIds(tree: TreeViewBaseItem[], parentId: string): string[] {
 
 export function IntegrationViewer() {
 
-  const [data, setData] = React.useState<TreeViewBaseItem[]>(MUI_X_PRODUCTS);
+  const [data, setData] = React.useState<TreeViewBaseItem[]>([]);
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
   const appDispatch = useAppDispatch();

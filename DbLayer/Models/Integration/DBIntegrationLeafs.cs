@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace DbLayer.Models
 {
-  internal class DBIntegration
+  internal class DBIntegrationLeafs
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

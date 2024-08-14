@@ -1,80 +1,88 @@
 ﻿using System;
-using DbLayer.Models;
 using Domain;
 using Domain.Integration;
 using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DbLayer.Models;
 
 namespace DbLayer.Services
 {
-  internal class IntegrationService: IIntegrationServiceInternal,  IIntegrationService
+  internal class IntegrationLeafsService
   {
-    private readonly IMongoCollection<DBIntegration> _coll;
+    private IMongoCollection<DBIntegrationLeafs> _coll;
+    private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
+    private IMongoCollection<DBIntegrationLeafs> Coll
+    {
+      get
+      {
+        if (_coll == null)
+        {
+          var mongoDatabase = _mongoClient.GetDatabase(
+            _geoStoreDatabaseSettings.Value.DatabaseName);
+          _coll =
+          mongoDatabase.GetCollection<DBIntegrationLeafs>
+          (_geoStoreDatabaseSettings.Value.IntegrationLeafsCollectionName);
+
+          CreateIndexes();
+        }
+        return _coll;
+      }
+    }
     private readonly IMongoClient _mongoClient;
-    public IntegrationService(
+    public IntegrationLeafsService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
       IMongoClient mongoClient)
     {
       _mongoClient = mongoClient;
-
-      var mongoDatabase = _mongoClient.GetDatabase(
-          geoStoreDatabaseSettings.Value.DatabaseName);
-
-      _coll =
-        mongoDatabase.GetCollection<DBIntegration>
-        (geoStoreDatabaseSettings.Value.IntegrationCollectionName);
-
-      CreateIndexes();
+      _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
     }
 
     private void CreateIndexes()
     {
       {
         var keys =
-                new IndexKeysDefinitionBuilder<DBIntegration>()
-                .Ascending(d => d.name)
+                new IndexKeysDefinitionBuilder<DBIntegrationLeafs>()
                 .Ascending(d => d.parent_id)
                 ;
 
-        var indexModel = new CreateIndexModel<DBIntegration>(
+        var indexModel = new CreateIndexModel<DBIntegrationLeafs>(
           keys, new CreateIndexOptions()
           { Name = "base" }
         );
 
-        _coll.Indexes.CreateOneAsync(indexModel);
+        Coll.Indexes.CreateOneAsync(indexModel);
       }
     }
-    async Task<Dictionary<string, IntegrationDTO>> IIntegrationService.GetByParentIdsAsync(
+    async Task<Dictionary<string, IntegrationDTO>> GetByParentIdsAsync(
       List<string> parent_ids,
       string start_id,
       string end_id,
       int count
     )
     {
-      List<DBIntegration> retVal;
+      List<DBIntegrationLeafs> retVal;
 
       if (start_id != null)
       {
-        var filter = Builders<DBIntegration>.Filter.Gte("_id", new ObjectId(start_id))
-          & Builders<DBIntegration>.Filter.In("parent_id", parent_ids);
+        var filter = Builders<DBIntegrationLeafs>.Filter.Gte("_id", new ObjectId(start_id))
+          & Builders<DBIntegrationLeafs>.Filter.In("parent_id", parent_ids);
 
-        retVal = await _coll
+        retVal = await Coll
           .Find(filter)
           .Limit(count)
           .ToListAsync();
       }
       else if (end_id != null)
       {
-        var filter = Builders<DBIntegration>.Filter.Lte("_id", new ObjectId(end_id))
-          & Builders<DBIntegration>.Filter.In("parent_id", parent_ids);
+        var filter = Builders<DBIntegrationLeafs>.Filter.Lte("_id", new ObjectId(end_id))
+          & Builders<DBIntegrationLeafs>.Filter.In("parent_id", parent_ids);
 
-        retVal = await _coll
+        retVal = await Coll
           .Find(filter)
           .SortByDescending(x => x.id)
           .Limit(count)
@@ -85,13 +93,13 @@ namespace DbLayer.Services
       }
       else
       {
-        retVal = await _coll
+        retVal = await Coll
                 .Find(x => parent_ids.Contains(x.parent_id))
                 .Limit(count)
                 .ToListAsync();
       }
 
-      return PropertyCopy.ConvertListDB2DTO<DBIntegration, IntegrationDTO>(retVal);
+      return PropertyCopy.ConvertListDB2DTO<DBIntegrationLeafs, IntegrationDTO>(retVal);
     }
 
     public async Task<Dictionary<string, bool>> GetHasChildrenAsync(List<string> parent_ids)
@@ -101,10 +109,10 @@ namespace DbLayer.Services
       try
       {
         // Фильтр по parent_ids
-        var filter = Builders<DBIntegration>.Filter.In(x => x.parent_id, parent_ids);
+        var filter = Builders<DBIntegrationLeafs>.Filter.In(x => x.parent_id, parent_ids);
 
         // Агрегирование для проверки наличия хотя бы одного дочернего элемента для каждого parent_id
-        var aggregation = await _coll.Aggregate()
+        var aggregation = await Coll.Aggregate()
             .Match(filter) // Фильтрация документов по parent_ids
             .Group(new BsonDocument
             {
@@ -130,16 +138,16 @@ namespace DbLayer.Services
       return retVal;
     }
 
-    async Task IIntegrationServiceInternal.UpdateListAsync(List<IntegrationDTO> obj2UpdateIn)
+    async Task UpdateListAsync(List<IntegrationDTO> obj2UpdateIn)
     {
-      var dbUpdated = new Dictionary<IntegrationDTO, DBIntegration>();
-      var bulkWrites = new List<WriteModel<DBIntegration>>();
+      var dbUpdated = new Dictionary<IntegrationDTO, DBIntegrationLeafs>();
+      var bulkWrites = new List<WriteModel<DBIntegrationLeafs>>();
 
       foreach (var item in obj2UpdateIn)
       {
-        var updatedObj = PropertyCopy.ConvertDTO2DB<DBIntegration, IntegrationDTO>(item);
+        var updatedObj = PropertyCopy.ConvertDTO2DB<DBIntegrationLeafs, IntegrationDTO>(item);
         dbUpdated.Add(item, updatedObj);
-        var filter = Builders<DBIntegration>.Filter.Eq(x => x.id, updatedObj.id);
+        var filter = Builders<DBIntegrationLeafs>.Filter.Eq(x => x.id, updatedObj.id);
 
         if (string.IsNullOrEmpty(updatedObj.parent_id))
         {
@@ -149,25 +157,25 @@ namespace DbLayer.Services
         if (string.IsNullOrEmpty(updatedObj.id))
         {
           updatedObj.id = ObjectId.GenerateNewId().ToString();
-          var request = new InsertOneModel<DBIntegration>(updatedObj);
+          var request = new InsertOneModel<DBIntegrationLeafs>(updatedObj);
           bulkWrites.Add(request);
         }
         else
         {
-          var request = new ReplaceOneModel<DBIntegration>(filter, updatedObj);
+          var request = new ReplaceOneModel<DBIntegrationLeafs>(filter, updatedObj);
           request.IsUpsert = true;
           bulkWrites.Add(request);
         }
       }
 
-      var writeResult = await _coll.BulkWriteAsync(bulkWrites);
+      var writeResult = await Coll.BulkWriteAsync(bulkWrites);
 
       foreach (var pair in dbUpdated)
       {
         pair.Key.id = pair.Value.id;
       }
     }
-    async Task IIntegrationServiceInternal.RemoveAsync(List<string> ids)
+    async Task RemoveAsync(List<string> ids)
     {
       var allIdsToDelete = new HashSet<string>(ids);
 
@@ -175,12 +183,12 @@ namespace DbLayer.Services
       {
         await CollectChildIds(id, allIdsToDelete);
       }
-      await _coll.DeleteManyAsync(x => allIdsToDelete.Contains(x.id));
+      await Coll.DeleteManyAsync(x => allIdsToDelete.Contains(x.id));
     }
 
     private async Task CollectChildIds(string parentId, HashSet<string> allIdsToDelete)
     {
-      var children = await _coll.Find(x => x.parent_id == parentId).ToListAsync();
+      var children = await Coll.Find(x => x.parent_id == parentId).ToListAsync();
 
       foreach (var child in children)
       {

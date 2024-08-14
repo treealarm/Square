@@ -1,5 +1,5 @@
 ﻿
-using DbLayer.Models.Events;
+using DbLayer.Models;
 using Domain;
 using Domain.Events;
 using Domain.OptionsModels;

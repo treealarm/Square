@@ -1,18 +1,14 @@
 ﻿using DbLayer.Models;
-using DbLayer.Models.Diagrams;
 using Domain;
 using Domain.Diagram;
 using Domain.DiagramType;
 using Domain.OptionsModels;
-using Domain.Rights;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services

@@ -25,6 +25,7 @@ namespace Domain.OptionsModels
     public string DiagramCollectionName { get; set; } = "Diagram";
     public string EventsCollectionName { get; set; } = "Events";
     public string IntegrationCollectionName { get; set; } = "Integration";
+    public string IntegrationLeafsCollectionName { get; set; } = "IntegrationLeafs";
 
   }
 }

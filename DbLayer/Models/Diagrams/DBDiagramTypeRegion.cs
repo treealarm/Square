@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace DbLayer.Models.Diagrams
+namespace DbLayer.Models
 {
   //class to describe bindings. Like rack position.
   internal class DBDiagramTypeRegion

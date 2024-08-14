@@ -1,4 +1,4 @@
-﻿using DbLayer.Models.Diagrams;
+﻿using DbLayer.Models;
 using Domain;
 using Domain.Diagram;
 using Domain.OptionsModels;
@@ -7,8 +7,6 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services

@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using System.Collections.Generic;
 
-namespace DbLayer.Models.Events
+namespace DbLayer.Models
 {
   internal class DBEventMeta
   {

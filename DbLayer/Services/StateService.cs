@@ -1,5 +1,4 @@
 ﻿using DbLayer.Models;
-using DbLayer.Models.Diagrams;
 using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
