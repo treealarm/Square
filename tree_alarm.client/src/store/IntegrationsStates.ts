@@ -8,11 +8,13 @@ import { ApiIntegrationsRootString } from './constants';
 export interface IntegrationStates {
   integrations: IGetIntegrationsDTO|null;
   isFetching: boolean;
+  selected_integration: string|null;
 }
 
 const unloadedState: IntegrationStates = {
   integrations: null,
-  isFetching: false
+  isFetching: false,
+  selected_integration:null
 };
 
 export const fetchIntegrationsByParent = createAsyncThunk<IGetIntegrationsDTO, string>(
@@ -35,7 +37,9 @@ const integrationsSlice = createSlice({
   name: 'IntegrationsStates',
   initialState: unloadedState,
   reducers: {
-
+    set_selected_integration(state: IntegrationStates, action: PayloadAction<string | null>) {
+      state.selected_integration = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -56,6 +60,7 @@ const integrationsSlice = createSlice({
   },
 })
 
+export const { set_selected_integration } = integrationsSlice.actions
 export const reducer = integrationsSlice.reducer
 
 

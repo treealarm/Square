@@ -2,8 +2,10 @@ import * as React from 'react';
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
+import {
+  Box,
+  Grid, Toolbar,
+} from "@mui/material";
 
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem, TreeViewItemId } from '@mui/x-tree-view/models';
@@ -12,6 +14,7 @@ import * as IntegrationsStore from '../store/IntegrationsStates'
 import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { IGetIntegrationsDTO, IIntegrationExDTO, uuidv4 } from "../store/Marker";
+import { IntegrationToolbar } from './IntegrationToolbar';
 
 function updateTreeData(tree: TreeViewBaseItem[], parentId: string, newChildren: TreeViewBaseItem[]): TreeViewBaseItem[] {
   return tree.map((node) => {
@@ -57,9 +60,10 @@ export function IntegrationViewer() {
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
   const appDispatch = useAppDispatch();
-  const expanded_integration: IGetIntegrationsDTO = useSelector((state: ApplicationState) => state?.integrationsStates?.integrations);
+  const expanded_integration: IGetIntegrationsDTO | null | undefined =
+    useSelector((state: ApplicationState) => state?.integrationsStates?.integrations);
 
-  const transformChildren = (children: IIntegrationExDTO[]): TreeViewBaseItem[] => {    
+  const transformChildren = (children: IIntegrationExDTO[]|null): TreeViewBaseItem[] => {    
 
     if(children == null)
     {
@@ -98,6 +102,20 @@ export function IntegrationViewer() {
     
   };
 
+  
+  const handleItemSelectionToggle = (
+    event: React.SyntheticEvent,
+    itemId: string,
+    isSelected: boolean,
+  ) => {
+    if (isSelected) {
+      appDispatch(IntegrationsStore.set_selected_integration(itemId));
+    }
+    else {
+
+    }
+  }
+
   const handleItemExpansionToggle = (
     event: React.SyntheticEvent,
     itemId: string,
@@ -117,15 +135,12 @@ export function IntegrationViewer() {
   };
 
   return (
-    <Stack spacing={2}>
-      <Box sx={{ minHeight: 352, minWidth: 250 }}>
-        <RichTreeView
-          items={data}
-          expandedItems={expandedItems}
-          onItemExpansionToggle={handleItemExpansionToggle}
-          onExpandedItemsChange={handleExpandedItemsChange}
-        />
-      </Box>
-    </Stack>
+    <RichTreeView
+      items={data}
+      expandedItems={expandedItems}
+      onItemExpansionToggle={handleItemExpansionToggle}
+      onExpandedItemsChange={handleExpandedItemsChange}
+      onItemSelectionToggle={handleItemSelectionToggle}
+    />
   );
 }
