@@ -7,6 +7,7 @@ import {
 
 import { IntegrationToolbar } from './IntegrationToolbar';
 import { IntegrationViewer } from './IntegrationViewer';
+import { IntegrationLeafsViewer } from './IntegrationLeafsViewer';
 
 export function IntegrationMain() {
 
@@ -32,7 +33,7 @@ export function IntegrationMain() {
         </Grid>
 
         <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
-
+          <IntegrationLeafsViewer />
         </Grid>
 
         <Grid item xs={3} sx={{ height: "100%"}}>

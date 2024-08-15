@@ -414,3 +414,13 @@ export interface IGetIntegrationsDTO {
   children: IIntegrationExDTO[] | null;
   parent_id?: string | null;
 }
+
+export interface IIntegrationLeafDTO {
+  id: string;
+  parent_id?: string | null;
+}
+
+export interface IGetIntegrationLeafsDTO {
+  children: IIntegrationLeafDTO[] | null;
+  parent_id?: string | null;
+}

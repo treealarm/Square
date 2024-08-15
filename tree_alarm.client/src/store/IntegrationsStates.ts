@@ -1,25 +1,27 @@
 ﻿import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { IGetIntegrationsDTO, IIntegrationExDTO } from './Marker';
+import { IGetIntegrationLeafsDTO, IGetIntegrationsDTO, IIntegrationLeafDTO } from './Marker';
 import { DoFetch } from './Fetcher';
-import { ApiIntegrationsRootString } from './constants';
+import { ApiIntegrationsRootString, ApiIntegrationLeafsRootString } from './constants';
 
 
 export interface IntegrationStates {
   integrations: IGetIntegrationsDTO|null;
   isFetching: boolean;
-  selected_integration: string|null;
+  selected_integration: string | null;
+  integration_leafs: IGetIntegrationLeafsDTO | null;
 }
 
 const unloadedState: IntegrationStates = {
   integrations: null,
   isFetching: false,
-  selected_integration:null
+  selected_integration: null,
+  integration_leafs: null
 };
 
-export const fetchIntegrationsByParent = createAsyncThunk<IGetIntegrationsDTO, string>(
+export const fetchIntegrationsByParent = createAsyncThunk<IGetIntegrationsDTO, string|null>(
   'integrations/GetByParent',
-  async (parent_id: string, { getState }) => {
+  async (parent_id: string|null, { getState }) => {
     let body = JSON.stringify(parent_id);
 
     var fetched = await DoFetch(ApiIntegrationsRootString + "/GetByParent?parent_id=" + parent_id,
@@ -28,6 +30,22 @@ export const fetchIntegrationsByParent = createAsyncThunk<IGetIntegrationsDTO, s
       });
 
     var json = await fetched.json() as Promise<IGetIntegrationsDTO>;
+
+    return json;
+  }
+)
+
+export const fetchIntegrationLeafsByParent = createAsyncThunk<IGetIntegrationLeafsDTO, string>(
+  'integrationleafs/GetByParent',
+  async (parent_id: string, { getState }) => {
+    let body = JSON.stringify(parent_id);
+    console.log("fetch:", parent_id);
+    var fetched = await DoFetch(ApiIntegrationLeafsRootString + "/GetByParent?parent_id=" + parent_id,
+      {
+        method: "GET"
+      });
+
+    var json = await fetched.json() as Promise<IGetIntegrationLeafsDTO>;
 
     return json;
   }
@@ -56,7 +74,19 @@ const integrationsSlice = createSlice({
         const { requestId } = action.meta
         state.integrations = null;
       })
-      //Next
+    //fetchIntegrationLeafsByParent
+      .addCase(fetchIntegrationLeafsByParent.pending, (state: IntegrationStates, action) => {
+      })
+      .addCase(fetchIntegrationLeafsByParent.fulfilled, (state: IntegrationStates, action) => {
+        state.isFetching = false;
+        const { requestId } = action.meta
+        state.integration_leafs = action.payload;
+      })
+      .addCase(fetchIntegrationLeafsByParent.rejected, (state: IntegrationStates, action) => {
+        state.isFetching = false;
+        const { requestId } = action.meta
+        state.integration_leafs = null;
+      })
   },
 })
 

@@ -51,14 +51,20 @@ namespace LeafletAlarms.Controllers
     }
     [HttpGet()]
     [Route("GetByParent")]
-    public async Task<List<IntegrationLeafsDTO>> GetByParentAsync(
+    public async Task<GetIntegrationLeafsDTO> GetByParentAsync(
        string parent_id,
        int count
      )
     {
+      var ret = new GetIntegrationLeafsDTO()
+      {
+        parent_id = parent_id
+      };
+
       var ret_val = await _integrationService.GetByParentIdsAsync(new List<string>() { parent_id });
-     
-      return ret_val.Values.ToList();
+
+      ret.children = ret_val.Values.ToList();
+      return ret;
     }
   }
 }
