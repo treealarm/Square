@@ -1,12 +1,15 @@
 import React from 'react';
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { List, ListItem, ListItemText, Typography, Button } from '@mui/material';
+import { List, ListItem, ListItemText, Typography, Button, ListItemButton } from '@mui/material';
 
 import * as IntegrationsStore from '../store/IntegrationsStates';
+import * as GuiStore from '../store/GUIStates';
+import * as ObjPropsStore from '../store/ObjPropsStates';
+
 import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
-import { IGetIntegrationLeafsDTO, IIntegrationLeafDTO } from "../store/Marker";
+import { IGetIntegrationLeafsDTO, IIntegrationLeafDTO, IObjProps } from "../store/Marker";
 
 export function IntegrationLeafsViewer() {
   const appDispatch = useAppDispatch();
@@ -16,6 +19,9 @@ export function IntegrationLeafsViewer() {
   const integration_leafs: IGetIntegrationLeafsDTO | null =
     useSelector((state: ApplicationState) => state?.integrationsStates?.integration_leafs);
 
+  const objProps: IObjProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const reduxSelectedId = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+
   const children: IIntegrationLeafDTO[] = integration_leafs?.children || [];
 
   useEffect(() => {
@@ -23,6 +29,18 @@ export function IntegrationLeafsViewer() {
       appDispatch(IntegrationsStore.fetchIntegrationLeafsByParent(selected_integration));
     }
   }, [selected_integration, appDispatch]);
+
+  useEffect(() => {
+    if (objProps == null) {
+
+      var copy: IObjProps = {
+        id: reduxSelectedId ?? "",
+        name: 'New Object',
+        extra_props:[]
+      }
+      appDispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    }
+  }, [objProps, reduxSelectedId]);
 
   const handleAddLeaf = () => {
     if (selected_integration) {
@@ -43,7 +61,7 @@ export function IntegrationLeafsViewer() {
   };
 
   const handleSelectLeaf = (leaf: IIntegrationLeafDTO) => {
-    //appDispatch(IntegrationsStore.selectIntegrationLeaf(leaf));
+    appDispatch(GuiStore.actionCreators.selectTreeItem(leaf.id));
   };
 
   return (
@@ -55,7 +73,9 @@ export function IntegrationLeafsViewer() {
       <List>
         {children.length > 0 ? (
           children.map((child: IIntegrationLeafDTO) => (
-            <ListItem key={child.id} onClick={() => handleSelectLeaf(child)}>
+            <ListItemButton key={child.id} onClick={() => handleSelectLeaf(child)}
+              selected={reduxSelectedId == child.id}>
+              
               <ListItemText
                 primary={child.id}
                 secondary={child.parent_id ? `Parent ID: ${child.parent_id}` : 'No Parent ID'}
@@ -63,7 +83,7 @@ export function IntegrationLeafsViewer() {
               <Button onClick={() => handleDeleteLeaf(child.id)} color="secondary">
                 Delete
               </Button>
-            </ListItem>
+            </ListItemButton>
           ))
         ) : (
           <Typography variant="body1">No children available</Typography>
