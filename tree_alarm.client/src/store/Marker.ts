@@ -416,8 +416,8 @@ export interface IGetIntegrationsDTO {
 }
 
 export interface IIntegrationLeafDTO {
-  id: string;
-  parent_id?: string | null;
+  id?: string | null;
+  parent_id: string;
 }
 
 export interface IGetIntegrationLeafsDTO {

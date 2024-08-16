@@ -22,7 +22,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("Update")]
-    public async Task<IActionResult> Update(List<IntegrationLeafsDTO> obj2UpdateIn)
+    public async Task<ActionResult<List<IntegrationLeafsDTO>>> Update(List<IntegrationLeafsDTO> obj2UpdateIn)
     {
       try
       {
@@ -33,9 +33,11 @@ namespace LeafletAlarms.Controllers
       {
         return StatusCode(500, new { Message = "An error occurred while processing request", Detailed = ex.Message });
       }
-      return Ok();
+      return Ok(obj2UpdateIn);
     }
+
     [HttpDelete]
+    [Route("Delete")]
     public async Task<IActionResult> Delete(List<string> ids)
     {      
       try

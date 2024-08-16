@@ -39,7 +39,7 @@ export const fetchIntegrationLeafsByParent = createAsyncThunk<IGetIntegrationLea
   'integrationleafs/GetByParent',
   async (parent_id: string, { getState }) => {
     let body = JSON.stringify(parent_id);
-    console.log("fetch:", parent_id);
+
     var fetched = await DoFetch(ApiIntegrationLeafsRootString + "/GetByParent?parent_id=" + parent_id,
       {
         method: "GET"
@@ -48,6 +48,48 @@ export const fetchIntegrationLeafsByParent = createAsyncThunk<IGetIntegrationLea
     var json = await fetched.json() as Promise<IGetIntegrationLeafsDTO>;
 
     return json;
+  }
+)
+
+export const addIntegrationLeaf = createAsyncThunk<IIntegrationLeafDTO[], string>(
+  'integrationleafs/Update',
+  async (parent_id: string, { getState }) => {
+
+    var newObjects: IIntegrationLeafDTO[] =
+      [
+        {
+          id: null,
+          parent_id: parent_id
+        }
+      ];
+    let body = JSON.stringify(newObjects);
+
+    var fetched = await DoFetch(ApiIntegrationLeafsRootString + "/Update",
+      {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+    var json = await fetched.json() as Promise<IIntegrationLeafDTO[]>;
+
+    return json;
+  }
+)
+
+export const deleteIntegrationLeaf = createAsyncThunk<any, string>(
+  'integrationleafs/Delete',
+  async (parent_id: string, { getState }) => {
+    let body = JSON.stringify([parent_id]);
+
+    var fetched = await DoFetch(ApiIntegrationLeafsRootString + "/Delete",
+      {
+        method: "DELETE",
+        headers: { "Content-type": "application/json" },
+        body: body
+      });
+
+    return fetched;
   }
 )
 
