@@ -216,7 +216,6 @@ export function ObjectProperties() {
       }
     } as React.ChangeEvent<HTMLInputElement>;
     handleChangeParentId(event);
-    setIsSelectorOpen(false);
   };
 
   return (
@@ -281,6 +280,7 @@ export function ObjectProperties() {
           </TextField>
           <ObjectSelector
             selectedId={objProps.parent_id ?? null}
+            excludeId={objProps.id}
             onSelect={handleSelect}
           />
           </ListItem>
