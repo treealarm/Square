@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import { fileURLToPath, URL } from 'node:url';
-import react from '@vitejs/plugin-react'
 //import fs from 'fs';
 import path from 'path';
 //import child_process from 'child_process';
@@ -45,13 +44,6 @@ const nodeModulesPath = path.resolve(__dirname, './node_modules');
 const target = env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:8000';
 
 export default defineConfig({
-  optimizeDeps: {
-    include: [
-      '@emotion/react',
-      '@emotion/styled',
-      '@mui/material/Tooltip'
-    ],
-  },
   plugins: [
     plugin()
   ],
