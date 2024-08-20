@@ -153,7 +153,7 @@ export function ObjectProperties() {
       id: copy.id,
       name: copy.name
     }
-    dispatch<any>(TreeStore.actionCreators.setTreeItem(treeItem));
+    dispatch<any>(TreeStore.setTreeItem(treeItem));
 
     // Stop edit mode.
     dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));

@@ -1,179 +1,99 @@
-﻿import { Action, Reducer } from "redux";
-import { AppThunkAction } from "./";
-import { ApiRootString } from "./constants";
-import { DoFetch } from "./Fetcher";
-import { DeepCopy, GetByParentDTO, TreeMarker } from "./Marker";
-
-// -----------------
-// STATE - This defines the type of data maintained in the Redux store.
+﻿import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { ApiRootString } from './constants';
+import { DoFetch } from './Fetcher';
+import { DeepCopy, GetByParentDTO, TreeMarker } from './Marker';
 
 export interface TreeState {
   isLoading: boolean;
   parent_id: string | null;
   parents: TreeMarker[];
-  children: TreeMarker[];  
+  children: TreeMarker[];
   start_id?: string;
   end_id?: string;
 }
 
-// -----------------
-// ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
-// They do not themselves have any side-effects; they just describe something that is going to happen.
-
-interface RequestTreeStateAction {
-  type: "REQUEST_TREE_STATE";
-  parent_marker_id: string | null;
-}
-
-interface ReceiveTreeStateAction {
-  type: "RECEIVE_TREE_STATE";
-  data: GetByParentDTO
-}
-
-interface SetTreeItemAction {
-  type: "SET_TREE_ITEM";
-  item: TreeMarker
-}
-
-
-
-// Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
-// declared type strings (and not any other arbitrary string).
-type KnownAction =
-  | RequestTreeStateAction
-  | ReceiveTreeStateAction
-  | SetTreeItemAction
-  ;
-
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-
-export const actionCreators = {
-
-  getByParent: (
-    parent_id: string | null,
-    start_id: string | null,
-    end_id: string | null
-  ): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-
-      console.log("fetching by parent_id=", parent_id);
-      var request = ApiRootString + "/GetByParent?count=100";
-
-      if (parent_id != null) {
-        request += "&parent_id=" + parent_id;
-      }
-
-      if (start_id != null) {
-        request += "&start_id=" + start_id;
-      }
-
-      if (end_id != null) {
-        request += "&end_id=" + end_id;
-      }
-
-      var fetched = DoFetch(request);
-
-      console.log("fetched:", fetched);
-
-      fetched
-        .then(response => {
-          if (!response.ok)
-            throw response.statusText;
-          var json = response.json() as Promise<GetByParentDTO>;
-          return json;
-       })
-      .then(data => {
-        dispatch({
-          type: "RECEIVE_TREE_STATE",
-          data: data
-        });
-      })
-        .catch((error) => {
-          console.log("getByParent:", error);
-      });
-
-    dispatch({ type: "REQUEST_TREE_STATE", parent_marker_id: parent_id });
-  },
-
-  setTreeItem: (treeItem: TreeMarker | null): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    dispatch({ type: "SET_TREE_ITEM", item: treeItem });
-  }
-};
-
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-
-const unloadedState: TreeState = {
+// Initial state
+const initialState: TreeState = {
   children: [],
   isLoading: false,
   parent_id: null,
-  parents:[]
+  parents: []
 };
 
-export const reducer: Reducer<TreeState> = (
-  state: TreeState | undefined,
-  incomingAction: Action
-): TreeState => {
-  if (state === undefined) {
-    return unloadedState;
+// Async thunk for fetching data
+export const getByParent = createAsyncThunk < GetByParentDTO, { parent_id: string | null, start_id: string | null, end_id:string | null} >(
+  'tree/getByParent',
+  async ({ parent_id, start_id, end_id }) => {
+
+    console.log('getByParent:', parent_id);
+
+    console.log('fetching by parent_id=', parent_id);
+    let request = `${ApiRootString}/GetByParent?count=100`;
+
+    if (parent_id != null) {
+      request += `&parent_id=${parent_id}`;
+    }
+
+    if (start_id != null) {
+      request += `&start_id=${start_id}`;
+    }
+
+    if (end_id != null) {
+      request += `&end_id=${end_id}`;
+    }
+
+    var fetched = await DoFetch(request,
+      {
+        method: "GET"
+      });
+
+    var json = await fetched.json() as Promise<GetByParentDTO>;
+
+    return json;
   }
+);
 
-  const action = incomingAction as KnownAction;
+// Slice
+const treeSlice = createSlice({
+  name: 'tree',
+  initialState,
+  reducers: {
+    setTreeItem: (state, action: PayloadAction<TreeMarker | null>) => {
+      const treeItem = action.payload;
+      if (!treeItem) return;
 
-  switch (action.type) {
-    case "REQUEST_TREE_STATE":
-      return {
-        ...state,
-        parent_id: action.parent_marker_id,
-        children: state.children,
-        isLoading: true
-      };
-    case "RECEIVE_TREE_STATE":
-      if (action.data.parent_id == state.parent_id) {
-        return {
-          ...state,
-          parent_id: action.data.parent_id,
-          children: action.data.children,
-          isLoading: false,
-          parents: [null, ...action.data.parents],
-          start_id: action.data.start_id,
-          end_id: action.data.end_id
-        };
-      }
-      break;
-    case "SET_TREE_ITEM":
+      const found = state.children.find(i => i.id === treeItem.id);
+      if (!found) return;
 
-      var found = state.children.find(i => i.id == action.item.id);
-
-      if (found == null) {
-        return state;
-      }
-
-      var newMarkers = DeepCopy(state.children);
-
-      newMarkers = newMarkers.map((item : any): TreeMarker => {
-        if (item.id == action.item.id) {
-          item.name = action.item.name;
-        }
-        return item;
-      }
+      const updatedChildren = DeepCopy(state.children).map(item =>
+        item.id === treeItem.id ? { ...item, name: treeItem.name } : item
       );
 
-        return {
-          ...state,
-          children: newMarkers,
-        };
-
-      break;
-      
+      state.children = updatedChildren;
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getByParent.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getByParent.fulfilled, (state, action: PayloadAction<GetByParentDTO>) => {
+        const data = action.payload;
+        if (data.parent_id === state.parent_id) {
+          state.parent_id = data.parent_id;
+          state.children = data.children;
+          state.parents = [null, ...data.parents];
+          state.start_id = data.start_id;
+          state.end_id = data.end_id;
+        }
+        state.isLoading = false;
+      })
+      .addCase(getByParent.rejected, (state, action) => {
+        console.log('getByParent:', action.error.message);
+        state.isLoading = false;
+      });
   }
+});
 
-  return state;
-};
+export const { setTreeItem } = treeSlice.actions;
+export const reducer = treeSlice.reducer;
