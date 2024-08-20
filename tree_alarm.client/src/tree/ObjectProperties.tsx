@@ -7,7 +7,7 @@ import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/material';
+import { Box, Button, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -28,6 +28,7 @@ import { RequestRoute } from './RequestRoute';
 import { DiagramProperties } from '../diagrams/DiagramProperties';
 import * as DiagramsStore from '../store/DiagramsStates';
 import { ControlSelector } from '../prop_controls/control_selector';
+import { ObjectSelector } from '../components/ObjectSelector';
 
 declare module 'react-redux' {
   interface DefaultRootState extends ApplicationState { }
@@ -43,7 +44,7 @@ export function ObjectProperties() {
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
 
   const [newPropName, setNewPropName] = React.useState('');
-  
+
   //useEffect(() => {
   //  if (selected_id == null) {
   //    dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
@@ -69,6 +70,16 @@ export function ObjectProperties() {
       return;
     }
     copy.name = value;
+    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  };
+
+  function handleChangeParentId(e: any) {
+    const { target: { id, value } } = e;
+    var copy = DeepCopy(objProps);
+    if (copy == null) {
+      return;
+    }
+    copy.parent_id = value;
     dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
   };
 
@@ -197,6 +208,17 @@ export function ObjectProperties() {
   }
   
 
+
+  const handleSelect = (id: string | null) => {
+    const event = {
+      target: {
+        value: id
+      }
+    } as React.ChangeEvent<HTMLInputElement>;
+    handleChangeParentId(event);
+    setIsSelectorOpen(false);
+  };
+
   return (
     <Box sx={{
       width: '100%',
@@ -257,8 +279,11 @@ export function ObjectProperties() {
             value={objProps.parent_id ? objProps.parent_id:''}
             inputProps={{ readOnly: true}}>
           </TextField>
+          <ObjectSelector
+            selectedId={objProps.parent_id ?? null}
+            onSelect={handleSelect}
+          />
           </ListItem>
-        
         <ListItem>
           <TextField size="small"
           fullWidth

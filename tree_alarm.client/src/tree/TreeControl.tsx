@@ -23,7 +23,7 @@ export function TreeControl() {
   const appDispatch = useAppDispatch();
 
   const getTreeItemsByParent = (parent_marker_id: string | null) => {
-    appDispatch(TreeStore.getByParent({ parent_id: parent_marker_id, start_id:null, end_id:null}));
+    appDispatch(TreeStore.fetchByParent({ parent_id: parent_marker_id, start_id:null, end_id:null}));
   };
 
   const treeStates = useSelector((state: ApplicationState) => state?.treeStates);
@@ -77,9 +77,9 @@ export function TreeControl() {
 
   const OnNavigate = (next: boolean) => {
     if (next) {
-      appDispatch(TreeStore.getByParent({ parent_id:parent_marker_id, start_id:treeStates?.end_id, end_id:null}));
+      appDispatch(TreeStore.fetchByParent({ parent_id:parent_marker_id, start_id:treeStates?.end_id, end_id:null}));
     } else {
-      appDispatch(TreeStore.getByParent({ parent_id: parent_marker_id ?? null, start_id:null, end_id:treeStates?.start_id ?? null}));
+      appDispatch(TreeStore.fetchByParent({ parent_id: parent_marker_id ?? null, start_id:null, end_id:treeStates?.start_id ?? null}));
     }
   };
 

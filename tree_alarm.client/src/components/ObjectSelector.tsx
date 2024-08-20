@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useAppDispatch } from '../store/configureStore';
-import { getByParent, getById } from '../store/TreeStates'; // Убедитесь, что вы импортируете правильно
+import { fetchByParent, fetchById, getByParent, getById } from '../store/TreeStates'; // Убедитесь, что вы импортируете правильно
 import { TreeMarker } from '../store/Marker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -8,10 +8,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Popover from '@mui/material/Popover';
-import Button from '@mui/material/Button';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Checkbox from '@mui/material/Checkbox';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 
 interface ObjectSelectorProps {
   selectedId: string | null;
@@ -27,8 +27,8 @@ export function ObjectSelector({ selectedId, onSelect }: ObjectSelectorProps) {
   // Обновленный fetchTreeItems с использованием unwrap
   const fetchTreeItems = useCallback(async (parentId: string | null) => {
     try {
-      const response = await dispatch(getByParent({ parent_id: parentId, start_id: null, end_id: null })).unwrap();
-      setItems(response.children); // Предположим, что `response` содержит `children`
+      const response = await getByParent(parentId, null, null);
+      setItems(response.children??[]); // Предположим, что `response` содержит `children`
     } catch (error) {
       console.error('Failed to fetch tree items:', error);
     }
@@ -38,7 +38,7 @@ export function ObjectSelector({ selectedId, onSelect }: ObjectSelectorProps) {
     const fetchData = async () => {
       if (selectedId) {
         try {
-          const response = await dispatch(getById(selectedId)).unwrap();
+          const response = await getById(selectedId);
           setCurrentParentId(response.parent_id);
           fetchTreeItems(response.parent_id);
         } catch (error) {
@@ -70,9 +70,9 @@ export function ObjectSelector({ selectedId, onSelect }: ObjectSelectorProps) {
 
   return (
     <>
-      <Button aria-describedby={id} variant="contained" onClick={handleClick}>
-        Select Item
-      </Button>
+      <IconButton aria-label="select item" onClick={handleClick}>
+        <CheckCircleIcon />
+      </IconButton>
       <Popover
         id={id}
         open={open}
