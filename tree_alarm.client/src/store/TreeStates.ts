@@ -1,7 +1,7 @@
 ﻿import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApiRootString } from './constants';
 import { DoFetch } from './Fetcher';
-import { DeepCopy, GetByParentDTO, TreeMarker } from './Marker';
+import { DeepCopy, GetByParentDTO, TreeMarker, Marker } from './Marker';
 
 export interface TreeState {
   isLoading: boolean;
@@ -53,6 +53,24 @@ export const getByParent = createAsyncThunk < GetByParentDTO, { parent_id: strin
   }
 );
 
+export const getById = createAsyncThunk < Marker, string | null>(
+  'tree/getById',
+  async (id) => {
+
+    let request = `${ApiRootString}/GetById?id=${id}`;
+
+   
+    var fetched = await DoFetch(request,
+      {
+        method: "GET"
+      });
+
+    var json = await fetched.json() as Promise<Marker>;
+
+    return json;
+  }
+);
+
 // Slice
 const treeSlice = createSlice({
   name: 'tree',
@@ -81,8 +99,8 @@ const treeSlice = createSlice({
         const data = action.payload;
         if (data.parent_id === state.parent_id) {
           state.parent_id = data.parent_id;
-          state.children = data.children;
-          state.parents = [null, ...data.parents];
+          state.children = data.children??[];
+          state.parents = data.parents??[];
           state.start_id = data.start_id;
           state.end_id = data.end_id;
         }
@@ -91,7 +109,11 @@ const treeSlice = createSlice({
       .addCase(getByParent.rejected, (state, action) => {
         console.log('getByParent:', action.error.message);
         state.isLoading = false;
-      });
+      })
+      //getById
+      .addCase(getById.fulfilled, (state, action: PayloadAction<GetByParentDTO>) => {
+      })
+      ;
   }
 });
 

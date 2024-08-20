@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useAppDispatch } from '../store/configureStore';
-import * as TreeStore from '../store/TreeStates';
+import { getByParent, getById } from '../store/TreeStates'; // Убедитесь, что вы импортируете правильно
 import { TreeMarker } from '../store/Marker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -24,23 +24,32 @@ export function ObjectSelector({ selectedId, onSelect }: ObjectSelectorProps) {
   const [items, setItems] = useState<TreeMarker[]>([]);
   const [currentParentId, setCurrentParentId] = useState<string | null>(null);
 
-  const fetchTreeItems = useCallback((parentId: string | null) => {
-    dispatch(TreeStore.getByParent({ parent_id: parentId, start_id:null, end_id:null})).then(response => {
-      setItems(response);
-    });
+  // Обновленный fetchTreeItems с использованием unwrap
+  const fetchTreeItems = useCallback(async (parentId: string | null) => {
+    try {
+      const response = await dispatch(getByParent({ parent_id: parentId, start_id: null, end_id: null })).unwrap();
+      setItems(response.children); // Предположим, что `response` содержит `children`
+    } catch (error) {
+      console.error('Failed to fetch tree items:', error);
+    }
   }, [dispatch]);
 
   useEffect(() => {
-    if (selectedId) {
-      // Fetch the parent of the selected item and display its siblings
-      dispatch(TreeStore.actionCreators.getById(selectedId)).then(response => {
-        setCurrentParentId(response.parent_id);
-        fetchTreeItems(response.parent_id);
-      });
-    } else {
-      // Fetch the root items
-      fetchTreeItems(null);
-    }
+    const fetchData = async () => {
+      if (selectedId) {
+        try {
+          const response = await dispatch(getById(selectedId)).unwrap();
+          setCurrentParentId(response.parent_id);
+          fetchTreeItems(response.parent_id);
+        } catch (error) {
+          console.error('Failed to fetch item by ID:', error);
+        }
+      } else {
+        fetchTreeItems(null);
+      }
+    };
+
+    fetchData();
   }, [selectedId, fetchTreeItems, dispatch]);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {

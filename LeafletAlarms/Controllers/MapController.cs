@@ -45,7 +45,8 @@ namespace LeafletAlarms.Controllers
     }        
 
     [HttpGet("{id:length(24)}")]
-    public async Task<ActionResult<BaseMarkerDTO>> Get(string id)
+    [Route("GetById")]
+    public async Task<ActionResult<BaseMarkerDTO>> GetById(string id)
     {
       var marker = await _mapService.GetAsync(id);
 
