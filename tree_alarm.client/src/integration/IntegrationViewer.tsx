@@ -1,20 +1,14 @@
 import * as React from 'react';
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-
-import {
-  Box,
-  Grid, Toolbar,
-} from "@mui/material";
+import { useEffect } from "react";
 
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { TreeViewBaseItem, TreeViewItemId } from '@mui/x-tree-view/models';
+import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 
 import * as IntegrationsStore from '../store/IntegrationsStates'
 import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { IGetIntegrationsDTO, IIntegrationExDTO, uuidv4 } from "../store/Marker";
-import { IntegrationToolbar } from './IntegrationToolbar';
 
 function updateTreeData(tree: TreeViewBaseItem[], parentId: string, newChildren: TreeViewBaseItem[]): TreeViewBaseItem[] {
   return tree.map((node) => {
@@ -78,7 +72,7 @@ export function IntegrationViewer() {
 
   useEffect(() => {
     appDispatch(IntegrationsStore.fetchIntegrationsByParent(''));
-  }, []);
+  }, [appDispatch]);
 
   useEffect(() => {
     
@@ -93,13 +87,13 @@ export function IntegrationViewer() {
     }
       setData((prevData) => updateTreeData(prevData, parentId, newChildren));
     }
-  }, [expanded_integration]);
+  }, [expanded_integration, data.length]);
 
   const handleExpandedItemsChange = (
     event: React.SyntheticEvent,
     itemIds: string[],
   ) => {
-    
+    console.log(event, itemIds);
   };
 
   
@@ -110,9 +104,6 @@ export function IntegrationViewer() {
   ) => {
     if (isSelected) {
       appDispatch(IntegrationsStore.set_selected_integration(itemId));
-    }
-    else {
-
     }
   }
 

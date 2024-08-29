@@ -2,10 +2,10 @@
 import * as L from 'leaflet';
 import { useDispatch, useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { BoundBox, IPolygon, PolygonType, IObjProps, IPolygonCoord, setExtraProp, getExtraProp, PointType, DeepCopy } from '../store/Marker';
+import { IPolygon, PolygonType, IObjProps, IPolygonCoord, setExtraProp, getExtraProp, DeepCopy } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import {
   CircleMarker,
   Popup,
@@ -15,11 +15,7 @@ import {
   Polyline
 } from 'react-leaflet'
 
-import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
-
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
+import { LeafletKeyboardEvent } from 'leaflet';
 
 function CirclePopup(props: any) {
   return (
@@ -79,12 +75,12 @@ export function PolygonMaker(props: any) {
   const [isMoveAll, setIsMoveAll] = React.useState(false);
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
 
-  const initPolygon: IPolygon = {
+  const initPolygon: IPolygon = useMemo(()=>( {
     id: null,
     name: 'New Polygon',
     parent_id: selected_id,
     geometry: { coord: [], type: PolygonType }
-  };
+  }),[selected_id]);
 
   function DoSetMovedIndex(index: number, place: any) {
     console.log("DoSetMovedIndex ", place, " ", index);
@@ -100,7 +96,7 @@ export function PolygonMaker(props: any) {
       initPolygon.geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
       initPolygon.id = obj2Edit.id;
     }
-  }, [props.obj2Edit]);
+  }, [initPolygon, props.obj2Edit]);
 
   const [curPolygon, setPolygon] = React.useState<IPolygon>(initPolygon);
   const [oldPolygon, setOldPolygon] = React.useState<IPolygon>(initPolygon);
@@ -114,10 +110,10 @@ export function PolygonMaker(props: any) {
 
     setExtraProp(copy,"geometry",JSON.stringify(curPolygon.geometry), null);
     dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  }, [curPolygon]);
+  }, [curPolygon, dispatch, objProps]);
 
     
-  const mapEvents = useMapEvents({
+  useMapEvents({
     click(e: any) {
 
       if (click == 1) {
@@ -148,8 +144,6 @@ export function PolygonMaker(props: any) {
       }));
     },
 
-    moveend(e: LeafletEvent) {
-    },
 
     mousemove(e: L.LeafletMouseEvent) {
       if (isMoveAll) {
@@ -177,18 +171,18 @@ export function PolygonMaker(props: any) {
       }
 
       if (movedIndex >= 0) {
-         var updated_geometry: IPolygonCoord =
+         var updated_geometry1: IPolygonCoord =
         {
           coord: [...curPolygon.geometry.coord],
           type: PolygonType
         }            
 
 
-        updated_geometry.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
+        updated_geometry1.coord.splice(movedIndex, 1, [e.latlng.lat, e.latlng.lng]);
 
         setPolygon(polygon => ({
           ...polygon,
-          geometry: updated_geometry
+          geometry: updated_geometry1
         }));
       }
     },
@@ -207,15 +201,15 @@ export function PolygonMaker(props: any) {
 
     
   const moveVertex = useCallback(
-    (index: any, e: any) => {
+    (index: any) => {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
       DoSetMovedIndex(index, "moveVertex");
       setClick(1);
-    }, [curPolygon])
+    }, [curPolygon, parentMap])
 
   const addVertex = useCallback(
-    (index: any, e: any) => {
+    (index: any) => {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
 
@@ -227,17 +221,17 @@ export function PolygonMaker(props: any) {
       console.log("addVertex:", index);
       geometry_upd.coord.splice(index, 0, geometry_upd.coord[index]);
 
-      setPolygon(polygon1 => ({
+      setPolygon({
         ...curPolygon,
         geometry: geometry_upd
-      }));
+      });
 
       DoSetMovedIndex(index, "AddVertex");
       setClick(1);
-    }, [curPolygon])
+    }, [curPolygon, parentMap])
 
   const deleteVertex = useCallback(
-    (index: any, e: any) => {      
+    (index: any) => {      
       parentMap.closePopup();
 
       var geometry_upd: IPolygonCoord =
@@ -248,14 +242,14 @@ export function PolygonMaker(props: any) {
       
       geometry_upd.coord.splice(index, 1);
       console.log("deleteVertex:", index, " ", geometry_upd.coord.length);
-      setPolygon(polygon1 => ({
+      setPolygon({
         ...curPolygon,
         geometry: geometry_upd
-      }));
+      });
 
       setClick(1);
 
-    }, [curPolygon])
+    }, [curPolygon, parentMap])
 
   const colorOptions = { color: 'green' }
   const colorOptionsCircle = { color: 'red' }
@@ -264,14 +258,14 @@ export function PolygonMaker(props: any) {
     (e: any) => {
       props.figureChanged(curPolygon, e);
       setPolygon(initPolygon);
-    }, [curPolygon])
+    }, [curPolygon, initPolygon, props])
 
-  function moveAllPoints( e: React.MouseEventHandler)
+  function moveAllPoints()
   {
       parentMap.closePopup();
       setOldPolygon(curPolygon);
-    setIsMoveAll(true);
-    setClick(1);
+      setIsMoveAll(true);
+      setClick(1);
   }
   
 

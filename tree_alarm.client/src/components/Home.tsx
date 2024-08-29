@@ -1,4 +1,5 @@
-import * as React from "react";
+import * as React from 'react';
+
 import { TreeControl } from "../tree/TreeControl";
 import { MapComponent } from "../map/MapComponent";
 import { ObjectProperties } from "../tree/ObjectProperties";
@@ -25,7 +26,7 @@ const LeftPanel = () => {
 
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
-  var components: Array<[IPanelsStatesDTO, JSX.Element]> = panels.map((datum) => {
+  var components: Array<[IPanelsStatesDTO, React.ReactElement]> = panels?.map((datum) => {
 
     if (datum.panelId == IPanelTypes.tree) {
       return [datum, (
@@ -51,29 +52,29 @@ const RightPanel = () => {
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
 
 
-  var components: Array<[IPanelsStatesDTO, JSX.Element]> = panels.map((datum) => {
+  var components: Array<[IPanelsStatesDTO, React.ReactElement]> = panels.map((datum) => {
 
     if (datum.panelId == IPanelTypes.properties) {
       return [datum, (
-        <ObjectProperties />
+        <ObjectProperties key={datum.panelId} />
       )];
     }
 
     if (datum.panelId == IPanelTypes.search) {
       return [datum, (
-        <RetroSearch />
+        <RetroSearch key={datum.panelId} />
       )];
     }
 
     if (datum.panelId == IPanelTypes.rights) {
       return [datum, (
-        <ObjectRights />
+        <ObjectRights key={datum.panelId} />
       )];
     }
 
     if (datum.panelId == IPanelTypes.track_props) {
       return [datum, (
-        <TrackProps />
+        <TrackProps key={datum.panelId} />
       )];
     }
     return null;

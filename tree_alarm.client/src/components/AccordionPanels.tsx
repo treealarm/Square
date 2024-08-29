@@ -1,4 +1,4 @@
-﻿import * as React from "react";
+﻿import * as React from 'react';
 import {
   Box,
   IconButton, Tooltip, Typography
@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
 import * as PanelsStore from '../store/PanelsStates';
 
-export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JSX.Element]> }) => {
+export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, React.ReactElement]> }) => {
 
   const appDispatch = useAppDispatch();
 
@@ -109,7 +109,7 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, JS
               <IconButton
                 aria-label="close"
                 size="small"
-                onClick={(e: any) => handleClose(component[0].panelId)}
+                onClick={() => handleClose(component[0].panelId)}
 
               >
                 <CloseIcon />

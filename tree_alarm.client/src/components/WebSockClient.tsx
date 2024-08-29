@@ -1,7 +1,7 @@
 ﻿import * as React from "react";
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import * as MarkersStore from '../store/MarkersStates';
-import { Box, Button, Paper, styled, Tooltip } from "@mui/material";
+import { Box, Button, Tooltip } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
@@ -33,27 +33,29 @@ export function WebSockClient() {
 
   const [updatedTracks, setUpdatedTracks] = useState([]);
 
-
-  useEffect(() => {
-    onTracksUpdated(updatedTracks);
-  }, [updatedTracks])
-
-  function socket_onopen(event: any){
-    setIsConnected(true);
-  };
-
-  function socket_onclose(event: any){
-    setIsConnected(false);
-    setTimeout(function () {
-      connect();
-    }, 1000);
-  };
-
   const onTracksUpdated = useCallback(
     (track_ids: string[]) => {
       // TODO update routes newly created.
       console.log("onTracksUpdated:", track_ids, " ", selected_track?.id);
     }, [selected_track]);
+
+
+  useEffect(() => {
+    onTracksUpdated(updatedTracks);
+  }, [onTracksUpdated, updatedTracks])
+
+  function socket_onopen(){
+    setIsConnected(true);
+  }
+
+  function socket_onclose(){
+    setIsConnected(false);
+    setTimeout(function () {
+      connect();
+    }, 1000);
+  }
+
+
 
   function socket_onmessage(event: any) {
     try {
@@ -85,7 +87,7 @@ export function WebSockClient() {
     } catch (err) {
       console.log(err);
     }
-  };
+  }
 
   function connect() {
     socket = new WebSocket(url);
@@ -110,7 +112,7 @@ export function WebSockClient() {
       return function cleanup() {
         disconnect();
       };
-    }, []);
+    }, [connect]);
 
   const SafeSend = (data: any) => {
     try {
@@ -156,10 +158,6 @@ export function WebSockClient() {
     };
     SafeSend(Message);
   }
-
-  const onButtonClick = (event: React.MouseEvent<HTMLElement>) => {
-
-  };
 
   return (
       <React.Fragment key={"WebSock1"}>

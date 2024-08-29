@@ -1,6 +1,4 @@
-﻿import * as React from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+﻿import { useSelector } from "react-redux";
 
 import {
   Box, ToggleButton, ButtonGroup, Grid, IconButton, Toolbar, Tooltip
@@ -26,7 +24,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function EventViewer() {
 
@@ -37,11 +35,11 @@ export function EventViewer() {
   const searchFilter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
   const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching);
 
-  let timeoutId: any = null;
+  const timeoutIdRef = useRef<any>(null);
 
   useEffect(() => {
-    if (timeoutId != null) {
-      clearTimeout(timeoutId);
+    if (timeoutIdRef.current != null) {
+      clearTimeout(timeoutIdRef.current);
     }
 
     if (searchFilter.search_id == null) {
@@ -50,11 +48,12 @@ export function EventViewer() {
       setLocalFilter(newFilter);
       return;
     }
-    timeoutId = setTimeout(() => {
+    timeoutIdRef.current = setTimeout(() => {
       appDispatch(EventsStore.fetchEventsByFilter(searchFilter));
     }, 1000);
-    return () => clearTimeout(timeoutId);
-  }, [searchFilter]);
+
+    return () => clearTimeout(timeoutIdRef.current);
+  }, [appDispatch, searchFilter, setLocalFilter]);
 
   useEffect(() => {
     // Just reserve cursor if exist.
@@ -69,7 +68,7 @@ export function EventViewer() {
     return () => {
       clearInterval(interval);
     };
-  }, [searchFilter, autoUpdate, isFetching]);
+  }, [searchFilter, autoUpdate, isFetching, appDispatch]);
 
   useEffect(() => {
     // Autoupdate
@@ -82,9 +81,9 @@ export function EventViewer() {
     return () => {
       clearInterval(interval);
     };
-  }, [searchFilter]);
+  }, [appDispatch, searchFilter]);
 
-  function setLocalFilter(newFilter: SearchFilterDTO) {
+  const setLocalFilter = useCallback((newFilter: SearchFilterDTO)=> {
 
     var idFromStorage = sessionStorage.getItem("ID_KEY");
     if (idFromStorage == null) {
@@ -94,7 +93,7 @@ export function EventViewer() {
     newFilter.search_id = idFromStorage;
 
     appDispatch(EventsStore.set_local_filter(newFilter));
-  }
+  },[appDispatch])
 
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
@@ -104,7 +103,7 @@ export function EventViewer() {
       setLocalFilter(newFilter);
     }
     catch (err) {
-
+      console.log(err);
     }
   };
 
@@ -116,7 +115,7 @@ export function EventViewer() {
       setLocalFilter(newFilter);
     }
     catch (err) {
-
+      console.log(err);
     }
   };
 
@@ -125,14 +124,14 @@ export function EventViewer() {
     newFilter.forward = 0;// replace cursor
     newFilter.start_id = "";
     setLocalFilter(newFilter);
-  };
+  }
   function handleChangeTextSearch(e: any) {
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     var newFilter = DeepCopy(searchFilter);
     newFilter.forward = 0;// replace cursor
     newFilter.start_id = value;
     setLocalFilter(newFilter);
-  };
+  }
 
   const OnNavigate = (next: number) => {
 
@@ -164,7 +163,7 @@ export function EventViewer() {
                       sx={{ borderRadius: 1, border: 0 }}
                       value="check"
                       selected={autoUpdate}
-                      onClick={(e: any) => OnNavigate(0)}>
+                      onClick={() => OnNavigate(0)}>
                       <FirstPageIcon />
                     </ToggleButton >
                   </Tooltip>
@@ -172,7 +171,7 @@ export function EventViewer() {
                   <Tooltip title={"Next events page"}>
                     <IconButton
                       sx={{ borderRadius: 1, border: 0 }}
-                      onClick={(e: any) => OnNavigate(1)}>
+                      onClick={() => OnNavigate(1)}>
                       <NavigateNextIcon />
                     </IconButton>
                   </Tooltip>

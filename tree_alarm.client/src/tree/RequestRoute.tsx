@@ -1,26 +1,16 @@
-﻿import * as React from 'react';
+﻿import { useCallback } from 'react';
 
-import { useCallback } from 'react';
-
-import { ApplicationState } from '../store';
-import { IconButton, Stack, TextField, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import AltRouteIcon from '@mui/icons-material/AltRoute';
 
 import {
-  PointType,
   LineStringType,
-  PolygonType, ViewOption, LatLngPair,
+  LatLngPair,
   IGeometryDTO,
-  IPointCoord,
   IRoutDTO
 } from '../store/Marker';
 import * as TracksStore from '../store/TracksStates';
-import * as L from 'leaflet';
 import { useAppDispatch } from '../store/configureStore';
-
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 interface IRequestRoute {
   geometry: IGeometryDTO;
@@ -33,9 +23,9 @@ export function RequestRoute(props: IRequestRoute) {
   const appDispatch = useAppDispatch();
 
   const requestSelectedRoute = useCallback(
-    (geo: IGeometryDTO, e: any) => {
+    (geo: IGeometryDTO) => {
 
-      var myFigure: LatLngPair[];
+      var myFigure: LatLngPair[]|null = null;
 
       switch (geo.type) {
         case LineStringType:
@@ -56,7 +46,7 @@ export function RequestRoute(props: IRequestRoute) {
       }
       
 
-    }, [props])
+    }, [appDispatch])
 
   if (geometry?.type != LineStringType) {
     return null;

@@ -11,7 +11,7 @@ import {
   PolygonType
 } from '../store/Marker';
 
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   useMap,
   Polyline,
@@ -19,12 +19,8 @@ import {
   Circle,
   Polygon
 } from 'react-leaflet'
-import { LeafletMouseEvent } from 'leaflet';
-import { useAppDispatch } from '../store/configureStore';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
+import { useAppDispatch } from '../store/configureStore';
 
 const pathOptionsTracks = {
   fillColor: 'purple',
@@ -62,11 +58,11 @@ function TrackPolygon(props: any) {
 
   const eventHandlers = React.useMemo(
     () => ({
-      click(event: LeafletMouseEvent) {
+      click() {
         appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
       }
     }),
-    [track],
+    [appDispatch, track],
   )
 
   return (
@@ -91,11 +87,11 @@ function TrackPolyline(props: any) {
 
   const eventHandlers = React.useMemo(
     () => ({
-      click(event: LeafletMouseEvent) {
+      click() {
         appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
       }
     }),
-    [track],
+    [appDispatch, track],
   )
 
   return (
@@ -120,11 +116,11 @@ function TrackCircle(props: any) {
 
   const eventHandlers = React.useMemo(
     () => ({
-      click(event: LeafletMouseEvent) {
+      click() {
         appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
       }
     }),
-    [track],
+    [appDispatch, track],
   )
 
   return (
@@ -208,7 +204,7 @@ export function TrackViewer() {
   const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
-  function UpdateTracks() {
+  const UpdateTracks = useCallback(() =>{
     var bounds: L.LatLngBounds;
     bounds = parentMap.getBounds();
 
@@ -240,12 +236,8 @@ export function TrackViewer() {
     // We request routes by selection for now.
     //dispatch<any>(TracksStore.actionCreators.requestRoutes(boundBox));
     appDispatch<any>(TracksStore.actionCreators.requestTracks(boundBox));
-  }
+  },[appDispatch, checked_ids, parentMap, searchFilter?.applied, searchFilter?.property_filter, searchFilter?.sort, searchFilter?.time_end, searchFilter?.time_start, selected_id])
 
-  useEffect(() => {
-    console.log('ComponentDidMount TrackViewer');
-    //UpdateTracks();
-  }, []);
 
   useEffect(() => {
     console.log('Search Filter Updated TrackViewer');
@@ -254,13 +246,13 @@ export function TrackViewer() {
       UpdateTracks();
     }
     
-  }, [searchFilter?.search_id, selected_id, checked_ids, user]);
+  }, [searchFilter?.search_id, selected_id, checked_ids, user, UpdateTracks]);
 
-  const mapEvents = useMapEvents({
-    moveend(e: L.LeafletEvent) {
+  useMapEvents({
+    moveend() {
       UpdateTracks();
     },
-    preclick(e: LeafletMouseEvent) {
+    preclick() {
       appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(null));
     },
     async click(e: L.LeafletMouseEvent) {
@@ -275,7 +267,7 @@ export function TrackViewer() {
     <React.Fragment>
       {
         searchFilter?.show_tracks != false &&
-        tracks?.map((track, index) =>          
+        tracks?.map((track) =>          
           <CommonTrack
             key={track?.id }
             track={track}

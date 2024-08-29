@@ -20,6 +20,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 interface FileUploadProps {
+  // eslint-disable-next-line no-unused-vars
   onUploadSuccess: (data: any) => void; // Тип функции колбэка
   path: string; // Тип строки для пути
 }

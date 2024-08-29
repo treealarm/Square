@@ -1,5 +1,5 @@
 ﻿
-import * as React from 'react';
+
 import {  ApplicationState } from '../store';
 import {Tooltip} from '@mui/material';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
@@ -22,7 +22,7 @@ export function SearchApplyButton(props: { hideIfNotPushed: boolean }) {
       filter.applied = !filter.applied;
       filter.search_id = (new Date()).toISOString();
       dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
-    }, [searchFilter]);
+    }, [dispatch, searchFilter]);
 
   if (props.hideIfNotPushed && searchFilter?.applied != true) {
     return null;

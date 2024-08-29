@@ -1,6 +1,4 @@
-﻿import * as React from 'react';
-
-import { useSelector } from "react-redux";
+﻿import { useSelector } from "react-redux";
 
 import { ApplicationState } from '../store';
 import * as DiagramsStore from '../store/DiagramsStates';
@@ -15,7 +13,7 @@ import Select from '@mui/material/Select';
 import Link from '@mui/material/Link';
 
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IGetDiagramDTO, IGetDiagramTypesByFilterDTO } from '../store/Marker';
+import { DeepCopy, IGetDiagramDTO } from '../store/Marker';
 import { useCallback, useEffect } from 'react';
 
 import { IDiagramDTO } from '../store/Marker';
@@ -81,13 +79,13 @@ export function DiagramProperties(props: IDiagramProperties) {
       }
       appDispatch(DiagramsStore.set_local_diagram(cur_diagram_copy));
     }
-  }, [result, curDiagram, cur_diagramtype, getDiagramDto]);
+  }, [result, curDiagram, cur_diagramtype, getDiagramDto, appDispatch]);
 
   useEffect(() => {
     if (getDiagramDto?.parent?.id != null && selected_id == getDiagramDto?.parent?.id) {
       appDispatch(DiagramsStore.fetchSingleDiagram(getDiagramDto.parent.id));
     } 
-  }, [propsUpdated]);
+  }, [propsUpdated, appDispatch, getDiagramDto.parent.id, selected_id]);
 
   function handleEditDiagramClick() {
     appDispatch(DiagramTypeStore.set_local_filter(curDiagram?.dgr_type));
@@ -99,12 +97,9 @@ export function DiagramProperties(props: IDiagramProperties) {
     if (curDiagram != null) {
       appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
     }
-    else {
-           
-    }
     //TODO Must refetch content since other properties updated
     
-  }, [curDiagram, content]);
+  }, [curDiagram, appDispatch]);
 
   //subscribe to props.events changes
   useEffect(() => {
@@ -115,14 +110,14 @@ export function DiagramProperties(props: IDiagramProperties) {
   }, [props.events, handleSave]);
 
   function handleChangeType(e: any) {
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     var copy = DeepCopy(curDiagram);
     copy.dgr_type = value;
     appDispatch(DiagramsStore.update_single_diagram(copy));
-  };
+  }
 
   function handleChangeBackgroundImg(e: any) {
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     var copy = DeepCopy(curDiagram);
     copy.background_img = value;
     appDispatch(DiagramsStore.update_single_diagram(copy));
@@ -149,15 +144,15 @@ export function DiagramProperties(props: IDiagramProperties) {
     }
 
     appDispatch(DiagramsStore.update_single_diagram(copy));
-  };
+  }
 
   function handleChangeRegionId(e: any) {
-    const { target: { name, value } } = e;
+    const { target: { value } } = e;
 
     var copy = DeepCopy(curDiagram);
     copy.region_id = value;
     appDispatch(DiagramsStore.update_single_diagram(copy));
-  };
+  }
 
   function onUploadSuccess(data: any) {
 
@@ -222,7 +217,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             >
               {
                 parentType?.regions.map((region, index) =>
-                  <MenuItem value={region?.id}>{ region?.id}</MenuItem>
+                  <MenuItem key={"menu" + index } value={region?.id}>{ region?.id}</MenuItem>
                 )}
 
             </Select>

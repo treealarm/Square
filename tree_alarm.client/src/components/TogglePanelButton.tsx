@@ -1,10 +1,9 @@
-﻿import * as React from "react";
-import {ToggleButton, Tooltip} from "@mui/material";
+﻿import {ToggleButton, Tooltip} from "@mui/material";
 
 import * as PanelsStore from '../store/PanelsStates';
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
-import { DeepCopy, EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
+import { DeepCopy, IPanelsStatesDTO } from "../store/Marker";
 import { useAppDispatch } from "../store/configureStore";
 
 import { PanelIcon } from "./PanelIcon";

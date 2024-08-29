@@ -84,6 +84,10 @@ const diagramsSlice = createSlice({
       state.cur_diagram = action.payload;
     },
     update_single_diagram(state: DiagramsStates, action: PayloadAction<IDiagramDTO>) {
+
+      if (state.cur_diagram == null) {
+        return;
+      }
       var newContent = state.cur_diagram.content.filter(d => d.id != action.payload.id);
       newContent.push(action.payload);
       state.cur_diagram.content = newContent;
@@ -92,7 +96,8 @@ const diagramsSlice = createSlice({
       state.depth = action.payload;
     },
     remove_ids_locally(state: DiagramsStates, action: PayloadAction<string[]>) {
-      state.cur_diagram.content = state.cur_diagram.content.filter(
+      if (state.cur_diagram != null)
+        state.cur_diagram.content = state.cur_diagram.content.filter(
         d => action.payload.find( id => id==d.id) == null);
     }
   }
@@ -118,6 +123,10 @@ const diagramsSlice = createSlice({
       .addCase(updateDiagrams.fulfilled, (state: DiagramsStates, action) => {
         const { requestId } = action.meta
         const updated: IDiagramDTO[] = action.payload;
+
+        if (state.cur_diagram == null) {
+          return;
+        }
         var newContent =
           state.cur_diagram.content.filter(d => updated.find(ud => ud.id == d.id) == null);
         state.cur_diagram.content = [...updated, ...newContent];
@@ -129,6 +138,10 @@ const diagramsSlice = createSlice({
       //fetchSingleDiagram
       .addCase(fetchSingleDiagram.fulfilled, (state: DiagramsStates, action) => {
         const { requestId } = action.meta
+
+        if (state.cur_diagram == null) {
+          return;
+        }
         if (action.payload.id == state.cur_diagram.parent.id) {
           state.cur_diagram.parent = action.payload;
         }

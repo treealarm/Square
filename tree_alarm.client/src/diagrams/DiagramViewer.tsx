@@ -64,22 +64,10 @@ export default function DiagramViewer() {
       var objArray2: string[] = [];
       diagram?.content?.forEach(arr => objArray2.push(arr.id));
       appDispatch<any>(MarkersVisualStore.requestMarkersVisualStates(objArray2));
-    }, [diagram?.content]);
+    }, [diagram?.content, appDispatch]);
 
 
 
-  function hexToRgba(hex: string, alpha: number): string {
-
-    if (hex == null) {
-      return null;
-    }
-    const hexColor = hex.replace('#', '');
-    const r = parseInt(hexColor.substring(0, 2), 16);
-    const g = parseInt(hexColor.substring(2, 4), 16);
-    const b = parseInt(hexColor.substring(4, 6), 16);
-
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  }
 
   const getColor = useCallback(
     (marker: IDiagramDTO) => {
@@ -130,6 +118,7 @@ export default function DiagramViewer() {
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    console.log(e);
     appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram?.parent?.id));
   };
 
@@ -138,15 +127,9 @@ export default function DiagramViewer() {
     //e.stopPropagation();
     //var newZ = zoom + ((e.deltaY) / Math.abs(e.deltaY)) * -0.1
     //setZoom(newZ);
-    //console.log("ZOOM", newZ)
+    console.log(e)
   };
 
-  function handleScrollCapture(event: any) {
-    event.stopPropagation(); // Это предотвратит дальнейшее распространение события прокрутки
-    event.preventDefault();
-    console.log('Scroll event captured!');
-    // Ваша логика обработки события прокрутки
-  }
 
   if (diagram == null) {
     return null;
@@ -252,16 +235,16 @@ export default function DiagramViewer() {
       <ButtonGroup variant="contained" orientation="vertical"
         sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
         <IconButton
-          onClick={(e: any) => setZoom(zoom + 0.1)}>
+          onClick={() => setZoom(zoom + 0.1)}>
           <ZoomInIcon fontSize="inherit"></ZoomInIcon>
         </IconButton>
 
         <IconButton
-          onClick={(e: any) => setZoom(zoom - 0.1)}>
+          onClick={() => setZoom(zoom - 0.1)}>
           <ZoomOutIcon fontSize="inherit" />
         </IconButton>
         <IconButton
-          onClick={(e: any) => setZoom(1)}>
+          onClick={() => setZoom(1)}>
           <RestartAltIcon fontSize="inherit" />
         </IconButton>
 

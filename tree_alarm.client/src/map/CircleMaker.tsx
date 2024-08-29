@@ -5,9 +5,8 @@ import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ApplicationState } from '../store';
 import { DeepCopy, getExtraProp, ICircle, IObjProps, PointType, setExtraProp } from '../store/Marker';
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import {
-  CircleMarker,
   Popup,
   useMap,
   useMapEvents,
@@ -16,9 +15,6 @@ import {
 
 import { LeafletKeyboardEvent } from 'leaflet';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 function CirclePopup(props: any) {
   if (props.movedIndex >= 0) {
@@ -56,13 +52,13 @@ export function CircleMaker(props: any) {
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
 
-  const initFigure: ICircle = {
+  const initFigure: ICircle = useMemo(() => ({
     name: 'New Circle',
     parent_id: selected_id,
     geometry: { coord: null, type: PointType },
     radius: 10,
     id: null
-  };
+  }), [selected_id]);
 
   useEffect(() => {
     if (props.obj2Edit != null) {
@@ -88,7 +84,7 @@ export function CircleMaker(props: any) {
         setMovedIndex(0)
       }
     }
-  }, [props.obj2Edit]);
+  }, [initFigure, props.obj2Edit]);
 
   const [figure, setFigure] = React.useState<ICircle>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<ICircle>(initFigure);
@@ -105,10 +101,10 @@ export function CircleMaker(props: any) {
     setExtraProp(copy, "geometry", JSON.stringify(figure?.geometry), null);
 
     dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  }, [figure]);
+  }, [dispatch, figure, objProps]);
 
 
-  const mapEvents = useMapEvents({
+  useMapEvents({
     click(e: any) {
       console.log('onclick map');
       var ll: L.LatLng = e.latlng as L.LatLng;
@@ -119,10 +115,10 @@ export function CircleMaker(props: any) {
       }
       var updatedValue = { geometry: figure.geometry};
       updatedValue.geometry = { coord: [ll.lat, ll.lng], type: PointType };
-      setFigure(fig => ({
+      setFigure({
         ...figure,
         ...updatedValue
-      }));
+      });
     },
 
     mousemove(e: L.LeafletMouseEvent) {
@@ -156,13 +152,13 @@ export function CircleMaker(props: any) {
       parentMap.closePopup();
 
       setMovedIndex(index);
-    }, [])
+    }, [parentMap])
 
   const deleteVertex = useCallback(
-    (index:any, e: any) => {
+    () => {
       parentMap.closePopup();
       setFigure(initFigure);
-    }, [figure])
+    }, [initFigure, parentMap])
 
   const colorOptions = {
     fillColor: 'yellow',
@@ -176,7 +172,7 @@ export function CircleMaker(props: any) {
     (e: any) => {
       props.figureChanged(figure, e);
       setFigure(initFigure);
-    }, [figure]);
+    }, [figure, initFigure, props]);
 
   if (figure?.geometry?.coord == null) {
     return null;

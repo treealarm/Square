@@ -1,14 +1,8 @@
-﻿import * as React from 'react';
-import Stack from '@mui/material/Stack';
+﻿import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { ApplicationState } from '../store';
 import CloseIcon from "@mui/icons-material/Close";
 import { DeepCopy, KeyValueDTO, ObjPropsSearchDTO } from '../store/Marker';
 import { Box, IconButton, List, ListItem, Tooltip } from '@mui/material';
-
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 export function PropertyFilter(props:any) {
 
@@ -27,7 +21,7 @@ export function PropertyFilter(props:any) {
       first.prop_name = value;
     }
     props.setPropsFilter(copy);
-  };
+  }
 
   function handleChangePropVal(e: any) {
     const { target: { id, value } } = e;
@@ -44,14 +38,14 @@ export function PropertyFilter(props:any) {
     }
 
     props.setPropsFilter(copy);
-  };
+  }
 
   function deleteProperty
     (e: any, index: any){
       let copy = DeepCopy(props.propsFilter) as ObjPropsSearchDTO;
       copy.props.splice(index, 1);
       props.setPropsFilter(copy);
-    };
+    }
 
   return (
     <Box

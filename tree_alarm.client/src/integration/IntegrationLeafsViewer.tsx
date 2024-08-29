@@ -1,7 +1,6 @@
-import React from 'react';
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { List, ListItem, ListItemText, Typography, Button, ListItemButton } from '@mui/material';
+import { List, ListItemText, Typography, Button, ListItemButton } from '@mui/material';
 
 import * as IntegrationsStore from '../store/IntegrationsStates';
 import * as GuiStore from '../store/GUIStates';
@@ -40,7 +39,7 @@ export function IntegrationLeafsViewer() {
       }
       appDispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
     }
-  }, [objProps, reduxSelectedId]);
+  }, [objProps, reduxSelectedId, appDispatch]);
 
   const handleAddLeaf = () => {
     if (selected_integration) {

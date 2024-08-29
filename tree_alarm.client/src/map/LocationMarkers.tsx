@@ -23,9 +23,6 @@ import {
 import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
 import { ApiDefaultMaxCountResult } from '../store/constants';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 function MyPolygon(props: any) {
 
@@ -146,22 +143,15 @@ function MyCircle(props: any) {
 
 
 function MyCommonFig(props: any) {
-  
-  if (props.hidden == true) {
-    return null;
-  }
 
   var fig: ICommonFig = props.marker;
   var geo: IGeometryDTO = fig.geometry;
 
-  if (geo?.type == null) {
-    return null;
-  }
-
   const appDispatch = useAppDispatch();
+
   const eventHandlers = useMemo(
     () => ({
-      click(event: LeafletMouseEvent) {
+      click() {
         appDispatch<any>(GuiStore.actionCreators.selectTreeItem(props.marker.id));
 
         var __is_diagram = getExtraProp(fig, "__is_diagram", "0");
@@ -171,11 +161,20 @@ function MyCommonFig(props: any) {
         }
       }
     }),
-    [],
+    [appDispatch, fig, props.marker.id],
   );
 
+  if (props.hidden == true) {
+    return null;
+  }
+
+
+
+  if (geo?.type == null) {
+    return null;
+  }
+  
   if (geo.type == PointType) {
-    const center = geo.coord as [number, number];
     return (
       <MyCircle {...props} eventHandlers={eventHandlers} >
         
@@ -184,7 +183,6 @@ function MyCommonFig(props: any) {
   }
 
   if (geo.type == PolygonType) {
-    const center = L.polygon(geo.coord).getBounds().getCenter();
     return (
       <MyPolygon {...props} eventHandlers={eventHandlers}>
       </MyPolygon>
@@ -192,7 +190,6 @@ function MyCommonFig(props: any) {
   }
 
   if (geo.type == LineStringType) {
-    const center = L.polyline(geo.coord).getBounds().getCenter();
     return (
       <MyPolyline {...props} eventHandlers={eventHandlers}>
       </MyPolyline>
@@ -223,7 +220,7 @@ export function LocationMarkers() {
   parentMap.attributionControl.options.prefix = 
     '<a href="https://www.leftfront.org" title="A JavaScript library for interactive maps">' + '<img width="12" height="8" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg"></img>' + 'LeafletAlarms</a>';
 
-  function RequestMarkersByBox(bounds: L.LatLngBounds) {
+  const RequestMarkersByBox = useCallback((bounds: L.LatLngBounds)=> {
     if (bounds == null) {
       bounds = parentMap.getBounds();
     }
@@ -240,11 +237,11 @@ export function LocationMarkers() {
     }
 
     appDispatch<any>(MarkersStore.actionCreators.requestMarkers(boundBox));
-  }
+  },[appDispatch, parentMap, searchFilter?.applied, searchFilter?.property_filter])
 
   useEffect(() => {
     RequestMarkersByBox(null);
-  }, [user]);
+  }, [RequestMarkersByBox, user]);
 
 
 
@@ -256,12 +253,12 @@ export function LocationMarkers() {
       var objArray2: string[] = [];
       markers.figs?.forEach(arr => objArray2.push(arr.id));
       appDispatch<any>(MarkersVisualStore.requestMarkersVisualStates(objArray2));
-    }, [markers]);
+    }, [appDispatch, markers]);
 
-   const mapEvents = useMapEvents({
+   useMapEvents({
      preclick(e: LeafletMouseEvent) {
-
-       if (!selectedEditMode.edit_mode) {
+       console.log(e);
+       if (!selectedEditMode?.edit_mode) {
          appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
        }       
       },
@@ -273,23 +270,13 @@ export function LocationMarkers() {
          RequestMarkersByBox(bounds);
          //console.log('LocationMarkers Chaged:', e.target.getBounds(), "->", e.target.getZoom());
        },
-        mousemove(e: L.LeafletMouseEvent) {
-
-     }
+ 
    });
-
-  
-  const selectMe = useCallback(
-    (marker: any, e: any) => {
-      parentMap.closePopup();
-      var selected_id = marker.id;
-      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_id));
-    }, [])
 
   useEffect(
     () => {
       appDispatch<any>(GuiStore.actionCreators.requestTreeUpdate());
-    }, [isChanging]);
+    }, [appDispatch, isChanging]);
   
   useEffect(
     () => {
@@ -297,7 +284,7 @@ export function LocationMarkers() {
         // Clear TODO time limit
         RequestMarkersByBox(null);
       }      
-    }, [markers]);
+    }, [RequestMarkersByBox, markers]);
 
   useEffect(
     () => {
@@ -306,7 +293,7 @@ export function LocationMarkers() {
         searchFilter?.search_id != "") {
         RequestMarkersByBox(null);
       }      
-    }, [markersStates?.initiateUpdateAll, searchFilter?.search_id]);
+    }, [RequestMarkersByBox, markersStates?.initiateUpdateAll, searchFilter?.search_id]);
 
   const getColor = useCallback(
     (marker: IObjProps) => {
@@ -366,10 +353,10 @@ export function LocationMarkers() {
     }, [visualStates, alarmedObjects, selected_id, checked_ids]);
 
 
-  var hidden_id: string = null;
+  var hidden_id: string | null = null;
 
-  if (selectedEditMode.edit_mode) {
-    hidden_id = objProps?.id;
+  if (selectedEditMode?.edit_mode) {
+    hidden_id = objProps?.id??null;
   }
 
 
@@ -377,7 +364,7 @@ export function LocationMarkers() {
     <React.Fragment>
       {
         searchFilter?.show_objects != false &&
-        markers?.figs?.map((marker, index) =>
+        markers?.figs?.map((marker) =>
           <MyCommonFig
             key={marker.id} 
             marker={marker}

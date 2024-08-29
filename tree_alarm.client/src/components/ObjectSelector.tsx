@@ -15,10 +15,11 @@ import { Box, IconButton, CircularProgress, Tabs, Tab, Button } from '@mui/mater
 interface ObjectSelectorProps {
   selectedId: string | null;
   excludeId?: string | null;
+  // eslint-disable-next-line no-unused-vars
   onSelect: (id: string | null) => void;
 }
 
-export function ObjectSelector({ selectedId, onSelect, excludeId }: ObjectSelectorProps) {
+export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelectorProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [items, setItems] = useState<TreeMarker[]>([]);
   const [parents, setParents] = useState<TreeMarker[]>([]);
@@ -42,7 +43,7 @@ export function ObjectSelector({ selectedId, onSelect, excludeId }: ObjectSelect
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [excludeId]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,7 +80,8 @@ export function ObjectSelector({ selectedId, onSelect, excludeId }: ObjectSelect
   };
 
   const handleOk = () => {
-    onSelect(selectedItem);
+    var id = selectedItem;
+    onSelect(id);
     setTimeout(() => {
       handleClose();
     }, 0);

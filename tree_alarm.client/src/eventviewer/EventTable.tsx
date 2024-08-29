@@ -1,12 +1,10 @@
-﻿import * as React from 'react';
-import Box from '@mui/material/Box';
+﻿import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
@@ -23,6 +21,7 @@ interface Column {
   label: string;
   minWidth?: number;
   align?: 'right'|'left';
+  // eslint-disable-next-line no-unused-vars
   format?: (value: number) => string;
 }
 
@@ -51,6 +50,7 @@ const columns: readonly Column[] = [
 ];
 
 interface IEventTableProps {
+  // eslint-disable-next-line no-unused-vars
   setLocalFilter: (newFilter: SearchFilterDTO) => any;
 }
 export default function EventTable(props: IEventTableProps) {

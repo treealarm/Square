@@ -18,7 +18,7 @@ export default function GlobalLayersOptions() {
   const dispatch = useDispatch();
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
 
-  function GetCopyOfSearchFilter(): SearchFilterGUI {
+  const GetCopyOfSearchFilter = React.useCallback((): SearchFilterGUI=> {
     let filter = DeepCopy(searchFilter);
 
     if (filter == null) {
@@ -36,7 +36,7 @@ export default function GlobalLayersOptions() {
       };
     }
     return filter;
-  }
+  },[searchFilter])
 
   // Checked.
   const handleChecked = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +56,7 @@ export default function GlobalLayersOptions() {
     }
 
     dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
-  }, [searchFilter]);
+  }, [GetCopyOfSearchFilter, dispatch]);
 
   var checks = [
     { "id": "show_objects", "name": "Objects", "checked": searchFilter?.show_objects },
@@ -68,7 +68,7 @@ export default function GlobalLayersOptions() {
     <Box>
       <FormGroup row>
         {
-          checks.map((item, index) =>
+          checks.map((item) =>
             <FormControlLabel key={"fkl" + item.id} control={
               <Checkbox
                 checked={item.checked != false}

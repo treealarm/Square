@@ -5,17 +5,14 @@ import * as RightsStore from '../store/RightsStates';
 import { ApplicationState } from '../store';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, ButtonGroup, IconButton, TextField } from '@mui/material';
+import { Box, ButtonGroup, IconButton, TextField } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import { DeepCopy, IObjectRightsDTO, IObjectRightValueDTO} from '../store/Marker';
+import { DeepCopy, IObjectRightValueDTO} from '../store/Marker';
 import { useAppDispatch } from '../store/configureStore';
 import RoleRightSelector from './RoleRightSelector';
 import SaveIcon from '@mui/icons-material/Save';
 import { useCallback } from 'react';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 export function ObjectRights() {
 
@@ -40,21 +37,21 @@ export function ObjectRights() {
   React.useEffect(() => {
     appDispatch(RightsStore.fetchAllRoles());
     appDispatch(RightsStore.fetchAllRightValues());
-  }, [user]);
+  }, [user, appDispatch]);
 
   React.useEffect(() => {
     appDispatch(RightsStore.fetchRightsByIds([selected_id]));
-  }, [selected_id]);
+  }, [selected_id, appDispatch]);
 
   const handleSave = useCallback(() => {
     if (rights != null && rights.length > 0) {
       var copy_rights = DeepCopy(rights);
       appDispatch(RightsStore.updateRights(copy_rights));
     }
-  }, [rights]);
+  }, [rights, appDispatch]);
 
   function addRoleRight
-    (e: any) {
+    () {
     var copy_right = DeepCopy(myRight);
     var newRightValue: IObjectRightValueDTO =
     {
@@ -63,7 +60,7 @@ export function ObjectRights() {
     }
     copy_right.rights = [...copy_right.rights, newRightValue];
     appDispatch(RightsStore.set_rights([copy_right]));
-  };
+  }
 
   function onChangeRoleValue(roleRight: IObjectRightValueDTO, index: number) {
     var copy_right = DeepCopy(myRight);

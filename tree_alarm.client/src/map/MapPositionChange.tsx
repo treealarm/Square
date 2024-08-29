@@ -6,7 +6,6 @@ import {
 
 import { useEffect } from "react";
 import { ApplicationState } from "../store";
-import { Map as LeafletMap } from 'leaflet';
 
 export function MapPositionChange() {
 
@@ -16,13 +15,19 @@ export function MapPositionChange() {
 
     var container = document.getElementById('map-container')
 
+    if (container == null) {
+      return;
+    }
     const resizeObserver = new ResizeObserver(() => {
       parentMap.invalidateSize();
     });
     resizeObserver.observe(container);
 
     return () => {
-      resizeObserver.unobserve(container);
+      if (container != null) {
+        resizeObserver.unobserve(container);
+      }
+     
       resizeObserver.disconnect();
     };
   }, [parentMap]);
@@ -30,8 +35,8 @@ export function MapPositionChange() {
   const guiStates = useSelector((state: ApplicationState) => state.guiStates);
 
   useEffect(() => {
-    let map_center = guiStates.map_option?.map_center;
-    let zoom = guiStates.map_option?.zoom;
+    let map_center = guiStates?.map_option?.map_center;
+    let zoom = guiStates?.map_option?.zoom;
 
     if (map_center != null) {
       if (zoom != null) {
@@ -41,15 +46,15 @@ export function MapPositionChange() {
       }
     }
     else {
-      if (guiStates.map_option.find_current_pos) {
+      if (guiStates?.map_option?.find_current_pos) {
         parentMap.locate();
       }
     }
    
-  }, [guiStates.map_option]);
+  }, [guiStates?.map_option, parentMap]);
 
-  const map = useMapEvents({
-    locationfound: (location) => {
+  useMapEvents({
+    locationfound: (location:any) => {
       parentMap.setView(location.latlng);
       console.log('location found:', location)
     },

@@ -1,5 +1,5 @@
 ﻿import * as React from "react";
-import { Button, Paper, styled, Tooltip } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import UserService from "./UserService";
@@ -16,7 +16,7 @@ export function Login() {
       setLoggedIn(UserService.isLoggedIn());
     }, [user]);
 
-  const onButtonClick = (event: React.MouseEvent<HTMLElement>) => {  
+  const onButtonClick = () => {  
 
     if (!UserService.isLoggedIn()) {
       UserService.doLogin();

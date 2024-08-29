@@ -1,11 +1,11 @@
 ﻿import * as React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import Autocomplete, { AutocompleteChangeDetails, AutocompleteChangeReason } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { DeepCopy, IObjectRightValueDTO, IRightValuesDTO } from '../store/Marker';
-import { Box, FormControl, IconButton, InputLabel, List, ListItem, MenuItem, OutlinedInputProps, Select, SelectChangeEvent } from '@mui/material';
+import { Box, FormControl, IconButton, List, ListItem } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -35,7 +35,7 @@ export default function RoleRightSelector(properties: any) {
 
     cur_value_copy.role = newValue;
     properties.onChangeRoleValue(cur_value_copy, properties.index);
-  };
+  }
 
   //function handleInputChangeRole(event: React.SyntheticEvent, newValue: string, reason: string) {
 
@@ -52,8 +52,6 @@ export default function RoleRightSelector(properties: any) {
   function handleChangeRights(
     event: React.SyntheticEvent,
     valueTag: IRightValuesDTO[],
-    reason: any,
-    details?: any
   ) {
     var cur_value_copy = DeepCopy(cur_value);
     var val = 0;
@@ -62,12 +60,12 @@ export default function RoleRightSelector(properties: any) {
     });
     cur_value_copy.value = val;
     properties.onChangeRoleValue(cur_value_copy, properties.index);
-  };
+  }
 
   function deleteMe
-    (e: any) {
+    () {
     properties.onChangeRoleValue(null, properties.index);
-  };
+  }
 
   return (
     <Box sx={{

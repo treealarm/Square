@@ -1,13 +1,13 @@
 ﻿import * as React from 'react';
 
-import { useEffect, useCallback} from 'react';
+import { useEffect, useCallback, useMemo} from 'react';
 import { useSelector} from "react-redux";
 
 import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/material';
+import { Box, ButtonGroup, Divider, IconButton, TextField, Tooltip } from '@mui/material';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -30,16 +30,12 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import { ControlSelector } from '../prop_controls/control_selector';
 import { ObjectSelector } from '../components/ObjectSelector';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
-
 export function ObjectProperties() {
 
-  const dispatch = useAppDispatch();
+  const app_dispatch = useAppDispatch();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const objProps: IObjProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const objProps: IObjProps|null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
 
@@ -64,24 +60,24 @@ export function ObjectProperties() {
 
 
   function handleChangeName (e: any){
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     var copy = DeepCopy(objProps);
     if (copy == null) {
       return;
     }
     copy.name = value;
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  };
+    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }
 
   function handleChangeParentId(e: any) {
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     var copy = DeepCopy(objProps);
     if (copy == null) {
       return;
     }
     copy.parent_id = value;
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  };
+    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }
 
   function handleChangeProp(e: any) {
     const { target: { id, value } } = e;
@@ -99,8 +95,8 @@ export function ObjectProperties() {
       first.str_val = value;
     }
     
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  };
+    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }
 
   function handleAddProp(id: any) {
 
@@ -112,7 +108,7 @@ export function ObjectProperties() {
 
     const first = copy.extra_props.find((obj) => {
       return obj.prop_name == id;
-    });
+    })
 
     if (first != null) {
       return;
@@ -123,8 +119,8 @@ export function ObjectProperties() {
       prop_name: id
     };
     copy.extra_props.push(newProp);
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  };
+    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }
 
   function handleRemoveProp(id: any) {
 
@@ -138,16 +134,18 @@ export function ObjectProperties() {
       return obj.prop_name != id;
     });
 
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  };
+    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+  }
 
   useEffect(() => {
     if (objProps?.id != null) {
-      dispatch<any>(MarkersStore.actionCreators.requestMarkersByIds([objProps.id]));
+      app_dispatch<any>(MarkersStore.actionCreators.requestMarkersByIds([objProps.id]));
     }      
-  }, [propsUpdated]);
+  }, [propsUpdated, app_dispatch, objProps?.id]);
 
-  const childDiagramPropEvents = { clickSave: () => { } };
+  const childDiagramPropEvents = useMemo(() => ({
+    clickSave: () => { }
+  }), []);
 
   const handleSave = useCallback(() => {
 
@@ -157,41 +155,41 @@ export function ObjectProperties() {
       return;
     }
 
-    dispatch<any>(ObjPropsStore.actionCreators.updateObjProps(copy));
+    app_dispatch<any>(ObjPropsStore.actionCreators.updateObjProps(copy));
 
     // Update name in tree control.
     var treeItem: TreeMarker = {
       id: copy.id,
       name: copy.name
     }
-    dispatch<any>(TreeStore.setTreeItem(treeItem));
+    app_dispatch<any>(TreeStore.setTreeItem(treeItem));
 
     // Stop edit mode.
-    dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
+    app_dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
 
-  }, [objProps, childDiagramPropEvents.clickSave]);
+  }, [objProps, app_dispatch, childDiagramPropEvents]);
 
   function editMe(props: IObjProps, editMode: boolean){
-    dispatch<any>(EditStore.actionCreators.setFigureEditMode(editMode));
+    app_dispatch<any>(EditStore.actionCreators.setFigureEditMode(editMode));
 
     if (!editMode) {
-      dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
+      app_dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
     }
-  };
+  }
 
   const deleteMe = useCallback(
-    (props: IObjProps, e: any) => {
+    (obj_props: IObjProps) => {
 
       var marker: Marker = {
-        name: props.name,
-        id: props.id,
-        parent_id: props.parent_id
+        name: obj_props.name,
+        id: obj_props.id,
+        parent_id: obj_props.parent_id
       }
       let idsToDelete: string[] = [marker.id];
-      dispatch<any>(MarkersStore.actionCreators.deleteMarker(idsToDelete));
-      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-      dispatch(DiagramsStore.remove_ids_locally(idsToDelete));
-    }, [])
+      app_dispatch<any>(MarkersStore.actionCreators.deleteMarker(idsToDelete));
+      app_dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+      app_dispatch(DiagramsStore.remove_ids_locally(idsToDelete));
+    }, [app_dispatch])
 
 
     if (objProps == null || objProps == undefined) {
@@ -242,7 +240,7 @@ export function ObjectProperties() {
 
             <Tooltip title={"Edit object"}>
             <IconButton aria-label="edit" size="medium"
-              onClick={(e: any) => editMe(objProps, !selectedEditMode.edit_mode)} >
+              onClick={() => editMe(objProps, !selectedEditMode.edit_mode)} >
               {
                 selectedEditMode.edit_mode ?
                   <NotInterestedSharpIcon fontSize="inherit" /> :
@@ -253,7 +251,7 @@ export function ObjectProperties() {
             </Tooltip>
 
             <Tooltip title={"Delete object"}>
-            <IconButton aria-label="delete" size="medium" onClick={(e: any) => deleteMe(objProps, e)}>
+            <IconButton aria-label="delete" size="medium" onClick={() => deleteMe(objProps)}>
               <DeleteIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
@@ -310,7 +308,7 @@ export function ObjectProperties() {
                 handleChangeProp={handleChangeProp} />
 
               <Tooltip title={"remove property"}>
-                <IconButton aria-label="delete" size="small" onClick={(e: any) => { handleRemoveProp(item.prop_name); }}>
+                <IconButton aria-label="delete" size="small" onClick={() => { handleRemoveProp(item.prop_name); }}>
                   <DeleteOutlineIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
@@ -326,7 +324,7 @@ export function ObjectProperties() {
             value={newPropName}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => { setNewPropName(event.target.value); }} />
           <Tooltip title={"add new property"}>
-            <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddProp(newPropName); }}>
+            <IconButton aria-label="save" size="medium" onClick={() => { handleAddProp(newPropName); }}>
               <AddTaskIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>

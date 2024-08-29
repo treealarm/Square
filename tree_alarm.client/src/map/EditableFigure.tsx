@@ -17,41 +17,41 @@ export function EditableFigure() {
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
 
   const polygonChanged = useCallback(
-    (polygon: IPolygon, e: any) => {
+    (polygon: IPolygon) => {
       var figures: IFigures = {
 
       };
       figures.figs = [polygon];
       dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-    }, [])
+    }, [dispatch])
 
   const polylineChanged = useCallback(
-    (figure: IPolyline, e:any) => {
+    (figure: IPolyline) => {
       var figures: IFigures = {
 
       };
       figures.figs = [figure];
       dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-    }, [])
+    }, [dispatch])
 
   const circleChanged = useCallback(
-    (figure: ICircle, e: any) => {
+    (figure: ICircle) => {
       var figures: IFigures = {
 
       };
       figures.figs = [figure];
       dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-    }, [])
+    }, [dispatch])
 
 
   if (obj2Edit == null) {
     return null;
   }  
 
-  if (!selectedEditMode.edit_mode) {
+  if (!selectedEditMode?.edit_mode) {
     return null;
   }
 

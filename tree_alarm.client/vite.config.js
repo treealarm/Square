@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url';
 import path from 'path';
 //import child_process from 'child_process';
 import { env } from 'process';
-
+import eslintPlugin from 'vite-plugin-eslint'
 
 // Получаем абсолютный путь к текущему файлу
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
@@ -45,7 +45,12 @@ const target = env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http:/
 
 export default defineConfig({
   plugins: [
-    plugin()
+    plugin(),
+    eslintPlugin({
+      cache: false,
+      include: ['./src/**/*.js', './src/**/*.jsx', './src/**/*.tsx'],
+      exclude: [],
+    }),
   ],
   resolve: {
     alias: {

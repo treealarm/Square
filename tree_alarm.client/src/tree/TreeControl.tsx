@@ -1,5 +1,5 @@
 ﻿import * as React from 'react';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../store/configureStore";
 import * as TreeStore from '../store/TreeStates';
@@ -23,8 +23,9 @@ export function TreeControl() {
   const appDispatch = useAppDispatch();
 
   const getTreeItemsByParent = (parent_marker_id: string | null) => {
-    appDispatch(TreeStore.fetchByParent({ parent_id: parent_marker_id, start_id:null, end_id:null}));
+    appDispatch(TreeStore.fetchByParent({ parent_id: parent_marker_id, start_id: null, end_id: null }));
   };
+
 
   const treeStates = useSelector((state: ApplicationState) => state?.treeStates);
   const markers = useSelector((state: ApplicationState) => state?.treeStates?.children);
@@ -35,7 +36,7 @@ export function TreeControl() {
 
   useEffect(() => {
     getTreeItemsByParent(null);
-  }, [user]);
+  }, [user, getTreeItemsByParent]);
 
   const selectItem = (selected_marker: TreeMarker | null) => {
     let selected_id = selected_marker?.id ?? null;

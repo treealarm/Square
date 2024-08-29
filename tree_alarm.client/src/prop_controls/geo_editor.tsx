@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import * as React from 'react';
 import { TextField, Button, Box, Typography, InputAdornment, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { IControlSelector } from 'control_selector_common';
+import { IControlSelector } from './control_selector_common';
 
 const GeoEditor = ({ props }: { props: IControlSelector }) => {
   const [geometry, setGeometry] = React.useState(JSON.parse(props.str_val));

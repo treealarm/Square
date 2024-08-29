@@ -1,20 +1,13 @@
-﻿import * as React from 'react';
-
+﻿
 import { useCallback } from 'react';
 
-import { ApplicationState } from '../store';
-import { IconButton, Stack, TextField, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 
 import {
-  PointType,
-  LineStringType,
-  PolygonType, ViewOption, LatLngPair,
-  IGeometryDTO,
-  IPointCoord
+  ViewOption
 } from '../store/Marker';
 import * as GuiStore from '../store/GUIStates';
-import * as L from 'leaflet';
 import { useAppDispatch } from '../store/configureStore';
 
 
@@ -31,11 +24,11 @@ export function FlyToMyLocationButton() {
       };
 
       appDispatch<any>(GuiStore.actionCreators.setMapOption(viewOption));
-    },[]);
+    },[appDispatch]);
 
   return (
     <Tooltip title={"Search me on Map"}>
-      <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap()}>
+      <IconButton aria-label="search" size="medium" onClick={() => searchMeOnMap()}>
         <LocationSearchingIcon fontSize="inherit" />
       </IconButton>
     </Tooltip>

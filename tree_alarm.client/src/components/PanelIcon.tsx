@@ -1,7 +1,5 @@
-﻿import * as React from 'react';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
+﻿import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import DataObjectIcon from '@mui/icons-material/DataObject';
-import SchemaIcon from '@mui/icons-material/Schema';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import SearchIcon from '@mui/icons-material/Search';

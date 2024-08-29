@@ -10,7 +10,7 @@ import * as ObjPropsStore from '../store/ObjPropsStates';
 import * as EditStore from '../store/EditStates';
 import { useAppDispatch } from '../store/configureStore';
 
-export function ObjectPropertiesUpdater(): JSX.Element {
+export function ObjectPropertiesUpdater(): React.ReactElement {
 
   const dispatch = useAppDispatch();
 
@@ -22,16 +22,17 @@ export function ObjectPropertiesUpdater(): JSX.Element {
       dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
     }
     else if (selected_id?.startsWith('00000000', 0)) {
-      var selectedMarker = markers.figs.find(m => m.id == selected_id);
+      var selectedMarker = markers?.figs?.find(m => m.id == selected_id);
 
       if (selectedMarker != null) {
         dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
         return;
       }
     }
-
-    dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
-  }, [selected_id]);
+    if (selected_id) {
+      dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
+    }
+  }, [selected_id, dispatch, markers?.figs]);
 
   
   return (null);

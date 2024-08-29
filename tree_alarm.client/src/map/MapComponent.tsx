@@ -1,5 +1,4 @@
-﻿import * as React from "react";
-import { LocationMarkers } from "./LocationMarkers";
+﻿import { LocationMarkers } from "./LocationMarkers";
 import {
   MapContainer,
   TileLayer
@@ -12,7 +11,7 @@ import L from "leaflet";
 
 
 
-export function MapComponent(props: any) {
+export function MapComponent() {
 
   var url = 'http://';
 

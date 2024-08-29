@@ -1,5 +1,4 @@
-﻿import * as React from 'react';
-
+﻿
 import * as SearchResultStore from '../store/SearchResultStates';
 import { ApplicationState } from '../store';
 import { DeepCopy, ITrackPointDTO} from '../store/Marker';
@@ -17,9 +16,6 @@ import { useCallback } from 'react';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 export function SearchResult() {
 
@@ -42,10 +38,10 @@ export function SearchResult() {
     console.log("SELECTED_TRACK:", selected_track_id, " ", reduxSelectedTrack);
     appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(selected_marker));
 
-  }, [reduxSelectedTrack]);
+  }, [reduxSelectedTrack, appDispatch]);
 
   const OnNavigate = useCallback(
-    (next: boolean, e: any) => {
+    (next: boolean) => {
 
       let filter = DeepCopy(searchStates.filter);
       filter.forward = next ? 1: -1;
@@ -69,7 +65,7 @@ export function SearchResult() {
           SearchResultStore.actionCreators.getByFilter(filter)
         );
       }
-    }, [searchStates?.list])
+    }, [searchStates?.list, appDispatch, searchStates?.filter])
 
   function getLocalTimeString(timestamp: string) {
     try {

@@ -1,6 +1,4 @@
-﻿import * as React from 'react';
-
-import { useEffect, useCallback } from 'react';
+﻿import { useEffect, useCallback } from 'react';
 import { useSelector } from "react-redux";
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 
@@ -31,7 +29,7 @@ export function DiagramTypeProperties() {
   const handleSave = useCallback(() => {
     var copy = DeepCopy(diagramType);
     appDispatch(DiagramTypeStore.updateDiagramTypes([copy]));
-  }, [diagramType]);
+  }, [appDispatch, diagramType]);
 
   function addNew() {
     var copy: IDiagramTypeDTO =
@@ -42,33 +40,32 @@ export function DiagramTypeProperties() {
       regions: []
     }
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
-  };
+  }
   const deleteMe = useCallback(
-    (e: any) => {
+    () => {
       appDispatch(DiagramTypeStore.deleteDiagramTypes([diagramType.id]));
-    }, [diagramType])
+    }, [appDispatch, diagramType.id])
 
   function handleChangeName(e: any) {
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     var copy = DeepCopy(diagramType);
     copy.name = value;
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
-  };
+  }
 
   function handleChangeSrc(e: any) {
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     var copy = DeepCopy(diagramType);
     copy.src = value;
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
-  };
+  }
   function handleDeleteRegion(e: any) {
     const { index } = e;
     var copy = DeepCopy(diagramType);
     copy.regions.splice(index, 1);
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
   }
-  function handleAddRegion(e: any) {
-    const { index } = e;
+  function handleAddRegion() {
     var copy = DeepCopy(diagramType);
     var newRegion: IDiagramTypeRegionDTO =
     {
@@ -112,7 +109,7 @@ export function DiagramTypeProperties() {
     }
 
     appDispatch(DiagramTypeStore.set_local_diagram(copy));
-  };
+  }
 
   function onUploadSuccess(data: any) {
 
@@ -145,7 +142,7 @@ export function DiagramTypeProperties() {
 
             <Tooltip title={"Add object"}>
               <IconButton aria-label="edit" size="medium"
-                onClick={(e: any) => addNew()} >
+                onClick={() => addNew()} >
 
                 <AddIcon fontSize="inherit" />
 
@@ -153,7 +150,7 @@ export function DiagramTypeProperties() {
             </Tooltip>
 
             <Tooltip title={"Delete object"}>
-              <IconButton aria-label="delete" size="medium" onClick={(e: any) => deleteMe(e)}>
+              <IconButton aria-label="delete" size="medium" onClick={() => deleteMe()}>
                 <DeleteIcon fontSize="inherit" />
               </IconButton>
             </Tooltip>
@@ -200,15 +197,17 @@ export function DiagramTypeProperties() {
         </ListItem>
         <ListItem id="diagram_type_name_src">
           <Tooltip title={"add new region"}>
-            <IconButton aria-label="save" size="medium" onClick={(e: any) => { handleAddRegion(e); }}>
+            <IconButton aria-label="save" size="medium" onClick={() => { handleAddRegion(); }}>
               <AddTaskIcon fontSize="inherit" />
             </IconButton>
 
           </Tooltip></ListItem>
         {
           diagramType?.regions?.map((region, index) =>
-            <div><Divider><br /></Divider>
-              <ListItem id={"reg_id" + index.toString()}>
+            <div key={"list_itemrr" + index}><Divider><br /></Divider>
+              <ListItem
+                
+                id={"reg_id" + index.toString()}>
                 <TextField
                   id={"editreg_id:" + index.toString()}
                   fullWidth
@@ -222,7 +221,7 @@ export function DiagramTypeProperties() {
                 <Tooltip title={"Delete region"}>
                   <IconButton
                     id={"deletereg:" + index.toString()}
-                    aria-label="delete" size="medium" onClick={(e: any) => handleDeleteRegion({ index: index })}>
+                    aria-label="delete" size="medium" onClick={() => handleDeleteRegion({ index: index })}>
                     <DeleteIcon fontSize="inherit" />
                   </IconButton>
                 </Tooltip>

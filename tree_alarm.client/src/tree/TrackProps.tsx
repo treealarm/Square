@@ -1,5 +1,4 @@
-﻿import * as React from 'react';
-import { ApplicationState } from '../store/index';
+﻿import { ApplicationState } from '../store/index';
 import { List, ListItem, ListItemButton, ListItemText, TextField } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { DateTimeField, LocalizationProvider } from '@mui/x-date-pickers';
@@ -28,7 +27,7 @@ export function TrackProps() {
       appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }
 
-  }, [selected_id, selected_track]);
+  }, [selected_id, selected_track, appDispatch]);
 
   if (selected_track == null) {
     return null;

@@ -31,8 +31,7 @@ export default function EditOptions() {
   };
 
   const handleMenuItemClick = (
-    item: string,
-    index: number,
+    item: string
   ) => {
     setAnchorEl(null);
 
@@ -139,10 +138,10 @@ export default function EditOptions() {
         }}
       >
 
-        {Object.entries(figuresMenu).map((item, index) => (
+        {Object.entries(figuresMenu).map((item) => (
           <MenuItem
             key={item[0]}
-            onClick={(event) => handleMenuItemClick(item[0], index)}>
+            onClick={() => handleMenuItemClick(item[0])}>
             {item[1]}
           </MenuItem>
         ))}

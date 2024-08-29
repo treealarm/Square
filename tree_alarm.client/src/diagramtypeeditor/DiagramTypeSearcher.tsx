@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
 
-import {useCallback } from 'react';
+import {useCallback, useRef } from 'react';
 import { useSelector } from "react-redux";
 
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
@@ -30,19 +30,19 @@ export function DiagramTypeSearcher() {
     
     var copy = DeepCopy(selected);
     appDispatch(DiagramTypeStore.set_local_diagram(copy));    
-  }, [diagramtypes, diagramType]);
+  }, [appDispatch]);
 
   const countOnPage = 200;
 
-  let timeoutId:any = null;
+  const timeoutIdRef = useRef<any>(null);
 
 
   React.useEffect(() => {
-    if (timeoutId != null) {
-      clearTimeout(timeoutId);
+    if (timeoutIdRef.current != null) {
+      clearTimeout(timeoutIdRef.current);
     }
       
-    timeoutId = setTimeout(() => {
+    timeoutIdRef.current = setTimeout(() => {
       var filterToApplay: IGetDiagramTypesByFilterDTO =
       {
         filter: localFilter,
@@ -53,16 +53,16 @@ export function DiagramTypeSearcher() {
 
       appDispatch(DiagramTypeStore.fetchGetDiagramTypesByFilter(filterToApplay));
     }, 1500);
-    return () => clearTimeout(timeoutId);
-  }, [localFilter]);
+    return () => clearTimeout(timeoutIdRef.current);
+  }, [appDispatch, localFilter]);
 
   function handleChangeName(e: any) {
-    const { target: { id, value } } = e;
+    const { target: { value } } = e;
     appDispatch(DiagramTypeStore.set_local_filter(value));
-  };
+  }
 
   const OnNavigate = useCallback(
-    (next: boolean, e: any) => {
+    (next: boolean) => {
 
       var filterToApplay: IGetDiagramTypesByFilterDTO =
       {
@@ -85,7 +85,7 @@ export function DiagramTypeSearcher() {
         } 
       }
       appDispatch(DiagramTypeStore.fetchGetDiagramTypesByFilter(filterToApplay));
-    }, [diagramtypes])
+    }, [appDispatch, diagramtypes, localFilter])
 
   return (
     <Box sx={{
@@ -98,7 +98,7 @@ export function DiagramTypeSearcher() {
         <Toolbar variant="dense" >
 
           <Tooltip title="Go to previous page">
-            <IconButton onClick={(e: any) => OnNavigate(false, e)}>
+            <IconButton onClick={() => OnNavigate(false)}>
               <ArrowBackIcon />
             </IconButton>
           </Tooltip>
@@ -115,7 +115,7 @@ export function DiagramTypeSearcher() {
           <Box sx={{ flexGrow: 1 }} />
 
           <Tooltip title="Go to next page">
-            <IconButton onClick={(e: any) => OnNavigate(true, e)}>
+            <IconButton onClick={() => OnNavigate(true)}>
               <ArrowForwardIcon />
             </IconButton>
           </Tooltip>

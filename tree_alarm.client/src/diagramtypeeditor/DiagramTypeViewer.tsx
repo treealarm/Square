@@ -1,22 +1,16 @@
-﻿import * as React from 'react';
-import { useEffect } from 'react';
-import { ApplicationState } from '../store';
+﻿import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { getExtraProp, IDiagramCoord, IDiagramTypeDTO } from '../store/Marker';
+import { IDiagramTypeDTO } from '../store/Marker';
 
-import { useAppDispatch } from '../store/configureStore';
-import * as DiagramTypeStore from '../store/DiagramTypeStates';
 import { useState } from 'react';
 import { Box, ButtonGroup, IconButton, Tooltip } from '@mui/material';
 import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import { SelectChangeEvent } from '@mui/material/Select';
 
 
 export default function DiagramTypeViewer() {
 
-  const appDispatch = useAppDispatch();
   const [zoom, setZoom] = useState(1.0);
 
   const diagramType: IDiagramTypeDTO = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
@@ -128,16 +122,16 @@ export default function DiagramTypeViewer() {
           sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
 
           <IconButton
-            onClick={(e: any) => setZoom(zoom + 0.1)}>
+            onClick={() => setZoom(zoom + 0.1)}>
             <ZoomInIcon fontSize="inherit"></ZoomInIcon>
           </IconButton>
 
           <IconButton
-            onClick={(e: any) => setZoom(zoom - 0.1)}>
+            onClick={() => setZoom(zoom - 0.1)}>
             <ZoomOutIcon fontSize="inherit" />
           </IconButton>
           <IconButton
-            onClick={(e: any) => setZoom(1)}>
+            onClick={() => setZoom(1)}>
             <RestartAltIcon fontSize="inherit" />
           </IconButton>
 

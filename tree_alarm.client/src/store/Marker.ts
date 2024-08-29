@@ -14,7 +14,7 @@ export function uuidv4() {
 export type LatLngPair = [number, number];
 
 export interface Marker {
-  id: string;
+  id: string|null;
   parent_id?: string | null;
   name: string;
 }
@@ -25,7 +25,7 @@ export const LineStringType = 'LineString';
 
 export interface IPointCoord extends IGeometryDTO {
   type: 'Point';
-  coord: LatLngPair;
+  coord: LatLngPair|null;
 }
 
 export interface IPolygonCoord extends IGeometryDTO {
@@ -104,7 +104,7 @@ export function setExtraProp(
 export function getExtraProp(
   obj: IObjProps,
   propName: string,
-  defVal:string = null
+  defVal:string|null = null
 ): string {
 
   if (obj?.extra_props == null) {
@@ -206,8 +206,8 @@ export interface BoxTrackDTO extends BoundBox
 }
 
 export interface ViewOption {
-  map_center: LatLngPair;
-  zoom?: number;
+  map_center?: LatLngPair|null;
+  zoom?: number|null;
   find_current_pos?: boolean;
 }
 
@@ -355,7 +355,7 @@ export interface IDiagramTypeRegionDTO {
   geometry: IDiagramCoord;
 }
 export interface IDiagramTypeDTO {
-  id: string;
+  id?: string|null;
   name: string
   src: string;
   regions: IDiagramTypeRegionDTO[];

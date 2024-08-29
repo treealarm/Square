@@ -13,13 +13,9 @@ import {
   Polyline
 } from 'react-leaflet'
 
-import { LeafletEvent, LeafletKeyboardEvent } from 'leaflet';
+import { LeafletKeyboardEvent } from 'leaflet';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
-
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 function CirclePopup(props: any) {
   return (
@@ -83,7 +79,8 @@ export function PolylineMaker(props: any) {
     console.log("DoSetMovedIndex ", place, " ", index);
     setMovedIndex(index);
   }
-  const initFigure: IPolyline = {
+
+  const initFigure: IPolyline = useMemo(() => ({
     id: null,
     name: 'New Polyline',
     parent_id: selected_id,
@@ -91,7 +88,8 @@ export function PolylineMaker(props: any) {
       type: LineStringType,
       coord: []
     }
-  };
+  }), [selected_id]);
+
 
   useEffect(() => {
     if (props.obj2Edit != null) {
@@ -102,7 +100,7 @@ export function PolylineMaker(props: any) {
       initFigure.geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
       initFigure.id = obj2Edit.id;
     }
-  }, [props.obj2Edit]);
+  }, [initFigure, props.obj2Edit]);
 
   const [figure, setFigure] = React.useState<IPolyline>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<IPolyline>(initFigure);
@@ -117,9 +115,9 @@ export function PolylineMaker(props: any) {
 
     setExtraProp(copy, "geometry", JSON.stringify(figure.geometry), null);
     dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
-  }, [figure]);
+  }, [dispatch, figure, objProps]);
     
-  const mapEvents = useMapEvents({
+  useMapEvents({
     click(e: any) {
 
       if (click == 1) {
@@ -138,14 +136,10 @@ export function PolylineMaker(props: any) {
         type: LineStringType
         }
 
-      setFigure(polygon => ({
+      setFigure({
         ...figure,
         geometry: geometry_upd
-      }));
-    },
-
-    moveend(e: LeafletEvent) {
-
+      });
     },
 
     mousemove(e: L.LeafletMouseEvent) {
@@ -197,10 +191,10 @@ export function PolylineMaker(props: any) {
       
       DoSetMovedIndex(index, "moveVertex");
       setClick(1);
-    }, [figure])
+    }, [parentMap])
 
   const addVertex = useCallback(
-    (index: any, toEnd: any, e: any) => {
+    (index: any, toEnd: any) => {
       parentMap.closePopup();
       setOldFigure(figure);
 
@@ -211,10 +205,10 @@ export function PolylineMaker(props: any) {
 
       geometry_upd.coord.splice(index, 0, geometry_upd.coord[index]);
 
-      setFigure(f1 => ({
+      setFigure({
         ...figure,
         geometry: geometry_upd
-      }));
+      });
 
       if (toEnd) {
         index++;
@@ -222,10 +216,10 @@ export function PolylineMaker(props: any) {
 
       DoSetMovedIndex(index, "AddVertex");
       setClick(1);
-    }, [figure])
+    }, [figure, parentMap])
 
   const deleteVertex = useCallback(
-    (index: any, e: any) => {      
+    (index: any) => {      
       parentMap.closePopup();
 
       var geometry_upd: IPolylineCoord = {
@@ -242,7 +236,7 @@ export function PolylineMaker(props: any) {
 
       setClick(1);
 
-    }, [figure])
+    }, [figure.geometry.coord, parentMap])
 
   const colorOptions = { color: 'green' }
 
@@ -250,7 +244,7 @@ export function PolylineMaker(props: any) {
     (e: any) => {
       props.figureChanged(figure, e);
       setFigure(initFigure);
-    }, [figure])
+    }, [figure, initFigure, props])
 
   return (
     <React.Fragment>

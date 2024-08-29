@@ -1,5 +1,4 @@
-﻿import * as React from 'react';
-import dayjs, { Dayjs } from 'dayjs';
+﻿import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
@@ -22,9 +21,6 @@ import { useAppDispatch } from '../store/configureStore';
 import { SearchApplyButton } from './SearchApplyButton';
 import { ApiDefaultPagingNum, INPUT_DATETIME_FORMAT } from '../store/constants';
 
-declare module 'react-redux' {
-  interface DefaultRootState extends ApplicationState { }
-}
 
 export function RetroSearch() {
   const dispatch = useAppDispatch();
@@ -33,16 +29,17 @@ export function RetroSearch() {
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
   const routes = useSelector((state: ApplicationState) => state?.tracksStates?.routes);
 
-  function GetCopyOfSearchFilter(): SearchFilterGUI {
+  const GetCopyOfSearchFilter = useCallback((): SearchFilterGUI|null => {
     let filter = DeepCopy(searchFilter);
     return filter;
-  }
+  }, [searchFilter]);
+
 
   useEffect(() => {
     if (searchFilter == null) {
       console.error("Normally search filter should be inited");
     }
-  }, []);
+  }, [searchFilter]);
 
   useEffect(() => {
     var filter: SearchFilterGUI = GetCopyOfSearchFilter();
@@ -51,16 +48,16 @@ export function RetroSearch() {
       return;
     }
     DoSearchTracks(filter);
-  }, [searchFilter?.applied]);
+  }, [searchFilter?.applied, GetCopyOfSearchFilter, DoSearchTracks]);
 
-  function UpdateFilterInRedux(filter: SearchFilterGUI, applyFilter: boolean) {
+  const UpdateFilterInRedux = useCallback((filter: SearchFilterGUI, applyFilter: boolean)=> {
     filter.applied = applyFilter;
     dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
 
     if (filter.applied != true) {
       dispatch<any>(SearchResultStore.actionCreators.setEmptyResult());
     }
-  }
+  },[dispatch])
 
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
@@ -70,9 +67,9 @@ export function RetroSearch() {
     }
     catch (err)
     {
-
+      console.log(err);
     }
-  };
+  }
 
   const handleChange2 = (newValue: Dayjs | null) => {
     try {
@@ -81,11 +78,11 @@ export function RetroSearch() {
       UpdateFilterInRedux(filter, false);
     }
     catch (err) {
-
+      console.log(err);
     }
-  };
+  }
 
-  function DoSearchTracks(filterIn: SearchFilterGUI) {
+  const DoSearchTracks = useCallback((filterIn: SearchFilterGUI) => {
 
     if (filterIn == null) {
       console.error("DoSearchTracks:", "filterIn == null");
@@ -106,30 +103,30 @@ export function RetroSearch() {
       count: ApiDefaultPagingNum
     }
 
-    if (filterIn.applied != true) {      
+    if (filterIn.applied != true) {
       dispatch<any>(SearchResultStore.actionCreators.setEmptyResult());
     }
     else {
       dispatch<any>(SearchResultStore.actionCreators.getByFilter(filterDto));
-    }    
-  }
+    }
+  },[UpdateFilterInRedux, dispatch, searchFilter]);
 
   const addProperty = useCallback(
-    (e: any) => {
+    () => {
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
       UpdateFilterInRedux(filter, false);
-    }, [searchFilter]);
+    }, [GetCopyOfSearchFilter, UpdateFilterInRedux]);
 
   const setPropsFilter = useCallback(
     (propsFilter: ObjPropsSearchDTO) => {
       var filter: SearchFilterGUI = GetCopyOfSearchFilter();
       filter.property_filter = propsFilter;
       UpdateFilterInRedux(filter, false);
-    }, [searchFilter]);
+    }, [GetCopyOfSearchFilter, UpdateFilterInRedux]);
 
   const OnNavigate = useCallback(
-    (next: boolean, e: any) => {
+    (next: boolean) => {
 
       if (tracks == null  && routes == null) {
         return;
@@ -200,14 +197,14 @@ export function RetroSearch() {
           maxDate = new Date(filter.time_end);//
         }
 
-        var t1 = dayjs(maxDate).subtract(1, 's');
-        filter.time_end = t1.toISOString();
+        var t1_1 = dayjs(maxDate).subtract(1, 's');
+        filter.time_end = t1_1.toISOString();
         filter.sort = -1;
       }
 
       DoSearchTracks(filter);
 
-    }, [searchFilter, tracks, routes])
+    }, [tracks, routes, DoSearchTracks, GetCopyOfSearchFilter])
 
 
   return (

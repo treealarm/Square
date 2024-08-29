@@ -43,12 +43,14 @@ const renderColorInput = (props: IControlSelector) => {
 
 
 
-const controlMap: { [key: string]: (props: IControlSelector) => JSX.Element } = {
-  __txt: renderTextField,
-  __clr: renderColorInput,
-  __geo: renderGeoInput,
+// eslint-disable-next-line no-unused-vars
+const controlMap: { [key: string]: (props_in: IControlSelector) => React.ReactElement } = {
+  __txt: (props_in) => renderTextField(props_in),
+  __clr: (props_in) => renderColorInput(props_in),
+  __geo: (props_in) => renderGeoInput(props_in),
   // Add other control types here
 };
+
 export function ControlSelector(props: IControlSelector) {
 
   const { visual_type } = props;

@@ -24,7 +24,7 @@ export interface GetPropsAction {
 
 export interface SetPropsAction {
   type: 'SET_PROPS';
-  objProps: IObjProps;
+  objProps: IObjProps|null;
 }
 
 export interface SetPropsLocallyAction {

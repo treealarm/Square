@@ -28,12 +28,12 @@ export default function DiagramNavigation() {
         return;
       }
       appDispatch<any>(DiagramsStore.fetchDiagram(diagram_id));
-    }, [objProps, diagram]);
+    }, [ appDispatch]);
 
   const Resurface = useCallback(
     () => {
       appDispatch<any>(DiagramsStore.reset_diagram());
-    }, [diagram]);
+    }, [ appDispatch]);
 
   if (__is_diagram != '1' && diagram?.parent == null) {
     return null;
@@ -53,7 +53,7 @@ export default function DiagramNavigation() {
         diagram?.parent == null ?
           <React.Fragment /> :
           <Tooltip title={"Resurface from the diagram"}>
-            <IconButton aria-label="search" size="medium" onClick={(e: any) => Resurface()}>
+            <IconButton aria-label="search" size="medium" onClick={() => Resurface()}>
               <PoolIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>
@@ -62,7 +62,7 @@ export default function DiagramNavigation() {
       <DiagramParentsNavigator parent_list={diagram?.parents} parent_id={diagram?.parent?.id} />
 
       <Tooltip title={"Dive into the diagram"}>
-        <IconButton aria-label="search" size="medium" onClick={(e: any) => setDiagram(objProps?.id)}>
+        <IconButton aria-label="search" size="medium" onClick={() => setDiagram(objProps?.id)}>
           <ScubaDivingIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>

@@ -15,12 +15,12 @@ interface IDiagramElement {
   parent_coord: IDiagramCoord
   zoom: number;
   z_index: number;
+  // eslint-disable-next-line no-unused-vars
   getColor: (marker: IDiagramDTO) => any;
 }
 
 export default function DiagramElement(props: IDiagramElement) {
 
-  const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
@@ -43,7 +43,7 @@ export default function DiagramElement(props: IDiagramElement) {
     (diagram_id: string) => {
       appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram_id));
       console.log("selecting diagram:", diagram_id);
-    }, [objProps]);
+    }, [appDispatch]);
 
   useEffect(
     () => {
@@ -79,7 +79,7 @@ export default function DiagramElement(props: IDiagramElement) {
           };
       }
       setCoord(newCoord);
-    }, [diagram, diagrams]);
+    }, [diagram, diagrams, parent.dgr_type, parent_coord.height, parent_coord.width]);
 
 
   var diagram_type: IDiagramTypeDTO = null;
@@ -147,7 +147,7 @@ export default function DiagramElement(props: IDiagramElement) {
           }} />
 
         {
-          content?.map((dgr, index) =>
+          content?.map((dgr) =>
             <DiagramElement
               diagram={dgr}
               parent={diagram}
@@ -160,7 +160,7 @@ export default function DiagramElement(props: IDiagramElement) {
         {
           color == null ? null :
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
-              pointer-events='none'
+              pointerEvents='none'
               style={{
                 position: 'absolute',
                 top: 0,
@@ -168,7 +168,7 @@ export default function DiagramElement(props: IDiagramElement) {
               }}>
 
               <rect x="0" y="0" width="100%" height="100%"
-                fill={color} fill-opacity="0.1"
+                fill={color} fillOpacity="0.1"
                 stroke={color} strokeWidth="5" opacity="0.5" />
             </svg>
         }

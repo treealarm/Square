@@ -111,7 +111,7 @@ export default function PanelSwitch(props: { panelType: EPanelType }) {
           curPannels.map((datum) => 
             <MenuItem
               key={"PanelSwith:" + datum.panelId }
-              onClick={(e: any) => handleSelect(
+              onClick={() => handleSelect(
                 datum.panelValue, datum.panelId, datum.panelType)}
               selected={panels.find(p => p.panelId == datum.panelId )!= null}>
               <ListItemIcon>

@@ -1,8 +1,5 @@
-﻿import * as React from 'react';
+﻿import { useCallback } from 'react';
 
-import { useCallback } from 'react';
-
-import { ApplicationState } from '../store';
 import { IconButton, Stack, TextField, Tooltip } from '@mui/material';
 import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 
@@ -32,7 +29,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
   const appDispatch = useAppDispatch();
 
   const searchMeOnMap = useCallback(
-    (geo: IGeometryDTO, e: any) => {
+    (geo: IGeometryDTO) => {
 
       var myFigure = null;
       var center: L.LatLng = null;
@@ -43,13 +40,17 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
           center = new L.LatLng(coord[0], coord[1]);
           break;
         case LineStringType:
-          var coordArr: LatLngPair[] = geo.coord;
-          myFigure = new L.Polyline(coordArr)
-          break;
+          {
+            var coordArr: LatLngPair[] = geo.coord;
+            myFigure = new L.Polyline(coordArr)
+            break;
+          }          
         case PolygonType:
-          var coordArr: LatLngPair[] = geo.coord;
-          myFigure = new L.Polygon(coordArr)
-          break;
+          {
+            var coordArr1: LatLngPair[] = geo.coord;
+            myFigure = new L.Polygon(coordArr1)
+            break;
+          }          
         default:
           break;
       }
@@ -66,7 +67,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
 
       appDispatch<any>(GuiStore.actionCreators.setMapOption(viewOption));
 
-    }, [props])
+    }, [appDispatch, props.zoom_min])
 
   return (
     <Stack direction="row" spacing={2}
@@ -84,7 +85,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
       </TextField>
 
       <Tooltip title={"Find object on map"} hidden={geometry == null}>
-      <IconButton aria-label="search" size="medium" onClick={(e: any) => searchMeOnMap(geometry, e)}>
+      <IconButton aria-label="search" size="medium" onClick={() => searchMeOnMap(geometry)}>
         <LocationSearchingIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>
