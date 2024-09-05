@@ -1,4 +1,5 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import { useEffect } from 'react';
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../store/configureStore";
@@ -29,14 +30,14 @@ export function TreeControl() {
 
   const treeStates = useSelector((state: ApplicationState) => state?.treeStates);
   const markers = useSelector((state: ApplicationState) => state?.treeStates?.children);
-  const parent_marker_id = useSelector((state: ApplicationState) => state?.treeStates?.parent_id);
+  const parent_marker_id = useSelector((state: ApplicationState) => state?.treeStates?.parent_id??null);
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
   const reduxSelectedId = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const requestTreeUpdate = useSelector((state: ApplicationState) => state?.guiStates?.requestedTreeUpdate);
 
   useEffect(() => {
     getTreeItemsByParent(null);
-  }, [user, getTreeItemsByParent]);
+  }, [user]);
 
   const selectItem = (selected_marker: TreeMarker | null) => {
     let selected_id = selected_marker?.id ?? null;
@@ -78,7 +79,7 @@ export function TreeControl() {
 
   const OnNavigate = (next: boolean) => {
     if (next) {
-      appDispatch(TreeStore.fetchByParent({ parent_id:parent_marker_id, start_id:treeStates?.end_id, end_id:null}));
+      appDispatch(TreeStore.fetchByParent({ parent_id:parent_marker_id, start_id:treeStates?.end_id ?? null, end_id:null}));
     } else {
       appDispatch(TreeStore.fetchByParent({ parent_id: parent_marker_id ?? null, start_id:null, end_id:treeStates?.start_id ?? null}));
     }
