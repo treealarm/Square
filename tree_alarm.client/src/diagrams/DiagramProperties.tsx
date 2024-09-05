@@ -33,11 +33,11 @@ export function DiagramProperties(props: IDiagramProperties) {
   const appDispatch = useAppDispatch();
   let navigate = useNavigate();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const getDiagramDto: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
+  const getDiagramDto: IGetDiagramDTO|null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram??null);
   const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
   const cur_diagramtype = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
 
-  const content: IDiagramDTO[] = getDiagramDto?.content;
+  const content: IDiagramDTO[] = getDiagramDto?.content??[];
   var curDiagram = content?.find(e => e.id == selected_id);
 
   var parentDiagram = content?.find(e => e.id == curDiagram?.parent_id);
@@ -65,9 +65,9 @@ export function DiagramProperties(props: IDiagramProperties) {
       var copy = DeepCopy(curDiagram);
       copy.dgr_type = cur_diagramtype?.name;
       
-      var newType = getDiagramDto.dgr_types?.find(dt => dt.name == copy.dgr_type);
-      var cur_diagram_copy = DeepCopy(getDiagramDto);
-      var newContent = cur_diagram_copy.content?.filter(e => e.id != copy.id);
+      var newType = getDiagramDto.dgr_types?.find(dt => dt.name == copy?.dgr_type);
+      var cur_diagram_copy = DeepCopy(getDiagramDto)??null;
+      var newContent = cur_diagram_copy.content?.filter(e => e.id != copy?.id);
       newContent.push(copy);
       cur_diagram_copy.content = newContent;
       if (newType == null) {
@@ -85,7 +85,7 @@ export function DiagramProperties(props: IDiagramProperties) {
     if (getDiagramDto?.parent?.id != null && selected_id == getDiagramDto?.parent?.id) {
       appDispatch(DiagramsStore.fetchSingleDiagram(getDiagramDto.parent.id));
     } 
-  }, [propsUpdated, appDispatch, getDiagramDto.parent.id, selected_id]);
+  }, [propsUpdated, appDispatch, getDiagramDto?.parent.id, selected_id]);
 
   function handleEditDiagramClick() {
     appDispatch(DiagramTypeStore.set_local_filter(curDiagram?.dgr_type));

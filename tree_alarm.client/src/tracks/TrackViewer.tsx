@@ -59,7 +59,7 @@ function TrackPolygon(props: any) {
   const eventHandlers = React.useMemo(
     () => ({
       click() {
-        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
+        appDispatch<any>(TracksStore.OnSelectTrack(track));
       }
     }),
     [appDispatch, track],
@@ -88,7 +88,7 @@ function TrackPolyline(props: any) {
   const eventHandlers = React.useMemo(
     () => ({
       click() {
-        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
+        appDispatch<any>(TracksStore.OnSelectTrack(track));
       }
     }),
     [appDispatch, track],
@@ -117,7 +117,7 @@ function TrackCircle(props: any) {
   const eventHandlers = React.useMemo(
     () => ({
       click() {
-        appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(track));
+        appDispatch<any>(TracksStore.OnSelectTrack(track));
       }
     }),
     [appDispatch, track],
@@ -235,7 +235,7 @@ export function TrackViewer() {
     }
     // We request routes by selection for now.
     //dispatch<any>(TracksStore.actionCreators.requestRoutes(boundBox));
-    appDispatch<any>(TracksStore.actionCreators.requestTracks(boundBox));
+    appDispatch<any>(TracksStore.fetchTracksByBox(boundBox));
   },[appDispatch, checked_ids, parentMap, searchFilter?.applied, searchFilter?.property_filter, searchFilter?.sort, searchFilter?.time_end, searchFilter?.time_start, selected_id])
 
 
@@ -253,7 +253,7 @@ export function TrackViewer() {
       UpdateTracks();
     },
     preclick() {
-      appDispatch<any>(TracksStore.actionCreators.OnSelectTrack(null));
+      appDispatch<any>(TracksStore.OnSelectTrack(null));
     },
     async click(e: L.LeafletMouseEvent) {
       var ll: L.LatLng = e.latlng as L.LatLng;

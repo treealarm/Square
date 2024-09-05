@@ -1,212 +1,147 @@
-﻿import dayjs, { Dayjs } from 'dayjs';
+﻿import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { ApplicationState } from '../store';
-import {
-  Box, IconButton, List, ListItem, Tooltip
-} from '@mui/material';
-
-import { useCallback, useEffect } from 'react';
-import { useSelector } from "react-redux";
-import * as SearchResultStore from '../store/SearchResultStates';
-import { ObjPropsSearchDTO, SearchFilterGUI, SearchFilterDTO, DeepCopy } from '../store/Marker';
-import { PropertyFilter } from './PropertyFilter';
+import { Box, IconButton, List, ListItem, Tooltip } from '@mui/material';
 import LibraryAddIcon from '@mui/icons-material/LibraryAdd';
-import * as GuiStore from '../store/GUIStates';
-
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../store/configureStore';
+import { ApplicationState } from '../store';
+import * as GuiStore from '../store/GUIStates';
+import * as SearchResultStore from '../store/SearchResultStates';
+import { PropertyFilter } from './PropertyFilter';
+import { SearchFilterGUI, SearchFilterDTO, DeepCopy, ObjPropsSearchDTO } from '../store/Marker';
 import { SearchApplyButton } from './SearchApplyButton';
 import { ApiDefaultPagingNum, INPUT_DATETIME_FORMAT } from '../store/constants';
 
-
 export function RetroSearch() {
-  const dispatch = useAppDispatch();
+  const app_dispatch = useAppDispatch();
 
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
   const routes = useSelector((state: ApplicationState) => state?.tracksStates?.routes);
 
-  const GetCopyOfSearchFilter = useCallback((): SearchFilterGUI|null => {
-    let filter = DeepCopy(searchFilter);
-    return filter;
-  }, [searchFilter]);
 
-
-  useEffect(() => {
-    if (searchFilter == null) {
-      console.error("Normally search filter should be inited");
-    }
-  }, [searchFilter]);
-
-  useEffect(() => {
-    var filter: SearchFilterGUI = GetCopyOfSearchFilter();
-
-    if (filter == null) {
-      return;
-    }
-    DoSearchTracks(filter);
-  }, [searchFilter?.applied, GetCopyOfSearchFilter, DoSearchTracks]);
-
-  const UpdateFilterInRedux = useCallback((filter: SearchFilterGUI, applyFilter: boolean)=> {
+  const updateFilterInRedux = (filter: SearchFilterGUI, applyFilter: boolean) => {
+    filter.search_id = new Date().toISOString();
     filter.applied = applyFilter;
-    dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
-
-    if (filter.applied != true) {
-      dispatch<any>(SearchResultStore.actionCreators.setEmptyResult());
+    app_dispatch(GuiStore.actionCreators.applyFilter(filter));
+    if (!filter.applied) {
+      app_dispatch(SearchResultStore.actionCreators.setEmptyResult());
     }
-  },[dispatch])
+  };
 
-  const handleChange1 = (newValue: Dayjs | null) => {
-    try {
-      var filter = GetCopyOfSearchFilter();
-      filter.time_start = newValue.toISOString();
-      UpdateFilterInRedux(filter, false);
-    }
-    catch (err)
-    {
-      console.log(err);
-    }
-  }
 
-  const handleChange2 = (newValue: Dayjs | null) => {
-    try {
-      var filter = GetCopyOfSearchFilter();
-      filter.time_end = newValue.toISOString();
-      UpdateFilterInRedux(filter, false);
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
-
-  const DoSearchTracks = useCallback((filterIn: SearchFilterGUI) => {
-
-    if (filterIn == null) {
-      console.error("DoSearchTracks:", "filterIn == null");
+  const doSearchTracks = useCallback((filterIn: SearchFilterGUI) => {
+    if (!filterIn) {
+      console.error("DoSearchTracks:", "filterIn is null");
       return;
-    }
+    }   
 
-    filterIn.search_id = (new Date()).toISOString();
-    UpdateFilterInRedux(filterIn, filterIn.applied == true);
-
-    let filter = DeepCopy(searchFilter);
-
-    var filterDto: SearchFilterDTO = {
-      search_id: (new Date()).toISOString(),
-      property_filter: filter.property_filter,
-      time_start: filter.time_start,
-      time_end: filter.time_end,
+    const filterDto: SearchFilterDTO = {
+      search_id: new Date().toISOString(),
+      property_filter: filterIn.property_filter,
+      time_start: filterIn.time_start,
+      time_end: filterIn.time_end,
       forward: 1,
-      count: ApiDefaultPagingNum
-    }
+      count: ApiDefaultPagingNum,
+    };
 
-    if (filterIn.applied != true) {
-      dispatch<any>(SearchResultStore.actionCreators.setEmptyResult());
+    if (!filterIn.applied) {
+      app_dispatch(SearchResultStore.actionCreators.setEmptyResult());
+    } else {
+      app_dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
     }
-    else {
-      dispatch<any>(SearchResultStore.actionCreators.getByFilter(filterDto));
-    }
-  },[UpdateFilterInRedux, dispatch, searchFilter]);
+  }, []);
 
-  const addProperty = useCallback(
-    () => {
-      var filter: SearchFilterGUI = GetCopyOfSearchFilter();
+  ////////////////////
+  const handleChangeStart = useCallback((newValue: dayjs.Dayjs | null) => {
+    if (newValue) {
+      const filter = DeepCopy(searchFilter);
+      if (filter) {
+        filter.time_start = newValue.toISOString();
+        updateFilterInRedux(filter, false);
+      }
+    }
+  }, [searchFilter]);
+  ////////////////////
+  const handleChangeEnd = useCallback((newValue: dayjs.Dayjs | null) => {
+    if (newValue) {
+      const filter = DeepCopy(searchFilter);
+      if (filter) {
+        filter.time_end = newValue.toISOString();
+        updateFilterInRedux(filter, false);
+      }
+    }
+  }, [searchFilter]);
+  ////////////////////
+  const addProperty = useCallback(() => {
+    const filter = DeepCopy(searchFilter);
+    if (filter && filter.property_filter && filter.property_filter.props) {
       filter.property_filter.props.push({ prop_name: "test_name", str_val: "test_val" });
-      UpdateFilterInRedux(filter, false);
-    }, [GetCopyOfSearchFilter, UpdateFilterInRedux]);
-
-  const setPropsFilter = useCallback(
-    (propsFilter: ObjPropsSearchDTO) => {
-      var filter: SearchFilterGUI = GetCopyOfSearchFilter();
+      updateFilterInRedux(filter, false);
+    }
+  }, [searchFilter]);
+  ////////////////////
+  const setPropsFilter = useCallback((propsFilter: ObjPropsSearchDTO) => {
+    const filter = DeepCopy(searchFilter);
+    if (filter) {
       filter.property_filter = propsFilter;
-      UpdateFilterInRedux(filter, false);
-    }, [GetCopyOfSearchFilter, UpdateFilterInRedux]);
+      updateFilterInRedux(filter, false);
+    }
+  }, [searchFilter]);
+  ////////////////////
+  const handleNavigate = useCallback((next: boolean) => {
+    if (!tracks && !routes) return;
 
-  const OnNavigate = useCallback(
-    (next: boolean) => {
+    const filter = DeepCopy(searchFilter);
+    if (!filter) return;
 
-      if (tracks == null  && routes == null) {
-        return;
-      }
-      var filter: SearchFilterGUI = GetCopyOfSearchFilter();      
-      filter.sort = 0;
+    let minDate = next ? new Date('2045-10-05T11:03:21') : new Date('1945-01-01T00:00:00');
+    let maxDate = minDate;
 
-      if (next) {
-        const MIN_DATE = new Date('2045-10-05T11:03:21');
-        var minDate = MIN_DATE;
-
-        if (tracks != null && tracks.length > 0) {         
-
-          tracks.forEach(function (e: any) {
-            var curTs = new Date(e.timestamp);
-
-            if (curTs < minDate) {
-              minDate = curTs;
-            }
-          });
+    if (tracks) {
+      tracks.forEach(track => {
+        const curTs = new Date(track.timestamp);
+        if (next ? curTs < minDate : curTs > maxDate) {
+          minDate = curTs;
         }
+      });
+    }
 
-        if (routes != null && routes.length > 0) {
-          routes.forEach(function (e: any) {
-            var curTs = new Date(e.ts_start);
-
-            if (curTs < minDate) {
-              minDate = curTs;
-            }
-          });
+    if (routes) {
+      routes.forEach(route => {
+        const curTs = new Date(route.ts_start);
+        if (next ? curTs < minDate : curTs > maxDate) {
+          minDate = curTs;
         }
+      });
+    }
 
-        if (minDate == MIN_DATE) {
-          minDate = new Date(filter.time_start);//
-        }
+    if (next) {
+      filter.time_start = dayjs(minDate).add(1, 's').toISOString();
+    } else {
+      filter.time_end = dayjs(maxDate).subtract(1, 's').toISOString();
+      filter.sort = -1;
+    }
 
-        var t1 = dayjs(minDate).add(1, 's');
-          
-        filter.time_start = t1.toISOString();          
-        
-      }
-      else {
-        const MAX_DATE = new Date("1945-01-01T00:00:00");
+    updateFilterInRedux(filter, filter.applied == true);
+  }, [tracks, routes, doSearchTracks, searchFilter]);
+  ////////////////////
 
-        var maxDate = MAX_DATE;
+  useEffect(() => {
+    const filter = DeepCopy(searchFilter);
+    if (filter) {
+      doSearchTracks(filter);
+    }
+  }, [searchFilter]);
 
-        if (tracks != null && tracks.length > 0) {
-          tracks.forEach(function (e: any) {
-            var curTs = new Date(e.timestamp);
-
-            if (curTs > maxDate) {
-              maxDate = curTs;
-            }
-          });
-        }
-
-        if (routes != null && routes.length > 0) {
-          routes.forEach(function (e: any) {
-            var curTs = new Date(e.ts_end);
-
-            if (curTs > maxDate) {
-              maxDate = curTs;
-            }
-          });
-        }
-
-        if (maxDate == MAX_DATE) {
-          maxDate = new Date(filter.time_end);//
-        }
-
-        var t1_1 = dayjs(maxDate).subtract(1, 's');
-        filter.time_end = t1_1.toISOString();
-        filter.sort = -1;
-      }
-
-      DoSearchTracks(filter);
-
-    }, [tracks, routes, DoSearchTracks, GetCopyOfSearchFilter])
-
-
+  
+  var time_start = dayjs(searchFilter?.time_start);
+  console.log(time_start);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <List dense>
@@ -218,51 +153,46 @@ export function RetroSearch() {
         <ListItem>
           <DateTimePicker
             label="begin"
-            value={dayjs(searchFilter?.time_start)}
-            onChange={handleChange1}
+            value={time_start}
+            onChange={handleChangeStart}
             views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
             format={INPUT_DATETIME_FORMAT}
           />
-
-          <Tooltip title={"Shift begin time to next track"}>
-          <IconButton onClick={(e: any) => OnNavigate(true, e)}>
-            <ArrowForwardIcon />
+          <Tooltip title="Shift begin time to next track">
+            <IconButton onClick={() => handleNavigate(true)}>
+              <ArrowForwardIcon />
             </IconButton>
           </Tooltip>
-
-          </ListItem>
-          <ListItem>
+        </ListItem>
+        <ListItem>
           <DateTimePicker
             label="end"
             value={dayjs(searchFilter?.time_end)}
-            onChange={handleChange2}
+            onChange={handleChangeEnd}
             format={INPUT_DATETIME_FORMAT}
           />
-
-          <Tooltip title={"Shift begin time to previous track"}>
-          <IconButton onClick={(e: any) => OnNavigate(false, e)}>
-            <ArrowBackIcon />
+          <Tooltip title="Shift end time to previous track">
+            <IconButton onClick={() => handleNavigate(false)}>
+              <ArrowBackIcon />
             </IconButton>
           </Tooltip>
-
         </ListItem>
-
-          <Box display="flex"
-          justifyContent="flex-start">
-          <Tooltip title={"Add property value into the filter"}>
-          <IconButton aria-label="addProp" size="medium" onClick={(e: any) => addProperty(e)}>
+        <ListItem>
+          <Box display="flex" justifyContent="flex-start">
+            <Tooltip title="Add property value into the filter">
+              <IconButton aria-label="addProp" size="medium" onClick={addProperty}>
                 <LibraryAddIcon fontSize="inherit" />
-            </IconButton>
-          </Tooltip>
+              </IconButton>
+            </Tooltip>
           </Box>
-
+        </ListItem>
         <ListItem>
           <PropertyFilter
             propsFilter={searchFilter?.property_filter}
-            setPropsFilter={setPropsFilter} />
-          </ListItem>
-        </List>
-      </LocalizationProvider>
+            setPropsFilter={setPropsFilter}
+          />
+        </ListItem>
+      </List>
+    </LocalizationProvider>
   );
 }
-

@@ -135,7 +135,7 @@ const diagramtypesSlice = createSlice({
     set_local_filter(state: DiagramTypeStates, action: PayloadAction<string>) {
       state.localFilter = action.payload;
     },
-    set_result(state: DiagramTypeStates, action: PayloadAction<string>) {
+    set_result(state: DiagramTypeStates, action: PayloadAction<string|null>) {
       state.result = action.payload;
     }
   }
