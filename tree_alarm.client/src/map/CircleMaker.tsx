@@ -100,7 +100,7 @@ export function CircleMaker(props: any) {
     setExtraProp(copy, "radius", figure.radius.toString(), null);
     setExtraProp(copy, "geometry", JSON.stringify(figure?.geometry), null);
 
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }, [dispatch, figure, objProps]);
 
 

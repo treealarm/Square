@@ -1,145 +1,100 @@
-﻿import { Action, Reducer } from 'redux';
-import { AppThunkAction } from '.';
+﻿import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from './store';
 import { ApiRootString } from './constants';
 import { DoFetch } from './Fetcher';
 import { IObjProps } from './Marker';
 
-
 // -----------------
+// STATE - This defines the type of data maintained in the Redux store.
 
 export interface ObjPropsState {
-  objProps: IObjProps;
+  objProps: IObjProps | null;
   updated: number;
 }
 
+const initialState: ObjPropsState = {
+  objProps: null,
+  updated: 0,
+};
+
 // -----------------
-// ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
-// They do not themselves have any side-effects; they just describe something that is going to happen.
-// Use @typeName and isActionType for type detection that works even after serialization/deserialization.
+// Async thunks
 
-export interface GetPropsAction {
-  type: 'GET_PROPS';
-  object_id: string;
-}
+export const fetchObjProps = createAsyncThunk(
+  'objProps/fetchObjProps',
+  async (object_id: string, { rejectWithValue }) => {
+    try {
+      if (!object_id) {
+        return null;
+      }
 
-export interface SetPropsAction {
-  type: 'SET_PROPS';
-  objProps: IObjProps|null;
-}
+      const response = await DoFetch(`${ApiRootString}/GetObjProps?id=${object_id}`);
 
-export interface SetPropsLocallyAction {
-  type: 'SET_PROPS_LOCALLY';
-  objProps: IObjProps;
-}
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
 
-export interface UpdatedPropsAction {
-  type: 'UPDATED_PROPS';
-  objProps: IObjProps;
-}
-
-export interface UpdatingDPropsAction {
-  type: 'UPDATING_PROPS';
-  objProps: IObjProps;
-}
-
-// Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
-// declared type strings (and not any other arbitrary string).
-export type KnownAction =
-  GetPropsAction | SetPropsAction | UpdatedPropsAction | UpdatingDPropsAction | SetPropsLocallyAction;
-
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-
-export const actionCreators = {
-  getObjProps: (object_id: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
-
-    if (object_id == null) {
-      dispatch({ type: "SET_PROPS", objProps: null });
-      return;
+      const data = (await response.json()) as IObjProps;
+      return data;
+    } catch (error) {
+      return rejectWithValue(null);
     }
+  }
+);
 
-    var request = ApiRootString + "/GetObjProps?id=" + object_id;
-
-    var fetched = DoFetch(request);
-
-    fetched
-      .then(response => {
-        if (!response.ok) throw response.statusText;
-        var json = response.json();
-        return json as Promise<IObjProps>;
-      })
-      .then(data => {
-        dispatch({ type: "SET_PROPS", objProps: data });
-      })
-      .catch((error) => {
-        dispatch({ type: "SET_PROPS", objProps: null });
+export const updateObjProps = createAsyncThunk(
+  'objProps/updateObjProps',
+  async (marker: IObjProps, { rejectWithValue }) => {
+    try {
+      const response = await DoFetch(`${ApiRootString}/UpdateProperties`, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(marker),
       });
 
-    dispatch({ type: "GET_PROPS", object_id: object_id });
+      const data = (await response.json()) as IObjProps;
+      return data;
+    } catch (error) {
+      return rejectWithValue(null);
+    }
+  }
+);
+
+// -----------------
+// Slice
+
+const objPropsSlice = createSlice({
+  name: 'objProps',
+  initialState,
+  reducers: {
+    setObjPropsLocally: (state, action: PayloadAction<IObjProps>) => {
+      state.objProps = action.payload;
+    },
   },
-  updateObjProps: (marker: IObjProps): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-
-    // Send data to the backend via POST
-    let body = JSON.stringify(marker);
-    var fetched = DoFetch(ApiRootString + "/UpdateProperties", {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: body
-    });
-
-
-    fetched.then(response => response.json()).then(data => {
-      let m: IObjProps = data as IObjProps;
-      dispatch({ type: "UPDATED_PROPS", objProps: m });
-    });
-
-    dispatch({ type: "UPDATING_PROPS", objProps: marker });
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchObjProps.fulfilled, (state, action) => {
+        state.objProps = action.payload;
+      })
+      .addCase(updateObjProps.fulfilled, (state, action) => {
+        state.objProps = action.payload;
+        state.updated += 1;
+      })
+      .addCase(fetchObjProps.rejected, (state) => {
+        state.objProps = null;
+      })
+      .addCase(updateObjProps.rejected, (state) => {
+        // Handle rejected updates if necessary
+      });
   },
-  setObjPropsLocally: (marker: IObjProps): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    dispatch({ type: "SET_PROPS_LOCALLY", objProps: marker });
-  }
-};
+});
 
-const unloadedState: ObjPropsState = {
-  objProps: null,
-  updated: 0
-};
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+// -----------------
+// Action creators and selectors
 
-export const reducer: Reducer<ObjPropsState> = (state: ObjPropsState | undefined, incomingAction: Action): ObjPropsState => {
-  if (state === undefined) {
-    return unloadedState;
-  }
+export const { setObjPropsLocally } = objPropsSlice.actions;
 
-  const action = incomingAction as KnownAction;
-  switch (action.type) {
-    case 'GET_PROPS':
-      return {
-        ...state,
-        objProps: state.objProps
-      };
-    case 'SET_PROPS':
-      return { objProps: action.objProps, updated: state.updated };
-    case 'SET_PROPS_LOCALLY':
-      return { objProps: action.objProps, updated: state.updated };
+export const selectObjProps = (state: RootState) => state.objProps.objProps;
+export const selectUpdatedCount = (state: RootState) => state.objProps.updated;
 
-    case 'UPDATED_PROPS':
-      return {
-        ...state,
-        objProps: action.objProps,
-        updated: state.updated+1
-      };
-    case 'UPDATING_PROPS':
-      return { objProps: action.objProps, updated: state.updated };
-    default:
-      return state;
-  }
-};
+export const reducer = objPropsSlice.reducer;

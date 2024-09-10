@@ -114,7 +114,7 @@ export function PolylineMaker(props: any) {
     }
 
     setExtraProp(copy, "geometry", JSON.stringify(figure.geometry), null);
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }, [dispatch, figure, objProps]);
     
   useMapEvents({

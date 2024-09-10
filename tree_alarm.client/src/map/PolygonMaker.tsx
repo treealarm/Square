@@ -109,7 +109,7 @@ export function PolygonMaker(props: any) {
     }
 
     setExtraProp(copy,"geometry",JSON.stringify(curPolygon.geometry), null);
-    dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }, [curPolygon, dispatch, objProps]);
 
     

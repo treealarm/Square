@@ -25,12 +25,12 @@ export function ObjectPropertiesUpdater(): React.ReactElement {
       var selectedMarker = markers?.figs?.find(m => m.id == selected_id);
 
       if (selectedMarker != null) {
-        dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
+        dispatch(ObjPropsStore.setObjPropsLocally(selectedMarker));
         return;
       }
     }
     if (selected_id) {
-      dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
+      dispatch(ObjPropsStore.fetchObjProps(selected_id));
     }
   }, [selected_id, dispatch, markers?.figs]);
 

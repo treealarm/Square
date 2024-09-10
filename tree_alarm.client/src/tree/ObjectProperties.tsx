@@ -41,23 +41,6 @@ export function ObjectProperties() {
 
   const [newPropName, setNewPropName] = React.useState('');
 
-  //useEffect(() => {
-  //  if (selected_id == null) {
-  //    dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
-  //  }
-  //  else if (selected_id?.startsWith('00000000', 0))
-  //  {
-  //    var selectedMarker = markers.figs.find(m => m.id == selected_id);
-
-  //    if (selectedMarker != null) {
-  //      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(selectedMarker));
-  //      return;
-  //    }
-  //  }
-
-  //  dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
-  //}, [selected_id]);
-
 
   function handleChangeName (e: any){
     const { target: { value } } = e;
@@ -66,7 +49,7 @@ export function ObjectProperties() {
       return;
     }
     copy.name = value;
-    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleChangeParentId(e: any) {
@@ -76,7 +59,7 @@ export function ObjectProperties() {
       return;
     }
     copy.parent_id = value;
-    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleChangeProp(e: any) {
@@ -95,7 +78,7 @@ export function ObjectProperties() {
       first.str_val = value;
     }
     
-    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleAddProp(id: any) {
@@ -119,7 +102,7 @@ export function ObjectProperties() {
       prop_name: id
     };
     copy.extra_props.push(newProp);
-    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleRemoveProp(id: any) {
@@ -134,7 +117,7 @@ export function ObjectProperties() {
       return obj.prop_name != id;
     });
 
-    app_dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   useEffect(() => {
@@ -155,7 +138,7 @@ export function ObjectProperties() {
       return;
     }
 
-    app_dispatch<any>(ObjPropsStore.actionCreators.updateObjProps(copy));
+    app_dispatch(ObjPropsStore.updateObjProps(copy));
 
     // Update name in tree control.
     var treeItem: TreeMarker = {
@@ -173,7 +156,7 @@ export function ObjectProperties() {
     app_dispatch<any>(EditStore.actionCreators.setFigureEditMode(editMode));
 
     if (!editMode) {
-      app_dispatch<any>(ObjPropsStore.actionCreators.getObjProps(selected_id));
+      app_dispatch(ObjPropsStore.fetchObjProps(selected_id??null));
     }
   }
 

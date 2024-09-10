@@ -37,7 +37,7 @@ export function IntegrationLeafsViewer() {
         name: 'New Object',
         extra_props:[]
       }
-      appDispatch(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+      appDispatch(ObjPropsStore.setObjPropsLocally(copy));
     }
   }, [objProps, reduxSelectedId, appDispatch]);
 

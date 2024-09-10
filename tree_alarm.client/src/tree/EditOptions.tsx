@@ -50,7 +50,7 @@ export default function EditOptions() {
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry1), null);
       dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+      dispatch(ObjPropsStore.setObjPropsLocally(copy));
       return;
     }
 
@@ -68,7 +68,7 @@ export default function EditOptions() {
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry2), null);
       dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+      dispatch(ObjPropsStore.setObjPropsLocally(copy));
       return;
     }
 
@@ -86,7 +86,7 @@ export default function EditOptions() {
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry3), null);
       dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch<any>(ObjPropsStore.actionCreators.setObjPropsLocally(copy));
+      dispatch(ObjPropsStore.setObjPropsLocally(copy));
       return;
     }
 
