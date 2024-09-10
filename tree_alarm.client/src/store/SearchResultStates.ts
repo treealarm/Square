@@ -1,128 +1,81 @@
-﻿import { Action, Reducer } from "redux";
-import { AppThunkAction } from "./";
-import { ApiTracksRootString } from "./constants";
-import { DoFetch } from "./Fetcher";
-import { GetTracksBySearchDTO, ITrackPointDTO, SearchFilterDTO } from "./Marker";
+﻿import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from './store';
+import { ApiTracksRootString } from './constants';
+import { DoFetch } from './Fetcher';
+import { GetTracksBySearchDTO, ITrackPointDTO, SearchFilterDTO } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface SearchResultState {
   list: ITrackPointDTO[];
-  filter: SearchFilterDTO;
+  filter: SearchFilterDTO | null;
 }
+
+const initialState: SearchResultState = {
+  list: [],
+  filter: null,
+};
 
 // -----------------
-// ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
-// They do not themselves have any side-effects; they just describe something that is going to happen.
+// Async thunks
 
-interface RequestSearchStateAction {
-  type: "REQUEST_SEARCH_STATE";
-  filter: SearchFilterDTO;
-}
+export const fetchTracksByFilter = createAsyncThunk(
+  'search/fetchTracksByFilter',
+  async (filter: SearchFilterDTO, { rejectWithValue }) => {
+    try {
+      const response = await DoFetch(`${ApiTracksRootString}/GetByFilter`, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify(filter),
+      });
 
-interface ReceiveSearchStateAction {
-  type: "RECEIVE_SEARCH_STATE";
-  data: GetTracksBySearchDTO
-}
+      const data = (await response.json()) as GetTracksBySearchDTO;
 
-
-// Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
-// declared type strings (and not any other arbitrary string).
-type KnownAction =
-  | RequestSearchStateAction
-  | ReceiveSearchStateAction
-  ;
-
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-
-export const actionCreators = {
-
-  setEmptyResult: (
-  ): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    var emptyResult: GetTracksBySearchDTO = {
-      search_id: "",
-      list: []
+      return data;
+    } catch (error) {
+      return rejectWithValue(null);
     }
-    dispatch({
-      type: "RECEIVE_SEARCH_STATE",
-      data: emptyResult
-    });
+  }
+);
+
+// -----------------
+// Slice
+
+const searchSlice = createSlice({
+  name: 'search',
+  initialState,
+  reducers: {
+    setEmptyResult: (state) => {
+      state.list = [];
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchTracksByFilter.pending, (state, action) => {
+        state.filter = action.meta.arg;
+      })
+      .addCase(fetchTracksByFilter.fulfilled, (state, action) => {
+        if (
+          state.filter == null ||
+          action.payload?.search_id === state.filter.search_id ||
+          action.payload?.search_id === ''
+        ) {
+          state.list = action.payload ? action.payload.list : [];
+        }
+      })
+      .addCase(fetchTracksByFilter.rejected, (state) => {
+        state.list = [];
+      });
+  },
+});
 
-  getByFilter: (
-    filter: SearchFilterDTO
-  ): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
+// -----------------
+// Action creators and selectors
 
+export const { setEmptyResult } = searchSlice.actions;
 
-    let body = JSON.stringify(filter);
-    var request = ApiTracksRootString + "/GetByFilter";
+export const selectSearchResults = (state: RootState) => state.search.list;
+export const selectSearchFilter = (state: RootState) => state.search.filter;
 
-    var fetched = DoFetch(request, {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: body
-    });
-
-      fetched
-        .then(response => response.json() as Promise<GetTracksBySearchDTO>)
-        .then(data => {
-          dispatch({
-            type: "RECEIVE_SEARCH_STATE",
-            data: data
-          });
-        });
-
-    dispatch({ type: "REQUEST_SEARCH_STATE", filter: filter });
-    }
-};
-
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-
-const unloadedState: SearchResultState = {
-  list: [],
-  filter: null
-};
-
-export const reducer: Reducer<SearchResultState> = (
-  state: SearchResultState | undefined,
-  incomingAction: Action
-): SearchResultState => {
-  if (state === undefined) {
-    return unloadedState;
-  }
-
-  const action = incomingAction as KnownAction;
-
-  switch (action.type) {
-    case "REQUEST_SEARCH_STATE":
-      return {
-        ...state,
-        filter: action.filter
-      };
-
-    case "RECEIVE_SEARCH_STATE":
-
-      if (
-        state.filter == null ||
-        action.data.search_id == state.filter.search_id ||
-        action.data.search_id == "") {
-        return {
-          ...state,
-          list: action.data.list
-        };
-      }
-      break;
-  }
-
-  return state;
-};
+export const reducer = searchSlice.reducer;

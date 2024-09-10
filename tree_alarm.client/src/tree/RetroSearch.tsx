@@ -31,7 +31,7 @@ export function RetroSearch() {
     filter.applied = applyFilter;
     app_dispatch(GuiStore.actionCreators.applyFilter(filter));
     if (!filter.applied) {
-      app_dispatch(SearchResultStore.actionCreators.setEmptyResult());
+      app_dispatch(SearchResultStore.setEmptyResult());
     }
   };
 
@@ -52,9 +52,9 @@ export function RetroSearch() {
     };
 
     if (!filterIn.applied) {
-      app_dispatch(SearchResultStore.actionCreators.setEmptyResult());
+      app_dispatch(SearchResultStore.setEmptyResult());
     } else {
-      app_dispatch(SearchResultStore.actionCreators.getByFilter(filterDto));
+      app_dispatch(SearchResultStore.fetchTracksByFilter(filterDto));
     }
   }, []);
 
