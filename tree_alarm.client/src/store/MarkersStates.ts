@@ -1,341 +1,213 @@
-import { Action, Reducer } from "redux";
-import { AppThunkAction } from "./";
-import { ApiRootString } from "./constants";
-import { DoFetch } from "./Fetcher";
-import { BoundBox, IFigures } from "./Marker";
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from './store';
+import { ApiRootString } from './constants';
+import { DoFetch } from './Fetcher';
+import { BoundBox, IFigures } from './Marker';
+
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface MarkersState {
   isLoading: boolean;
-  markers: IFigures;
-  box: BoundBox;
+  markers: IFigures | null;
+  box: BoundBox | null;
   isChanging?: number;
   initiateUpdateAll: number;
 }
 
-// -----------------
-// ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
-// They do not themselves have any side-effects; they just describe something that is going to happen.
-
-interface RequestMarkersAction {
-  type: "REQUEST_MARKERS";
-  box: BoundBox;
-}
-
-interface ReceiveMarkersAction {
-  type: "RECEIVE_MARKERS";
-  box: BoundBox;
-  markers: IFigures;
-}
-
-interface PostingMarkerAction {
-  type: "POSTING_MARKERS";
-  markers: IFigures;
-}
-
-interface PostedMarkerAction {
-  type: "POSTED_MARKERS";
-  markers: IFigures;
-  success: boolean;
-}
-
-interface DeletingMarkerAction {
-  type: "DELETING_MARKERS";
-  ids_to_delete: string[];
-}
-
-interface DeletedMarkerAction {
-  type: "DELETED_MARKERS";
-  deleted_ids: string[];
-  success: boolean;
-}
-
-interface GotMarkersByIdsAction {
-  type: "GOT_MARKERS_BY_IDS";
-  markers: IFigures;
-}
-
-interface InitiateUpdateAllAction {
-  type: "INITIATE_UPDATE_ALL";
-}
-
-
-// Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
-// declared type strings (and not any other arbitrary string).
-type KnownAction =
-  | RequestMarkersAction
-  | ReceiveMarkersAction
-  | PostingMarkerAction
-  | PostedMarkerAction
-  | DeletingMarkerAction
-  | DeletedMarkerAction
-  | GotMarkersByIdsAction
-  | InitiateUpdateAllAction
-  ;
-
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-
-export const actionCreators = {
-  requestMarkers: (box: BoundBox): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    // Only load data if it's something we don't already have (and are not already loading)
-    const appState = getState();
-
-    if (
-      appState &&
-      appState.markersStates &&
-      box !== appState.markersStates.box
-    ) {
-
-      let body = JSON.stringify(box);
-      var request = ApiRootString + "/GetByBox";
-
-      var fetched = DoFetch(request, {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: body
-      });
-
-      fetched
-        .then(response => {
-          if (!response.ok) throw response.statusText;
-          var json = response.json();
-          return json as Promise<IFigures>;
-        })
-        .then(data => {
-          dispatch({ type: "RECEIVE_MARKERS", box: box, markers: data });
-        })
-        .catch((error) => {
-          const emtyMarkers = {} as IFigures;
-          dispatch({ type: "RECEIVE_MARKERS", box: box, markers: emtyMarkers });
-        });
-
-      dispatch({ type: "REQUEST_MARKERS", box: box });
-    }
-  },
-
-  updateFigures: (markers: IFigures): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    //let marker: Marker = {} as Marker;
-
-    // Send data to the backend via POST
-    markers.add_tracks = true;
-    let body = JSON.stringify(markers);
-
-    var request = ApiRootString + "/UpdateFigures";
-
-    var fetched = DoFetch(request, {
-      method: "POST",
-      headers: { "Content-type": "application/json" },
-      body: body
-    });
-
-    console.log("posted:", fetched);
-
-    fetched.then(response => response.json()).then(data => {
-      let m: IFigures = data as IFigures;
-      dispatch({ type: "POSTED_MARKERS", success: true, markers: m });
-    });
-
-    dispatch({ type: "POSTING_MARKERS", markers: markers });
-  },
-
-  deleteMarker: (ids: string[]): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-
-    let body = JSON.stringify(ids);
-
-    // Send data to the backend via DELETE
-
-    var fetched = DoFetch(ApiRootString, {
-      method: "DELETE",
-      headers: { 'Content-type': 'application/json' },
-      body: body
-    });
-
-    console.log("deleted:", fetched);
-
-    fetched.then(response => response.json()).then(data => {
-      let deleted_ids: string[] = data as string[];
-      dispatch({ type: "DELETED_MARKERS", success: true, deleted_ids: deleted_ids });
-    });
-
-    dispatch({ type: "DELETING_MARKERS", ids_to_delete: ids });
-  },
-  deleteMarkersLocally: (ids: string[]): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    dispatch({ type: "DELETED_MARKERS", success: true, deleted_ids: ids });
-  }
-  ,
-  requestMarkersByIds: (ids: string[]): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    // Only load data if it's something we don't already have (and are not already loading)
-    const appState = getState();
-
-    if (
-      appState &&
-      appState.markersStates
-    ) {
-
-      let body = JSON.stringify(ids);
-      var request = ApiRootString + "/GetByIds";
-
-      var fetched = DoFetch(request, {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: body
-      });
-
-      fetched
-        .then(response => {
-          if (!response.ok) throw response.statusText;
-          var json = response.json();
-          return json as Promise<IFigures>;
-        })
-        .then(data => {
-          dispatch({ type: "GOT_MARKERS_BY_IDS", markers: data });
-        })
-        .catch((error) => {
-          const emtyMarkers = {} as IFigures;
-          //dispatch({ type: "RECEIVE_MARKERS", box: box, markers: emtyMarkers });
-        });
-    }
-  },
-  //////
-  initiateUpdateAll: (): AppThunkAction<KnownAction> => (
-    dispatch
-  ) => {
-    dispatch({ type: "INITIATE_UPDATE_ALL"});
-  }
-};
-
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-
-const unloadedState: MarkersState = {
+const initialState: MarkersState = {
   markers: null,
   isLoading: false,
   box: null,
   isChanging: 0,
-  initiateUpdateAll: 0
+  initiateUpdateAll: 0,
 };
 
-export const reducer: Reducer<MarkersState> = (
-  state: MarkersState | undefined,
-  incomingAction: Action
-): MarkersState => {
-  if (state === undefined) {
-    return unloadedState;
+interface ReceiveMarkersAction {
+  box: BoundBox;
+  markers: IFigures;
+}
+
+// -----------------
+// Async Thunks
+
+export const fetchMarkersByBox = createAsyncThunk<ReceiveMarkersAction, BoundBox|null>(
+  'markers/fetchMarkers',
+  async (box: BoundBox|null) => {
+    const body = JSON.stringify(box);
+    const response = await DoFetch(`${ApiRootString}/GetByBox`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch markers');
+    }
+
+    const data = (await response.json()) as IFigures;
+    return { box:box, markers: data };
   }
+);
 
-  const action = incomingAction as KnownAction;
 
-  switch (action.type) {
-    case "REQUEST_MARKERS":
-      return {
-        ...state,
-        box: action.box,
-        markers: state.markers,
-        isLoading: true
-      };
-    case "RECEIVE_MARKERS":
-      // Only accept the incoming data if it matches the most recent request. This ensures we correctly
-      // handle out-of-order responses.
-      if (action.box === state.box) {
-        return {
-          ...state,
-          box: action.box,
-          markers: action.markers,
-          isLoading: false
-        };
-      }
-      break;
-
-    case "POSTING_MARKERS":
-      return {
-        ...state,
-        box: state.box,
-        markers: state.markers,
-        isLoading: true
-      };
-    case "POSTED_MARKERS":
-      {
-        let deleted_ids = action.markers.figs.map(item => item.id);
-
-        var cur_markersLeft: IFigures =
-        {
-          figs: state.markers.figs.filter(item => !(deleted_ids.includes(item.id)))
-        };
-
-        var cur_markers: IFigures =
-        {
-          figs: cur_markersLeft.figs.concat(action.markers.figs)
-        };
-
-        return {
-          ...state,
-          markers: cur_markers,
-          isLoading: false,
-          isChanging: state.isChanging + 1
-        };
-      }
-
-    case "DELETING_MARKERS":
-      return {
-        ...state,
-        isLoading: true
-      };
-    case "DELETED_MARKERS":
-      {
-        var cur_markers: IFigures =
-        {
-          figs: state.markers.figs.filter(item => !(action.deleted_ids.includes(item.id)))
-        };
-        
-        return {
-          ...state,
-          markers: cur_markers,
-          isLoading: false,
-          isChanging: state.isChanging + 1
-        };
-      }
-
-    case "GOT_MARKERS_BY_IDS":
-      var cur_markers: IFigures = action.markers;
-
-      state.markers.figs.forEach(element => {
-        const itemIndex = cur_markers.figs.findIndex(o => o.id === element.id);
-        if (itemIndex < 0) {
-          cur_markers.figs.push(element);
-        }
+export const updateMarkers = createAsyncThunk(
+  'markers/updateMarkers',
+  async (markers: IFigures, { rejectWithValue }) => {
+    try {
+      markers.add_tracks = true;
+      const body = JSON.stringify(markers);
+      const response = await DoFetch(`${ApiRootString}/UpdateFigures`, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: body,
       });
 
-      return {
-        ...state,
-        markers: cur_markers,
-        isLoading: false,
-        isChanging: state.isChanging + 1
-      };
-    case "INITIATE_UPDATE_ALL":
+      const data = (await response.json()) as IFigures;
+      return data;
+    } catch (error) {
+      return rejectWithValue(null);
+    }
+  }
+);
 
-      return {
-        ...state,
-        initiateUpdateAll: state.initiateUpdateAll + 1
-      };
+export const deleteMarkers = createAsyncThunk(
+  'markers/deleteMarkers',
+  async (ids: string[], { rejectWithValue }) => {
+    try {
+      const body = JSON.stringify(ids);
+      const response = await DoFetch(`${ApiRootString}`, {
+        method: 'DELETE',
+        headers: { 'Content-type': 'application/json' },
+        body: body,
+      });
+
+      const deleted_ids = (await response.json()) as string[];
+      return deleted_ids;
+    } catch (error) {
+      return rejectWithValue(null);
+    }
+  }
+);
+
+export const fetchMarkersByIds = createAsyncThunk(
+  'markers/fetchMarkersByIds',
+  async (ids: string[], { rejectWithValue }) => {
+    try {
+      const body = JSON.stringify(ids);
+      const response = await DoFetch(`${ApiRootString}/GetByIds`, {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: body,
+      });
+
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+
+      const data = (await response.json()) as IFigures;
+      return data;
+    } catch (error) {
+      return rejectWithValue(null);
+    }
+  }
+);
+
+function deepEqual(obj1: any, obj2: any): boolean {
+  if (obj1 === obj2) return true; // Check for strict equality
+
+  if (obj1 == null || obj2 == null) return false; // Handle null and undefined
+
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object') return false; // Check if both are objects
+
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (keys1.length !== keys2.length) return false; // Different number of keys
+
+  for (const key of keys1) {
+    if (!keys2.includes(key) || !deepEqual(obj1[key], obj2[key])) {
+      return false; // Key is missing or values are not deeply equal
+    }
   }
 
-  return state;
-};
+  return true;
+}
+
+
+// -----------------
+// Slice
+
+const markersSlice = createSlice({
+  name: 'markers',
+  initialState,
+  reducers: {
+    initiateUpdateAll: (state) => {
+      state.initiateUpdateAll += 1;
+    },
+    deleteMarkersLocally: (state, action: PayloadAction<string[]>) => {
+      state.markers = {
+        figs: state.markers?.figs?.filter(marker => !action.payload.includes(marker.id ?? '')) || [],
+      };
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchMarkersByBox.pending, (state, action) => {
+        state.isLoading = true;
+        state.box = action.meta.arg;
+      })
+      .addCase(fetchMarkersByBox.fulfilled, (state, action) => {
+        if (deepEqual(action.payload.box,state.box)) {
+          state.markers = action.payload.markers;
+        }
+        state.isLoading = false;
+      })
+      .addCase(fetchMarkersByBox.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateMarkers.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateMarkers.fulfilled, (state, action) => {
+        state.markers = {
+          figs: [
+            ...state.markers?.figs.filter(item => !action.payload.figs.some(newItem => newItem.id === item.id)) || [],
+            ...action.payload.figs,
+          ],
+        };
+        state.isLoading = false;
+        state.isChanging! += 1;
+      })
+      .addCase(deleteMarkers.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteMarkers.fulfilled, (state, action) => {
+        state.markers = {
+          figs: state.markers?.figs.filter(item => !action.payload.includes(item.id)) || [],
+        };
+        state.isLoading = false;
+        state.isChanging! += 1;
+      })
+      .addCase(fetchMarkersByIds.fulfilled, (state, action) => {
+        action.payload.figs.forEach(newMarker => {
+          const existingIndex = state.markers?.figs.findIndex(marker => marker.id === newMarker.id);
+          if (existingIndex === -1 || existingIndex === undefined) {
+            state.markers?.figs.push(newMarker);
+          }
+        });
+        state.isChanging! += 1;
+      });
+  },
+});
+
+// -----------------
+// Action creators and selectors
+
+export const { initiateUpdateAll, deleteMarkersLocally } = markersSlice.actions;
+
+export const selectMarkers = (state: RootState) => state.markers.markers;
+export const selectIsLoading = (state: RootState) => state.markers.isLoading;
+export const selectIsChanging = (state: RootState) => state.markers.isChanging;
+
+export const reducer = markersSlice.reducer;

@@ -236,7 +236,7 @@ export function LocationMarkers() {
       boundBox.property_filter = null;
     }
 
-    appDispatch<any>(MarkersStore.actionCreators.requestMarkers(boundBox));
+    appDispatch(MarkersStore.fetchMarkersByBox(boundBox));
   },[appDispatch, parentMap, searchFilter?.applied, searchFilter?.property_filter])
 
   useEffect(() => {

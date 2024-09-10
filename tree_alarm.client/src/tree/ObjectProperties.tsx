@@ -122,7 +122,7 @@ export function ObjectProperties() {
 
   useEffect(() => {
     if (objProps?.id != null) {
-      app_dispatch<any>(MarkersStore.actionCreators.requestMarkersByIds([objProps.id]));
+      app_dispatch(MarkersStore.fetchMarkersByIds([objProps.id]));
     }      
   }, [propsUpdated, app_dispatch, objProps?.id]);
 
@@ -169,7 +169,7 @@ export function ObjectProperties() {
         parent_id: obj_props.parent_id
       }
       let idsToDelete: string[] = [marker.id];
-      app_dispatch<any>(MarkersStore.actionCreators.deleteMarker(idsToDelete));
+      app_dispatch(MarkersStore.deleteMarker(idsToDelete));
       app_dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
       app_dispatch(DiagramsStore.remove_ids_locally(idsToDelete));
     }, [app_dispatch])

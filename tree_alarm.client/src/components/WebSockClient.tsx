@@ -50,16 +50,16 @@ export function WebSockClient() {
           appDispatch(MarkersVisualStore.updateMarkersVisualStates(received.data));
           break;
         case "set_ids2update":
-          appDispatch(MarkersStore.actionCreators.requestMarkersByIds(received.data));
+          appDispatch(MarkersStore.fetchMarkersByIds(received.data));
           break;
         case "set_ids2delete":
-          appDispatch(MarkersStore.actionCreators.deleteMarkersLocally(received.data));
+          appDispatch(MarkersStore.deleteMarkersLocally(received.data));
           break;
         case "set_alarm_states":
           appDispatch(MarkersVisualStore.updateMarkersAlarmStates(received.data));
           break;
         case "update_viewbox":
-          appDispatch(MarkersStore.actionCreators.initiateUpdateAll());
+          appDispatch(MarkersStore.initiateUpdateAll());
           break;
         case "update_routes_by_tracks":
           setUpdatedTracks(received.data as string[]);

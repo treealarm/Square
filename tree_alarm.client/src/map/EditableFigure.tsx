@@ -1,6 +1,6 @@
 ﻿import * as React from 'react';
 import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getExtraProp, ICircle, IFigures, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 import { CircleMaker } from "./CircleMaker";
 import { PolygonMaker } from "./PolygonMaker";
@@ -8,10 +8,11 @@ import { PolylineMaker } from "./PolylineMaker";
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import { ApplicationState } from '../store';
+import { useAppDispatch } from '../store/configureStore';
 
 export function EditableFigure() {
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const obj2Edit = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
@@ -22,7 +23,7 @@ export function EditableFigure() {
 
       };
       figures.figs = [polygon];
-      dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
+      dispatch(MarkersStore.updateMarkers(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [dispatch])
 
@@ -32,7 +33,7 @@ export function EditableFigure() {
 
       };
       figures.figs = [figure];
-      dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
+      dispatch(MarkersStore.updateMarkers(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [dispatch])
 
@@ -42,7 +43,7 @@ export function EditableFigure() {
 
       };
       figures.figs = [figure];
-      dispatch<any>(MarkersStore.actionCreators.updateFigures(figures));
+      dispatch(MarkersStore.updateMarkers(figures));
       dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
     }, [dispatch])
 
