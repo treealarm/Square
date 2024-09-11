@@ -32,7 +32,7 @@ import { ObjectSelector } from '../components/ObjectSelector';
 
 export function ObjectProperties() {
 
-  const app_dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const objProps: IObjProps|null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
@@ -49,7 +49,7 @@ export function ObjectProperties() {
       return;
     }
     copy.name = value;
-    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleChangeParentId(e: any) {
@@ -59,7 +59,7 @@ export function ObjectProperties() {
       return;
     }
     copy.parent_id = value;
-    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleChangeProp(e: any) {
@@ -78,7 +78,7 @@ export function ObjectProperties() {
       first.str_val = value;
     }
     
-    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleAddProp(id: any) {
@@ -102,7 +102,7 @@ export function ObjectProperties() {
       prop_name: id
     };
     copy.extra_props.push(newProp);
-    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   function handleRemoveProp(id: any) {
@@ -117,14 +117,14 @@ export function ObjectProperties() {
       return obj.prop_name != id;
     });
 
-    app_dispatch(ObjPropsStore.setObjPropsLocally(copy));
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
   useEffect(() => {
     if (objProps?.id != null) {
-      app_dispatch(MarkersStore.fetchMarkersByIds([objProps.id]));
+      appDispatch(MarkersStore.fetchMarkersByIds([objProps.id]));
     }      
-  }, [propsUpdated, app_dispatch, objProps?.id]);
+  }, [propsUpdated, appDispatch, objProps?.id]);
 
   const childDiagramPropEvents = useMemo(() => ({
     clickSave: () => { }
@@ -138,25 +138,25 @@ export function ObjectProperties() {
       return;
     }
 
-    app_dispatch(ObjPropsStore.updateObjProps(copy));
+    appDispatch(ObjPropsStore.updateObjProps(copy));
 
     // Update name in tree control.
     var treeItem: TreeMarker = {
       id: copy.id,
       name: copy.name
     }
-    app_dispatch<any>(TreeStore.setTreeItem(treeItem));
+    appDispatch(TreeStore.setTreeItem(treeItem));
 
     // Stop edit mode.
-    app_dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
+    appDispatch(EditStore.setEditMode(false));
 
-  }, [objProps, app_dispatch, childDiagramPropEvents]);
+  }, [objProps, appDispatch, childDiagramPropEvents]);
 
   function editMe(props: IObjProps, editMode: boolean){
-    app_dispatch<any>(EditStore.actionCreators.setFigureEditMode(editMode));
+    appDispatch(EditStore.setEditMode(editMode));
 
     if (!editMode) {
-      app_dispatch(ObjPropsStore.fetchObjProps(selected_id??null));
+      appDispatch(ObjPropsStore.fetchObjProps(selected_id??null));
     }
   }
 
@@ -169,10 +169,10 @@ export function ObjectProperties() {
         parent_id: obj_props.parent_id
       }
       let idsToDelete: string[] = [marker.id];
-      app_dispatch(MarkersStore.deleteMarker(idsToDelete));
-      app_dispatch(GuiStore.selectTreeItem(null));
-      app_dispatch(DiagramsStore.remove_ids_locally(idsToDelete));
-    }, [app_dispatch])
+      appDispatch(MarkersStore.deleteMarker(idsToDelete));
+      appDispatch(GuiStore.selectTreeItem(null));
+      appDispatch(DiagramsStore.remove_ids_locally(idsToDelete));
+    }, [appDispatch])
 
 
     if (objProps == null || objProps == undefined) {

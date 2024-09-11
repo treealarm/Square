@@ -12,7 +12,7 @@ import { ApplicationState } from '../store';
 
 export default function EditOptions() {
 
-  const dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
 
   const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
 
@@ -49,8 +49,8 @@ export default function EditOptions() {
         type: PolygonType
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry1), null);
-      dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch(ObjPropsStore.setObjPropsLocally(copy));
+      appDispatch(EditStore.setEditMode(true));
+      appDispatch(ObjPropsStore.setObjPropsLocally(copy));
       return;
     }
 
@@ -67,8 +67,8 @@ export default function EditOptions() {
         type: LineStringType
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry2), null);
-      dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch(ObjPropsStore.setObjPropsLocally(copy));
+      appDispatch(EditStore.setEditMode(true));
+      appDispatch(ObjPropsStore.setObjPropsLocally(copy));
       return;
     }
 
@@ -85,8 +85,8 @@ export default function EditOptions() {
         type: PointType
       }
       setExtraProp(copy, "geometry", JSON.stringify(geometry3), null);
-      dispatch<any>(EditStore.actionCreators.setFigureEditMode(true));
-      dispatch(ObjPropsStore.setObjPropsLocally(copy));
+      appDispatch(EditStore.setEditMode(true));
+      appDispatch(ObjPropsStore.setObjPropsLocally(copy));
       return;
     }
 
@@ -107,12 +107,12 @@ export default function EditOptions() {
         region_id:null
       };
 
-      dispatch(DiagramsStore.updateDiagrams([copy]));
-      dispatch(DiagramsStore.fetchDiagram(selected_id));
+      appDispatch(DiagramsStore.updateDiagrams([copy]));
+      appDispatch(DiagramsStore.fetchDiagram(selected_id));
       return;
     }
 
-    dispatch<any>(EditStore.actionCreators.setFigureEditMode(false));
+    appDispatch(EditStore.setEditMode(false));
   };
 
   const handleClose = () => {
