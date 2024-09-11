@@ -60,7 +60,7 @@ export function IntegrationLeafsViewer() {
   };
 
   const handleSelectLeaf = (leaf: IIntegrationLeafDTO) => {
-    appDispatch(GuiStore.actionCreators.selectTreeItem(leaf.id));
+    appDispatch(GuiStore.selectTreeItem(leaf.id));
   };
 
   return (

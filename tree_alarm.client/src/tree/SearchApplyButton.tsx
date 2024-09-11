@@ -21,7 +21,7 @@ export function SearchApplyButton(props: { hideIfNotPushed: boolean }) {
       let filter: SearchFilterGUI = DeepCopy(searchFilter);      
       filter.applied = !filter.applied;
       filter.search_id = (new Date()).toISOString();
-      dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
+      dispatch(GuiStore.applyFilter(filter));
     }, [dispatch, searchFilter]);
 
   if (props.hideIfNotPushed && searchFilter?.applied != true) {

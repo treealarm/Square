@@ -65,7 +65,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
         zoom: props.zoom_min
       };
 
-      appDispatch<any>(GuiStore.actionCreators.setMapOption(viewOption));
+      appDispatch(GuiStore.setMapOption(viewOption));
 
     }, [appDispatch, props.zoom_min])
 

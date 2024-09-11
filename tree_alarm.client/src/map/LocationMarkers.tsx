@@ -152,7 +152,7 @@ function MyCommonFig(props: any) {
   const eventHandlers = useMemo(
     () => ({
       click() {
-        appDispatch<any>(GuiStore.actionCreators.selectTreeItem(props.marker.id));
+        appDispatch(GuiStore.selectTreeItem(props.marker.id));
 
         var __is_diagram = getExtraProp(fig, "__is_diagram", "0");
 
@@ -259,7 +259,7 @@ export function LocationMarkers() {
      preclick(e: LeafletMouseEvent) {
        console.log(e);
        if (!selectedEditMode?.edit_mode) {
-         appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+         appDispatch(GuiStore.selectTreeItem(null));
        }       
       },
 
@@ -275,7 +275,7 @@ export function LocationMarkers() {
 
   useEffect(
     () => {
-      appDispatch<any>(GuiStore.actionCreators.requestTreeUpdate());
+      appDispatch(GuiStore.requestTreeUpdate());
     }, [appDispatch, isChanging]);
   
   useEffect(

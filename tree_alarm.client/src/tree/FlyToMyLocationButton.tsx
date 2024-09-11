@@ -23,7 +23,7 @@ export function FlyToMyLocationButton() {
         find_current_pos: true
       };
 
-      appDispatch<any>(GuiStore.actionCreators.setMapOption(viewOption));
+      appDispatch(GuiStore.setMapOption(viewOption));
     },[appDispatch]);
 
   return (

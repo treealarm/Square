@@ -1,11 +1,12 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ApplicationState } from '../store';
 import { DeepCopy, getExtraProp, ICircle, IObjProps, PointType, setExtraProp } from '../store/Marker';
 
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   Popup,
   useMap,
@@ -14,6 +15,7 @@ import {
 } from 'react-leaflet'
 
 import { LeafletKeyboardEvent } from 'leaflet';
+import { useAppDispatch } from '../store/configureStore';
 
 
 function CirclePopup(props: any) {
@@ -44,7 +46,7 @@ function CirclePopup(props: any) {
 
 export function CircleMaker(props: any) {
 
-  const dispatch = useDispatch();
+  const appDispatch = useAppDispatch();
   const parentMap = useMap();
 
 
@@ -52,13 +54,13 @@ export function CircleMaker(props: any) {
 
   const [movedIndex, setMovedIndex] = React.useState(-1);
 
-  const initFigure: ICircle = useMemo(() => ({
+  const initFigure: ICircle = {
     name: 'New Circle',
     parent_id: selected_id,
     geometry: { coord: null, type: PointType },
     radius: 10,
     id: null
-  }), [selected_id]);
+  }
 
   useEffect(() => {
     if (props.obj2Edit != null) {
@@ -84,7 +86,7 @@ export function CircleMaker(props: any) {
         setMovedIndex(0)
       }
     }
-  }, [initFigure, props.obj2Edit]);
+  }, [props.obj2Edit]);
 
   const [figure, setFigure] = React.useState<ICircle>(initFigure);
   const [oldFigure, setOldFigure] = React.useState<ICircle>(initFigure);
@@ -100,8 +102,8 @@ export function CircleMaker(props: any) {
     setExtraProp(copy, "radius", figure.radius.toString(), null);
     setExtraProp(copy, "geometry", JSON.stringify(figure?.geometry), null);
 
-    dispatch(ObjPropsStore.setObjPropsLocally(copy));
-  }, [dispatch, figure, objProps]);
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
+  }, [figure]);
 
 
   useMapEvents({
@@ -152,13 +154,13 @@ export function CircleMaker(props: any) {
       parentMap.closePopup();
 
       setMovedIndex(index);
-    }, [parentMap])
+    }, [])
 
   const deleteVertex = useCallback(
     () => {
       parentMap.closePopup();
       setFigure(initFigure);
-    }, [initFigure, parentMap])
+    }, [figure])
 
   const colorOptions = {
     fillColor: 'yellow',
@@ -185,7 +187,7 @@ export function CircleMaker(props: any) {
         <Circle
           pathOptions={colorOptions}
           center={figure.geometry.coord}
-          radius={figure.radius}
+          radius={figure.radius}          
           key={0}
           >
           {

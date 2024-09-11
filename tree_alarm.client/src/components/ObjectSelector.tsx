@@ -1,5 +1,6 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { getByParent, getById } from '../store/TreeStates'; // Убедитесь, что вы импортируете правильно
+/* eslint-disable no-unused-vars */
+import React, { useCallback, useState } from 'react';
+import { getByParent, getById } from '../store/TreeStates';
 import { TreeMarker } from '../store/Marker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,7 +16,6 @@ import { Box, IconButton, CircularProgress, Tabs, Tab, Button } from '@mui/mater
 interface ObjectSelectorProps {
   selectedId: string | null;
   excludeId?: string | null;
-  // eslint-disable-next-line no-unused-vars
   onSelect: (id: string | null) => void;
 }
 
@@ -23,20 +23,18 @@ export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelect
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [items, setItems] = useState<TreeMarker[]>([]);
   const [parents, setParents] = useState<TreeMarker[]>([]);
-  const [currentParentId, setCurrentParentId] = useState<string | null>(null);
+  const [currentParentId, setCurrentParentId] = useState<string | null>(selectedId);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(selectedId);
 
-  
-  // Обновленный fetchTreeItems с использованием unwrap
   const fetchTreeItems = useCallback(async (parentId: string | null) => {
     setLoading(true);
     try {
       const response = await getByParent(parentId, null, null);
-      var availableForSelection = response.children?.filter(marker => marker.id !== excludeId) ?? null;
+      const availableForSelection = response.children?.filter(marker => marker.id !== excludeId) ?? [];
 
-      setItems(availableForSelection ?? []); // Предположим, что `response` содержит `children`
-      setParents(response.parents ?? []); // Предположим, что `response` содержит `parents`
+      setItems(availableForSelection);
+      setParents(response.parents ?? []);
       setCurrentParentId(response.parent_id ?? null);
     } catch (error) {
       console.error('Failed to fetch tree items:', error);
@@ -45,26 +43,20 @@ export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelect
     }
   }, [excludeId]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (selectedId) {
-        try {
-          const response = await getById(selectedId);
-          fetchTreeItems(response.parent_id ?? null);
-        } catch (error) {
-          console.error('Failed to fetch item by ID:', error);
-        }
-      } else {
-        fetchTreeItems(null);
-      }
-    };
-
-    fetchData();
-    
-  }, [selectedId, fetchTreeItems]);
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  // Handle click event to open the popover and fetch the tree one level above the selected object
+  const handleClick = async (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    if (selectedId) {
+      try {
+        const response = await getById(selectedId);
+        const parentId = response.parent_id ?? null;
+        fetchTreeItems(parentId);  // Fetch one level above the selected object
+      } catch (error) {
+        console.error('Failed to fetch item by ID:', error);
+      }
+    } else {
+      fetchTreeItems(null);
+    }
   };
 
   const handleClose = () => {
@@ -80,11 +72,8 @@ export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelect
   };
 
   const handleOk = () => {
-    var id = selectedItem;
-    onSelect(id);
-    setTimeout(() => {
-      handleClose();
-    }, 0);
+    onSelect(selectedItem);
+    handleClose();
   };
 
   const handleCancel = () => {
@@ -97,7 +86,7 @@ export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelect
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const popoverId = open ? 'simple-popover' : undefined;
 
   return (
     <>
@@ -105,17 +94,13 @@ export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelect
         <CheckCircleIcon />
       </IconButton>
       <Popover
-        id={id}
+        id={popoverId}
         open={open}
         anchorEl={anchorEl}
         onClose={handleClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       >
         <Box sx={{ width: 300, padding: 2, display: 'flex', flexDirection: 'column', height: 400 }}>
-          {/* Tabs for parents */}
           <Tabs
             value={currentParentId}
             onChange={handleParentChange}
@@ -124,38 +109,22 @@ export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelect
             allowScrollButtonsMobile
             sx={{ marginBottom: 1 }}
           >
-            {parents.map((parent) => (
-              <Tab
-                key={parent.id}
-                label={parent.name}
-                value={parent.id}
-              />
+            {parents.map(parent => (
+              <Tab key={parent.id} label={parent.name} value={parent.id} />
             ))}
-            <Tab
-              label="Root"
-              value={null}
-            />
+            <Tab label="Root" value={null} />
           </Tabs>
 
-          {/* List of items */}
           <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
             {loading ? (
               <CircularProgress />
             ) : (
               <List>
-                {items.map((item) => (
+                {items.map(item => (
                   <ListItem key={item.id} disablePadding>
-                    <ListItemButton
-                      selected={selectedItem === item.id}
-                      onClick={handleSelect(item)}
-                    >
+                    <ListItemButton selected={selectedItem === item.id} onClick={handleSelect(item)}>
                       <ListItemIcon>
-                        <Checkbox
-                          edge="start"
-                          checked={selectedItem === item.id}
-                          tabIndex={-1}
-                          disableRipple
-                        />
+                        <Checkbox edge="start" checked={selectedItem === item.id} tabIndex={-1} disableRipple />
                       </ListItemIcon>
                       <ListItemText primary={item.name} />
                       {item.has_children && (
@@ -170,12 +139,11 @@ export function ObjectSelector({ selectedId, excludeId, onSelect }: ObjectSelect
             )}
           </Box>
 
-          {/* Action buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
             <Button onClick={handleCancel} sx={{ marginRight: 1 }}>
               Cancel
             </Button>
-            <Button onClick={handleOk} variant="contained">
+            <Button onClick={handleOk} variant="contained" disabled={loading}>
               OK
             </Button>
           </Box>

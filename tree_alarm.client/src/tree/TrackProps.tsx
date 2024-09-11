@@ -21,10 +21,10 @@ export function TrackProps() {
   const handleSelect = useCallback(() => () => {
 
     if (selected_id == null) {
-      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(selected_track?.figure.id));
+      appDispatch(GuiStore.selectTreeItem(selected_track?.figure.id));
     }
     else {
-      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
+      appDispatch(GuiStore.selectTreeItem(null));
     }
 
   }, [selected_id, selected_track, appDispatch]);

@@ -1,4 +1,5 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { getExtraProp, ICircle, IFigures, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
@@ -12,7 +13,7 @@ import { useAppDispatch } from '../store/configureStore';
 
 export function EditableFigure() {
 
-  const dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
 
   const obj2Edit = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
@@ -23,9 +24,9 @@ export function EditableFigure() {
 
       };
       figures.figs = [polygon];
-      dispatch(MarkersStore.updateMarkers(figures));
-      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-    }, [dispatch])
+      appDispatch(MarkersStore.updateMarkers(figures));
+      appDispatch(GuiStore.selectTreeItem(null));
+    }, [])
 
   const polylineChanged = useCallback(
     (figure: IPolyline) => {
@@ -33,9 +34,9 @@ export function EditableFigure() {
 
       };
       figures.figs = [figure];
-      dispatch(MarkersStore.updateMarkers(figures));
-      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-    }, [dispatch])
+      appDispatch(MarkersStore.updateMarkers(figures));
+      appDispatch(GuiStore.selectTreeItem(null));
+    }, [])
 
   const circleChanged = useCallback(
     (figure: ICircle) => {
@@ -43,9 +44,9 @@ export function EditableFigure() {
 
       };
       figures.figs = [figure];
-      dispatch(MarkersStore.updateMarkers(figures));
-      dispatch<any>(GuiStore.actionCreators.selectTreeItem(null));
-    }, [dispatch])
+      appDispatch(MarkersStore.updateMarkers(figures));
+      appDispatch(GuiStore.selectTreeItem(null));
+    }, [])
 
 
   if (obj2Edit == null) {

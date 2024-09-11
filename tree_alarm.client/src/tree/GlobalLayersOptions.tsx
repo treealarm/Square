@@ -55,7 +55,7 @@ export default function GlobalLayersOptions() {
       filter.show_routes = event.target.checked;
     }
 
-    dispatch<any>(GuiStore.actionCreators.applyFilter(filter));
+    dispatch(GuiStore.applyFilter(filter));
   }, [GetCopyOfSearchFilter, dispatch]);
 
   var checks = [

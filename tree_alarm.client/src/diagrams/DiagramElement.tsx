@@ -41,7 +41,7 @@ export default function DiagramElement(props: IDiagramElement) {
 
   const selectItem = useCallback(
     (diagram_id: string) => {
-      appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram_id));
+      appDispatch(GuiStore.selectTreeItem(diagram_id));
       console.log("selecting diagram:", diagram_id);
     }, [appDispatch]);
 

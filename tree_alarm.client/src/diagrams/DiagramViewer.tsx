@@ -119,7 +119,7 @@ export default function DiagramViewer() {
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     console.log(e);
-    appDispatch<any>(GuiStore.actionCreators.selectTreeItem(diagram?.parent?.id));
+    appDispatch(GuiStore.selectTreeItem(diagram?.parent?.id));
   };
 
   const handleWheelEvent = (e: WheelEvent) => {

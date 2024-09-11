@@ -1,11 +1,12 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import * as L from 'leaflet';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ApplicationState } from '../store';
 import { IPolygon, PolygonType, IObjProps, IPolygonCoord, setExtraProp, getExtraProp, DeepCopy } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect } from 'react'
 import {
   CircleMarker,
   Popup,
@@ -16,6 +17,7 @@ import {
 } from 'react-leaflet'
 
 import { LeafletKeyboardEvent } from 'leaflet';
+import { useAppDispatch } from '../store/configureStore';
 
 function CirclePopup(props: any) {
   return (
@@ -64,7 +66,7 @@ function PolygonPopup(props: any) {
 
 export function PolygonMaker(props: any) {
 
-  const dispatch = useDispatch();
+  const appDispatch = useAppDispatch();
   const parentMap = useMap();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
@@ -75,12 +77,12 @@ export function PolygonMaker(props: any) {
   const [isMoveAll, setIsMoveAll] = React.useState(false);
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
 
-  const initPolygon: IPolygon = useMemo(()=>( {
+  const initPolygon: IPolygon = {
     id: null,
     name: 'New Polygon',
     parent_id: selected_id,
     geometry: { coord: [], type: PolygonType }
-  }),[selected_id]);
+  };
 
   function DoSetMovedIndex(index: number, place: any) {
     console.log("DoSetMovedIndex ", place, " ", index);
@@ -96,7 +98,7 @@ export function PolygonMaker(props: any) {
       initPolygon.geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
       initPolygon.id = obj2Edit.id;
     }
-  }, [initPolygon, props.obj2Edit]);
+  }, [props.obj2Edit]);
 
   const [curPolygon, setPolygon] = React.useState<IPolygon>(initPolygon);
   const [oldPolygon, setOldPolygon] = React.useState<IPolygon>(initPolygon);
@@ -109,8 +111,8 @@ export function PolygonMaker(props: any) {
     }
 
     setExtraProp(copy,"geometry",JSON.stringify(curPolygon.geometry), null);
-    dispatch(ObjPropsStore.setObjPropsLocally(copy));
-  }, [curPolygon, dispatch, objProps]);
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
+  }, [curPolygon]);
 
     
   useMapEvents({
@@ -206,7 +208,7 @@ export function PolygonMaker(props: any) {
       setOldPolygon(curPolygon);
       DoSetMovedIndex(index, "moveVertex");
       setClick(1);
-    }, [curPolygon, parentMap])
+    }, [curPolygon])
 
   const addVertex = useCallback(
     (index: any) => {
@@ -228,7 +230,7 @@ export function PolygonMaker(props: any) {
 
       DoSetMovedIndex(index, "AddVertex");
       setClick(1);
-    }, [curPolygon, parentMap])
+    }, [curPolygon])
 
   const deleteVertex = useCallback(
     (index: any) => {      
@@ -249,7 +251,7 @@ export function PolygonMaker(props: any) {
 
       setClick(1);
 
-    }, [curPolygon, parentMap])
+    }, [curPolygon])
 
   const colorOptions = { color: 'green' }
   const colorOptionsCircle = { color: 'red' }

@@ -19,7 +19,7 @@ import { SearchApplyButton } from './SearchApplyButton';
 import { ApiDefaultPagingNum, INPUT_DATETIME_FORMAT } from '../store/constants';
 
 export function RetroSearch() {
-  const app_dispatch = useAppDispatch();
+  const appDispatch = useAppDispatch();
 
   const searchFilter = useSelector((state: ApplicationState) => state?.guiStates?.searchFilter);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
@@ -29,9 +29,9 @@ export function RetroSearch() {
   const updateFilterInRedux = (filter: SearchFilterGUI, applyFilter: boolean) => {
     filter.search_id = new Date().toISOString();
     filter.applied = applyFilter;
-    app_dispatch(GuiStore.actionCreators.applyFilter(filter));
+    appDispatch(GuiStore.applyFilter(filter));
     if (!filter.applied) {
-      app_dispatch(SearchResultStore.setEmptyResult());
+      appDispatch(SearchResultStore.setEmptyResult());
     }
   };
 
@@ -52,9 +52,9 @@ export function RetroSearch() {
     };
 
     if (!filterIn.applied) {
-      app_dispatch(SearchResultStore.setEmptyResult());
+      appDispatch(SearchResultStore.setEmptyResult());
     } else {
-      app_dispatch(SearchResultStore.fetchTracksByFilter(filterDto));
+      appDispatch(SearchResultStore.fetchTracksByFilter(filterDto));
     }
   }, []);
 

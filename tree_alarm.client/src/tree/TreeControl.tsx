@@ -44,7 +44,7 @@ export function TreeControl() {
     if (selected_id === reduxSelectedId) {
       selected_id = null;
     }
-    appDispatch(GuiStore.actionCreators.selectTreeItem(selected_id));
+    appDispatch(GuiStore.selectTreeItem(selected_id));
   };
 
   const handleSelect = (selected: TreeMarker) => () => {
@@ -70,7 +70,7 @@ export function TreeControl() {
     }
 
     setChecked(newChecked);
-    appDispatch(GuiStore.actionCreators.checkTreeItem(newChecked));
+    appDispatch(GuiStore.checkTreeItem(newChecked));
   };
 
   useEffect(() => {
