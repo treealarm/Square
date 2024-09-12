@@ -2,8 +2,8 @@
 import * as React from 'react';
 import { TextField, Button, Box, Typography, InputAdornment, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { IControlSelector } from './control_selector_common';
+import CoordInput from './CoordInput';
 
 const GeoEditor = ({ props }: { props: IControlSelector }) => {
   const [geometry, setGeometry] = React.useState(JSON.parse(props.str_val));
@@ -108,51 +108,6 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
             </Button>
           )}
         </Box>
-      )}
-    </Box>
-  );
-};
-
-// Coordinate input component
-const CoordInput = ({ index, lat, lng, onCoordChange, onRemoveCoord }: any) => {
-  const handleLatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLat = parseFloat(e.target.value);
-    onCoordChange(index, newLat, lng);
-  };
-
-  const handleLngChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLng = parseFloat(e.target.value);
-    onCoordChange(index, lat, newLng);
-  };
-
-  return (
-    <Box display="flex" alignItems="center" my={1}>
-      <TextField
-        size="small"
-        label={`Lat ${index}`}
-        type="number"
-        value={lat}
-        onChange={handleLatChange}
-        style={{ marginRight: 8, marginTop: 4 }}
-        inputProps={{ style: { fontSize: '0.875rem'} }}
-      />
-      <TextField
-        size="small"
-        label={`Lng ${index}`}
-        type="number"
-        value={lng}
-        onChange={handleLngChange}
-        style={{ marginRight: 8, marginTop: 4 }}
-        inputProps={{ style: { fontSize: '0.875rem'} }}
-      />
-      {onRemoveCoord && (
-        <IconButton
-          edge="end"
-          color="secondary"
-          onClick={() => onRemoveCoord(index)}
-        >
-          <DeleteIcon fontSize="small" />
-        </IconButton>
       )}
     </Box>
   );
