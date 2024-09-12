@@ -4,10 +4,30 @@ import { TextField, Button, Box, Typography, InputAdornment, IconButton } from '
 import EditIcon from '@mui/icons-material/Edit';
 import { IControlSelector } from './control_selector_common';
 import CoordInput from './CoordInput';
+import { IPointCoord, IPolygonCoord, IPolylineCoord } from '../store/Marker';
+
+const defaultGeometry: IPointCoord = {
+  type: 'Point' as const,
+  coord: [0, 0]
+};
 
 const GeoEditor = ({ props }: { props: IControlSelector }) => {
-  const [geometry, setGeometry] = React.useState(JSON.parse(props.str_val));
+  const [geometry, setGeometry] = React.useState<IPointCoord | IPolygonCoord | IPolylineCoord>(defaultGeometry);
   const [editMode, setEditMode] = React.useState(false);
+
+  React.useEffect(() => {
+    try {
+      const parsedGeometry = JSON.parse(props.str_val);
+      if (parsedGeometry && ['Point', 'Polygon', 'LineString'].includes(parsedGeometry.type)) {
+        setGeometry(parsedGeometry);
+      } else {
+        setGeometry(defaultGeometry);
+      }
+    } catch (error) {
+      // JSON parsing failed or data is invalid
+      setGeometry(defaultGeometry);
+    }
+  }, [props.str_val]);
 
   const handleChange = (newValue: string) => {
     // ׁמחהאול סמבûעטו, סמגלוסעטלמו ס handleChangeProp

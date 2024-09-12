@@ -89,7 +89,7 @@ export function ObjectProperties() {
       return;
     }
 
-    const first = copy.extra_props.find((obj) => {
+    const first = copy.extra_props?.find((obj) => {
       return obj.prop_name == id;
     })
 
@@ -101,7 +101,11 @@ export function ObjectProperties() {
       str_val: "",
       prop_name: id
     };
-    copy.extra_props.push(newProp);
+
+    if (id == 'geometry') {
+      newProp.visual_type = '__geo';
+    }
+    copy.extra_props?.push(newProp);
     appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
