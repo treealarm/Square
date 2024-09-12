@@ -153,12 +153,12 @@ namespace LeafletAlarms.Services
 
         var replay = JsonSerializer.SerializeToUtf8Bytes(json);
 
-        await _webSocket.SendAsync(
-          new ArraySegment<byte>(buffer, 0, replay.Length),
-          result.MessageType,
-          result.EndOfMessage,
-          CancellationToken.None
-        );
+        //await _webSocket.SendAsync(
+        //  new ArraySegment<byte>(buffer, 0, replay.Length),
+        //  result.MessageType,
+        //  result.EndOfMessage,
+        //  CancellationToken.None
+        //);
 
         result = await _webSocket.ReceiveAsync(
           new ArraySegment<byte>(buffer),
