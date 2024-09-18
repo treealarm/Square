@@ -43,6 +43,10 @@ namespace DbLayer
     {
       var res = new Dictionary<string, GeoObjectDTO>();
 
+      if (dto == null)
+      {
+        return res;
+      }
       foreach (var item in dto)
       {
         res.Add(item.id, ConvertDB2DTO(item));

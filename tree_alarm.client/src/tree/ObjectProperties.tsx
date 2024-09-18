@@ -173,7 +173,7 @@ export function ObjectProperties() {
         parent_id: obj_props.parent_id
       }
       let idsToDelete: string[] = [marker.id];
-      appDispatch(MarkersStore.deleteMarker(idsToDelete));
+      appDispatch(MarkersStore.deleteMarkers(idsToDelete));
       appDispatch(GuiStore.selectTreeItem(null));
       appDispatch(DiagramsStore.remove_ids_locally(idsToDelete));
     }, [appDispatch])

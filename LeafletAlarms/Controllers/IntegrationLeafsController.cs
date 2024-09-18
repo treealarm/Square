@@ -22,7 +22,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("Update")]
-    public async Task<ActionResult<List<IntegrationLeafsDTO>>> Update(List<IntegrationLeafsDTO> obj2UpdateIn)
+    public async Task<ActionResult<List<IntegrationLeafDTO>>> Update(List<IntegrationLeafDTO> obj2UpdateIn)
     {
       try
       {

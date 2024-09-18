@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
-import { List, ListItemText, Typography, Button, ListItemButton } from '@mui/material';
+import { List, ListItemText, Typography, Button, ListItemButton, Box, ListItem } from '@mui/material';
 
 import * as IntegrationsStore from '../store/IntegrationsStates';
 import * as GuiStore from '../store/GUIStates';
@@ -23,11 +24,47 @@ export function IntegrationLeafsViewer() {
 
   const children: IIntegrationLeafDTO[] = integration_leafs?.children || [];
 
+  const handleAddLeaf = () => {
+    if (selected_integration) {
+      appDispatch(IntegrationsStore.addIntegrationLeaf(selected_integration))
+        .then(() => {
+          appDispatch(IntegrationsStore.fetchIntegrationLeafsByParent(selected_integration));
+        });
+    }
+  };
+
+  const handleDeleteLeaf = (id: string|null) => {
+    if (selected_integration) {
+      appDispatch(IntegrationsStore.deleteIntegrationLeaf(id))
+        .then(() => {
+          appDispatch(IntegrationsStore.fetchIntegrationLeafsByParent(selected_integration));
+        });
+    }
+  };
+
+  const handleSelectLeaf = (leaf: IIntegrationLeafDTO | null) => {
+    appDispatch(GuiStore.selectTreeItem(leaf?.id ?? null));
+  };
+
   useEffect(() => {
     if (selected_integration) {
       appDispatch(IntegrationsStore.fetchIntegrationLeafsByParent(selected_integration));
     }
   }, [selected_integration, appDispatch]);
+
+  useEffect(() => {
+    if (selected_integration) {
+      appDispatch(IntegrationsStore.fetchIntegrationLeafsByParent(selected_integration));
+    }
+  }, [selected_integration, appDispatch]);
+
+  useEffect(() => {
+    var selected_child = children.findIndex(c => c.id == reduxSelectedId);
+    if (selected_child < 0) {
+      handleSelectLeaf(null);
+    }
+  }, [children, handleSelectLeaf, reduxSelectedId]);
+  
 
   useEffect(() => {
     if (objProps == null) {
@@ -41,45 +78,32 @@ export function IntegrationLeafsViewer() {
     }
   }, [objProps, reduxSelectedId, appDispatch]);
 
-  const handleAddLeaf = () => {
-    if (selected_integration) {
-      appDispatch(IntegrationsStore.addIntegrationLeaf(selected_integration))
-        .then(() => {
-          appDispatch(IntegrationsStore.fetchIntegrationLeafsByParent(selected_integration));
-        });
-    }
-  };
-
-  const handleDeleteLeaf = (id: string) => {
-    if (selected_integration) {
-      appDispatch(IntegrationsStore.deleteIntegrationLeaf(id))
-        .then(() => {
-          appDispatch(IntegrationsStore.fetchIntegrationLeafsByParent(selected_integration));
-        });
-    }
-  };
-
-  const handleSelectLeaf = (leaf: IIntegrationLeafDTO) => {
-    appDispatch(GuiStore.selectTreeItem(leaf.id));
-  };
-
   return (
-    <div>
-      <Typography variant="h6">Integration Leafs</Typography>
-      <Button onClick={handleAddLeaf} variant="contained" color="primary">
-        Add Leaf
-      </Button>
-      <List>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 2 }}>
+      
+      <List sx={{ width: '100%' }}>
+        <ListItem sx={{ width: '100%' }}>
+          <Button
+            onClick={handleAddLeaf}
+            variant="contained"
+            sx={{ marginLeft: 'auto', display: 'block' }}
+          >
+          Add Leaf
+          </Button>
+        </ListItem>
+        
         {children.length > 0 ? (
           children.map((child: IIntegrationLeafDTO) => (
             <ListItemButton key={child.id} onClick={() => handleSelectLeaf(child)}
-              selected={reduxSelectedId == child.id}>
+              selected={reduxSelectedId == child.id}
+            >
               
               <ListItemText
                 primary={child.id}
                 secondary={child.parent_id ? `Parent ID: ${child.parent_id}` : 'No Parent ID'}
+                
               />
-              <Button onClick={() => handleDeleteLeaf(child.id)} color="secondary">
+              <Button onClick={() => handleDeleteLeaf(child?.id??null)} color="secondary">
                 Delete
               </Button>
             </ListItemButton>
@@ -88,6 +112,6 @@ export function IntegrationLeafsViewer() {
           <Typography variant="body1">No children available</Typography>
         )}
       </List>
-    </div>
+    </Box>
   );
 }

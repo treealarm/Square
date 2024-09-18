@@ -16,7 +16,7 @@ namespace DataChangeLayer
       _integrationService = integrationService;
       _pub = pub;
     }
-    async Task IIntegrationLeafsUpdateService.UpdateListAsync(List<IntegrationLeafsDTO> obj2UpdateIn)
+    async Task IIntegrationLeafsUpdateService.UpdateListAsync(List<IntegrationLeafDTO> obj2UpdateIn)
     {
       await _integrationService.UpdateListAsync(obj2UpdateIn);
     }

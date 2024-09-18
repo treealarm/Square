@@ -9,8 +9,12 @@ import { IntegrationViewer } from './IntegrationViewer';
 import { IntegrationLeafsViewer } from './IntegrationLeafsViewer';
 import { ObjectProperties } from '../tree/ObjectProperties';
 import { ObjectPropertiesUpdater } from '../components/ObjectPropertiesUpdater';
+import { useSelector } from "react-redux";
+import { ApplicationState } from "../store";
 
 export function IntegrationMain() {
+
+  const reduxSelectedId = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   return (
     <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
@@ -29,18 +33,25 @@ export function IntegrationMain() {
         flex: 1
       }}>
 
-        <Grid item xs={2} sx={{ height: "100%"}}>
+        <Grid item xs={2} sx={{ overflow: 'auto', height: "100%", boxShadow: 1 }}>
           <IntegrationViewer/>
         </Grid>
 
-        <Grid item xs={3} sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
+        <Grid item xs={4} sx={{ overflow: 'auto', minWidth: '100px', minHeight: '100px', height: '100%', boxShadow: 1 }}>
           <IntegrationLeafsViewer />
         </Grid>
 
-        <Grid item xs sx={{ height: "100%" }}>
-          <ObjectProperties />
-          <ObjectPropertiesUpdater/>
+        <Grid item xs sx={{ overflow: 'auto', height: "100%", boxShadow: 1 }}>
+          <ObjectPropertiesUpdater />
+          {
+            reduxSelectedId !== null && reduxSelectedId !== undefined &&
+            <div>
+              <ObjectProperties />
+            </div>
+          }
         </Grid>
+          
+          
       </Grid>
 
     </Box>
