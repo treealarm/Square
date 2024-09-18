@@ -48,7 +48,7 @@ namespace DbLayer.Services
       {
         var keys =
                 new IndexKeysDefinitionBuilder<DBIntegrationLeaf>()
-                .Ascending(d => d.parent_id)
+                .Ascending(d => d.integration_id)
                 ;
 
         var indexModel = new CreateIndexModel<DBIntegrationLeaf>(
@@ -66,7 +66,7 @@ namespace DbLayer.Services
       List<DBIntegrationLeaf> retVal;
 
         retVal = await Coll
-                .Find(x => parent_ids.Contains(x.parent_id))
+                .Find(x => parent_ids.Contains(x.integration_id))
                 .ToListAsync();
 
       return PropertyCopy.ConvertListDB2DTO<DBIntegrationLeaf, IntegrationLeafDTO>(retVal);
@@ -83,9 +83,9 @@ namespace DbLayer.Services
         dbUpdated.Add(item, updatedObj);
         var filter = Builders<DBIntegrationLeaf>.Filter.Eq(x => x.id, updatedObj.id);
 
-        if (string.IsNullOrEmpty(updatedObj.parent_id))
+        if (string.IsNullOrEmpty(updatedObj.integration_id))
         {
-          updatedObj.parent_id = null;
+          updatedObj.integration_id = null;
         }
 
         if (string.IsNullOrEmpty(updatedObj.id))
@@ -122,7 +122,7 @@ namespace DbLayer.Services
 
     private async Task CollectChildIds(string parentId, HashSet<string> allIdsToDelete)
     {
-      var children = await Coll.Find(x => x.parent_id == parentId).ToListAsync();
+      var children = await Coll.Find(x => x.integration_id == parentId).ToListAsync();
 
       foreach (var child in children)
       {

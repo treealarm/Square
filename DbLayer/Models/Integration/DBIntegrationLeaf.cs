@@ -3,6 +3,7 @@ using MongoDB.Bson;
 
 namespace DbLayer.Models
 {
+  [BsonIgnoreExtraElements]
   internal class DBIntegrationLeaf
   {
     [BsonId]
@@ -11,9 +12,6 @@ namespace DbLayer.Models
     public string id { get; set; }
 
     [BsonRepresentation(BsonType.ObjectId)]
-    public string parent_id { get; set; }
-
-    [BsonElement("name")]
-    public string name { get; set; }
+    public string integration_id { get; set; }
   }
 }

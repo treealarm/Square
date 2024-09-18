@@ -417,10 +417,10 @@ export interface IGetIntegrationsDTO {
 
 export interface IIntegrationLeafDTO {
   id?: string | null;
-  parent_id: string;
+  integration_id: string;
 }
 
 export interface IGetIntegrationLeafsDTO {
   children: IIntegrationLeafDTO[] | null;
-  parent_id?: string | null;
+  integration_id?: string | null;
 }

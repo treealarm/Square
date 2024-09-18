@@ -339,7 +339,7 @@ namespace LeafletAlarms.Controllers
     [Route("GetByIds")]
     public async Task<ActionResult<FiguresDTO>> GetByIds(List<string> ids)
     {
-      var geo = await _geoService.GetGeoObjectsAsync(ids);
+      var geo = await _geoService.GetGeoObjectsAsync(ids.Where(e=> !string.IsNullOrEmpty(e)).ToList());
       var figures = await GetFigures(geo);
 
       return CreatedAtAction(nameof(GetByIds), figures);

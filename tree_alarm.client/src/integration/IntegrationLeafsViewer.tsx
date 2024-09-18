@@ -100,7 +100,7 @@ export function IntegrationLeafsViewer() {
               
               <ListItemText
                 primary={child.id}
-                secondary={child.parent_id ? `Parent ID: ${child.parent_id}` : 'No Parent ID'}
+                secondary={child.integration_id ? `Parent ID: ${child.integration_id}` : 'No Parent ID'}
                 
               />
               <Button onClick={() => handleDeleteLeaf(child?.id??null)} color="secondary">

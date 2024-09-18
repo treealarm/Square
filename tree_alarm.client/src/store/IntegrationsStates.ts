@@ -37,10 +37,10 @@ export const fetchIntegrationsByParent = createAsyncThunk<IGetIntegrationsDTO, s
 
 export const fetchIntegrationLeafsByParent = createAsyncThunk<IGetIntegrationLeafsDTO, string>(
   'integrationleafs/GetByParent',
-  async (parent_id: string, { getState }) => {
-    let body = JSON.stringify(parent_id);
+  async (integration_id: string, { getState }) => {
+    let body = JSON.stringify(integration_id);
 
-    var fetched = await DoFetch(ApiIntegrationLeafsRootString + "/GetByParent?parent_id=" + parent_id,
+    var fetched = await DoFetch(ApiIntegrationLeafsRootString + "/GetByParent?integration_id=" + integration_id,
       {
         method: "GET"
       });
@@ -53,13 +53,13 @@ export const fetchIntegrationLeafsByParent = createAsyncThunk<IGetIntegrationLea
 
 export const addIntegrationLeaf = createAsyncThunk<IIntegrationLeafDTO[], string>(
   'integrationleafs/Update',
-  async (parent_id: string, { getState }) => {
+  async (integration_id: string, { getState }) => {
 
     var newObjects: IIntegrationLeafDTO[] =
       [
         {
           id: null,
-          parent_id: parent_id
+          integration_id: integration_id
         }
       ];
     let body = JSON.stringify(newObjects);
