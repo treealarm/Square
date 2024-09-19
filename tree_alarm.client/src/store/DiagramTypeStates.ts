@@ -7,14 +7,14 @@ import { ApiDiagramTypesRootString } from './constants';
 
 export interface DiagramTypeStates {
   cur_diagramtype: IDiagramTypeDTO | null;
-  diagramtypes: IDiagramTypeDTO[] | null;
+  diagramtypes: IDiagramTypeDTO[];
   localFilter: string | null;
   result: string | null;
 }
 
 const unloadedState: DiagramTypeStates = {
   cur_diagramtype: null,
-  diagramtypes: null,
+  diagramtypes: [],
   localFilter: null,
   result: null
 };
@@ -186,7 +186,10 @@ const diagramtypesSlice = createSlice({
         if (action.payload?.dgr_types.length > 0) {
           var newDiagram = action.payload.dgr_types[0];
           state.cur_diagramtype = newDiagram;
-          var index = state.diagramtypes.findIndex(e => e.id == newDiagram.id);
+          if (!state.diagramtypes) {
+            state.diagramtypes = [];
+          }
+          var index = state.diagramtypes?.findIndex(e => e.id == newDiagram.id) ?? -1;
           if (index >= 0) {
             state.diagramtypes[index] = newDiagram;
           }

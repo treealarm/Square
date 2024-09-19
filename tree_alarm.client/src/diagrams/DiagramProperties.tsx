@@ -1,4 +1,5 @@
-﻿import { useSelector } from "react-redux";
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import { useSelector } from "react-redux";
 
 import { ApplicationState } from '../store';
 import * as DiagramsStore from '../store/DiagramsStates';
@@ -79,13 +80,13 @@ export function DiagramProperties(props: IDiagramProperties) {
       }
       appDispatch(DiagramsStore.set_local_diagram(cur_diagram_copy));
     }
-  }, [result, curDiagram, cur_diagramtype, getDiagramDto, appDispatch]);
+  }, [result, curDiagram, cur_diagramtype, getDiagramDto]);
 
   useEffect(() => {
     if (getDiagramDto?.parent?.id != null && selected_id == getDiagramDto?.parent?.id) {
       appDispatch(DiagramsStore.fetchSingleDiagram(getDiagramDto.parent.id));
     } 
-  }, [propsUpdated, appDispatch, getDiagramDto?.parent.id, selected_id]);
+  }, [propsUpdated]);
 
   function handleEditDiagramClick() {
     appDispatch(DiagramTypeStore.set_local_filter(curDiagram?.dgr_type));
@@ -98,8 +99,8 @@ export function DiagramProperties(props: IDiagramProperties) {
       appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
     }
     //TODO Must refetch content since other properties updated
-    
-  }, [curDiagram, appDispatch]);
+
+  }, [curDiagram, content]);
 
   //subscribe to props.events changes
   useEffect(() => {

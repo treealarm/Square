@@ -1,4 +1,5 @@
-﻿import { useEffect, useCallback } from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useCallback } from 'react';
 import { useSelector } from "react-redux";
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 
@@ -43,8 +44,9 @@ export function DiagramTypeProperties() {
   }
   const deleteMe = useCallback(
     () => {
-      appDispatch(DiagramTypeStore.deleteDiagramTypes([diagramType.id]));
-    }, [appDispatch, diagramType.id])
+      if (diagramType?.id != null)
+        appDispatch(DiagramTypeStore.deleteDiagramTypes([diagramType?.id]));
+    }, [diagramType?.id])
 
   function handleChangeName(e: any) {
     const { target: { value } } = e;

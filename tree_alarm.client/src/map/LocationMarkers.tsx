@@ -1,4 +1,5 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import * as L from 'leaflet';
 import { useSelector } from "react-redux";
 import { useAppDispatch } from '../store/configureStore';
@@ -153,15 +154,9 @@ function MyCommonFig(props: any) {
     () => ({
       click() {
         appDispatch(GuiStore.selectTreeItem(props.marker.id));
-
-        var __is_diagram = getExtraProp(fig, "__is_diagram", "0");
-
-        if (__is_diagram == '1') {
-          console.log('__is_diagram:', __is_diagram);
-        }
       }
     }),
-    [appDispatch, fig, props.marker.id],
+    [props.marker.id],
   );
 
   if (props.hidden == true) {
