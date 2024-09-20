@@ -102,7 +102,7 @@ export function ObjectProperties() {
       prop_name: id
     };
 
-    if (id == 'geometry') {
+    if (id == "geometry") {
       newProp.visual_type = '__geo';
     }
     copy.extra_props?.push(newProp);
