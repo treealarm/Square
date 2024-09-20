@@ -451,22 +451,22 @@ namespace LeafletAlarms.Controllers
       {
         var type = geoPart.location.GetFigureType();
 
-        var geometry = JsonSerializer.Serialize(geoPart.location);
+        //var geometry = JsonSerializer.Serialize(geoPart.location);
 
-        propDTO.extra_props.Add(
-          new ObjExtraPropertyDTO() { str_val = $"{geometry}", prop_name = "geometry", visual_type = "__geo" }
-        );
+        //propDTO.extra_props.Add(
+        //  new ObjExtraPropertyDTO() { str_val = $"{geometry}", prop_name = "geometry", visual_type = "__geo" }
+        //);
 
-        if (type == "Point")
-        {          
-          propDTO.extra_props.Add(
-            new ObjExtraPropertyDTO() { str_val = $"{geoPart.radius}", prop_name = "radius" }
-          );
-        }
+        //if (type == "Point")
+        //{          
+        //  propDTO.extra_props.Add(
+        //    new ObjExtraPropertyDTO() { str_val = $"{geoPart.radius}", prop_name = "radius" }
+        //  );
+        //}
 
-        propDTO.extra_props.Add(
-            new ObjExtraPropertyDTO() { str_val = $"{geoPart.zoom_level}", prop_name = "zoom_level" }
-          );
+        //propDTO.extra_props.Add(
+        //    new ObjExtraPropertyDTO() { str_val = $"{geoPart.zoom_level}", prop_name = "zoom_level" }
+        //  );
 
         var zoomLevel = await _levelService.GetByZoomLevel(geoPart.zoom_level);
 

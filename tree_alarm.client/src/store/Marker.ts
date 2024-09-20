@@ -23,6 +23,10 @@ export const PointType = 'Point';
 export const PolygonType = 'Polygon';
 export const LineStringType = 'LineString';
 
+export interface IGeometryDTO {
+  coord: any[];
+  type: string;
+}
 export interface IPointCoord extends IGeometryDTO {
   type: 'Point';
   coord: LatLngPair|null;
@@ -68,7 +72,7 @@ export interface ObjExtraPropertyDTO {
 }
 
 export interface IObjProps extends Marker {
-  extra_props?: ObjExtraPropertyDTO[];
+  extra_props?: ObjExtraPropertyDTO[]|null;
   zoom_min?: number;
   zoom_max?: number;
 }
@@ -233,11 +237,6 @@ export interface MarkerVisualStateDTO {
   states: ObjectStateDTO[];
   states_descr: ObjectStateDescriptionDTO[]; 
   alarmed_objects: AlarmObject[];
-}
-
-export interface IGeometryDTO {
-  coord: any[];
-  type: string;
 }
 
 export interface IGeoObjectDTO {

@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { TextField, Button, Box, Typography, InputAdornment, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { IControlSelector } from './control_selector_common';
+import { IControlGeoProps } from './control_selector_common';
 import CoordInput from './CoordInput';
 import { IPointCoord, IPolygonCoord, IPolylineCoord } from '../store/Marker';
 
@@ -11,13 +11,13 @@ const defaultGeometry: IPointCoord = {
   coord: [0, 0]
 };
 
-const GeoEditor = ({ props }: { props: IControlSelector }) => {
+const GeoEditor = ({ props }: { props: IControlGeoProps }) => {
   const [geometry, setGeometry] = React.useState<IPointCoord | IPolygonCoord | IPolylineCoord>(defaultGeometry);
   const [editMode, setEditMode] = React.useState(false);
 
   React.useEffect(() => {
     try {
-      const parsedGeometry = JSON.parse(props.str_val);
+      const parsedGeometry = props.val;// JSON.parse(props.str_val);
       if (parsedGeometry && ['Point', 'Polygon', 'LineString'].includes(parsedGeometry.type)) {
         setGeometry(parsedGeometry);
       } else {
@@ -27,7 +27,7 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
       // JSON parsing failed or data is invalid
       setGeometry(defaultGeometry);
     }
-  }, [props.str_val]);
+  }, [props.val]);
 
   const handleChange = (newValue: string) => {
     // ׁמחהאול סמבûעטו, סמגלוסעטלמו ס handleChangeProp
@@ -74,8 +74,8 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
       return (
         <CoordInput
           index={0}
-          lat={geometry.coord[0]}
-          lng={geometry.coord[1]}
+          lat={geometry?.coord[0]??0}
+          lng={geometry?.coord[1]??0}
           onCoordChange={handleCoordChange}
           onRemoveCoord={null}
         />
@@ -100,7 +100,7 @@ const GeoEditor = ({ props }: { props: IControlSelector }) => {
         fullWidth
         id={props.prop_name}
         label={props.prop_name}
-        value={props.str_val}
+        value={JSON.stringify(props.val)}
         InputProps={{
           readOnly: true,
           endAdornment: (

@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as L from 'leaflet';
 import { useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { DeepCopy, getExtraProp, IObjProps, IPolyline, IPolylineCoord, LineStringType, setExtraProp } from '../store/Marker';
+import { DeepCopy, ICommonFig, IPolyline, IPolylineCoord, LineStringType } from '../store/Marker';
 
 import { useCallback, useMemo, useEffect } from 'react'
 import {
@@ -17,7 +17,7 @@ import {
 import { LeafletKeyboardEvent } from 'leaflet';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { useAppDispatch } from '../store/configureStore';
-
+import * as MarkersStore from '../store/MarkersStates';
 
 function CirclePopup(props: any) {
   return (
@@ -90,11 +90,11 @@ export function PolylineMaker(props: any) {
 
   useEffect(() => {
     if (props.obj2Edit != null) {
-      const obj2Edit: IObjProps = props.obj2Edit;
+      const obj2Edit: ICommonFig = props.obj2Edit;
 
       initFigure.name = obj2Edit.name;
       initFigure.parent_id = obj2Edit.parent_id;
-      initFigure.geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
+      initFigure.geometry = obj2Edit.geometry;
       initFigure.id = obj2Edit.id;
     }
   }, [props.obj2Edit]);
@@ -110,7 +110,7 @@ export function PolylineMaker(props: any) {
       return;
     }
 
-    setExtraProp(copy, "geometry", JSON.stringify(figure.geometry), null);
+    appDispatch(MarkersStore.selectMarkerLocally(figure));
     appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }, [figure]);
     

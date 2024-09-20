@@ -3,8 +3,9 @@ import * as React from 'react';
 import * as L from 'leaflet';
 import { useSelector } from "react-redux";
 import { ApplicationState } from '../store';
-import { IPolygon, PolygonType, IObjProps, IPolygonCoord, setExtraProp, getExtraProp, DeepCopy } from '../store/Marker';
+import { IPolygon, PolygonType, IPolygonCoord,  DeepCopy, ICommonFig } from '../store/Marker';
 import * as ObjPropsStore from '../store/ObjPropsStates';
+import * as MarkersStore from '../store/MarkersStates';
 
 import { useCallback, useEffect } from 'react'
 import {
@@ -91,11 +92,11 @@ export function PolygonMaker(props: any) {
 
   useEffect(() => {
     if (props.obj2Edit != null) {
-      const obj2Edit: IObjProps = props.obj2Edit;
+      const obj2Edit: ICommonFig = props.obj2Edit;
 
       initPolygon.name = obj2Edit.name;
       initPolygon.parent_id = obj2Edit.parent_id;
-      initPolygon.geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
+      initPolygon.geometry = obj2Edit.geometry;
       initPolygon.id = obj2Edit.id;
     }
   }, [props.obj2Edit]);
@@ -110,7 +111,7 @@ export function PolygonMaker(props: any) {
       return;
     }
 
-    setExtraProp(copy,"geometry",JSON.stringify(curPolygon.geometry), null);
+    appDispatch(MarkersStore.selectMarkerLocally(curPolygon));
     appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }, [curPolygon]);
 

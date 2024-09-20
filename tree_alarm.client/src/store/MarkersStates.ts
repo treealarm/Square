@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import { ApiRootString } from './constants';
 import { DoFetch } from './Fetcher';
-import { BoundBox, IFigures } from './Marker';
+import { BoundBox, ICommonFig, IFigures } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -13,6 +13,7 @@ export interface MarkersState {
   box: BoundBox | null;
   isChanging?: number;
   initiateUpdateAll: number;
+  selected_marker: ICommonFig | null;
 }
 
 const initialState: MarkersState = {
@@ -21,6 +22,7 @@ const initialState: MarkersState = {
   box: null,
   isChanging: 0,
   initiateUpdateAll: 0,
+  selected_marker: null
 };
 
 interface ReceiveMarkersAction {
@@ -90,23 +92,29 @@ export const deleteMarkers = createAsyncThunk(
   }
 );
 
+export const requestMarkersByIds = 
+  async (ids: string[]): Promise<IFigures> => {
+  const body = JSON.stringify(ids);
+  const response = await DoFetch(`${ApiRootString}/GetByIds`, {
+    method: 'POST',
+    headers: { 'Content-type': 'application/json' },
+    body: body,
+  });
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  const data = (await response.json()) as IFigures;
+  return data;
+}
+
+
 export const fetchMarkersByIds = createAsyncThunk(
   'markers/fetchMarkersByIds',
   async (ids: string[], { rejectWithValue }) => {
     try {
-      const body = JSON.stringify(ids);
-      const response = await DoFetch(`${ApiRootString}/GetByIds`, {
-        method: 'POST',
-        headers: { 'Content-type': 'application/json' },
-        body: body,
-      });
-
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-
-      const data = (await response.json()) as IFigures;
-      return data;
+      return requestMarkersByIds(ids);
     } catch (error) {
       return rejectWithValue(null);
     }
@@ -149,6 +157,13 @@ const markersSlice = createSlice({
       state.markers = {
         figs: state.markers?.figs?.filter(marker => !action.payload.includes(marker.id ?? '')) || [],
       };
+    },
+    selectMarkerLocally: (state, action: PayloadAction<ICommonFig | null>) => {
+      state.selected_marker = action.payload;
+
+      if (state.selected_marker == null) {
+        console.log("selected_marker is null");
+      }
     },
   },
   extraReducers: (builder) => {
@@ -204,7 +219,7 @@ const markersSlice = createSlice({
 // -----------------
 // Action creators and selectors
 
-export const { initiateUpdateAll, deleteMarkersLocally } = markersSlice.actions;
+export const { initiateUpdateAll, deleteMarkersLocally, selectMarkerLocally } = markersSlice.actions;
 
 export const selectMarkers = (state: RootState) => state.markers.markers;
 export const selectIsLoading = (state: RootState) => state.markers.isLoading;

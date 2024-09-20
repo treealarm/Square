@@ -1,4 +1,5 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 
 import { useEffect, useCallback, useMemo} from 'react';
 import { useSelector} from "react-redux";
@@ -15,7 +16,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 
-import { IObjProps, Marker, TreeMarker, getExtraProp, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
+import { IObjProps, Marker, TreeMarker, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
 import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
@@ -29,6 +30,7 @@ import { DiagramProperties } from '../diagrams/DiagramProperties';
 import * as DiagramsStore from '../store/DiagramsStates';
 import { ControlSelector } from '../prop_controls/control_selector';
 import { ObjectSelector } from '../components/ObjectSelector';
+import SelectedObjectGeoEditor from './SelectedObjectGeoEditor';
 
 export function ObjectProperties() {
 
@@ -38,6 +40,7 @@ export function ObjectProperties() {
   const objProps: IObjProps|null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
+  const selected_marker = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
 
   const [newPropName, setNewPropName] = React.useState('');
 
@@ -102,9 +105,6 @@ export function ObjectProperties() {
       prop_name: id
     };
 
-    if (id == "geometry") {
-      newProp.visual_type = '__geo';
-    }
     copy.extra_props?.push(newProp);
     appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
@@ -134,9 +134,15 @@ export function ObjectProperties() {
     clickSave: () => { }
   }), []);
 
+  const childGeoPropEvents = useMemo(() => ({
+    clickSave: () => { }
+  }), []);
+
   const handleSave = useCallback(() => {
 
     childDiagramPropEvents.clickSave();
+    childGeoPropEvents.clickSave();
+
     var copy = DeepCopy(objProps);
     if (copy == null) {
       return;
@@ -154,7 +160,7 @@ export function ObjectProperties() {
     // Stop edit mode.
     appDispatch(EditStore.setEditMode(false));
 
-  }, [objProps, appDispatch, childDiagramPropEvents]);
+  }, [objProps, childDiagramPropEvents]);
 
   function editMe(props: IObjProps, editMode: boolean){
     appDispatch(EditStore.setEditMode(editMode));
@@ -183,15 +189,7 @@ export function ObjectProperties() {
       return null;
   }
 
-  var geometry: IGeometryDTO;
-
-  try {
-    geometry = JSON.parse(getExtraProp(objProps, "geometry")) as IGeometryDTO;
-  }
-  catch (e: any) {
-    console.error(e);
-  }
-  
+  var geometry: IGeometryDTO = selected_marker?.geometry;
 
 
   const handleSelect = (id: string | null) => {
@@ -276,7 +274,9 @@ export function ObjectProperties() {
             value={objProps?.name}
             onChange={handleChangeName} />
         </ListItem>
-
+        <ListItem sx={{ width: '100%' }}>
+          <SelectedObjectGeoEditor events={childGeoPropEvents} />
+        </ListItem>
         <DiagramProperties events={childDiagramPropEvents} />
         <Divider><br></br></Divider>
         {

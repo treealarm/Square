@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
-import { getExtraProp, ICircle, IFigures, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
+import { ICircle, IFigures, IPolygon, IPolyline, LineStringType, PointType, PolygonType } from '../store/Marker';
 import { CircleMaker } from "./CircleMaker";
 import { PolygonMaker } from "./PolygonMaker";
 import { PolylineMaker } from "./PolylineMaker";
@@ -15,7 +15,8 @@ export function EditableFigure() {
 
   const appDispatch = useAppDispatch();
 
-  const obj2Edit = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const obj2Edit = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
+
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
 
   const polygonChanged = useCallback(
@@ -57,8 +58,11 @@ export function EditableFigure() {
     return null;
   }
 
-  var geometry = JSON.parse(getExtraProp(obj2Edit, "geometry"));
+  var geometry = obj2Edit?.geometry;
 
+  if (!geometry) {
+    return null;
+  }
   return (
     <React.Fragment>
       {
