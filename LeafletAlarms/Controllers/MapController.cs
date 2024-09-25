@@ -451,23 +451,6 @@ namespace LeafletAlarms.Controllers
       {
         var type = geoPart.location.GetFigureType();
 
-        //var geometry = JsonSerializer.Serialize(geoPart.location);
-
-        //propDTO.extra_props.Add(
-        //  new ObjExtraPropertyDTO() { str_val = $"{geometry}", prop_name = "geometry", visual_type = "__geo" }
-        //);
-
-        //if (type == "Point")
-        //{          
-        //  propDTO.extra_props.Add(
-        //    new ObjExtraPropertyDTO() { str_val = $"{geoPart.radius}", prop_name = "radius" }
-        //  );
-        //}
-
-        //propDTO.extra_props.Add(
-        //    new ObjExtraPropertyDTO() { str_val = $"{geoPart.zoom_level}", prop_name = "zoom_level" }
-        //  );
-
         var zoomLevel = await _levelService.GetByZoomLevel(geoPart.zoom_level);
 
         if (zoomLevel != null)
@@ -485,21 +468,6 @@ namespace LeafletAlarms.Controllers
       return markerDto;
     }
 
-    //[HttpPost]
-    //[Route("UpdateOnlyProperties")]
-    //public async Task<IActionResult> UpdateOnlyProperties(ObjPropsDTO updatedMarker)
-    //{
-    //  await _mapService.UpdatePropAsync(updatedMarker);
-    //  return CreatedAtAction(nameof(UpdateOnlyProperties), updatedMarker);
-    //}
-
-    //[HttpPost]
-    //[Route("UpdateBase")]
-    //public async Task<ActionResult<BaseMarkerDTO>> UpdateBase(BaseMarkerDTO updatedMarker)
-    //{
-    //  await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
-    //  return CreatedAtAction(nameof(UpdateBase), updatedMarker);
-    //}
 
     [HttpPost]
     [Route("UpdateProperties")]

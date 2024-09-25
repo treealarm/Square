@@ -47,33 +47,7 @@ namespace DataChangeLayer
         return null;
       }
 
-      //marker.name = updatedMarker?.name;
-      //marker.parent_id = updatedMarker?.parent_id;
-
-      //await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { marker });
-
-
-
       await _mapService.UpdatePropAsync(updatedMarker);
-
-      ObjExtraPropertyDTO? radius = null;
-      ObjExtraPropertyDTO? zoom_level = null;
-      ObjExtraPropertyDTO? geometry = null;
-
-      if (updatedMarker?.extra_props != null)
-      {
-        radius = updatedMarker.extra_props.Where(p => p.prop_name == "radius").FirstOrDefault();
-        zoom_level = updatedMarker.extra_props.Where(p => p.prop_name == "zoom_level").FirstOrDefault();
-        geometry = updatedMarker.extra_props.Where(p => p.prop_name == "geometry").FirstOrDefault();
-      }
-
-      await _geoService.CreateOrUpdateGeoFromStringAsync(
-        updatedMarker?.id,
-        geometry?.str_val,
-        radius?.str_val,
-        zoom_level?.str_val
-      );
-
 
       return updatedMarker;
     }

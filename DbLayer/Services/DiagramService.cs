@@ -33,19 +33,6 @@ namespace DbLayer.Services
 
     private void CreateIndexes()
     {
-      {
-        //IndexKeysDefinition<DBDiagram> keys =
-        //        new IndexKeysDefinitionBuilder<DBDiagram>()
-        //        .Ascending(d => d.geometry)
-        //        ;
-
-        //var indexModel = new CreateIndexModel<DBDiagram>(
-        //  keys, new CreateIndexOptions()
-        //  { Name = "geometry" }
-        //);
-
-        //_coll.Indexes.CreateOneAsync(indexModel);
-      }
     }
 
     async Task IDiagramService.RemoveAsync(List<string> ids)
