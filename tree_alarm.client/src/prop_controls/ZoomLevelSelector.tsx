@@ -1,66 +1,60 @@
-/* eslint-disable no-unused-vars */
+п»ї/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '../store/configureStore';
 import { ApplicationState } from '../store';
 import * as ZoomLevelsStore from '../store/ZoomLevelsStates';
-import { FormControl, InputLabel, Select, MenuItem, CircularProgress } from '@mui/material';
+import { Autocomplete, TextField, CircularProgress } from '@mui/material';
 import { ZoomLevelsState } from '../store/ZoomLevelsStates';
 
 interface ZoomLevelSelectorProps {
   onZoomLevelChange: (cur_level: string | null) => void;
-  selectedZoomLevel: string | null; // Для хранения выбранного уровня зума
+  selectedZoomLevel: string | null; // To hold the selected zoom level
 }
 
-const ZoomLevelSelector: React.FC<ZoomLevelSelectorProps> = ({ onZoomLevelChange, selectedZoomLevel }) => {
+const ZoomLevelSelector = (props: ZoomLevelSelectorProps) => {
+  const { onZoomLevelChange, selectedZoomLevel } = props; // Destructure props
   const appDispatch = useAppDispatch();
 
-  // Извлечение состояния из Redux
-  const zoom_state: ZoomLevelsState|null = useSelector((state: ApplicationState) => state.zoomLevelsStates??null);
+  // Extracting state from Redux
+  const zoom_state: ZoomLevelsState | null = useSelector((state: ApplicationState) => state.zoomLevelsStates ?? null);
 
-  // Запрос уровней зума при монтировании компонента
+  // Fetching zoom levels on component mount
   useEffect(() => {
     appDispatch(ZoomLevelsStore.fetchZoomLevels());
-  }, [appDispatch]);
-
-  // Обработка изменения выбранного уровня зума
-  function handleChange(e: any) {
-    const { target: { value } } = e;
-    onZoomLevelChange(value as string || null);
-  }
+  }, []);
 
   return (
-    <FormControl fullWidth>
-      <InputLabel id="zoom_level_label">zoom_level</InputLabel>
-      <Select
-        size="small"
-        labelId="zoom-level-label"
-        id="zoom-level"
-        value={selectedZoomLevel || ''}
-        onChange={handleChange}
-        label={"zoom_level" }
-      >
-        <MenuItem value="">
-          {""}
-        </MenuItem>
-        {zoom_state?.isLoading && (
-          <MenuItem disabled>
-            <CircularProgress size={24} />
-          </MenuItem>
-        )}
-        {zoom_state?.error && (
-          <MenuItem disabled>
-            Ошибка: {zoom_state.error}
-          </MenuItem>
-        )}
-        {zoom_state?.levels?.map((level) => (
-          <MenuItem key={level.id} value={level.zoom_level || ''}>
-            {level.zoom_level}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <Autocomplete
+      fullWidth
+      size="small"
+      options={zoom_state?.levels || []}
+      getOptionLabel={(option) => option.zoom_level || ''}
+      onChange={(event, newValue) => {
+        onZoomLevelChange(newValue ? newValue.zoom_level : null);
+      }}
+      loading={zoom_state?.isLoading}
+      value={zoom_state?.levels.find(level => level.zoom_level === selectedZoomLevel) || null}
+      disableClearable
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="zoom_level"
+          variant="outlined"
+          InputProps={{
+            ...params.InputProps,
+            endAdornment: (
+              <>
+                {zoom_state?.isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            ),
+          }}
+        />
+      )}
+      noOptionsText={zoom_state?.error ? `Error: ${zoom_state.error}` : 'No available zoom levels'}
+    />
   );
 };
 

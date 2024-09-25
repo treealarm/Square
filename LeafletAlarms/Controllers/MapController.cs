@@ -535,7 +535,8 @@ namespace LeafletAlarms.Controllers
     public async Task<ActionResult<List<LevelDTO>>> GetZoomLevels()
     {
       var zooms = await _levelService.GetAllZooms();
-      return CreatedAtAction(nameof(GetZoomLevels), zooms.Values.ToList());
+      var zoomLevels = zooms.Values.OrderBy(v => v.zoom_min).ThenBy(v=>v.zoom_max);
+      return CreatedAtAction(nameof(GetZoomLevels), zoomLevels.ToList());
     }
    }
 }
