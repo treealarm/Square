@@ -44,7 +44,7 @@ namespace LeafletAlarms.Controllers
       _mapUpdateService = mapUpdateService;
     }        
 
-    [HttpGet("{id:length(24)}")]
+    [HttpGet()]
     [Route("GetById")]
     public async Task<ActionResult<BaseMarkerDTO>> GetById(string id)
     {
@@ -520,14 +520,6 @@ namespace LeafletAlarms.Controllers
       return ret;
     }
 
-    //[HttpPost]
-    //[Route("UpdatePropNotDeleteAsync")]
-    //public async Task<ActionResult<ObjPropsDTO>> UpdatePropNotDeleteAsync(ObjPropsDTO updatedObj)
-    //{
-    //  await _mapService.UpdatePropNotDeleteAsync(new List<ObjPropsDTO>() { updatedObj });
-    //  return CreatedAtAction(nameof(UpdateFigures), updatedObj);
-    //}
-
     [HttpPost]
     [Route("UpdateFigures")]
     public async Task<ActionResult<FiguresDTO>> UpdateFigures(FiguresDTO statMarkers)
@@ -536,5 +528,14 @@ namespace LeafletAlarms.Controllers
 
       return CreatedAtAction(nameof(UpdateFigures), statMarkers);
     }
-  }
+
+    [AllowAnonymous]
+    [HttpGet()]
+    [Route("GetZoomLevels")]
+    public async Task<ActionResult<LevelDTO>> GetZoomLevels()
+    {
+      var zooms = await _levelService.GetAllZooms();
+      return CreatedAtAction(nameof(GetZoomLevels), zooms);
+    }
+   }
 }

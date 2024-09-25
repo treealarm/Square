@@ -19,32 +19,31 @@ export interface Marker {
   name: string;
 }
 
-export const PointType = 'Point';
-export const PolygonType = 'Polygon';
-export const LineStringType = 'LineString';
+export const PointType = 'Point' as const;
+export const PolygonType = 'Polygon' as const;
+export const LineStringType = 'LineString' as const;
 
-export interface IGeometryDTO {
-  coord: any[];
-  type: string;
-}
-export interface IPointCoord extends IGeometryDTO {
-  type: 'Point';
-  coord: LatLngPair|null;
+export type GeometryType = typeof PointType | typeof PolygonType | typeof LineStringType;
+
+export interface IGeometryDTO<T extends GeometryType, C> {
+  coord: C;
+  type: T;
 }
 
-export interface IPolygonCoord extends IGeometryDTO {
-  type: 'Polygon';
-  coord: LatLngPair[];
+export interface IPointCoord extends IGeometryDTO<typeof PointType, LatLngPair | null> {
 }
 
-export interface IPolylineCoord extends IGeometryDTO {
-  type: 'LineString';
-  coord: LatLngPair[];
+export interface IPolygonCoord extends IGeometryDTO<typeof PolygonType, LatLngPair[]> {
 }
+
+export interface IPolylineCoord extends IGeometryDTO<typeof LineStringType, LatLngPair[]> {
+}
+
 
 export interface ICommonFig extends IObjProps {
   geometry: any;
   radius?: number;
+  zoom_level?: string;
 }
 
 export interface ICircle extends ICommonFig {
@@ -422,4 +421,11 @@ export interface IIntegrationLeafDTO {
 export interface IGetIntegrationLeafsDTO {
   children: IIntegrationLeafDTO[] | null;
   integration_id?: string | null;
+}
+
+export interface ILevelDTO {
+  id: string | null;
+  zoom_level?: string | null;
+  zoom_min?: number | null;
+  zoom_max?: number | null;
 }

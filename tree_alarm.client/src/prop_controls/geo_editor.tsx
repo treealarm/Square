@@ -29,7 +29,7 @@ const GeoEditor = ({ props }: { props: IControlGeoProps }) => {
     }
   }, [props.val]);
 
-  const handleChange = (newValue: string) => {
+  const handleChange = (newValue: IPointCoord | IPolygonCoord | IPolylineCoord) => {
     // ׁמחהאול סמבûעטו, סמגלוסעטלמו ס handleChangeProp
     const event = {
       target: {
@@ -48,7 +48,7 @@ const GeoEditor = ({ props }: { props: IControlGeoProps }) => {
       )
       : [lat, lng];
     setGeometry({ ...geometry, coord: newCoords });
-    handleChange(JSON.stringify({ ...geometry, coord: newCoords }));
+    handleChange({ ...geometry, coord: newCoords });
   };
 
   // Handle adding a new coordinate (for lines and polygons)
@@ -56,7 +56,7 @@ const GeoEditor = ({ props }: { props: IControlGeoProps }) => {
     if (geometry.type !== 'Point') {
       const newCoords = [...geometry.coord, [0, 0]];
       setGeometry({ ...geometry, coord: newCoords });
-      handleChange(JSON.stringify({ ...geometry, coord: newCoords }));
+      handleChange({ ...geometry, coord: newCoords });
     }
   };
 
@@ -65,7 +65,7 @@ const GeoEditor = ({ props }: { props: IControlGeoProps }) => {
     if (geometry.type !== 'Point') {
       const newCoords = geometry.coord.filter((_: any, i: number) => i !== index);
       setGeometry({ ...geometry, coord: newCoords });
-      handleChange(JSON.stringify({ ...geometry, coord: newCoords }));
+      handleChange({ ...geometry, coord: newCoords });
     }
   };
 

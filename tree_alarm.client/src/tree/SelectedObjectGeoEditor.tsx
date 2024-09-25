@@ -3,11 +3,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { ICommonFig, IFigures } from '../store/Marker';
+import { ICommonFig, IFigures, PointType } from '../store/Marker';
 import GeoEditor from '../prop_controls/geo_editor';
 import { useAppDispatch } from '../store/configureStore';
 import * as MarkersStore from '../store/MarkersStates';
 import { Box } from '@mui/material';
+import GeoExtraPropertiesEditor from '../prop_controls/GeoExtraPropertiesEditor';
 
 export interface ChildEvents {
   clickSave: () => void;
@@ -53,15 +54,18 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
     }
   }, [selectedFig, props]);
 
-  const handleChangeProp = useCallback((event: any) => {
-    if (selectedFig) {
-      const fig: ICommonFig = {
-        ...selectedFig, // Сохраняем все свойства из selectedFig
-        geometry: JSON.parse(event.target.value), // Заменяем только geometry
-      };
-      appDispatch(MarkersStore.selectMarkerLocally(fig));
-    }
-  }, [selectedFig]);  // Добавляем зависимости
+  const handleChangeProp = useCallback(
+    (updatedProps: { geometry?: any; radius?: number; zoom_level?: string; }) => {
+      if (selectedFig) {
+        const updatedFig: ICommonFig = {
+          ...selectedFig,
+          ...updatedProps, // Merge updated properties into selectedFig
+        };
+        appDispatch(MarkersStore.selectMarkerLocally(updatedFig));
+      }
+    },
+    [selectedFig]
+  );
 
 
   useEffect(() => {
@@ -75,6 +79,7 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
   return (
     <Box style={{ width: '100%' }}>
       {selectedFig ? (
+        <>
         <GeoEditor
           props={{
             val: selectedFig.geometry,  // Передача геометрии в GeoEditor
@@ -84,6 +89,15 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
             },
           }}
         />
+        <GeoExtraPropertiesEditor
+            extraProps={{
+              radius: selectedFig.radius,
+              zoom_level: selectedFig.zoom_level,
+            }}
+            showRadius={selectedFig.geometry.type === PointType}
+            handleChangeProp={(updatedProps) => handleChangeProp(updatedProps)}
+          />
+          </>
       ) : null
       }
     </Box>
