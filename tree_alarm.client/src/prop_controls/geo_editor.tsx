@@ -30,14 +30,7 @@ const GeoEditor = ({ props }: { props: IControlGeoProps }) => {
   }, [props.val]);
 
   const handleChange = (newValue: IPointCoord | IPolygonCoord | IPolylineCoord) => {
-    // ׁמחהאול סמבûעטו, סמגלוסעטלמו ס handleChangeProp
-    const event = {
-      target: {
-        id: props.prop_name,
-        value: newValue
-      }
-    };
-    props.handleChangeProp(event);
+    props.handleChangeProp({ geometry:newValue });
   };
 
   // Handle coordinate change

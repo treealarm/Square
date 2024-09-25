@@ -1,10 +1,14 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+﻿/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import { useState, useEffect, MouseEvent } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Popover, Button, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import { MyCommonFig } from '../map/MyCommonFig';
+import { useSelector } from 'react-redux';
+import { ApplicationState } from '../store';
+import { ICommonFig } from '../store/Marker';
 
 var url = 'http://';
 
@@ -22,19 +26,24 @@ url = url
 interface CoordSelectorProps {
   lat: number | null;
   lon: number | null;
+  index: number;
   onConfirm: (lat: number, lon: number) => void;
 }
 
-export function CoordSelector({ lat, lon, onConfirm }: CoordSelectorProps) {
+export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps) {
   const fallbackPosition: [number, number] = [55.751137, 37.600408]; // Fallback if coordinates are invalid
   const [position, setPosition] = useState<[number, number]>(fallbackPosition);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const selectedFig = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
+
+  const [curFig, setCurFig] = useState<ICommonFig | null>(selectedFig ?? null);
 
   useEffect(() => {
     if (lat !== null && lon !== null) {
       setPosition([lat, lon]);
     } else {
-      // Get current location as fallback
+      // Получаем текущее местоположение как запасной вариант
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           setPosition([pos.coords.latitude, pos.coords.longitude]);
@@ -46,8 +55,17 @@ export function CoordSelector({ lat, lon, onConfirm }: CoordSelectorProps) {
     }
   }, [lat, lon]);
 
+
+  useEffect(() => {
+    setCurFig(selectedFig??null);
+  }, [selectedFig]);
+
   const handleClick = (event: MouseEvent<HTMLElement>) => {
+    if (lat !== null && lon !== null) {
+      setPosition([lat, lon]);
+    }
     setAnchorEl(event.currentTarget);
+    setCurFig(selectedFig ?? null);
   };
 
   const handleClose = () => {
@@ -60,8 +78,23 @@ export function CoordSelector({ lat, lon, onConfirm }: CoordSelectorProps) {
   // Component to handle map clicks
   const LocationMarker = () => {
     useMapEvents({
-      click(e) {
+      click(e:any) {
         setPosition([e.latlng.lat, e.latlng.lng]); // Save clicked coordinates
+
+        if (curFig?.geometry.coord?.length && curFig.geometry.coord.length > index) {
+          // Создаем копию текущей фигуры, чтобы избежать прямой мутации
+          const updatedCoord = [...curFig.geometry.coord];
+          updatedCoord[index] = [e.latlng.lat, e.latlng.lng]; // Обновляем координаты по индексу
+
+          const updatedFig = {
+            ...curFig,
+            geometry: {
+              ...curFig.geometry,
+              coord: updatedCoord, // Обновляем координаты в новой копии фигуры
+            },
+          };
+          setCurFig(updatedFig); // Устанавливаем обновленную фигуру в состояние
+        }
       },
     });
     const parentMap = useMap();
@@ -102,6 +135,13 @@ export function CoordSelector({ lat, lon, onConfirm }: CoordSelectorProps) {
             key={1}
           />
             <LocationMarker />
+            <MyCommonFig
+              key={curFig?.id}
+              marker={curFig}
+              hidden={false}
+              pathOptions={{}}
+            >
+            </MyCommonFig>
           </MapContainer>
 
           <div style={{ marginTop: 10 }}>
@@ -115,7 +155,11 @@ export function CoordSelector({ lat, lon, onConfirm }: CoordSelectorProps) {
             >
               OK
             </Button>
-            <Button variant="outlined" onClick={handleClose} style={{ marginLeft: 10 }}>
+            <Button variant="outlined"
+              onClick={() => {
+                handleClose();
+                }
+              } style={{ marginLeft: 10 }}>
               Cancel
             </Button>
           </div>

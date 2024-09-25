@@ -60,7 +60,8 @@ const CoordInput = ({ index, lat, lng, onCoordChange, onRemoveCoord }: CoordInpu
 
         <CoordSelector
           lat={lat}  // Передаем текущие координаты
-          lon={lng}
+        lon={lng}
+        index={index }
           onConfirm={(newLat, newLng) => {
             handleMapSelection(newLat, newLng); // Обработка выбранных на карте координат
           }}

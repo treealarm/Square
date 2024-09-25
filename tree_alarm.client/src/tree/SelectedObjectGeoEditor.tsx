@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { ICommonFig, IFigures, PointType } from '../store/Marker';
+import { ICommonFig, IFigures, IPointCoord, IPolygonCoord, IPolylineCoord, PointType } from '../store/Marker';
 import GeoEditor from '../prop_controls/geo_editor';
 import { useAppDispatch } from '../store/configureStore';
 import * as MarkersStore from '../store/MarkersStates';
@@ -55,7 +55,10 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
   }, [selectedFig, props]);
 
   const handleChangeProp = useCallback(
-    (updatedProps: { geometry?: any; radius?: number; zoom_level?: string; }) => {
+    (updatedProps: {
+      radius?: number;
+      zoom_level?: string;
+    }) => {
       if (selectedFig) {
         const updatedFig: ICommonFig = {
           ...selectedFig,
@@ -66,7 +69,20 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
     },
     [selectedFig]
   );
-
+  const handleChangeGeo = useCallback(
+    (updatedProps: {
+      geometry?: IPointCoord | IPolygonCoord | IPolylineCoord;
+    }) => {
+      if (selectedFig) {
+        const updatedFig: ICommonFig = {
+          ...selectedFig,
+          ...updatedProps, // Merge updated properties into selectedFig
+        };
+        appDispatch(MarkersStore.selectMarkerLocally(updatedFig));
+      }
+    },
+    [selectedFig]
+  );
 
   useEffect(() => {
     if (props.events) {
@@ -85,7 +101,7 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
             val: selectedFig.geometry,  // Передача геометрии в GeoEditor
             prop_name: 'geometry',
             handleChangeProp: (event: any) => {
-              handleChangeProp(event);
+              handleChangeGeo(event);
             },
           }}
         />

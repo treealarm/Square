@@ -41,7 +41,7 @@ export interface IPolylineCoord extends IGeometryDTO<typeof LineStringType, LatL
 
 
 export interface ICommonFig extends IObjProps {
-  geometry: any;
+  geometry: IPointCoord | IPolygonCoord | IPolylineCoord;
   radius?: number;
   zoom_level?: string;
 }
