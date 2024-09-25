@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 import React, { useCallback } from 'react';
 import { TextField, Box } from '@mui/material';
+import ZoomLevelSelector from './ZoomLevelSelector';
 
 export interface IGeoExtraProperties {
   radius?: number;
-  zoom_level?: string;
+  zoom_level?: string|null;
 }
 
 export interface IGeoExtraPropertiesEditorProps {
@@ -21,10 +22,10 @@ const GeoExtraPropertiesEditor = ({ extraProps, handleChangeProp, showRadius }: 
     });
   }, [extraProps, handleChangeProp]);
 
-  const handleZoomLevelChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleZoomLevelChange = useCallback((cur_level: string | null) => {
     handleChangeProp({
       ...extraProps,
-      zoom_level: event.target.value,
+      zoom_level: cur_level,
     });
   }, [extraProps, handleChangeProp]);
 
@@ -41,11 +42,9 @@ const GeoExtraPropertiesEditor = ({ extraProps, handleChangeProp, showRadius }: 
           fullWidth
         />
       )}
-      <TextField
-        size="small"
-        label="zoom_level"
-        value={extraProps.zoom_level || ''}
-        onChange={handleZoomLevelChange}
+      <ZoomLevelSelector
+        selectedZoomLevel={extraProps.zoom_level || ''}
+        onZoomLevelChange={handleZoomLevelChange}
         fullWidth
       />
     </Box>

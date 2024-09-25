@@ -532,10 +532,10 @@ namespace LeafletAlarms.Controllers
     [AllowAnonymous]
     [HttpGet()]
     [Route("GetZoomLevels")]
-    public async Task<ActionResult<LevelDTO>> GetZoomLevels()
+    public async Task<ActionResult<List<LevelDTO>>> GetZoomLevels()
     {
       var zooms = await _levelService.GetAllZooms();
-      return CreatedAtAction(nameof(GetZoomLevels), zooms);
+      return CreatedAtAction(nameof(GetZoomLevels), zooms.Values.ToList());
     }
    }
 }

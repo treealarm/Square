@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import * as ObjPropsStates from './ObjPropsStates';
 import * as EditStates from './EditStates';
 import * as MarkersStates from './MarkersStates';
@@ -12,6 +13,7 @@ import * as DiagramsStates from './DiagramsStates';
 import * as DiagramTypeStates from './DiagramTypeStates';
 import * as EventsStates from './EventsStates';
 import * as IntegrationsStates from './IntegrationsStates';
+import * as ZoomLevelsStates from './ZoomLevelsStates';
 
 // The top-level state object
 export interface ApplicationState {
@@ -29,6 +31,7 @@ export interface ApplicationState {
   diagramtypeStates: DiagramTypeStates.DiagramTypeStates | undefined;
   eventsStates: EventsStates.EventStates | undefined;
   integrationsStates: IntegrationsStates.IntegrationStates | undefined;
+  zoomLevelsStates: ZoomLevelsStates.ZoomLevelsState | undefined;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -48,7 +51,8 @@ export const reducers = {
   diagramsStates: DiagramsStates.reducer,
   diagramtypeStates: DiagramTypeStates.reducer,
   eventsStates: EventsStates.reducer,
-  integrationsStates: IntegrationsStates.reducer
+  integrationsStates: IntegrationsStates.reducer,
+  zoomLevelsStates: ZoomLevelsStates.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
