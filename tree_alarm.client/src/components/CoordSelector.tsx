@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { MyCommonFig } from '../map/MyCommonFig';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { ICommonFig } from '../store/Marker';
+import { DeepCopy, ICommonFig, LatLngPair, LineStringType, PointType, PolygonType } from '../store/Marker';
 
 var url = 'http://';
 
@@ -38,6 +38,29 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
   const selectedFig = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
 
   const [curFig, setCurFig] = useState<ICommonFig | null>(selectedFig ?? null);
+
+  function OnClick(newPos: LatLngPair) {
+    setPosition(newPos); // Сохраняем новые координаты
+
+    let updatedCoord: LatLngPair | LatLngPair[] | null;
+
+    var updatedFig: ICommonFig | null = DeepCopy(curFig);
+
+    // Проверяем тип геометрии и обновляем `coord` в зависимости от этого
+    if (curFig?.geometry?.type === PointType) {
+      updatedCoord = newPos; // Для Point — одна пара координат
+
+    } else if (curFig?.geometry?.type === PolygonType || curFig?.geometry?.type === LineStringType) {
+      updatedCoord = [...(curFig.geometry.coord as LatLngPair[])]; // Для Polygon и LineString — массив координат
+      if (curFig.geometry.coord.length > index) {
+        updatedCoord[index] = newPos; // Обновляем по индексу
+      }
+    } else {
+      updatedCoord = null; // Если тип неизвестен
+    }
+    updatedFig.geometry.coord = updatedCoord;
+    setCurFig(updatedFig); // Сохраняем обновлённую фигуру в состоянии
+  }
 
   useEffect(() => {
     if (lat !== null && lon !== null) {
@@ -77,26 +100,12 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
 
   // Component to handle map clicks
   const LocationMarker = () => {
-    useMapEvents({
+  useMapEvents({
       click(e:any) {
-        setPosition([e.latlng.lat, e.latlng.lng]); // Save clicked coordinates
-
-        if (curFig?.geometry.coord?.length && curFig.geometry.coord.length > index) {
-          // Создаем копию текущей фигуры, чтобы избежать прямой мутации
-          const updatedCoord = [...curFig.geometry.coord];
-          updatedCoord[index] = [e.latlng.lat, e.latlng.lng]; // Обновляем координаты по индексу
-
-          const updatedFig = {
-            ...curFig,
-            geometry: {
-              ...curFig.geometry,
-              coord: updatedCoord, // Обновляем координаты в новой копии фигуры
-            },
-          };
-          setCurFig(updatedFig); // Устанавливаем обновленную фигуру в состояние
-        }
-      },
-    });
+      const newPos: LatLngPair = [e.latlng.lat, e.latlng.lng];
+      OnClick(newPos);
+    },
+  });
     const parentMap = useMap();
     parentMap.attributionControl.options.prefix =
       '<a href="https://www.leftfront.org" title="A JavaScript library for interactive maps">' + '<img width="12" height="8" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg"></img>' + 'LeafletAlarms</a>';
