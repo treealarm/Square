@@ -13,12 +13,12 @@ import * as TracksStore from '../store/TracksStates';
 import { useAppDispatch } from '../store/configureStore';
 
 interface IRequestRoute {
-  geometry: IGeometryDTO;
+  geometry: IGeometryDTO|null;
 }
 
 export function RequestRoute(props: IRequestRoute) {
 
-  let geometry: IGeometryDTO = props.geometry;
+  let geometry: IGeometryDTO|null = props.geometry;
 
   const appDispatch = useAppDispatch();
 

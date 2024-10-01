@@ -16,8 +16,8 @@ import * as L from 'leaflet';
 import { useAppDispatch } from '../store/configureStore';
 
 interface ISearchMeOnMapProps {
-  geometry: IGeometryDTO;
-  text: string;
+  geometry?: IGeometryDTO|null;
+  text?: string|null;
   zoom_min?:number
 }
 
@@ -25,7 +25,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
 
   let geometry: IGeometryDTO|null = getGeometryType(props.geometry);
 
-  let text: string = props.text;
+  let text: string|null = props.text??null;
 
   const appDispatch = useAppDispatch();
 

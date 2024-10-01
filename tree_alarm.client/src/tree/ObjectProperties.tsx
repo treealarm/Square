@@ -37,7 +37,7 @@ export function ObjectProperties() {
   const appDispatch = useAppDispatch();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const objProps: IObjProps|null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
+  const objProps: IObjProps|null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps??null);
   const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
   const selectedEditMode = useSelector((state: ApplicationState) => state.editState);
   const selected_marker = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
@@ -73,7 +73,7 @@ export function ObjectProperties() {
       return;
     }
 
-    const first = copy.extra_props.find((obj) => {
+    const first = copy?.extra_props?.find((obj) => {
       return obj.prop_name === id;
     });
 
@@ -117,7 +117,7 @@ export function ObjectProperties() {
       return;
     }
 
-    copy.extra_props = copy.extra_props.filter((obj) => {
+    copy.extra_props = copy?.extra_props?.filter((obj) => {
       return obj.prop_name != id;
     });
 
@@ -152,7 +152,7 @@ export function ObjectProperties() {
 
     // Update name in tree control.
     var treeItem: TreeMarker = {
-      id: copy.id,
+      id: copy?.id??'',
       name: copy.name
     }
     appDispatch(TreeStore.setTreeItem(treeItem));
@@ -165,8 +165,8 @@ export function ObjectProperties() {
   function editMe(props: IObjProps, editMode: boolean){
     appDispatch(EditStore.setEditMode(editMode));
 
-    if (!editMode) {
-      appDispatch(ObjPropsStore.fetchObjProps(selected_id??null));
+    if (!editMode && selected_id) {
+      appDispatch(ObjPropsStore.fetchObjProps(selected_id));
     }
   }
 
@@ -178,7 +178,7 @@ export function ObjectProperties() {
         id: obj_props.id,
         parent_id: obj_props.parent_id
       }
-      let idsToDelete: string[] = [marker.id];
+      let idsToDelete: string[] = marker?.id?[marker.id]:[];
       appDispatch(MarkersStore.deleteMarkers(idsToDelete));
       appDispatch(GuiStore.selectTreeItem(null));
       appDispatch(DiagramsStore.remove_ids_locally(idsToDelete));
@@ -189,7 +189,7 @@ export function ObjectProperties() {
       return null;
   }
 
-  var geometry: IGeometryDTO = selected_marker?.geometry;
+  var geometry: IGeometryDTO|null = selected_marker?.geometry??null;
 
 
   const handleSelect = (id: string | null) => {
@@ -225,9 +225,9 @@ export function ObjectProperties() {
 
             <Tooltip title={"Edit object"}>
             <IconButton aria-label="edit" size="medium"
-              onClick={() => editMe(objProps, !selectedEditMode.edit_mode)} >
+              onClick={() => editMe(objProps, !selectedEditMode?.edit_mode)} >
               {
-                selectedEditMode.edit_mode ?
+                selectedEditMode?.edit_mode ?
                   <NotInterestedSharpIcon fontSize="inherit" /> :
                   <EditIcon fontSize="inherit" />
               }

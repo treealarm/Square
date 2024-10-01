@@ -1,4 +1,5 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 
 
 import { useEffect } from 'react';
@@ -10,7 +11,7 @@ import * as ObjPropsStore from '../store/ObjPropsStates';
 import * as EditStore from '../store/EditStates';
 import { useAppDispatch } from '../store/configureStore';
 
-export function ObjectPropertiesUpdater(): React.ReactElement {
+export function ObjectPropertiesUpdater(): React.ReactElement|null {
 
   const appDispatch = useAppDispatch();
 
@@ -20,6 +21,7 @@ export function ObjectPropertiesUpdater(): React.ReactElement {
   useEffect(() => {
     if (selected_id == null) {
       appDispatch<any>(EditStore.setEditMode(false));
+      appDispatch(ObjPropsStore.setObjPropsLocally(null));
     }
     else if (selected_id?.startsWith('00000000', 0)) {
       var selectedMarker = markers?.figs?.find(m => m.id == selected_id);
@@ -32,7 +34,7 @@ export function ObjectPropertiesUpdater(): React.ReactElement {
     if (selected_id) {
       appDispatch(ObjPropsStore.fetchObjProps(selected_id));
     }
-  }, [selected_id, appDispatch, markers?.figs]);
+  }, [selected_id, markers?.figs]);
 
   
   return (null);

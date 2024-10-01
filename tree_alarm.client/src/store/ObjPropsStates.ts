@@ -67,7 +67,7 @@ const objPropsSlice = createSlice({
   name: 'objProps',
   initialState,
   reducers: {
-    setObjPropsLocally: (state, action: PayloadAction<IObjProps>) => {
+    setObjPropsLocally: (state, action: PayloadAction<IObjProps|null>) => {
       state.objProps = action.payload;
     },
   },
