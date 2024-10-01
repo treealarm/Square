@@ -223,6 +223,19 @@ namespace DbLayer
       return ep_db;
     }
 
+    public static string GetDefaultVisualType(DBObjExtraProperty prop)
+    {
+      if(!string.IsNullOrEmpty(prop.visual_type))
+      {
+        return prop.visual_type;
+      }
+
+      if (prop.prop_name == "__color")
+      {
+        return "__clr";
+      }
+      return prop.visual_type;
+    }
     public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO(List<DBObjExtraProperty> props)
     {
       var retVal = new List<ObjExtraPropertyDTO> ();
@@ -238,7 +251,7 @@ namespace DbLayer
         {
           prop_name = prop.prop_name,
           str_val = prop.str_val.GetValue("str_val", string.Empty).ToString(),
-          visual_type = prop.visual_type
+          visual_type = GetDefaultVisualType(prop)
         };
         retVal.Add(newProp);
       }

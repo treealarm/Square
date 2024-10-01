@@ -8,7 +8,8 @@ import {
   LineStringType,
   PolygonType, ViewOption, LatLngPair,
   IGeometryDTO,
-  IPointCoord
+  IPointCoord,
+  getGeometryType
 } from '../store/Marker';
 import * as GuiStore from '../store/GUIStates';
 import * as L from 'leaflet';
@@ -22,21 +23,24 @@ interface ISearchMeOnMapProps {
 
 export function SearchMeOnMap(props: ISearchMeOnMapProps) {
 
-  let geometry: IGeometryDTO = props.geometry;
+  let geometry: IGeometryDTO|null = getGeometryType(props.geometry);
 
   let text: string = props.text;
 
   const appDispatch = useAppDispatch();
 
-  const searchMeOnMap = useCallback(
-    (geo: IGeometryDTO) => {
+  const searchMeOnMapCallback = useCallback(
+    (geo: IGeometryDTO|null) => {
 
       var myFigure = null;
       var center: L.LatLng = null;
 
-      switch (geo.type) {
+      switch (geo?.type) {
         case PointType:
-          var coord: LatLngPair = (geo as IPointCoord).coord;
+          var coord: LatLngPair | null = (geo as IPointCoord)?.coord;
+          if (!coord) {
+            return;
+          }
           center = new L.LatLng(coord[0], coord[1]);
           break;
         case LineStringType:
@@ -83,12 +87,16 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
         value={text ? text : ''}
             inputProps={{ readOnly: true }}>
       </TextField>
-
-      <Tooltip title={"Find object on map"} hidden={geometry == null}>
-      <IconButton aria-label="search" size="medium" onClick={() => searchMeOnMap(geometry)}>
-        <LocationSearchingIcon fontSize="inherit" />
-        </IconButton>
-      </Tooltip>
+      {
+        geometry?
+        < Tooltip title={"Find object on map"} hidden={geometry == null}>
+          <IconButton aria-label="search" size="medium" onClick={() => { searchMeOnMapCallback(geometry); }}>
+            <LocationSearchingIcon fontSize="inherit" />
+          </IconButton>
+        </Tooltip>:null
+      }
+      
     </Stack>
   );
 }
+

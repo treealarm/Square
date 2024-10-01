@@ -25,10 +25,11 @@ export const LineStringType = 'LineString' as const;
 
 export type GeometryType = typeof PointType | typeof PolygonType | typeof LineStringType;
 
-export interface IGeometryDTO<T extends GeometryType, C> {
+export interface IGeometryDTO<T extends GeometryType = any, C = any> {
   coord: C;
   type: T;
 }
+
 
 export interface IPointCoord extends IGeometryDTO<typeof PointType, LatLngPair | null> {
 }
@@ -38,6 +39,24 @@ export interface IPolygonCoord extends IGeometryDTO<typeof PolygonType, LatLngPa
 
 export interface IPolylineCoord extends IGeometryDTO<typeof LineStringType, LatLngPair[]> {
 }
+
+export function getGeometryType(geometry: any): IGeometryDTO<any, any> | null {
+  if (!geometry || typeof geometry !== 'object') {
+    return null; // Явно возвращаем null для недопустимых значений
+  }
+
+  switch (geometry.type) {
+    case PointType:
+      return geometry as IPointCoord;
+    case PolygonType:
+      return geometry as IPolygonCoord;
+    case LineStringType:
+      return geometry as IPolylineCoord;
+    default:
+      return null; // Явно возвращаем null для неизвестных типов
+  }
+}
+
 
 
 export interface ICommonFig extends IObjProps {
