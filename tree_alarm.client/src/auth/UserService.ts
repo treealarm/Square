@@ -1,6 +1,14 @@
-import Keycloak from "keycloak-js";
+import Keycloak, { KeycloakError } from "keycloak-js";
 
-const _kc = new Keycloak('keycloak.json');
+let _kcInstance: Keycloak | null = null;
+
+function getKeycloakInstance(): Keycloak {
+  if (!_kcInstance) {
+    _kcInstance = new Keycloak('keycloak.json');
+  }
+  return _kcInstance;
+}
+
 
 class FunctionHolder {
   onUserChangedCallback?(): void;
@@ -12,8 +20,8 @@ const CleanToken = () => {
   localStorage.setItem('kc_token', '');
   localStorage.setItem('kc_refreshToken', '');
 
-  if (_kc != null) {
-    _kc.token = null;
+  if (getKeycloakInstance() != null) {
+    getKeycloakInstance().token = null;
   }
 
 
@@ -35,14 +43,14 @@ const initKeycloak = (
 
   _fh.onUserChangedCallback = onUserChangedCallback;
 
-  var token = localStorage.getItem('kc_token');
+  var kc_token = localStorage.getItem('kc_token');
   var refreshToken = localStorage.getItem('kc_refreshToken');
 
   console.log("KC INIT:");
 
-  _kc.onTokenExpired = () => {
+  getKeycloakInstance().onTokenExpired = () => {
     console.log('expired ' + new Date());
-    _kc.updateToken(60).then((refreshed) => {
+    getKeycloakInstance().updateToken(60).then((refreshed:any) => {
       if (refreshed) {
         console.log('refreshed ' + new Date());
       } else {
@@ -55,36 +63,36 @@ const initKeycloak = (
     });
   }
 
-  _kc.onAuthError = () => {
-    console.log('ON_AUTH_ERROR');
+  getKeycloakInstance().onAuthError = (errorData: KeycloakError) => {
+    console.log('ON_AUTH_ERROR', errorData);
   }
 
-  _kc.onAuthLogout = () => {
+  getKeycloakInstance().onAuthLogout = () => {
     console.log('ON_AUTH_LOGOUT');
   }
 
-  _kc.init({
+  getKeycloakInstance().init({
     onLoad: 'check-sso',
     silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
     pkceMethod: 'S256',
-    token: token,
-    refreshToken: refreshToken
+    token: kc_token??undefined,
+    refreshToken: refreshToken??undefined
   })
-    .then((authenticated) => {
+    .then((authenticated:any) => {
 
       if (!authenticated) {
         console.log("user is not authenticated..!");
         CleanToken();
       }
       else {
-        localStorage.setItem('kc_token', _kc.token);
-        localStorage.setItem('kc_refreshToken', _kc.refreshToken);
-        console.log('roles', _kc.realmAccess.roles);
-        console.log('KC SEEMS TO BE AUTHENTIFICATED', _kc.authenticated);
+        localStorage.setItem('kc_token', getKeycloakInstance().token);
+        localStorage.setItem('kc_refreshToken', getKeycloakInstance().refreshToken??'');
+        console.log('roles', getKeycloakInstance().realmAccess.roles??'');
+        console.log('KC SEEMS TO BE AUTHENTIFICATED', getKeycloakInstance().authenticated);
 
-        if (_kc.isTokenExpired(60)) {
+        if (getKeycloakInstance().isTokenExpired(60)) {
           console.error("KC ERROR: EXPIRED");
-          _kc.onTokenExpired();
+          getKeycloakInstance().onTokenExpired();
         }
       }      
 
@@ -94,31 +102,32 @@ const initKeycloak = (
     {      
       CleanToken();
       console.log("KC ERROR:", e);
+      _kcInstance = null;
     });
 };
 
 const doLogin = () => {
-  _kc.login();
+  getKeycloakInstance().login();
 }
 
 const doLogout = () =>
 {  
-  _kc.logout();
+  getKeycloakInstance().logout();
   CleanToken();
 }
 
-const getToken = () => _kc.token;
+const getToken = () => getKeycloakInstance()?.token;
 
-const isLoggedIn = () => !!_kc.token;
+const isLoggedIn = () => !!getKeycloakInstance()?.token;
 
 const updateToken = (successCallback: any) =>
-  _kc.updateToken(60)
+  getKeycloakInstance().updateToken(60)
     .then(successCallback)
     .catch(doLogin);
 
-const getUsername = () => _kc.tokenParsed?.preferred_username;
+const getUsername = () => getKeycloakInstance().tokenParsed?.preferred_username;
 
-const hasRole = (roles: any) => roles.some((role: any) => _kc.hasRealmRole(role));
+const hasRole = (roles: any) => roles.some((role: any) => getKeycloakInstance().hasRealmRole(role));
 
 const UserService = {
   initKeycloak,

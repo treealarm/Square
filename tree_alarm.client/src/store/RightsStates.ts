@@ -92,7 +92,7 @@ const rightsSlice = createSlice({
     }
     ,
     set_user(state: ObjectRights, action: PayloadAction<string>) {
-      state.user = action.payload;
+      state.user = action.payload??null;
     }
   }
   ,
