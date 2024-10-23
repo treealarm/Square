@@ -116,6 +116,7 @@ export const fetchMarkersByIds = createAsyncThunk(
     try {
       return requestMarkersByIds(ids);
     } catch (error) {
+      console.log("fetchMarkersByIds:", error);
       return rejectWithValue(null);
     }
   }
@@ -197,22 +198,29 @@ const markersSlice = createSlice({
       .addCase(deleteMarkers.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(deleteMarkers.fulfilled, (state, action) => {
-        state.markers = {
-          figs: state.markers?.figs.filter(item => !action.payload.includes(item.id)) || [],
-        };
-        state.isLoading = false;
-        state.isChanging! += 1;
-      })
       .addCase(fetchMarkersByIds.fulfilled, (state, action) => {
-        action.payload.figs.forEach(newMarker => {
-          const existingIndex = state.markers?.figs.findIndex(marker => marker.id === newMarker.id);
-          if (existingIndex === -1 || existingIndex === undefined) {
-            state.markers?.figs.push(newMarker);
-          }
-        });
-        state.isChanging! += 1;
+        const newMarkers = action.payload.figs;
+
+        // Проверяем, что state.markers и state.markers.figs существуют
+        if (state.markers && state.markers.figs) {
+          newMarkers.forEach(newMarker => {
+            const existingIndex = state.markers.figs.findIndex(marker => marker.id === newMarker.id);
+
+            if (existingIndex !== -1) {
+              // Если маркер существует, обновляем его
+              state.markers.figs[existingIndex] = newMarker;
+            } else {
+              // Если маркер не существует, добавляем его
+              state.markers.figs.push(newMarker);
+            }
+          });
+
+          // Увеличиваем значение isChanging
+          state.isChanging = (state.isChanging || 0) + 1;
+        }
       });
+
+
   },
 });
 

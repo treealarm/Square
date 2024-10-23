@@ -38,6 +38,14 @@ services:
       - valhallaservice
       - leafletalarmsservice
  
+  blinkservice:
+    image: pruginkad/blinkservice:latest
+    build:
+      context: .
+      dockerfile: BlinkService/Dockerfile
+    env_file:
+      - global.env
+
   mongoservice:
     image : mongo
     container_name: mongodb
@@ -71,7 +79,7 @@ services:
       - 5432:5432
 
   keycloakservice:
-    image: quay.io/keycloak/keycloak:21.0.1
+    image: quay.io/keycloak/keycloak:latest
     restart: unless-stopped
     volumes:
       - ./keycloak_imports:/opt/keycloak/data/import

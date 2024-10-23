@@ -114,7 +114,8 @@
       "use_admin_db": true,
       "use_direction_on_ways": false,
       "use_rest_area": false,
-      "use_urban_tag": false
+      "use_urban_tag": false,
+      "grid_divisions_within_tile": 32
     },
     "global_synchronized_cache": false,
     "hierarchy": true,
@@ -285,6 +286,9 @@
     "service": {
       "proxy": "ipc:///tmp/thor"
     },
-    "source_to_target_algorithm": "select_optimal"
+    "source_to_target_algorithm": "select_optimal",
+    "costmatrix_allow_second_pass": false,
+    "costmatrix_check_reverse_connection": false,
+    "max_reserved_locations_costmatrix": 25
   }
 }

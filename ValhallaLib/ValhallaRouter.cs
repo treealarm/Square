@@ -135,7 +135,7 @@ namespace ValhallaLib
       query["json"] = JsonSerializer.Serialize(rootJson);
 
       builder.Query = query.ToString();
-
+      //http://valhallaservice:8012/optimized_route?json=%7b%22locations%22%3a%5b%7b%22lat%22%3a55.75331287562725%2c%22lon%22%3a37.671216860097786%7d%2c%7b%22lat%22%3a55.75851655178242%2c%22lon%22%3a37.65370127785045%7d%5d%2c%22costing%22%3a%22auto%22%2c%22costing_options%22%3a%7b%22auto%22%3a%7b%22country_crossing_penalty%22%3a2000%7d%7d%2c%22id%22%3a%22valhalla%22%7d
       var result = await GetRoutFromValhalla(builder.ToString());
       var legs = result?.trip?.legs;
 
