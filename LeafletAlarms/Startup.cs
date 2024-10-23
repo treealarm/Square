@@ -84,7 +84,7 @@ namespace LeafletAlarms
         setUpAction.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
         {
           Title = "MapApi",
-          Version = "1.0"
+          Version = "1.1"
         });
         setUpAction.ExampleFilters();
 

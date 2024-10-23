@@ -34,8 +34,9 @@ namespace GrpcTracksClient
         StrVal = "sad"
       });
 
-      for (int j = 0; j < 100000; j++)
+      for (int j = 0; j < 1000000; j++)
       {
+        await Task.Delay(1);
         try
         {
           await MoveGrpc(figs, fig);
