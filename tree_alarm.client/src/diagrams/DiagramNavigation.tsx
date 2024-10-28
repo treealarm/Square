@@ -15,7 +15,7 @@ import DiagramParentsNavigator from './DiagramParentsNavigator';
 export default function DiagramNavigation() {
 
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
-  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
 
   var __is_diagram = getExtraProp(objProps, "__is_diagram", "0");
 
@@ -27,7 +27,7 @@ export default function DiagramNavigation() {
         appDispatch<any>(DiagramsStore.reset_diagram());
         return;
       }
-      appDispatch<any>(DiagramsStore.fetchDiagram(diagram_id));
+      appDispatch<any>(DiagramsStore.fetchGetDiagramContent(diagram_id));
     }, [ appDispatch]);
 
   const Resurface = useCallback(

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { getExtraProp, IDiagramCoord, IDiagramDTO, IGetDiagramDTO } from '../store/Marker';
+import { getExtraProp, IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
@@ -23,12 +23,15 @@ export default function DiagramViewer() {
   const appDispatch = useAppDispatch();
   const [zoom, setZoom] = useState(1.0);
 
-  const diagram: IGetDiagramDTO = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const cur_diagram_content: IDiagramContentDTO | null =
+    useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content ?? null);
   const depth = useSelector((state: ApplicationState) => state?.diagramsStates.depth);
   const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
   const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates?.alarmed_objects);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
+  const cur_diagram = cur_diagram_content?.content.find(e => e.id == cur_diagram_content?.diagram_id);
+  const cur_diagram_prop = cur_diagram_content?.content_props.find(e => e.id == cur_diagram_content?.diagram_id);
 
   const [currentPaperProps, setCurrentPaperProps] = useState({
     paper_width: 0,
@@ -40,11 +43,11 @@ export default function DiagramViewer() {
     () => {
       var paper_width =
         parseFloat(
-          getExtraProp(diagram?.parent, "__paper_width", '1000'));
+          getExtraProp(cur_diagram_prop, "__paper_width", '1000'));
       var paper_height = parseFloat(
-        getExtraProp(diagram?.parent, "__paper_height", '1000'));
+        getExtraProp(cur_diagram_prop, "__paper_height", '1000'));
 
-      var background_img = getExtraProp(diagram?.parent, "__background_img", null);
+      var background_img = getExtraProp(cur_diagram_prop, "__background_img", null);
 
       var curPaperProps =
       {
@@ -54,17 +57,17 @@ export default function DiagramViewer() {
       }
       setCurrentPaperProps(curPaperProps);
 
-    }, [diagram?.parent]);
+    }, [cur_diagram_prop]);
 
   useEffect(
     () => {
-      if (diagram?.content == null) {
+      if (cur_diagram_content?.content == null) {
         return;
       }
       var objArray2: string[] = [];
-      diagram?.content?.forEach(arr => objArray2.push(arr.id));
+      cur_diagram_content?.content?.forEach(arr => objArray2.push(arr.id));
       appDispatch<any>(MarkersVisualStore.requestMarkersVisualStates(objArray2));
-    }, [diagram?.content, appDispatch]);
+    }, [cur_diagram_content?.content, appDispatch]);
 
 
 
@@ -114,12 +117,12 @@ export default function DiagramViewer() {
 
   const handleChange = (event: SelectChangeEvent) => {
     appDispatch<any>(DiagramsStore.set_depth(event.target.value as any as number));
-    appDispatch<any>(DiagramsStore.fetchDiagram(diagram.parent.id));
+    appDispatch<any>(DiagramsStore.fetchGetDiagramContent(cur_diagram.id));
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     console.log(e);
-    appDispatch(GuiStore.selectTreeItem(diagram?.parent?.id));
+    appDispatch(GuiStore.selectTreeItem(cur_diagram?.id));
   };
 
   const handleWheelEvent = (e: WheelEvent) => {
@@ -131,10 +134,10 @@ export default function DiagramViewer() {
   };
 
 
-  if (diagram == null) {
+  if (cur_diagram_content == null) {
     return null;
   }
-  var content = diagram.content.filter(e => e.parent_id == diagram?.parent?.id);
+  var content = cur_diagram_content.content.filter(e => e.parent_id == cur_diagram?.id);
 
   var coord: IDiagramCoord = 
   {
@@ -144,11 +147,11 @@ export default function DiagramViewer() {
     height: currentPaperProps?.paper_height
   }
 
-  if (diagram?.parent != null &&
-    diagram.parent.geometry != null &&
-    diagram.parent.geometry.width > 0 &&
-    diagram.parent.geometry.height > 0) {
-    coord = diagram.parent.geometry;
+  if (cur_diagram != null &&
+    cur_diagram.geometry != null &&
+    cur_diagram.geometry.width > 0 &&
+    cur_diagram.geometry.height > 0) {
+    coord = cur_diagram.geometry;
   }
 
   return (
@@ -201,7 +204,7 @@ export default function DiagramViewer() {
           {
             (currentPaperProps?.background_img != null && currentPaperProps?.background_img != '') &&
               <img
-              key={"img_background" + diagram?.parent?.id}
+              key={"img_background" + cur_diagram?.id}
               src={currentPaperProps?.background_img}
                 style={{
                   border: 0,
@@ -214,13 +217,13 @@ export default function DiagramViewer() {
           }
           
 
-          <DiagramGray diagram={diagram?.parent} zoom={zoom} />
+          <DiagramGray diagram={cur_diagram} zoom={zoom} />
 
           {
             content.map((dgr, index) =>
               <DiagramElement
                 diagram={dgr}
-                parent={diagram?.parent}
+                parent={cur_diagram??null}
                 parent_coord={coord}
                 zoom={zoom}
                 z_index={2}

@@ -13,7 +13,7 @@ interface IDiagramElement {
 
 export default function DiagramGray(props: IDiagramElement) {
 
-  const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
 
   const diagram = props.diagram
 

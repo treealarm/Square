@@ -20,10 +20,16 @@ namespace DataChangeLayer
       _diagramService = diagramService;
       _pub = pub;
     }
+
     public async Task<List<DiagramDTO>> UpdateDiagrams(List<DiagramDTO> dgrs)
     {
-      await _mapService.UpdateHierarchyAsync(dgrs);
       await _diagramService.UpdateListAsync(dgrs);
+
+      return dgrs;
+    }
+    public async Task<List<string>> DeleteDiagrams(List<string> dgrs)
+    {
+      await _diagramService.RemoveAsync(dgrs);
 
       return dgrs;
     }

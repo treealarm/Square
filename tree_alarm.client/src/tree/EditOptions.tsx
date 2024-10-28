@@ -19,7 +19,7 @@ export default function EditOptions() {
 
   const appDispatch = useAppDispatch();
 
-  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -123,7 +123,7 @@ export default function EditOptions() {
       };
 
       appDispatch(DiagramsStore.updateDiagrams([copy]));
-      appDispatch(DiagramsStore.fetchDiagram(selected_id));
+      appDispatch(DiagramsStore.fetchGetDiagramContent(selected_id));
       return;
     }
 

@@ -31,52 +31,40 @@ namespace LeafletAlarms.Controllers
     [HttpGet()]
     [Route("GetDiagramById")]
     public async Task<DiagramDTO> GetDiagramById(string diagram_id)
-    {
-      var retVal = new DiagramDTO();
-
+    { 
       if (string.IsNullOrEmpty(diagram_id))
       {
-        return retVal;
+        return null;
       }
 
       var diagrams = await _diagramService.GetListByIdsAsync(new List<string>() { diagram_id });
 
       if (diagrams.TryGetValue(diagram_id, out var value))
       {
-        retVal = value;
-      }
-      var marker = await _mapService.GetAsync(diagram_id);    
+        return value;
+      }  
 
-      var props = await _mapService.GetPropsAsync(new List<string>() { diagram_id });
-      retVal.id = marker.id;
-      retVal.name = marker.name;
-      retVal.parent_id = marker.parent_id;
-
-      if (props.TryGetValue(diagram_id, out var valueProps))
-      {
-        retVal.extra_props = valueProps.extra_props;
-      }     
-
-      return retVal;
+      return null;
     }
 
     [HttpGet()]
-    [Route("GetDiagramByParent")]
-    public async Task<GetDiagramDTO> GetDiagramByParent(string parent_id, int depth = 1)
+    [Route("GetDiagramContent")]
+    public async Task<DiagramContentDTO> GetDiagramContent(string diagram_id, int depth = 1)
     {
-      var retVal = new GetDiagramDTO()
+      var retVal = new DiagramContentDTO()
       {
-        depth = depth
+        depth = depth,
+        diagram_id = diagram_id
       };
 
-      if (string.IsNullOrEmpty(parent_id))
+      if (string.IsNullOrEmpty(diagram_id))
       {
         return retVal;
       }
 
-      var markerParent = await _mapService.GetAsync(new List<string>() { parent_id });
+      var markerParent = await _mapService.GetAsync(new List<string>() { diagram_id });
 
-      var markers = await _mapService.GetByParentIdAsync(parent_id, null, null, 1000);
+      var markers = await _mapService.GetByParentIdAsync(diagram_id, null, null, 1000);
       var children = markers;
 
       for (int l = 0; l < depth; ++l)
@@ -86,51 +74,34 @@ namespace LeafletAlarms.Controllers
         children = await _mapService.GetByParentIdsAsync(children.Values.Select(m => m.id).ToList(), null, null, 1000);
         markers = markers.Union(children).ToDictionary();
       }
-      markers[parent_id] = markerParent[parent_id];
+      markers[diagram_id] = markerParent[diagram_id];
 
-      var diagrams = await _diagramService.GetListByIdsAsync(markers.Keys.ToList());
+      var i_diagrams = await _diagramService.GetListByIdsAsync(markers.Keys.ToList());
+
+      Dictionary<string, DiagramDTO> diagrams = i_diagrams
+          .ToDictionary(
+              kvp => kvp.Key,
+              kvp => new DiagramDTO
+              {
+                geometry = kvp.Value.geometry,
+                region_id = kvp.Value.region_id,
+                dgr_type = kvp.Value.dgr_type,
+                background_img = kvp.Value.background_img
+              });
+
 
       var props = await _mapService.GetPropsAsync(markers.Keys.ToList());
 
       HashSet<string> dgrTypes = new HashSet<string>();
 
+      retVal.content_props = props.Values.ToList();
+
       foreach (var kvp in diagrams)
       {
-        if (props.TryGetValue(kvp.Key, out var value))
-        {
-          kvp.Value.extra_props = value.extra_props;
-        }
-
-        if (markers.TryGetValue(kvp.Key, out var marker))
-        {
-          kvp.Value.name = marker.name;
-          kvp.Value.parent_id = marker.parent_id;
-        }
-
         if (!string.IsNullOrEmpty(kvp.Value.dgr_type))
         {
           dgrTypes.Add(kvp.Value.dgr_type);
         }
-      }
-
-      if (!diagrams.TryGetValue(parent_id, out var diagram))
-      {
-        var parentMarker = markerParent[parent_id];
-        retVal.parent = new DiagramDTO()
-        {
-          id = parentMarker.id,
-          parent_id = parentMarker.parent_id,
-          name = parentMarker.name
-        };
-
-        if (props.TryGetValue(parentMarker.id, out var value))
-        {
-          retVal.parent.extra_props = value.extra_props;
-        }
-      }
-      else
-      {
-        retVal.parent = diagrams[parent_id];
       }
 
       retVal.content = diagrams.Values.ToList();
@@ -142,7 +113,7 @@ namespace LeafletAlarms.Controllers
       }
 
       // Fill out parents.
-      var parents = await _mapService.GetByChildIdAsync(parent_id);
+      var parents = await _mapService.GetByChildIdAsync(diagram_id);
 
       retVal.parents = new List<BaseMarkerDTO>();
 
@@ -160,5 +131,13 @@ namespace LeafletAlarms.Controllers
     {
       return await _diagramUpdateService.UpdateDiagrams(dgrs);
     }
+
+    [HttpDelete()]
+    [Route("DeleteDiagrams")]
+    public async Task<List<string>> DeleteDiagrams(List<string> dgrs)
+    {
+      return await _diagramUpdateService.DeleteDiagrams(dgrs);
+    }
+    
   }
 }

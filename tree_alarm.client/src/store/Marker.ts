@@ -1,4 +1,5 @@
-﻿export function DeepCopy<T>(a: T): T {
+﻿/* eslint-disable no-unused-vars */
+export function DeepCopy<T>(a: T): T {
   if (a == null) {
     return null;
   }
@@ -14,7 +15,7 @@ export function uuidv4() {
 export type LatLngPair = [number, number];
 
 export interface Marker {
-  id: string|null;
+  id: string | null;
   parent_id?: string | null;
   name: string;
 }
@@ -57,12 +58,14 @@ export function getGeometryType(geometry: any): IGeometryDTO<any, any> | null {
   }
 }
 
+export interface IFigureZoomed extends IObjProps
+{
+  zoom_level?: string;
+}
 
-
-export interface ICommonFig extends IObjProps {
+export interface ICommonFig extends IFigureZoomed {
   geometry: IPointCoord | IPolygonCoord | IPolylineCoord;
   radius?: number;
-  zoom_level?: string;
 }
 
 export interface ICircle extends ICommonFig {
@@ -360,11 +363,12 @@ export interface IDiagramCoord {
   width: number;
   height: number;
 }
-export interface IDiagramDTO extends ICommonFig {
+export interface IDiagramDTO {
+  id: string;
   geometry: IDiagramCoord;
-  dgr_type: string;
-  region_id: string;
-  background_img: string;
+  dgr_type?: string | null;
+  region_id?: string | null;
+  background_img?: string | null;
 }
 
 export interface IDiagramTypeRegionDTO {
@@ -378,10 +382,11 @@ export interface IDiagramTypeDTO {
   regions: IDiagramTypeRegionDTO[];
 }
 
-export interface IGetDiagramDTO {
+export interface IDiagramContentDTO {
+  diagram_id: string;
   content: IDiagramDTO[];
+  content_props: IObjProps[];
   dgr_types: IDiagramTypeDTO[];
-  parent: IDiagramDTO;
   parents?: TreeMarker[];
   depth: number;
 }

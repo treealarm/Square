@@ -1,4 +1,4 @@
-﻿import { IDiagramDTO, IGetDiagramDTO} from './Marker';
+﻿import { IDiagramDTO, IDiagramContentDTO, IDiagram} from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApplicationState } from './index';
@@ -6,29 +6,33 @@ import { ApiDiagramsRootString } from './constants';
 
 
 export interface DiagramsStates {
-  cur_diagram: IGetDiagramDTO | null; 
+  cur_diagram_content: IDiagramContentDTO | null; 
   depth: number;
+  cur_diagram: IDiagramDTO | null;
+  diagrams_updated: boolean;
 }
 
 const unloadedState: DiagramsStates = {
+  cur_diagram_content: null,
+  depth: 1,
   cur_diagram: null,
-  depth: 1
+  diagrams_updated: false
 };
 
-export const fetchDiagram = createAsyncThunk<IGetDiagramDTO, string>(
+export const fetchGetDiagramContent = createAsyncThunk<IDiagramContentDTO, string>(
   'diagrams/GetDiagram',
   async (diagram_id: string, { getState }) => {
     const state: ApplicationState = getState() as ApplicationState;
     const diagramsStates = state.diagramsStates as DiagramsStates;
 
-    var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagramByParent?parent_id=" +
+    var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagramContent?diagram_id=" +
       diagram_id + "&depth=" + diagramsStates.depth,
       {
       method: "GET",
       headers: { "Content-type": "application/json" }
     });
 
-    var json = await fetched.json() as Promise<IGetDiagramDTO>;
+    var json = await fetched.json() as Promise<IDiagramContentDTO>;
 
     return json;
   }
@@ -55,22 +59,45 @@ export const updateDiagrams = createAsyncThunk<IDiagramDTO[], IDiagramDTO[]>(
   }
 )
 
-export const fetchSingleDiagram = createAsyncThunk<IDiagramDTO, string>(
-  'diagrams/fetchSingleDiagram',
-  async (diagram_id: string, { getState }) => {
+export const deleteDiagrams = createAsyncThunk<string[], string[]>(
+  'diagrams/DeleteDiagrams',
+  async (diagramsToUpdate: string[]) => {
+    let body = JSON.stringify(diagramsToUpdate);
 
-    var fetched = await DoFetch(ApiDiagramsRootString + "/GetDiagramById?diagram_id=" +
-      diagram_id,
+    var fetched = await DoFetch(ApiDiagramsRootString + "/DeleteDiagrams",
       {
-        method: "GET",
-        headers: { "Content-type": "application/json" }
+        method: "DELETE",
+        headers: { "Content-type": "application/json" },
+        body: body
       });
 
-    var json = await fetched.json() as Promise<IDiagramDTO>;
+    var json = await fetched.json() as Promise<IDiagram[]>;
 
     return json;
   }
 )
+
+export const fetchSingleDiagram = createAsyncThunk<IDiagramDTO, string>(
+  'diagrams/fetchSingleDiagram',
+  async (diagram_id: string, { rejectWithValue }) => {
+    const fetched = await DoFetch(
+      `${ApiDiagramsRootString}/GetDiagramById?diagram_id=${diagram_id}`,
+      {
+        method: "GET",
+        headers: { "Content-type": "application/json" }
+      }
+    );
+
+    const json = await fetched.json();
+
+    if (!json) {
+      return rejectWithValue("Diagram not found");
+    }
+
+    return json as IDiagramDTO;
+  }
+);
+
 
 const diagramsSlice = createSlice({
   name: 'DiagramStates',
@@ -78,58 +105,67 @@ const diagramsSlice = createSlice({
   reducers: {
 
     reset_diagram(state: DiagramsStates, action: PayloadAction<null>) {
-      state.cur_diagram = null;
+      state.cur_diagram_content = null;
     },
-    set_local_diagram(state: DiagramsStates, action: PayloadAction<IGetDiagramDTO>) {
-      state.cur_diagram = action.payload;
+    set_local_diagram(state: DiagramsStates, action: PayloadAction<IDiagramContentDTO>) {
+      state.cur_diagram_content = action.payload;
     },
     update_single_diagram(state: DiagramsStates, action: PayloadAction<IDiagramDTO>) {
 
-      if (state.cur_diagram == null) {
+      state.cur_diagram = action.payload;
+
+      if (state.cur_diagram_content == null) {
         return;
       }
-      var newContent = state.cur_diagram.content.filter(d => d.id != action.payload.id);
+      var newContent = state.cur_diagram_content.content.filter(d => d.id != action.payload.id);
       newContent.push(action.payload);
-      state.cur_diagram.content = newContent;
+      state.cur_diagram_content.content = newContent;
     },
     set_depth(state: DiagramsStates, action: PayloadAction<number>) {
       state.depth = action.payload;
     },
     remove_ids_locally(state: DiagramsStates, action: PayloadAction<string[]>) {
-      if (state.cur_diagram != null)
-        state.cur_diagram.content = state.cur_diagram.content.filter(
+      if (state.cur_diagram_content != null)
+        state.cur_diagram_content.content = state.cur_diagram_content.content.filter(
         d => action.payload.find( id => id==d.id) == null);
     }
   }
   ,
   extraReducers: (builder) => {
     builder
-      .addCase(fetchDiagram.pending, (state, action) => {
+      .addCase(fetchGetDiagramContent.pending, (state, action) => {
         //state.parents = null;
       })
-      .addCase(fetchDiagram.fulfilled, (state, action) => {
+      .addCase(fetchGetDiagramContent.fulfilled, (state, action) => {
         const { requestId } = action.meta
-        state.cur_diagram = action.payload;
+        state.cur_diagram_content = action.payload;
       })
-      .addCase(fetchDiagram.rejected, (state, action) => {
+      .addCase(fetchGetDiagramContent.rejected, (state, action) => {
         const { requestId } = action.meta
-        state.cur_diagram = null;        
+        state.cur_diagram_content = null;        
       })
 
     //updateDiagrams
       .addCase(updateDiagrams.pending, (state, action) => {
-        //state.parents = null;
+        state.diagrams_updated = false;
       })
       .addCase(updateDiagrams.fulfilled, (state: DiagramsStates, action) => {
         const { requestId } = action.meta
         const updated: IDiagramDTO[] = action.payload;
 
-        if (state.cur_diagram == null) {
+        var cur_diagram_found = updated.find(ud => ud.id == state.cur_diagram?.id);
+        if (cur_diagram_found != null) {
+          state.cur_diagram = cur_diagram_found;
+        }
+
+        state.diagrams_updated = true;
+
+        if (state.cur_diagram_content == null) {
           return;
         }
         var newContent =
-          state.cur_diagram.content.filter(d => updated.find(ud => ud.id == d.id) == null);
-        state.cur_diagram.content = [...updated, ...newContent];
+          state.cur_diagram_content.content.filter(d => updated.find(ud => ud.id == d.id) == null);
+        state.cur_diagram_content.content = [...updated, ...newContent];
       })
       .addCase(updateDiagrams.rejected, (state, action) => {
         const { requestId } = action.meta
@@ -137,21 +173,19 @@ const diagramsSlice = createSlice({
       })
       //fetchSingleDiagram
       .addCase(fetchSingleDiagram.fulfilled, (state: DiagramsStates, action) => {
-        const { requestId } = action.meta
+        state.cur_diagram = action.payload;      
+      })
+      .addCase(fetchSingleDiagram.rejected, (state, action) => {
+        state.cur_diagram = null;
+      })
+    //deleteDiagrams
+      .addCase(deleteDiagrams.fulfilled, (state: DiagramsStates, action) => {
 
-        if (state.cur_diagram == null) {
-          return;
-        }
-        if (action.payload.id == state.cur_diagram.parent.id) {
-          state.cur_diagram.parent = action.payload;
-        }
-
-        const updated: IDiagramDTO = action.payload;
-        var index = state.cur_diagram.content.findIndex(d => updated.id == d.id);
-
-        if (index >= 0) {
-          state.cur_diagram.content[index] = updated;
-        }
+        if (state.cur_diagram?.id != null && action.payload.find(e => e == state?.cur_diagram?.id))
+          state.cur_diagram = null;
+      })
+      .addCase(deleteDiagrams.rejected, (state, action) => {
+        state.cur_diagram = null;
       })
   },
 })

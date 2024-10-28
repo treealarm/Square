@@ -9,21 +9,21 @@ namespace DataChangeLayer
     private readonly IGeoService _geoService;
     private readonly ITrackService _tracksService;
     private readonly ILevelService _levelService;
-    private readonly IDiagramService _diagramService;
+    private readonly IDiagramUpdateService _diagramUpdateService;
     private readonly ITracksUpdateService _trackUpdateService;
     public MapUpdateService(
       IMapService mapService, 
       IGeoService geoService,
       ITrackService tracksService,
       ILevelService levelService,
-      IDiagramService diagramService,
+      IDiagramUpdateService diagramUpdateService,
       ITracksUpdateService trackUpdateService)
     {
       _mapService = mapService;
       _geoService = geoService;
       _tracksService = tracksService;
       _levelService = levelService;
-      _diagramService = diagramService;
+      _diagramUpdateService = diagramUpdateService;
       _trackUpdateService = trackUpdateService;
     }
 
@@ -74,7 +74,7 @@ namespace DataChangeLayer
 
       await _geoService.RemoveAsync(listToDelete);
       await _mapService.RemoveAsync(listToDelete);
-      await _diagramService.RemoveAsync(listToDelete);
+      await _diagramUpdateService.DeleteDiagrams(listToDelete);
       return idsToDelete;
     }
   }

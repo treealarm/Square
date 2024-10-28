@@ -89,7 +89,7 @@ export function Home() {
 
   var showLeftPannel = panels.find(e => e.panelType == EPanelType.Left) != null;
   var showRightPannel = panels.find(e => e.panelType == EPanelType.Right) != null;
-  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
 
   return (
     <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>

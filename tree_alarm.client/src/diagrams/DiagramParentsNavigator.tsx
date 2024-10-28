@@ -27,7 +27,7 @@ export default function DiagramParentsNavigator(props: IDiagramParentsNavigator)
       appDispatch<any>(DiagramsStore.reset_diagram());
       return;
     }
-    appDispatch<any>(DiagramsStore.fetchDiagram(newValue?.id));
+    appDispatch<any>(DiagramsStore.fetchGetDiagramContent(newValue?.id));
   };
 
   if (parent_list == null) {

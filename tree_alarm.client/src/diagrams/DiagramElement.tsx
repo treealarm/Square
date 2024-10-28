@@ -21,7 +21,7 @@ interface IDiagramElement {
 
 export default function DiagramElement(props: IDiagramElement) {
 
-  const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram);
+  const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   const diagram = props.diagram

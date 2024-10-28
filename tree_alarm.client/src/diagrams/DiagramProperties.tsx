@@ -6,7 +6,7 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Divider, TextField } from '@mui/material';
+import { Box, Button, Divider, TextField } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -14,12 +14,14 @@ import Select from '@mui/material/Select';
 import Link from '@mui/material/Link';
 
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IGetDiagramDTO } from '../store/Marker';
+import { DeepCopy, IDiagramContentDTO } from '../store/Marker';
 import { useCallback, useEffect } from 'react';
 
 import { IDiagramDTO } from '../store/Marker';
 import { useNavigate } from 'react-router-dom';
 import FileUpload from '../components/FileUpload';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export interface ChildEvents {
   clickSave: () => void;
@@ -34,40 +36,26 @@ export function DiagramProperties(props: IDiagramProperties) {
   const appDispatch = useAppDispatch();
   let navigate = useNavigate();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const getDiagramDto: IGetDiagramDTO|null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram??null);
+  const cur_diagram_content: IDiagramContentDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content ?? null);
+  const cur_diagram: IDiagramDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram ?? null);
   const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
   const cur_diagramtype = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
+  const diagrams_updated = useSelector((state: ApplicationState) => state?.diagramsStates?.diagrams_updated ?? false);
+  const content: IDiagramDTO[] = cur_diagram_content?.content??[];
 
-  const content: IDiagramDTO[] = getDiagramDto?.content??[];
-  var curDiagram = content?.find(e => e.id == selected_id);
-
-  var parentDiagram = content?.find(e => e.id == curDiagram?.parent_id);
-  var parentType = getDiagramDto?.dgr_types?.find(t => t.name == parentDiagram?.dgr_type);
-
-  const propsUpdated = useSelector((state: ApplicationState) => state?.objPropsStates?.updated);
-
-  //let timeoutId: any = null;
-
-  //React.useEffect(() => {
-  //  if (timeoutId != null) {
-  //    clearTimeout(timeoutId);
-  //  }
-
-  //  timeoutId = setTimeout(() => {
-  //    appDispatch(DiagramsStore.update_single_diagram(copy));
-  //  }, 1500);
-  //  return () => clearTimeout(timeoutId);
-  //}, [curDiagram]);
+  var parentDiagram = content?.find(e => e.id == cur_diagram?.parent_id);
+  var parentType = cur_diagram_content?.dgr_types?.find(t => t.name == parentDiagram?.dgr_type);
+  
 
   useEffect(() => {
     if (result == 'OK') {
       
       appDispatch(DiagramTypeStore.set_result(null)); 
-      var copy = DeepCopy(curDiagram);
+      var copy = DeepCopy(cur_diagram);
       copy.dgr_type = cur_diagramtype?.name;
       
-      var newType = getDiagramDto.dgr_types?.find(dt => dt.name == copy?.dgr_type);
-      var cur_diagram_copy = DeepCopy(getDiagramDto)??null;
+      var newType = cur_diagram_content.dgr_types?.find(dt => dt.name == copy?.dgr_type);
+      var cur_diagram_copy = DeepCopy(cur_diagram_content)??null;
       var newContent = cur_diagram_copy.content?.filter(e => e.id != copy?.id);
       newContent.push(copy);
       cur_diagram_copy.content = newContent;
@@ -80,27 +68,31 @@ export function DiagramProperties(props: IDiagramProperties) {
       }
       appDispatch(DiagramsStore.set_local_diagram(cur_diagram_copy));
     }
-  }, [result, curDiagram, cur_diagramtype, getDiagramDto]);
+  }, [result, cur_diagram, cur_diagramtype, cur_diagram_content]);
 
   useEffect(() => {
-    if (getDiagramDto?.parent?.id != null && selected_id == getDiagramDto?.parent?.id) {
-      appDispatch(DiagramsStore.fetchSingleDiagram(getDiagramDto.parent.id));
-    } 
-  }, [propsUpdated]);
+    if (selected_id)
+      appDispatch(DiagramsStore.fetchSingleDiagram(selected_id));
+  }, [selected_id]);
+
+  useEffect(() => {
+    if (diagrams_updated)
+      appDispatch(DiagramsStore.fetchSingleDiagram(selected_id));
+  }, [diagrams_updated, selected_id]);
 
   function handleEditDiagramClick() {
-    appDispatch(DiagramTypeStore.set_local_filter(curDiagram?.dgr_type));
+    appDispatch(DiagramTypeStore.set_local_filter(cur_diagram?.dgr_type));
     appDispatch(DiagramTypeStore.set_result('EDIT_TYPE'));
     navigate("/editdiagram");
   }
 
   const handleSave = useCallback(() => {
-    if (curDiagram != null) {
-      appDispatch(DiagramsStore.updateDiagrams([DeepCopy(curDiagram)]));
+    if (cur_diagram != null) {
+      appDispatch(DiagramsStore.updateDiagrams([DeepCopy(cur_diagram)]));
     }
     //TODO Must refetch content since other properties updated
 
-  }, [curDiagram, content]);
+  }, [cur_diagram, content]);
 
   //subscribe to props.events changes
   useEffect(() => {
@@ -112,21 +104,21 @@ export function DiagramProperties(props: IDiagramProperties) {
 
   function handleChangeType(e: any) {
     const { target: { value } } = e;
-    var copy = DeepCopy(curDiagram);
+    var copy = DeepCopy(cur_diagram);
     copy.dgr_type = value;
     appDispatch(DiagramsStore.update_single_diagram(copy));
   }
 
   function handleChangeBackgroundImg(e: any) {
     const { target: { value } } = e;
-    var copy = DeepCopy(curDiagram);
+    var copy = DeepCopy(cur_diagram);
     copy.background_img = value;
     appDispatch(DiagramsStore.update_single_diagram(copy));
   }
   function handleChangeRegion(e: any) {
     const { target: { id, value } } = e;
 
-    var copy = DeepCopy(curDiagram);
+    var copy = DeepCopy(cur_diagram);
     var textId = id;
 
     if (!isNaN(value)) {
@@ -150,29 +142,90 @@ export function DiagramProperties(props: IDiagramProperties) {
   function handleChangeRegionId(e: any) {
     const { target: { value } } = e;
 
-    var copy = DeepCopy(curDiagram);
+    var copy = DeepCopy(cur_diagram);
     copy.region_id = value;
     appDispatch(DiagramsStore.update_single_diagram(copy));
   }
+  const onClickAddNewDiagram = useCallback(() => {
 
+    if (!selected_id || cur_diagram != null)
+      return;
+    const copy: IDiagramDTO = {
+      id: selected_id,
+      name: 'New Diagram',
+      parent_id: null,
+      dgr_type: null,
+      background_img: null,
+      geometry:
+      {
+        left: 0,
+        top: 0,
+        width: 100,
+        height: 100
+      },
+      region_id: null
+    };
+
+    appDispatch(DiagramsStore.updateDiagrams([copy]));  
+  }, [selected_id, cur_diagram]);
+  const onClickDeleteDiagram = useCallback(() => {
+
+    if (cur_diagram == null)
+      return;
+
+    appDispatch(DiagramsStore.deleteDiagrams([cur_diagram.id]));
+  }, [selected_id, cur_diagram]);
+  
   function onUploadSuccess(data: any) {
 
     if (data == null) {
       return;
     }
 
-    var copy = DeepCopy(curDiagram);
+    var copy = DeepCopy(cur_diagram);
     copy.background_img = data;
     appDispatch(DiagramsStore.update_single_diagram(copy));
   }
 
-  if (curDiagram == null
+  let enable_add_diagram = selected_id != null && cur_diagram == null;
+
+  if (enable_add_diagram) {
+    return (
+      <Box sx={{
+        width: '100%',
+
+        bgcolor: 'background.paper',
+        overflow: 'auto',
+        height: '100%',
+        border: 0
+      }}>
+        <List dense>
+          <Divider><br></br></Divider>
+          <ListItem id="btn_add">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          onClick={onClickAddNewDiagram}
+        >
+          Add Diagram for Object
+            </Button>
+            </ListItem>
+        </List>
+        </Box>
+    );
+  }
+
+
+  if (cur_diagram == null
     ||
-    (curDiagram.geometry == null && curDiagram.dgr_type == null))
+    (cur_diagram.geometry == null && cur_diagram.dgr_type == null))
   {
+
     // lets consider it as a parent - regular object, not diagram
     return null;
   }
+
   return (
     <Box sx={{
       width: '100%',
@@ -185,14 +238,23 @@ export function DiagramProperties(props: IDiagramProperties) {
 
       <List dense>
         <Divider><br></br></Divider>
-
+        <ListItem id="btn_delete">
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<DeleteIcon />}
+          onClick={onClickDeleteDiagram}
+        >
+          Delete Diagram for Object
+          </Button>
+        </ListItem>
         <ListItem id="diagram_type_name_src">
 
           <TextField
             fullWidth
             label='Diagram type'
             size="small"
-            value={curDiagram?.dgr_type != null ? curDiagram?.dgr_type : ""}
+            value={cur_diagram?.dgr_type != null ? cur_diagram?.dgr_type : ""}
             onChange={handleChangeType}
           >
           </TextField>
@@ -211,7 +273,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             <Select
               labelId="editreg_id_label"
               name={"editreg_id"}
-              value={curDiagram?.region_id != null ? curDiagram.region_id : ""}
+              value={cur_diagram?.region_id != null ? cur_diagram.region_id : ""}
               label="Region id"
               onChange={handleChangeRegionId}
               size="small"
@@ -231,7 +293,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             fullWidth
             label='background image'
             size="small"
-            value={curDiagram?.background_img == null ? "" : curDiagram?.background_img}
+            value={cur_diagram?.background_img == null ? "" : cur_diagram?.background_img}
             onChange={handleChangeBackgroundImg}
           >
           </TextField>
@@ -246,7 +308,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_left"}
             label='left'
             size="small"
-            value={curDiagram.geometry.left}
+            value={cur_diagram?.geometry?.left}
             onChange={handleChangeRegion}
           >
           </TextField>
@@ -254,7 +316,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_top"}
             label='top'
             size="small"
-            value={curDiagram.geometry.top}
+            value={cur_diagram?.geometry?.top}
             onChange={handleChangeRegion}
           >
           </TextField>
@@ -262,7 +324,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_width"}
             label='width'
             size="small"
-            value={curDiagram.geometry.width}
+            value={cur_diagram?.geometry?.width}
             onChange={handleChangeRegion}
           >
           </TextField>
@@ -270,7 +332,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             id={"editreg_height"}
             label='height'
             size="small"
-            value={curDiagram.geometry.height}
+            value={cur_diagram?.geometry?.height}
             onChange={handleChangeRegion}
           >
           </TextField>

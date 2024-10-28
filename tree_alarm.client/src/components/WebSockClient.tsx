@@ -19,7 +19,7 @@ const getWebSocketUrl = () => {
 export function WebSockClient() {
   const appDispatch = useAppDispatch();
   const box = useSelector((state: ApplicationState) => state?.markersStates?.box);
-  const cur_diagram = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
+  const cur_diagram = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
   const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
   const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
 

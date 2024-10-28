@@ -35,7 +35,7 @@ namespace DbLayer.Services
     {
     }
 
-    async Task IDiagramService.RemoveAsync(List<string> ids)
+    async Task IDiagramServiceInternal.RemoveAsync(List<string> ids)
     {
       await _coll.DeleteManyAsync(
           x => ids.Contains(x.id));
