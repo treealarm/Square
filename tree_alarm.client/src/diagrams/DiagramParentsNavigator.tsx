@@ -24,7 +24,7 @@ export default function DiagramParentsNavigator(props: IDiagramParentsNavigator)
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker | null) => {
     if (newValue?.id == null) {
-      appDispatch<any>(DiagramsStore.reset_diagram());
+      appDispatch<any>(DiagramsStore.reset_diagram_contentreset_diagram_content());
       return;
     }
     appDispatch<any>(DiagramsStore.fetchGetDiagramContent(newValue?.id));

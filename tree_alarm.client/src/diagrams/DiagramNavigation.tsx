@@ -24,7 +24,7 @@ export default function DiagramNavigation() {
   const setDiagram = useCallback(
     (diagram_id: string) => {
       if (diagram_id == null) {
-        appDispatch<any>(DiagramsStore.reset_diagram());
+        appDispatch<any>(DiagramsStore.reset_diagram_contentreset_diagram_content());
         return;
       }
       appDispatch<any>(DiagramsStore.fetchGetDiagramContent(diagram_id));
@@ -32,7 +32,7 @@ export default function DiagramNavigation() {
 
   const Resurface = useCallback(
     () => {
-      appDispatch<any>(DiagramsStore.reset_diagram());
+      appDispatch<any>(DiagramsStore.reset_diagram_contentreset_diagram_content());
     }, [ appDispatch]);
 
   if (__is_diagram != '1' && diagram?.parent == null) {

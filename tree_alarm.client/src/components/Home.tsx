@@ -20,6 +20,7 @@ import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
 import DiagramViewer from "../diagrams/DiagramViewer";
 import { ObjectPropertiesUpdater } from "./ObjectPropertiesUpdater";
+import DiagramPropertiesUpdater from '../diagrams/DiagramPropertiesUpdater';
 
 
 const LeftPanel = () => {
@@ -98,6 +99,7 @@ export function Home() {
       }}
       >
         <ObjectPropertiesUpdater />
+        <DiagramPropertiesUpdater/>
         <MainToolbar />
         <Toolbar />
       </Box>

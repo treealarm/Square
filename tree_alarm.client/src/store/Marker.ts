@@ -1,5 +1,5 @@
 ﻿/* eslint-disable no-unused-vars */
-export function DeepCopy<T>(a: T): T {
+export function DeepCopy<T>(a: T|null): T|null {
   if (a == null) {
     return null;
   }

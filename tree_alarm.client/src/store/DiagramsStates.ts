@@ -104,20 +104,18 @@ const diagramsSlice = createSlice({
   initialState: unloadedState,
   reducers: {
 
-    reset_diagram(state: DiagramsStates, action: PayloadAction<null>) {
-      state.cur_diagram_content = null;
-    },
-    set_local_diagram(state: DiagramsStates, action: PayloadAction<IDiagramContentDTO>) {
+    set_diagram_content_locally(state: DiagramsStates, action: PayloadAction<IDiagramContentDTO|null>) {
       state.cur_diagram_content = action.payload;
     },
-    update_single_diagram(state: DiagramsStates, action: PayloadAction<IDiagramDTO>) {
+    update_single_diagram_locally(state: DiagramsStates, action: PayloadAction<IDiagramDTO|null>) {
 
       state.cur_diagram = action.payload;
 
-      if (state.cur_diagram_content == null) {
+      if (state.cur_diagram_content == null ||
+        action.payload == null) {
         return;
       }
-      var newContent = state.cur_diagram_content.content.filter(d => d.id != action.payload.id);
+      var newContent = state.cur_diagram_content.content.filter(d => d.id != action.payload?.id);
       newContent.push(action.payload);
       state.cur_diagram_content.content = newContent;
     },
@@ -190,7 +188,12 @@ const diagramsSlice = createSlice({
   },
 })
 
-export const { reset_diagram, set_depth, set_local_diagram, remove_ids_locally, update_single_diagram } = diagramsSlice.actions
+export const {
+  set_depth,
+  set_diagram_content_locally,
+  remove_ids_locally,
+  update_single_diagram_locally
+} = diagramsSlice.actions
 export const reducer = diagramsSlice.reducer
 
 
