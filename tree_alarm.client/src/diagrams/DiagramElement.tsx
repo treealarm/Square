@@ -7,11 +7,11 @@ import { useAppDispatch } from '../store/configureStore';
 import { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
-import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
+import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IObjProps } from '../store/Marker';
 
 interface IDiagramElement {
   diagram: IDiagramDTO;
-  parent: IDiagramDTO;
+  parent: IDiagramDTO|null;
   parent_coord: IDiagramCoord
   zoom: number;
   z_index: number;
@@ -21,13 +21,15 @@ interface IDiagramElement {
 
 export default function DiagramElement(props: IDiagramElement) {
 
-  const diagrams = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
+  const diagram_content = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
-  const diagram = props.diagram
-  const parent = props.parent
-  const getColor = props.getColor
-  const parent_coord = props.parent_coord;
+  const { diagram, parent, getColor, parent_coord, zoom } = props;
+
+
+  const childrenProps: IObjProps[] = diagram_content?.content_props?.filter(i => i.parent_id === diagram?.id) || [];
+  const childrenDiagrams = diagram_content?.content?.filter(e => childrenProps.some(c => c.id === e.id)) || null;
+
 
   const appDispatch = useAppDispatch();
 
@@ -50,7 +52,7 @@ export default function DiagramElement(props: IDiagramElement) {
       var newCoord = diagram.geometry;
 
       if (diagram?.region_id != null) {
-        var parent_type: IDiagramTypeDTO = diagrams.dgr_types.find(t => t.name == parent.dgr_type);
+        var parent_type: IDiagramTypeDTO|null = diagram_content?.dgr_types.find(t => t.name == parent?.dgr_type) ?? null;
 
         if (parent_type != null) {
           var region = parent_type.regions.find(r => r.id == diagram.region_id);
@@ -79,23 +81,18 @@ export default function DiagramElement(props: IDiagramElement) {
           };
       }
       setCoord(newCoord);
-    }, [diagram, diagrams, parent.dgr_type, parent_coord.height, parent_coord.width]);
+    }, [diagram, diagram_content, parent?.dgr_type, parent_coord.height, parent_coord.width]);
 
 
-  var diagram_type: IDiagramTypeDTO = null;
+  var diagram_type: IDiagramTypeDTO|null = null;
 
-  if (diagrams.dgr_types != null) {
-    diagram_type = diagrams.dgr_types.find(t => t.name == diagram.dgr_type);
+  if (diagram_content?.dgr_types != null) {
+    diagram_type = diagram_content?.dgr_types.find(t => t.name == diagram?.dgr_type) ?? null;
   }
 
   if (diagram_type == null) {
     console.log("no type");
   }
-  var zoom = props.zoom;
-  var content = diagrams.content.filter(e => e.parent_id == diagram.id);
-
-  
-
 
   var color = getColor(diagram);
   var shadow = null;
@@ -147,7 +144,7 @@ export default function DiagramElement(props: IDiagramElement) {
           }} />
 
         {
-          content?.map((dgr) =>
+          childrenDiagrams?.map((dgr) =>
             <DiagramElement
               diagram={dgr}
               parent={diagram}

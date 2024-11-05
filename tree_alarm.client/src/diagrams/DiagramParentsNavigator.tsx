@@ -8,8 +8,8 @@ import { TreeMarker } from '../store/Marker';
 import { useAppDispatch } from '../store/configureStore';
 
 interface IDiagramParentsNavigator {
-  parent_list: TreeMarker[];
-  parent_id: string;
+  parent_list: TreeMarker[] | null;
+  parent_id: string | null;
 }
 export default function DiagramParentsNavigator(props: IDiagramParentsNavigator) {
 
@@ -17,14 +17,13 @@ export default function DiagramParentsNavigator(props: IDiagramParentsNavigator)
 
   let curMarker = parent_list?.find((element: any) => {
     return element?.id == props?.parent_id;
-  });
+  }) ?? null;
 
-  curMarker = curMarker == undefined ? null : curMarker;
   const appDispatch = useAppDispatch();
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker | null) => {
     if (newValue?.id == null) {
-      appDispatch<any>(DiagramsStore.reset_diagram_contentreset_diagram_content());
+      appDispatch<any>(DiagramsStore.update_single_diagram_locally(null));
       return;
     }
     appDispatch<any>(DiagramsStore.fetchGetDiagramContent(newValue?.id));

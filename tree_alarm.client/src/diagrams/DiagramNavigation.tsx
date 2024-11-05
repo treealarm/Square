@@ -1,10 +1,11 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import ScubaDivingIcon from '@mui/icons-material/ScubaDiving';
 import PoolIcon from '@mui/icons-material/Pool';
 
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { getExtraProp } from '../store/Marker';
+import { IDiagramDTO } from '../store/Marker';
 
 import * as DiagramsStore from '../store/DiagramsStates';
 import { useAppDispatch } from '../store/configureStore';
@@ -15,27 +16,29 @@ import DiagramParentsNavigator from './DiagramParentsNavigator';
 export default function DiagramNavigation() {
 
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
-  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
+  const diagram_content = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
+  const cur_diagram: IDiagramDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram ?? null);
 
-  var __is_diagram = getExtraProp(objProps, "__is_diagram", "0");
+  var parent_props = diagram_content?.content_props?.find(i => i.id == cur_diagram?.id);
+  var parent_diagram = diagram_content?.content?.find(e => e.id == parent_props?.parent_id) ?? null;
 
   const appDispatch = useAppDispatch();
 
   const setDiagram = useCallback(
-    (diagram_id: string) => {
+    (diagram_id: string|null) => {
       if (diagram_id == null) {
-        appDispatch<any>(DiagramsStore.reset_diagram_contentreset_diagram_content());
+        appDispatch<any>(DiagramsStore.update_single_diagram_locally(null));
         return;
       }
       appDispatch<any>(DiagramsStore.fetchGetDiagramContent(diagram_id));
-    }, [ appDispatch]);
+    }, [ ]);
 
   const Resurface = useCallback(
     () => {
-      appDispatch<any>(DiagramsStore.reset_diagram_contentreset_diagram_content());
-    }, [ appDispatch]);
+      appDispatch<any>(DiagramsStore.update_single_diagram_locally(null));
+    }, [ ]);
 
-  if (__is_diagram != '1' && diagram?.parent == null) {
+  if (!cur_diagram) {
     return null;
   }
 
@@ -50,7 +53,7 @@ export default function DiagramNavigation() {
     >
       <React.Fragment />
       {
-        diagram?.parent == null ?
+        parent_diagram == null ?
           <React.Fragment /> :
           <Tooltip title={"Resurface from the diagram"}>
             <IconButton aria-label="search" size="medium" onClick={() => Resurface()}>
@@ -59,10 +62,10 @@ export default function DiagramNavigation() {
           </Tooltip>
       }
 
-      <DiagramParentsNavigator parent_list={diagram?.parents} parent_id={diagram?.parent?.id} />
+      <DiagramParentsNavigator parent_list={diagram_content?.parents ?? null} parent_id={parent_diagram?.id ?? null} />
 
       <Tooltip title={"Dive into the diagram"}>
-        <IconButton aria-label="search" size="medium" onClick={() => setDiagram(objProps?.id)}>
+        <IconButton aria-label="search" size="medium" onClick={() => setDiagram(objProps?.id ??null)}>
           <ScubaDivingIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>

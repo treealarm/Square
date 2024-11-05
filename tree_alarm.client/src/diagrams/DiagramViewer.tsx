@@ -217,13 +217,13 @@ export default function DiagramViewer() {
           }
           
 
-          <DiagramGray diagram={cur_diagram} zoom={zoom} />
+          <DiagramGray diagram={cur_diagram??null} zoom={zoom} />
 
           {
             content.map((dgr, index) =>
               <DiagramElement
                 diagram={dgr}
-                parent={cur_diagram??null}
+                parent={null}
                 parent_coord={coord}
                 zoom={zoom}
                 z_index={2}

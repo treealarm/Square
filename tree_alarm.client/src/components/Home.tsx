@@ -86,11 +86,11 @@ const RightPanel = () => {
 
 export function Home() {
 
-  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
+  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels) ?? null;
 
-  var showLeftPannel = panels.find(e => e.panelType == EPanelType.Left) != null;
-  var showRightPannel = panels.find(e => e.panelType == EPanelType.Right) != null;
-  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
+  var showLeftPannel = panels?.find(e => e.panelType == EPanelType.Left) != null;
+  var showRightPannel = panels?.find(e => e.panelType == EPanelType.Right) != null;
+  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
 
   return (
     <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
