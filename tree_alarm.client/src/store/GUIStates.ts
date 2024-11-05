@@ -11,6 +11,7 @@ export interface GUIState {
   requestedTreeUpdate: number;
   map_option: ViewOption | null;
   searchFilter: SearchFilterGUI;
+  diagramDiving: boolean;
 }
 
 const initialState: GUIState = {
@@ -25,7 +26,8 @@ const initialState: GUIState = {
       props: [{ prop_name: "track_name", str_val: "lisa_alert" }]
     },
     search_id: ""
-  }
+  },
+  diagramDiving: false
 };
 
 // -----------------
@@ -35,6 +37,9 @@ const guiSlice = createSlice({
   name: 'gui',
   initialState,
   reducers: {
+    setDiagramDivingMode(state, action: PayloadAction<boolean>) {
+      state.diagramDiving = action.payload;
+    },
     selectTreeItem(state, action: PayloadAction<string | null>) {
       state.selected_id = action.payload;
     },
@@ -61,7 +66,8 @@ export const {
   checkTreeItem,
   requestTreeUpdate,
   setMapOption,
-  applyFilter
+  applyFilter,
+  setDiagramDivingMode
 } = guiSlice.actions;
 
 // -----------------

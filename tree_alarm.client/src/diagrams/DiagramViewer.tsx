@@ -117,12 +117,14 @@ export default function DiagramViewer() {
 
   const handleChange = (event: SelectChangeEvent) => {
     appDispatch<any>(DiagramsStore.set_depth(event.target.value as any as number));
-    appDispatch<any>(DiagramsStore.fetchGetDiagramContent(cur_diagram.id));
+    if (cur_diagram?.id)
+      appDispatch<any>(DiagramsStore.fetchGetDiagramContent(cur_diagram?.id ?? null));
   };
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     console.log(e);
-    appDispatch(GuiStore.selectTreeItem(cur_diagram?.id));
+    if (cur_diagram?.id)
+      appDispatch(GuiStore.selectTreeItem(cur_diagram?.id));
   };
 
   const handleWheelEvent = (e: WheelEvent) => {

@@ -345,6 +345,14 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(GetByIds), figures);
     }
 
+    [HttpGet]
+    [Route("GetGeoObject")]
+    public async Task<ActionResult<GeoObjectDTO>> GetGeoObject(string id)
+    {
+      var geo = await _geoService.GetGeoObjectAsync(id);
+      return CreatedAtAction(nameof(GetGeoObject), geo);
+    }
+
     [HttpPost]
     [Route("GetByParams")]
     public async Task<ActionResult<FiguresDTO>> GetByParams(SearchFilterDTO propFilter)

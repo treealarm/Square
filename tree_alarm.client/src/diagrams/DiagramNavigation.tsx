@@ -1,5 +1,4 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
-import * as React from 'react';
 import ScubaDivingIcon from '@mui/icons-material/ScubaDiving';
 import PoolIcon from '@mui/icons-material/Pool';
 
@@ -8,8 +7,9 @@ import { useSelector } from 'react-redux';
 import { IDiagramDTO } from '../store/Marker';
 
 import * as DiagramsStore from '../store/DiagramsStates';
+import * as GUIStore from '../store/GUIStates';
 import { useAppDispatch } from '../store/configureStore';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import DiagramParentsNavigator from './DiagramParentsNavigator';
 
@@ -18,24 +18,32 @@ export default function DiagramNavigation() {
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagram_content = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
   const cur_diagram: IDiagramDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram ?? null);
+  const diagramDiving = useSelector((state: ApplicationState) => state?.guiStates?.diagramDiving);
 
   var parent_props = diagram_content?.content_props?.find(i => i.id == cur_diagram?.id);
   var parent_diagram = diagram_content?.content?.find(e => e.id == parent_props?.parent_id) ?? null;
 
   const appDispatch = useAppDispatch();
+  useEffect(() => {
+
+    if (!cur_diagram) {
+      Resurface();
+    }
+  }, [cur_diagram]);
 
   const setDiagram = useCallback(
     (diagram_id: string|null) => {
       if (diagram_id == null) {
-        appDispatch<any>(DiagramsStore.update_single_diagram_locally(null));
         return;
       }
-      appDispatch<any>(DiagramsStore.fetchGetDiagramContent(diagram_id));
+      appDispatch(DiagramsStore.fetchGetDiagramContent(diagram_id));
+      appDispatch(GUIStore.setDiagramDivingMode(true));
     }, [ ]);
 
   const Resurface = useCallback(
     () => {
-      appDispatch<any>(DiagramsStore.update_single_diagram_locally(null));
+      //appDispatch<any>(DiagramsStore.update_single_diagram_locally(null));
+      appDispatch(GUIStore.setDiagramDivingMode(false));
     }, [ ]);
 
   if (!cur_diagram) {
@@ -51,15 +59,12 @@ export default function DiagramNavigation() {
         display: 'flex'
       }}
     >
-      <React.Fragment />
-      {
-        parent_diagram == null ?
-          <React.Fragment /> :
-          <Tooltip title={"Resurface from the diagram"}>
-            <IconButton aria-label="search" size="medium" onClick={() => Resurface()}>
-              <PoolIcon fontSize="inherit" />
-            </IconButton>
-          </Tooltip>
+      {diagramDiving ?
+        <Tooltip title={"Resurface from the diagram"}>
+          <IconButton aria-label="search" size="medium" onClick={() => Resurface()}>
+            <PoolIcon fontSize="inherit" />
+          </IconButton>
+        </Tooltip>:<div></div>
       }
 
       <DiagramParentsNavigator parent_list={diagram_content?.parents ?? null} parent_id={parent_diagram?.id ?? null} />

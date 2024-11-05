@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import { ApiRootString } from './constants';
 import { DoFetch } from './Fetcher';
-import { BoundBox, ICommonFig, IFigures } from './Marker';
+import { BoundBox, ICommonFig, IFigures, IGeoObjectDTO } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -109,6 +109,19 @@ export const requestMarkersByIds =
   return data;
 }
 
+export const getGeoObject = createAsyncThunk<IGeoObjectDTO, string>(
+  'markers/getGeoObject',
+  async (id: string) => {
+
+      const response = await DoFetch(`${ApiRootString}/GetGeoObject?id=${id}`, {
+        method: 'GET',
+        headers: { 'Content-type': 'application/json' }
+      });
+
+      const data = (await response.json()) as IGeoObjectDTO;
+      return data;   
+  }
+);
 
 export const fetchMarkersByIds = createAsyncThunk(
   'markers/fetchMarkersByIds',
@@ -169,6 +182,17 @@ const markersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      //getGeoObject
+      .addCase(getGeoObject.pending, (state, action) => {
+        
+      })
+      .addCase(getGeoObject.fulfilled, (state, action) => {
+
+      })
+      .addCase(getGeoObject.rejected, (state) => {
+        
+      })
+      //////fetchMarkersByBox/////////////////
       .addCase(fetchMarkersByBox.pending, (state, action) => {
         state.isLoading = true;
         state.box = action.meta.arg;

@@ -7,9 +7,11 @@ import { useSelector } from "react-redux";
 
 import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
-
 import * as EditStore from '../store/EditStates';
+import * as DiagramsStore from '../store/DiagramsStates';
+
 import { useAppDispatch } from '../store/configureStore';
+
 
 export function ObjectPropertiesUpdater(): React.ReactElement|null {
 
@@ -17,6 +19,9 @@ export function ObjectPropertiesUpdater(): React.ReactElement|null {
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
+  const diagrams_updated = useSelector((state: ApplicationState) => state?.diagramsStates?.diagrams_updated ?? false);
+
+  
 
   useEffect(() => {
     if (selected_id == null) {
@@ -33,8 +38,13 @@ export function ObjectPropertiesUpdater(): React.ReactElement|null {
     }
     if (selected_id) {
       appDispatch(ObjPropsStore.fetchObjProps(selected_id));
+      appDispatch(DiagramsStore.fetchSingleDiagram(selected_id));
     }
-  }, [selected_id, markers?.figs]);
+    else {
+      appDispatch(DiagramsStore.update_single_diagram_locally(null));
+   
+    }
+  }, [selected_id, markers?.figs, diagrams_updated]);
 
   
   return (null);

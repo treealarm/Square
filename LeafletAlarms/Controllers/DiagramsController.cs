@@ -83,6 +83,7 @@ namespace LeafletAlarms.Controllers
               kvp => kvp.Key,
               kvp => new DiagramDTO
               {
+                id = kvp.Value.id,
                 geometry = kvp.Value.geometry,
                 region_id = kvp.Value.region_id,
                 dgr_type = kvp.Value.dgr_type,

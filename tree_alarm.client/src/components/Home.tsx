@@ -20,8 +20,6 @@ import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
 import DiagramViewer from "../diagrams/DiagramViewer";
 import { ObjectPropertiesUpdater } from "./ObjectPropertiesUpdater";
-import DiagramPropertiesUpdater from '../diagrams/DiagramPropertiesUpdater';
-
 
 const LeftPanel = () => {
 
@@ -90,7 +88,9 @@ export function Home() {
 
   var showLeftPannel = panels?.find(e => e.panelType == EPanelType.Left) != null;
   var showRightPannel = panels?.find(e => e.panelType == EPanelType.Right) != null;
-  const diagram = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
+  const diagramDiving = useSelector((state: ApplicationState) => state?.guiStates?.diagramDiving);
+  //const diagram = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram);
+  //const selected_geo_object = useSelector((state: ApplicationState) => state?.markersStates?.selected_geo_object);
 
   return (
     <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
@@ -99,7 +99,6 @@ export function Home() {
       }}
       >
         <ObjectPropertiesUpdater />
-        <DiagramPropertiesUpdater/>
         <MainToolbar />
         <Toolbar />
       </Box>
@@ -116,7 +115,7 @@ export function Home() {
         </Grid>
 
         <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
-          {diagram == null ? <MapComponent /> : <DiagramViewer />}
+          {diagramDiving ? <DiagramViewer /> : <MapComponent />}
         </Grid>
 
         <Grid item xs={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
