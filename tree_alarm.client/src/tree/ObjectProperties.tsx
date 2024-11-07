@@ -128,7 +128,7 @@ export function ObjectProperties() {
     if (objProps?.id != null) {
       appDispatch(MarkersStore.fetchMarkersByIds([objProps.id]));
     }      
-  }, [propsUpdated, appDispatch, objProps?.id]);
+  }, [propsUpdated, objProps?.id]);
 
   const childDiagramPropEvents = useMemo(() => ({
     clickSave: () => { }

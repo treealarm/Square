@@ -23,7 +23,7 @@ export default function TabControl() {
   const appDispatch = useAppDispatch();
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker | null) => {
-    appDispatch(TreeStore.fetchByParent({ parent_id: newValue?.id??null, start_id:null, end_id:null}));
+    appDispatch(TreeStore.setParentIdLocally(newValue?.id ?? null));
   };
   
 

@@ -106,10 +106,12 @@ export default function EditOptions() {
     }
 
     if (item == EditStore.DiagramTool) {
+
+      if (selected_id == null) {
+        return;
+      }
       const copy: IDiagramDTO = {
-        id: null,
-        name: 'New Diagram',
-        parent_id: selected_id,
+        id: selected_id,
         dgr_type: null,
         background_img:null,
         geometry:

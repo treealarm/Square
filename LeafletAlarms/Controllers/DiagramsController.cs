@@ -130,6 +130,7 @@ namespace LeafletAlarms.Controllers
     [Route("UpdateDiagrams")]
     public async Task<List<DiagramDTO>> UpdateDiagrams(List<DiagramDTO> dgrs)
     {
+      dgrs = dgrs.Where(d => !string.IsNullOrEmpty(d.id)).ToList();
       return await _diagramUpdateService.UpdateDiagrams(dgrs);
     }
 

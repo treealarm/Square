@@ -101,7 +101,7 @@ export function LocationMarkers() {
   useEffect(
     () => {
       appDispatch(GuiStore.requestTreeUpdate());
-    }, [appDispatch, isChanging]);
+    }, [isChanging]);
   
   useEffect(
     () => {

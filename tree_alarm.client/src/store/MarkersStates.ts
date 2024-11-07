@@ -238,9 +238,6 @@ const markersSlice = createSlice({
               state.markers.figs.push(newMarker);
             }
           });
-
-          // Увеличиваем значение isChanging
-          state.isChanging = (state.isChanging || 0) + 1;
         }
       });
 

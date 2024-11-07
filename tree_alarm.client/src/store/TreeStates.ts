@@ -8,16 +8,17 @@ export interface TreeState {
   parent_id: string | null;
   parents: (TreeMarker | null)[];
   children: TreeMarker[];
-  start_id?: string;
-  end_id?: string;
+  parentBounds: Record<string, { start_id: string | null; end_id: string | null }>; // словарь с parent_id в качестве ключа
 }
+
 
 // Initial state
 const initialState: TreeState = {
   children: [],
   isLoading: false,
   parent_id: null,
-  parents: []
+  parents: [],
+  parentBounds: {}
 };
 
 export async function getByParent(parent_id: string | null, start_id: string | null, end_id: string | null): Promise<GetByParentDTO> {
@@ -92,13 +93,17 @@ const treeSlice = createSlice({
       const found = state.children.find(i => i.id === treeItem.id);
       if (!found) return;
 
-      const updatedChildren = DeepCopy(state.children).map(item =>
+      const updatedChildren = DeepCopy(state.children)?.map(item =>
         item.id === treeItem.id ? { ...item, name: treeItem.name } : item
       );
 
-      state.children = updatedChildren;
+      state.children = updatedChildren ?? [];
+    },
+    setParentIdLocally: (state, action: PayloadAction<string | null>) => {
+      state.parent_id = action.payload;
     }
   },
+  
   extraReducers: (builder) => {
     builder
       .addCase(fetchByParent.pending, (state) => {
@@ -106,12 +111,16 @@ const treeSlice = createSlice({
       })
       .addCase(fetchByParent.fulfilled, (state, action: PayloadAction<GetByParentDTO>) => {
         const data = action.payload;
-        var parents = data.parents ?? [];
-        state.parent_id = data.parent_id??null;
-        state.children = data.children??[];
-        state.parents = [null, ...parents];
-        state.start_id = data.start_id;
-        state.end_id = data.end_id;
+        state.parent_id = data.parent_id ?? null;
+        state.children = data.children ?? [];
+        state.parents = [null, ...(data.parents ?? [])];
+        // Обновляем start_id и end_id для текущего parent_id
+        //if (data.parent_id) {
+          state.parentBounds[data.parent_id ?? ''] = {
+            start_id: data.start_id ?? null,
+            end_id: data.end_id ?? null,
+          //};
+        }
         state.isLoading = false;
       })
       .addCase(fetchByParent.rejected, (state, action) => {
@@ -119,11 +128,11 @@ const treeSlice = createSlice({
         state.isLoading = false;
       })
       //getById
-      .addCase(fetchById.fulfilled, (state, action: PayloadAction<GetByParentDTO>) => {
+      .addCase(fetchById.fulfilled, (state, action: PayloadAction<Marker>) => {
       })
       ;
   }
 });
 
-export const { setTreeItem } = treeSlice.actions;
+export const { setTreeItem, setParentIdLocally } = treeSlice.actions;
 export const reducer = treeSlice.reducer;
