@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using MongoDB.Bson;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
@@ -139,12 +140,13 @@ namespace LeafletAlarms.Controllers
     [HttpGet()]
     [Route("GetByParent")]
     public async Task<GetByParentDTO> GetByParent(
-      string parent_id = null,
-      string start_id = null,
-      string end_id = null,
-      int count = 0
+      [FromQuery] string parent_id = null,
+      [FromQuery] string start_id = null,
+      [FromQuery] string end_id = null,
+      [FromQuery] int count = 0
     )
     {
+     
       GetByParentDTO retVal = new GetByParentDTO();
       retVal.parent_id = parent_id;
 
@@ -165,16 +167,30 @@ namespace LeafletAlarms.Controllers
 
       List<string> parentIds = new List<string>();
 
+      string minId = null;
+      string maxId = null;
+
       foreach (var marker in markers.Values)
       {
         var markerDto = DTOConverter.GetMarkerDTO(marker);
         retVal.children.Add(markerDto);
         parentIds.Add(marker.id);
+
+        if (minId == null || string.Compare(marker.id, minId) < 0)
+        {
+          minId = marker.id;
+        }
+        if (maxId == null || string.Compare(marker.id, maxId) > 0)
+        {
+          maxId = marker.id;
+        }
       }
 
-      
-      retVal.start_id = retVal.children.FirstOrDefault()?.id;
-      retVal.end_id = retVal.children.LastOrDefault()?.id;
+      retVal.start_id = minId;
+      retVal.end_id = maxId;
+
+      //retVal.start_id = retVal.children.FirstOrDefault()?.id;
+      //retVal.end_id = retVal.children.LastOrDefault()?.id;
 
       if (markers.Count < count)
       {

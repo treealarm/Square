@@ -2,13 +2,20 @@
 import { ApiRootString } from './constants';
 import { DoFetch } from './Fetcher';
 import { DeepCopy, GetByParentDTO, TreeMarker, Marker } from './Marker';
+import { ApplicationState } from '.';
 
-export interface TreeState {
-  isLoading: boolean;
+export interface RequestedState {
   parent_id: string | null;
+  start_id: string | null;
+  end_id: string | null;
+}
+export interface TreeState {
+  isLoading: boolean;  
   parents: (TreeMarker | null)[];
   children: TreeMarker[];
   parentBounds: Record<string, { start_id: string | null; end_id: string | null }>; // словарь с parent_id в качестве ключа
+
+  requestedState: RequestedState | null;
 }
 
 
@@ -16,9 +23,10 @@ export interface TreeState {
 const initialState: TreeState = {
   children: [],
   isLoading: false,
-  parent_id: null,
   parents: [],
-  parentBounds: {}
+  parentBounds: {},
+
+  requestedState: null
 };
 
 export async function getByParent(parent_id: string | null, start_id: string | null, end_id: string | null): Promise<GetByParentDTO> {
@@ -66,11 +74,15 @@ export async function getById(id: string | null): Promise <Marker>
 
 
 // Async thunk for fetching data
-export const fetchByParent = createAsyncThunk < GetByParentDTO, { parent_id: string | null, start_id: string | null, end_id:string | null} >(
+export const fetchByParent = createAsyncThunk<GetByParentDTO, void, { state: ApplicationState }>(
   'tree/fetchByParent',
-  async ({ parent_id, start_id, end_id }) => {
-
-    return getByParent(parent_id, start_id, end_id);
+  async (_,{ getState }) => {
+    const state: ApplicationState = getState() as ApplicationState;
+    const treeStates = state.treeStates as TreeState;
+    return getByParent(
+      treeStates.requestedState?.parent_id ?? null,
+      treeStates.requestedState?.start_id ?? null,
+      treeStates.requestedState?.end_id ?? null);
   }
 );
 
@@ -99,8 +111,8 @@ const treeSlice = createSlice({
 
       state.children = updatedChildren ?? [];
     },
-    setParentIdLocally: (state, action: PayloadAction<string | null>) => {
-      state.parent_id = action.payload;
+    setParentIdLocally: (state, action: PayloadAction<RequestedState | null >) => {
+      state.requestedState = action.payload;
     }
   },
   
@@ -111,7 +123,6 @@ const treeSlice = createSlice({
       })
       .addCase(fetchByParent.fulfilled, (state, action: PayloadAction<GetByParentDTO>) => {
         const data = action.payload;
-        state.parent_id = data.parent_id ?? null;
         state.children = data.children ?? [];
         state.parents = [null, ...(data.parents ?? [])];
         // Обновляем start_id и end_id для текущего parent_id

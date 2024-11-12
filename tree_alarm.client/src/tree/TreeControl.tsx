@@ -20,36 +20,38 @@ import * as TreeStore from '../store/TreeStates';
 import * as GuiStore from '../store/GUIStates';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { useAppDispatch } from "../store/configureStore";
+import { RequestedState } from '../store/TreeStates';
 
 export function TreeControl() {
   const appDispatch = useAppDispatch();
 
-  const treeStates = useSelector((state: ApplicationState) => state.treeStates);
   const parentBounds = useSelector((state: ApplicationState) => state.treeStates?.parentBounds || {});
 
   const markers = useSelector((state: ApplicationState) => state.treeStates?.children);
-  const parentMarkerId = useSelector((state: ApplicationState) => state.treeStates?.parent_id);
+  const parentMarkerId = useSelector((state: ApplicationState) => state.treeStates?.requestedState?.parent_id);
+  const requestedState: RequestedState|null = useSelector((state: ApplicationState) => state.treeStates?.requestedState ?? null);
   const user = useSelector((state: ApplicationState) => state.rightsStates?.user);
   const reduxSelectedId = useSelector((state: ApplicationState) => state.guiStates?.selected_id);
   const requestTreeUpdate = useSelector((state: ApplicationState) => state.guiStates?.requestedTreeUpdate);
 
-  const getTreeItemsByParent = useCallback((parentId: string | null) => {
-    appDispatch(TreeStore.fetchByParent({ parent_id: parentId, start_id: null, end_id: null }));
-  }, [appDispatch]);
-
   const startEndBounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
 
-  useEffect(() => {
-    getTreeItemsByParent(null);
-  }, [user]);
+  const getTreeItemsByParent = useCallback((requestedState: RequestedState | null) => {
+    appDispatch(TreeStore.setParentIdLocally(requestedState));
+  }, [appDispatch]);
+ 
 
   useEffect(() => {
-    appDispatch(TreeStore.fetchByParent({
+    getTreeItemsByParent({
       parent_id: parentMarkerId ?? null,
-      start_id: startEndBounds?.start_id ?? null,
-      end_id: startEndBounds?.end_id ?? null
-    }));
-  }, [requestTreeUpdate, parentMarkerId]);
+      start_id: startEndBounds?.start_id,
+      end_id: startEndBounds?.end_id
+    });
+  }, [user, getTreeItemsByParent]);
+
+  useEffect(() => {
+    appDispatch(TreeStore.fetchByParent());
+  }, [requestTreeUpdate, requestedState]);
 
   const [checked, setChecked] = React.useState<Set<string>>(new Set());
 
@@ -74,15 +76,21 @@ export function TreeControl() {
 
   const drillDown = (selectedMarker: TreeMarker | null) => () => {
     selectItem(null);
-    getTreeItemsByParent(selectedMarker?.id ?? null);
+    const my_bounds = selectedMarker?.id ? parentBounds[selectedMarker?.id] : parentBounds[''];
+
+    getTreeItemsByParent({
+      parent_id: selectedMarker?.id ?? null,
+      start_id: my_bounds?.start_id,
+      end_id: my_bounds?.end_id
+    });
   };
 
   const onNavigate = (next: boolean) => {
-    appDispatch(TreeStore.fetchByParent({
+    getTreeItemsByParent({
       parent_id: parentMarkerId ??  null,
       start_id: next ? startEndBounds?.end_id : null,
       end_id: next ? null : startEndBounds?.start_id
-    }));
+    });
   };
 
   const addChildItem = () => {
@@ -94,11 +102,13 @@ export function TreeControl() {
     }
     appDispatch(ObjPropsStore.updateObjProps(copy));
 
-    appDispatch(TreeStore.fetchByParent({
+    const my_bounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
+
+    getTreeItemsByParent({
       parent_id: parentMarkerId ?? null,
-      start_id: treeStates?.start_id ?? null,
+      start_id: my_bounds?.start_id ?? null,
       end_id: null
-    }));
+    });
   };
 
   return (

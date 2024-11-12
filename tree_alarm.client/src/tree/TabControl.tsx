@@ -13,17 +13,26 @@ import { useAppDispatch } from '../store/configureStore';
 export default function TabControl() {
 
   const treeState = useSelector((state: ApplicationState) => state?.treeStates);
+  const parentMarkerId = useSelector((state: ApplicationState) => state.treeStates?.requestedState?.parent_id);
+ 
+  const parentBounds = useSelector((state: ApplicationState) => state.treeStates?.parentBounds || {});
   const parent_list = treeState?.parents ?? [];
 
+
   let curMarker = parent_list.find((element: any) => {
-    return element?.id == treeState?.parent_id;
+    return element?.id == parentMarkerId;
   }) ?? null;
 
   curMarker = curMarker??null;
   const appDispatch = useAppDispatch();
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker | null) => {
-    appDispatch(TreeStore.setParentIdLocally(newValue?.id ?? null));
+    const my_bounds = newValue?.id ? parentBounds[newValue?.id] : parentBounds[''];
+    appDispatch(TreeStore.setParentIdLocally({
+      parent_id: newValue?.id ?? null,
+      start_id: my_bounds.start_id,
+      end_id: my_bounds.end_id
+    }));
   };
   
 

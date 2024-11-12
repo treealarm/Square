@@ -1,4 +1,4 @@
-﻿import { IDiagramDTO, IDiagramContentDTO, IDiagram} from './Marker';
+﻿import { IDiagramDTO, IDiagramContentDTO} from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApplicationState } from './index';
