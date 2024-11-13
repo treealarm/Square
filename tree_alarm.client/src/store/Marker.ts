@@ -371,6 +371,10 @@ export interface IDiagramDTO {
   background_img?: string | null;
 }
 
+export interface IDiagramFullDTO {
+  diagram: IDiagramDTO;
+  parent_type?: IDiagramTypeDTO|null;
+}
 export interface IDiagramTypeRegionDTO {
   id: string;
   geometry: IDiagramCoord;

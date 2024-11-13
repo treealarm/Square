@@ -47,6 +47,48 @@ namespace LeafletAlarms.Controllers
       return null;
     }
 
+    
+    [HttpGet()]
+    [Route("GetDiagramFull")]
+    public async Task<DiagramFullDTO> GetDiagramFull(string diagram_id)
+    {
+      if (string.IsNullOrEmpty(diagram_id))
+      {
+        return null;
+      }
+
+      var marker = await _mapService.GetAsync(diagram_id);
+      
+      var listOfIds = new List<string>() { diagram_id };
+
+      if (!string.IsNullOrEmpty(marker.parent_id))
+      {
+        listOfIds.Add(marker.parent_id);
+      }
+     
+      var diagrams = await _diagramService.GetListByIdsAsync(listOfIds);
+
+      if (diagrams.TryGetValue(diagram_id, out var value))
+      {        
+        var retVal = new DiagramFullDTO()
+        {
+          diagram = value
+        };
+
+        if (!string.IsNullOrEmpty(marker.parent_id) && diagrams.TryGetValue(marker.parent_id, out var parent_diagram))
+        {
+          var dgr_types = await _diagramTypeService.GetListByTypeNamesAsync(
+            new List<string>()
+              {parent_diagram.dgr_type}
+            );
+          retVal.parent_type = dgr_types.Values.FirstOrDefault();
+        }
+        return retVal;
+      }
+
+      return null;
+    }
+
     [HttpGet()]
     [Route("GetDiagramContent")]
     public async Task<DiagramContentDTO> GetDiagramContent(string diagram_id, int depth = 1)

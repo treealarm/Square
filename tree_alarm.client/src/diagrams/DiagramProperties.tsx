@@ -14,7 +14,7 @@ import Select from '@mui/material/Select';
 import Link from '@mui/material/Link';
 
 import { useAppDispatch } from '../store/configureStore';
-import { DeepCopy, IDiagramContentDTO } from '../store/Marker';
+import { DeepCopy, IDiagramContentDTO, IDiagramFullDTO } from '../store/Marker';
 import { useCallback, useEffect } from 'react';
 
 import { IDiagramDTO } from '../store/Marker';
@@ -36,15 +36,16 @@ export function DiagramProperties(props: IDiagramProperties) {
   const appDispatch = useAppDispatch();
   let navigate = useNavigate();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const cur_diagram_content: IDiagramContentDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content ?? null);
-  const cur_diagram: IDiagramDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram ?? null);
+  const cur_diagram_content: IDiagramContentDTO | null =
+    useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content ?? null);
+  const cur_diagram_full: IDiagramFullDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram ?? null);
+  
   const result = useSelector((state: ApplicationState) => state?.diagramtypeStates?.result);
   const cur_diagramtype = useSelector((state: ApplicationState) => state?.diagramtypeStates?.cur_diagramtype);
   const content: IDiagramDTO[] = cur_diagram_content?.content??[];
 
-  var parent_props = cur_diagram_content?.content_props?.find(i => i.id == cur_diagram?.id);
-  var parentDiagram = content?.find(e => e.id == parent_props?.parent_id);
-  var parentType = cur_diagram_content?.dgr_types?.find(t => t.name == parentDiagram?.dgr_type) ?? null;
+  const cur_diagram: IDiagramDTO | null = cur_diagram_full?.diagram ?? null;
+  var parentType = cur_diagram_full?.parent_type ?? null;
   
 
   useEffect(() => {
@@ -144,10 +145,13 @@ export function DiagramProperties(props: IDiagramProperties) {
   function handleChangeRegionId(e: any) {
     const { target: { value } } = e;
 
-    var copy = DeepCopy(cur_diagram);
-    copy.region_id = value;
-    appDispatch(DiagramsStore.update_single_diagram_locally(copy));
+    var copy = DeepCopy(cur_diagram_full);
+    if (copy?.diagram) {
+      copy.diagram.region_id = value;
+      appDispatch(DiagramsStore.update_single_diagram_locally(copy));
+    }    
   }
+
   const onClickAddNewDiagram = useCallback(() => {
 
     if (!selected_id || cur_diagram != null)

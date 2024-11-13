@@ -86,6 +86,12 @@ namespace DbLayer.Services
       return ConvertMarkerDB2DTO(result);
     }
 
+    public async Task<BaseMarkerDTO> GetParent(string id)
+    {
+      var result = await _markerCollection.Find(x => x.id == id).FirstOrDefaultAsync();
+      return ConvertMarkerDB2DTO(result);
+    }
+
     public async Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdsAsync(
       List<string> parent_ids,
       string start_id,

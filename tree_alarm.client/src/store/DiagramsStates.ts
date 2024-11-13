@@ -1,4 +1,4 @@
-﻿import { IDiagramDTO, IDiagramContentDTO} from './Marker';
+﻿import { IDiagramDTO, IDiagramFullDTO, IDiagramContentDTO} from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApplicationState } from './index';
@@ -8,7 +8,7 @@ import { ApiDiagramsRootString } from './constants';
 export interface DiagramsStates {
   cur_diagram_content: IDiagramContentDTO | null; 
   depth: number;
-  cur_diagram: IDiagramDTO | null;
+  cur_diagram: IDiagramFullDTO | null;
   diagrams_updated: boolean;
 }
 
@@ -71,17 +71,17 @@ export const deleteDiagrams = createAsyncThunk<string[], string[]>(
         body: body
       });
 
-    var json = await fetched.json() as Promise<IDiagram[]>;
+    var json = await fetched.json() as Promise<string[]>;
 
     return json;
   }
 )
 
-export const fetchSingleDiagram = createAsyncThunk<IDiagramDTO, string>(
+export const fetchSingleDiagram = createAsyncThunk<IDiagramFullDTO, string>(
   'diagrams/fetchSingleDiagram',
   async (diagram_id: string, { rejectWithValue }) => {
     const fetched = await DoFetch(
-      `${ApiDiagramsRootString}/GetDiagramById?diagram_id=${diagram_id}`,
+      `${ApiDiagramsRootString}/GetDiagramFull?diagram_id=${diagram_id}`,
       {
         method: "GET",
         headers: { "Content-type": "application/json" }
@@ -94,7 +94,7 @@ export const fetchSingleDiagram = createAsyncThunk<IDiagramDTO, string>(
       return rejectWithValue("Diagram not found");
     }
 
-    return json as IDiagramDTO;
+    return json as IDiagramFullDTO;
   }
 );
 
@@ -107,17 +107,23 @@ const diagramsSlice = createSlice({
     set_diagram_content_locally(state: DiagramsStates, action: PayloadAction<IDiagramContentDTO|null>) {
       state.cur_diagram_content = action.payload;
     },
-    update_single_diagram_locally(state: DiagramsStates, action: PayloadAction<IDiagramDTO|null>) {
+    update_single_diagram_locally(state: DiagramsStates, action: PayloadAction<IDiagramFullDTO |null>) {
 
-      state.cur_diagram = action.payload;
+      var cur_diagram_full = action.payload;
+      state.cur_diagram = cur_diagram_full;
 
       if (state.cur_diagram_content == null ||
         action.payload == null) {
         return;
       }
-      var newContent = state.cur_diagram_content.content.filter(d => d.id != action.payload?.id);
-      newContent.push(action.payload);
-      state.cur_diagram_content.content = newContent;
+
+      var cur_diagram = cur_diagram_full?.diagram ?? null;
+
+      if (cur_diagram) {
+        var newContent = state.cur_diagram_content.content.filter(d => d.id != cur_diagram?.id);
+        newContent.push(cur_diagram);
+        state.cur_diagram_content.content = newContent;
+      }      
     },
     set_depth(state: DiagramsStates, action: PayloadAction<number>) {
       state.depth = action.payload;

@@ -1,6 +1,4 @@
-﻿using Domain.GeoDTO;
-
-namespace Domain.Diagram
+﻿namespace Domain.Diagram
 {
   public record DiagramDTO
   {
