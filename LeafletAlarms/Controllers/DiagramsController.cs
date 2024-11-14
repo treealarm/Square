@@ -106,15 +106,22 @@ namespace LeafletAlarms.Controllers
 
       var markerParent = await _mapService.GetAsync(new List<string>() { diagram_id });
 
-      var markers = await _mapService.GetByParentIdAsync(diagram_id, null, null, 1000);
-      var children = markers;
+      Dictionary<string, BaseMarkerDTO> markers = new Dictionary<string, BaseMarkerDTO>();
 
-      for (int l = 0; l < depth; ++l)
+      if (depth > 0)
       {
-        if (!children.Any())
-        { continue; }
-        children = await _mapService.GetByParentIdsAsync(children.Values.Select(m => m.id).ToList(), null, null, 1000);
-        markers = markers.Union(children).ToDictionary();
+        markers = await _mapService.GetByParentIdAsync(diagram_id, null, null, 1000);
+        var children = markers;
+
+        for (int l = 0; l < depth; ++l)
+        {
+          if (!children.Any())
+          {
+            break;
+          }
+          children = await _mapService.GetByParentIdsAsync(children.Values.Select(m => m.id).ToList(), null, null, 1000);
+          markers = markers.Union(children).ToDictionary();
+        }
       }
       markers[diagram_id] = markerParent[diagram_id];
 
@@ -133,11 +140,10 @@ namespace LeafletAlarms.Controllers
               });
 
 
-      var props = await _mapService.GetPropsAsync(markers.Keys.ToList());
 
       HashSet<string> dgrTypes = new HashSet<string>();
 
-      retVal.content_props = props.Values.ToList();
+      retVal.children = markers.Values.ToList();
 
       foreach (var kvp in diagrams)
       {

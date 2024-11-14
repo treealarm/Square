@@ -69,6 +69,7 @@ export function SearchMeOnMap(props: ISearchMeOnMapProps) {
         zoom: props.zoom_min
       };
 
+      appDispatch(GuiStore.setDiagramDivingMode(false));
       appDispatch(GuiStore.setMapOption(viewOption));
 
     }, [appDispatch, props.zoom_min])

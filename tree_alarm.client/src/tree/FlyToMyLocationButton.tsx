@@ -22,7 +22,7 @@ export function FlyToMyLocationButton() {
         zoom: null,
         find_current_pos: true
       };
-
+      appDispatch(GuiStore.setDiagramDivingMode(false));
       appDispatch(GuiStore.setMapOption(viewOption));
     },[appDispatch]);
 

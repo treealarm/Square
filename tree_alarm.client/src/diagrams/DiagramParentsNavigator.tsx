@@ -23,10 +23,10 @@ export default function DiagramParentsNavigator(props: IDiagramParentsNavigator)
 
   const handleChange = (event: React.SyntheticEvent, newValue: TreeMarker | null) => {
     if (newValue?.id == null) {
-      appDispatch<any>(DiagramsStore.update_single_diagram_locally(null));
+      appDispatch(DiagramsStore.update_single_diagram_locally(null));
       return;
     }
-    appDispatch<any>(DiagramsStore.fetchGetDiagramContent(newValue?.id));
+    appDispatch(DiagramsStore.fetchGetDiagramContent(newValue?.id));
   };
 
   if (parent_list == null) {

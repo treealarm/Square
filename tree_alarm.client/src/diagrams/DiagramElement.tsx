@@ -7,7 +7,7 @@ import { useAppDispatch } from '../store/configureStore';
 import { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
-import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IObjProps } from '../store/Marker';
+import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, TreeMarker } from '../store/Marker';
 
 interface IDiagramElement {
   diagram: IDiagramDTO;
@@ -27,8 +27,8 @@ export default function DiagramElement(props: IDiagramElement) {
   const { diagram, parent, getColor, parent_coord, zoom } = props;
 
 
-  const childrenProps: IObjProps[] = diagram_content?.content_props?.filter(i => i.parent_id === diagram?.id) || [];
-  const childrenDiagrams = diagram_content?.content?.filter(e => childrenProps.some(c => c.id === e.id)) || null;
+  const children: TreeMarker[] = diagram_content?.children?.filter(i => i.parent_id === diagram?.id) || [];
+  const childrenDiagrams = diagram_content?.content?.filter(e => children.some(c => c.id === e.id)) || null;
 
 
   const appDispatch = useAppDispatch();

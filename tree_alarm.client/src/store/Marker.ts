@@ -388,10 +388,10 @@ export interface IDiagramTypeDTO {
 
 export interface IDiagramContentDTO {
   diagram_id: string;
-  content: IDiagramDTO[];
-  content_props: IObjProps[];
+  content: IDiagramDTO[]; 
   dgr_types: IDiagramTypeDTO[];
   parents?: TreeMarker[];
+  children: TreeMarker[];
   depth: number;
 }
 

@@ -4,7 +4,7 @@ import PoolIcon from '@mui/icons-material/Pool';
 
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { IDiagramDTO } from '../store/Marker';
+import { IDiagramDTO, IDiagramFullDTO } from '../store/Marker';
 
 import * as DiagramsStore from '../store/DiagramsStates';
 import * as GUIStore from '../store/GUIStates';
@@ -17,19 +17,22 @@ export default function DiagramNavigation() {
 
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const diagram_content = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
-  const cur_diagram: IDiagramDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram ?? null);
+  const cur_diagram_full: IDiagramFullDTO | null = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram ?? null);  
   const diagramDiving = useSelector((state: ApplicationState) => state?.guiStates?.diagramDiving);
 
-  var parent_props = diagram_content?.content_props?.find(i => i.id == cur_diagram?.id);
-  var parent_diagram = diagram_content?.content?.find(e => e.id == parent_props?.parent_id) ?? null;
+  const cur_diagram: IDiagramDTO | null = cur_diagram_full?.diagram ?? null;
 
   const appDispatch = useAppDispatch();
-  useEffect(() => {
 
-    if (!cur_diagram) {
-      Resurface();
-    }
-  }, [cur_diagram]);
+  useEffect(() => {
+  }, []);
+
+  //useEffect(() => {
+
+  //  if (!cur_diagram) {
+  //    Resurface();
+  //  }
+  //}, [cur_diagram]);
 
   const setDiagram = useCallback(
     (diagram_id: string|null) => {
@@ -46,7 +49,7 @@ export default function DiagramNavigation() {
       appDispatch(GUIStore.setDiagramDivingMode(false));
     }, [ ]);
 
-  if (!cur_diagram) {
+  if (!cur_diagram && !diagramDiving) {
     return null;
   }
 
@@ -67,7 +70,7 @@ export default function DiagramNavigation() {
         </Tooltip>:<div></div>
       }
 
-      <DiagramParentsNavigator parent_list={diagram_content?.parents ?? null} parent_id={parent_diagram?.id ?? null} />
+      <DiagramParentsNavigator parent_list={diagram_content?.parents ?? null} parent_id={cur_diagram?.id ?? null} />
 
       <Tooltip title={"Dive into the diagram"}>
         <IconButton aria-label="search" size="medium" onClick={() => setDiagram(objProps?.id ??null)}>

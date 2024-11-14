@@ -2,7 +2,7 @@
 import { useCallback, useEffect, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { getExtraProp, IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker';
+import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
@@ -13,7 +13,7 @@ import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import DiagramElement from './DiagramElement';
-import DiagramGray from './DiagramGray';
+
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -25,39 +25,25 @@ export default function DiagramViewer() {
 
   const cur_diagram_content: IDiagramContentDTO | null =
     useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content ?? null);
-  const depth = useSelector((state: ApplicationState) => state?.diagramsStates.depth);
+  const depth = useSelector((state: ApplicationState) => state?.diagramsStates?.depth);
   const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
   const alarmedObjects = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates?.alarmed_objects);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   const cur_diagram = cur_diagram_content?.content.find(e => e.id == cur_diagram_content?.diagram_id);
-  const cur_diagram_prop = cur_diagram_content?.content_props.find(e => e.id == cur_diagram_content?.diagram_id);
+  //const cur_diagram_children: TreeMarker[] =
+  //  cur_diagram_content?.children.filter(e => e.parent_id === cur_diagram_content?.diagram_id) ?? [];
+
+
+  //const content = cur_diagram_content?.content.filter(e => cur_diagram_children.some(c => c.id === e.id)) ?? null;
 
   const [currentPaperProps, setCurrentPaperProps] = useState({
-    paper_width: 0,
-    paper_height: 0,
+    paper_width: 1000,
+    paper_height: 800,
     background_img: null
   });
 
-  useEffect(
-    () => {
-      var paper_width =
-        parseFloat(
-          getExtraProp(cur_diagram_prop, "__paper_width", '1000'));
-      var paper_height = parseFloat(
-        getExtraProp(cur_diagram_prop, "__paper_height", '1000'));
-
-      var background_img = getExtraProp(cur_diagram_prop, "__background_img", null);
-
-      var curPaperProps =
-      {
-        paper_width: paper_width,
-        paper_height: paper_height,
-        background_img: background_img
-      }
-      setCurrentPaperProps(curPaperProps);
-
-    }, [cur_diagram_prop]);
+ 
 
   useEffect(
     () => {
@@ -70,7 +56,21 @@ export default function DiagramViewer() {
     }, [cur_diagram_content?.content, appDispatch]);
 
 
+  useEffect(
+    () => {
 
+      if (cur_diagram && cur_diagram.geometry &&
+        cur_diagram.geometry.width > 100 &&
+        cur_diagram.geometry.height > 100) {
+        setCurrentPaperProps(
+          {
+            paper_width: cur_diagram.geometry.width * 2,
+            paper_height: cur_diagram.geometry.height * 2,
+            background_img: currentPaperProps.background_img
+          }
+        );
+      }
+    }, [cur_diagram, currentPaperProps.background_img]);
 
   const getColor = useCallback(
     (marker: IDiagramDTO) => {
@@ -83,31 +83,31 @@ export default function DiagramViewer() {
       }
 
       {
-        var vState = visualStates.states.find(i => i.id == id);
+        var vState = visualStates?.states.find(i => i.id == id);
 
         if (vState != null && vState.states.length > 0) {
           var vStateFirst = vState.states[0];
-          var vStateDescr = visualStates.states_descr.find(s => s.state == vStateFirst);
+          var vStateDescr = visualStates?.states_descr.find(s => s.state == vStateFirst);
           if (vStateDescr != null) {
             retColor = vStateDescr.state_color;
           }
         }
       }
 
-      var vAlarmState = alarmedObjects.find(i => i.id == id);
+      var vAlarmState = alarmedObjects?.find(i => i.id == id);
 
       if (vAlarmState != null
         && (vAlarmState.alarm)) {
 
         retColor = '#ff0000';
       }
-      else {
-        var color = getExtraProp(marker, "__color");
+      //else {
+      //  var color = getExtraProp(marker, "__color");
 
-        if (color != null) {
-          retColor = color;
-        }
-      }
+      //  if (color != null) {
+      //    retColor = color;
+      //  }
+      //}
 
       return retColor;
 
@@ -136,11 +136,10 @@ export default function DiagramViewer() {
   };
 
 
-  if (cur_diagram_content == null) {
+  if (cur_diagram_content == null || cur_diagram == null) {
     return null;
   }
-  var content = cur_diagram_content.content.filter(e => e.parent_id == cur_diagram?.id);
-
+ 
   var coord: IDiagramCoord = 
   {
     left: 0,
@@ -219,19 +218,29 @@ export default function DiagramViewer() {
           }
           
 
-          <DiagramGray diagram={cur_diagram??null} zoom={zoom} />
+          
+            <DiagramElement
+              diagram={cur_diagram}
+              parent={null}
+              parent_coord={coord}
+              zoom={zoom}
+              z_index={1}
+              getColor={getColor}
+              key={'base diagram'} />
+          
+            
 
           {
-            content.map((dgr, index) =>
-              <DiagramElement
-                diagram={dgr}
-                parent={null}
-                parent_coord={coord}
-                zoom={zoom}
-                z_index={2}
-                getColor={getColor}
-                key={index} />
-            )
+            //content?.map((dgr, index) =>
+            //  <DiagramElement
+            //    diagram={dgr}
+            //    parent={cur_diagram}
+            //    parent_coord={coord}
+            //    zoom={zoom}
+            //    z_index={2}
+            //    getColor={getColor}
+            //    key={index} />
+            //)
           }
 
         </Box>

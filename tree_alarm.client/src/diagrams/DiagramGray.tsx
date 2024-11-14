@@ -7,7 +7,7 @@ import { Box } from '@mui/material';
 import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO } from '../store/Marker';
 
 interface IDiagramElement {
-  diagram: IDiagramDTO;
+  diagram?: IDiagramDTO|null;
   zoom: number;
 }
 

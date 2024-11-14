@@ -1,4 +1,4 @@
-﻿import { IDiagramDTO, IDiagramFullDTO, IDiagramContentDTO} from './Marker';
+﻿import { IDiagramDTO, IDiagramFullDTO, IDiagramContentDTO, DeepCopy} from './Marker';
 import { DoFetch } from './Fetcher';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { ApplicationState } from './index';
@@ -154,12 +154,18 @@ const diagramsSlice = createSlice({
         state.diagrams_updated = false;
       })
       .addCase(updateDiagrams.fulfilled, (state: DiagramsStates, action) => {
-        const { requestId } = action.meta
         const updated: IDiagramDTO[] = action.payload;
 
-        var cur_diagram_found = updated.find(ud => ud.id == state.cur_diagram?.id);
-        if (cur_diagram_found != null) {
-          state.cur_diagram = cur_diagram_found;
+        var cur_diagram_found = updated.find(ud => ud.id == state.cur_diagram?.diagram?.id);
+
+        if (cur_diagram_found != null && state.cur_diagram != null) {
+
+          var new_diag = DeepCopy(state.cur_diagram) ?? null;
+
+          if (new_diag) {
+            new_diag.diagram = cur_diagram_found;
+            state.cur_diagram = new_diag;
+          }          
         }
 
         state.diagrams_updated = true;
@@ -185,7 +191,7 @@ const diagramsSlice = createSlice({
     //deleteDiagrams
       .addCase(deleteDiagrams.fulfilled, (state: DiagramsStates, action) => {
 
-        if (state.cur_diagram?.id != null && action.payload.find(e => e == state?.cur_diagram?.id))
+        if (state.cur_diagram?.diagram != null && action.payload.find(e => e == state?.cur_diagram?.diagram?.id))
           state.cur_diagram = null;
       })
       .addCase(deleteDiagrams.rejected, (state, action) => {

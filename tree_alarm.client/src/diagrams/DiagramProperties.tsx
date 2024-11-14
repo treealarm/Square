@@ -78,7 +78,7 @@ export function DiagramProperties(props: IDiagramProperties) {
         }
         cur_diagram_copy.dgr_types.push(DeepCopy(cur_diagramtype));        
       }
-      appDispatch(DiagramsStore.update_single_diagram_locally(cur_diagram_copy));
+      appDispatch(DiagramsStore.set_diagram_content_locally(cur_diagram_copy));
     }
   }, [result, cur_diagram, cur_diagramtype, cur_diagram_content]);
 
@@ -107,35 +107,35 @@ export function DiagramProperties(props: IDiagramProperties) {
 
   function handleChangeType(e: any) {
     const { target: { value } } = e;
-    var copy = DeepCopy(cur_diagram);
-    copy.dgr_type = value;
+    var copy = DeepCopy(cur_diagram_full);
+    copy.cur_diagram.dgr_type = value;
     appDispatch(DiagramsStore.update_single_diagram_locally(copy));
   }
 
   function handleChangeBackgroundImg(e: any) {
     const { target: { value } } = e;
-    var copy = DeepCopy(cur_diagram);
-    copy.background_img = value;
+    var copy = DeepCopy(cur_diagram_full);
+    copy.diagram.background_img = value;
     appDispatch(DiagramsStore.update_single_diagram_locally(copy));
   }
   function handleChangeRegion(e: any) {
     const { target: { id, value } } = e;
 
-    var copy = DeepCopy(cur_diagram);
+    var copy = DeepCopy(cur_diagram_full);
     var textId = id;
 
     if (!isNaN(value)) {
       if (textId == "editreg_left") {
-        copy.geometry.left = value;
+        copy.diagram.geometry.left = value;
       }
       if (textId == "editreg_top") {
-        copy.geometry.top = value;
+        copy.diagram.geometry.top = value;
       }
       if (textId == "editreg_width") {
-        copy.geometry.width = value;
+        copy.diagram.geometry.width = value;
       }
       if (textId == "editreg_height") {
-        copy.geometry.height = value;
+        copy.diagram.geometry.height = value;
       }
     }
 
@@ -232,7 +232,7 @@ export function DiagramProperties(props: IDiagramProperties) {
     return null;
   }
   let cur_diagram_type = cur_diagram?.dgr_type != null ? cur_diagram?.dgr_type : "";
-  console.log("cur_diagram_type:", cur_diagram_type);
+
   return (
     <Box sx={{
       width: '100%',
