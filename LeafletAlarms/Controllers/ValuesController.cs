@@ -1,4 +1,5 @@
-﻿using Domain.Values;
+﻿using Domain.ServiceInterfaces;
+using Domain.Values;
 using Microsoft.AspNetCore.Mvc;
 using System.Xml.Linq;
 
@@ -6,34 +7,53 @@ using System.Xml.Linq;
 
 namespace LeafletAlarms.Controllers
 {
+
   [Route("api/[controller]")]
   [ApiController]
   public class ValuesController : ControllerBase  
   {
+    private readonly IValuesService _valuesService;
+    private readonly IValuesUpdateService _valuesUpdateService;
+    public ValuesController(
+     IValuesService valuesService,
+     IValuesUpdateService valuesUpdateService
+    )
+    {
+      _valuesService = valuesService;
+      _valuesUpdateService = valuesUpdateService;
+    }
+
     static ValueDTO _value = new ValueDTO()
     {
         name = "test",
         owner_id = "671f6f6f593be419bbece727"
-      };
-    // GET api/<ValuesController>/5
-    [HttpGet("{id}")]
-    public ValueDTO Get(string id)
+    };
+
+    [HttpGet()]
+    [Route("GetByOwner")]
+    public async Task<List<ValueDTO>> GetByOwner(string owner)
     {
-      return _value;
+      var dic = await _valuesService.GetListByOwnerAsync(owner);
+      return dic.Values.ToList();
+    }
+    [HttpGet()]
+    [Route("GetById")]
+    public async Task<List<ValueDTO>> GetById(string id)
+    {
+      var dic = await _valuesService.GetListByIdsAsync(new List<string> { id });
+      return dic.Values.ToList();
     }
 
-    // POST api/<ValuesController>
     [HttpPost]
-    public void Post([FromBody] ValueDTO value)
+    public void Post([FromBody] List<ValueDTO> values)
     {
-      _value = value;
+      _valuesUpdateService.UpdateValues(values);
     }
 
-
-    // DELETE api/<ValuesController>/5
-    [HttpDelete("{id}")]
-    public void Delete(string id)
+    [HttpDelete()]
+    public async Task Delete(List<string> ids)
     {
+      await _valuesUpdateService.RemoveValues(ids);
     }
   }
 }

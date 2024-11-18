@@ -64,6 +64,7 @@ namespace LeafletAlarms
       DbLayer.ServicesConfigurator.ConfigureServices(services);
       DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
 
+
       services.AddSingleton<RightsCheckerService>();
 
       services.AddSingleton<WebSockListService>(); // We must explicitly register Foo

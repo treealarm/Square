@@ -38,6 +38,11 @@ namespace DbLayer
       services.AddSingleton<IntegrationLeafsService>();
       services.AddSingleton<IIntegrationLeafsServiceInternal>(provider => provider.GetRequiredService<IntegrationLeafsService>());
       services.AddSingleton<IIntegrationLeafsService>(provider => provider.GetRequiredService<IntegrationLeafsService>());
+
+      services.AddSingleton<ValuesService>();
+      services.AddSingleton<IValuesService>(provider => provider.GetRequiredService<ValuesService>());
+      services.AddSingleton<IValuesServiceInternal>(provider => provider.GetRequiredService<ValuesService>());
+
     }
   }
 }
