@@ -428,29 +428,6 @@ export interface IEventDTO {
   event_priority: number;
 }
 
-export interface IIntegrationDTO {
-  id: string;
-  parent_id?: string | null;
-  name: string;
-}
-export interface IIntegrationExDTO extends IIntegrationDTO {
-  has_children: boolean;
-}
-export interface IGetIntegrationsDTO {
-  children: IIntegrationExDTO[] | null;
-  parent_id?: string | null;
-}
-
-export interface IIntegrationLeafDTO {
-  id?: string | null;
-  integration_id: string;
-}
-
-export interface IGetIntegrationLeafsDTO {
-  children: IIntegrationLeafDTO[] | null;
-  integration_id?: string | null;
-}
-
 export interface ILevelDTO {
   id: string | null;
   zoom_level?: string | null;

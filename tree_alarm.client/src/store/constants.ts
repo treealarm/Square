@@ -10,7 +10,5 @@ export const ApiDiagramsRootString = 'api/diagrams';
 export const ApiDiagramTypesRootString = 'api/diagramtypes';
 export const ApiFileSystemRootString = 'api/files';
 export const ApiEventsRootString = 'api/events';
-export const ApiIntegrationsRootString = 'api/integrations';
-export const ApiIntegrationLeafsRootString = 'api/integrationleafs';
 export const ApiDefaultPagingNum = 100;
 export const ApiDefaultMaxCountResult = 1000;

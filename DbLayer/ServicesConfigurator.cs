@@ -31,13 +31,6 @@ namespace DbLayer
       services.AddSingleton<IRightService, RightService>();
       services.AddSingleton<IEventsService, EventsService>();
 
-      services.AddSingleton<IntegrationService>();
-      services.AddSingleton<IIntegrationServiceInternal>(provider => provider.GetRequiredService<IntegrationService>());
-      services.AddSingleton<IIntegrationService>(provider => provider.GetRequiredService<IntegrationService>());
-
-      services.AddSingleton<IntegrationLeafsService>();
-      services.AddSingleton<IIntegrationLeafsServiceInternal>(provider => provider.GetRequiredService<IntegrationLeafsService>());
-      services.AddSingleton<IIntegrationLeafsService>(provider => provider.GetRequiredService<IntegrationLeafsService>());
 
       services.AddSingleton<ValuesService>();
       services.AddSingleton<IValuesService>(provider => provider.GetRequiredService<ValuesService>());

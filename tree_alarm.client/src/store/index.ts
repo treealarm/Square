@@ -12,7 +12,6 @@ import * as PanelsStates from './PanelsStates';
 import * as DiagramsStates from './DiagramsStates';
 import * as DiagramTypeStates from './DiagramTypeStates';
 import * as EventsStates from './EventsStates';
-import * as IntegrationsStates from './IntegrationsStates';
 import * as ZoomLevelsStates from './ZoomLevelsStates';
 
 // The top-level state object
@@ -30,7 +29,6 @@ export interface ApplicationState {
   diagramsStates: DiagramsStates.DiagramsStates | undefined;
   diagramtypeStates: DiagramTypeStates.DiagramTypeStates | undefined;
   eventsStates: EventsStates.EventStates | undefined;
-  integrationsStates: IntegrationsStates.IntegrationStates | undefined;
   zoomLevelsStates: ZoomLevelsStates.ZoomLevelsState | undefined;
 }
 
@@ -51,7 +49,6 @@ export const reducers = {
   diagramsStates: DiagramsStates.reducer,
   diagramtypeStates: DiagramTypeStates.reducer,
   eventsStates: EventsStates.reducer,
-  integrationsStates: IntegrationsStates.reducer,
   zoomLevelsStates: ZoomLevelsStates.reducer
 };
 
