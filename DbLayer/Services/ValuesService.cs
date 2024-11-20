@@ -144,7 +144,7 @@ namespace DbLayer.Services
       }
     }
 
-    public static object? ConvertFromBsonValue(BsonValue bsonValue)
+    public static object ConvertFromBsonValue(BsonValue bsonValue)
     {
       if (bsonValue == null || bsonValue.IsBsonNull)
       {
@@ -165,7 +165,7 @@ namespace DbLayer.Services
       //};
     }
 
-    public static DBValue? ConvertDTO2DB(ValueDTO dto)
+    public static DBValue ConvertDTO2DB(ValueDTO dto)
     {
       if (dto == null)
       {

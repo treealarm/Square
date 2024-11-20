@@ -47,7 +47,7 @@ export function WebSockClient() {
 
       switch (received.action) {
         case "set_visual_states":
-          appDispatch(MarkersVisualStore.updateMarkersVisualStates(received.data));
+          appDispatch(MarkersVisualStore.requestAndUpdateMarkersVisualStates(received.data));
           break;
         case "set_ids2update":
           appDispatch(MarkersStore.fetchMarkersByIds(received.data));

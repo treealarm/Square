@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
 
 namespace DbLayer
 {
@@ -14,6 +13,9 @@ namespace DbLayer
 
     [BsonRepresentation(BsonType.ObjectId)]
     public string parent_id { get; set; }
+
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string owner_id { get; set; }// points to object which receive and own all states
 
     [BsonElement("name")]
     public string name { get; set; }

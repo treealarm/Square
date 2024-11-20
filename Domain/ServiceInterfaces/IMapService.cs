@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Domain.ServiceInterfaces
@@ -9,7 +6,8 @@ namespace Domain.ServiceInterfaces
   public interface IMapService
   {
     Task<Dictionary<string, BaseMarkerDTO>> GetAsync(List<string> ids);
-
+    Task<Dictionary<string, BaseMarkerDTO>> GetOwnersAsync(List<string> ids);
+    Task<Dictionary<string, BaseMarkerDTO>> GetOwnersAndViewsAsync(List<string> ids);
     Task<BaseMarkerDTO> GetAsync(string? id);
     Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id);
     Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdAsync(

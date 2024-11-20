@@ -5,8 +5,11 @@ using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
+using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
+using static StackExchange.Redis.Role;
 
 namespace LeafletAlarms.Services
 {
@@ -31,6 +34,7 @@ namespace LeafletAlarms.Services
     private HashSet<string> _setTrackUpdate = new HashSet<string>();
     private HashSet<string> _setIdsToUpdate = new HashSet<string>();
     private HashSet<string> _dicIds = new HashSet<string>();
+    private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
     private object _locker = new object();
     private BoxDTO _currentBox;
     public BoxDTO CurrentBox
@@ -348,6 +352,7 @@ namespace LeafletAlarms.Services
           }
         }
       }
+      await UpdateOwners();
       await _pub.Publish(Topics.CheckStatesByIds, toUpdate);
 
       if (toDelete.Count > 0)
@@ -397,51 +402,32 @@ namespace LeafletAlarms.Services
 
     public async Task OnStateChanged(List<ObjectStateDTO> states)
     {
-      List<ObjectStateDTO> toUpdate = new List<ObjectStateDTO>();
+      HashSet<string> objIds = new HashSet<string>();
 
       lock (_locker)
       {
         foreach (var state in states)
         {
-          if (_dicIds.Contains(state.id))
+          if (_dicOwnersAndViews.TryGetValue(state.id, out var marker))
           {
-            toUpdate.Add(state);
+              var views = _dicOwnersAndViews.Values
+                .Where(i => i.owner_id == marker.id)
+                .Select(i => i.id)
+                ;
+              objIds.UnionWith(views);
+              objIds.Add(state.id);
           }
         }
+        
       }
 
-      if (toUpdate.Count > 0)
+      if (objIds.Count > 0)
       {
-        List<string> objIds = toUpdate.Select(el => el.id).ToList();
-        var objsToUpdate = await _mapService.GetAsync(objIds);
-        HashSet<string> mapExTypeToStates = new HashSet<string>();
-
-        foreach (var objState in toUpdate)
-        {
-          BaseMarkerDTO objToUpdate = null;
-          objsToUpdate.TryGetValue(objState.id, out objToUpdate);
-
-          if (objToUpdate == null)
-          {
-            continue;
-          }
-
-          mapExTypeToStates.UnionWith(objState.states);
-        }
-
-        MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
-        vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
-
-        vStateDTO.states_descr.AddRange(await _stateService.GetStateDescrAsync(mapExTypeToStates.ToList()));
-
         StateBaseDTO packet = new StateBaseDTO()
         {
           action = "set_visual_states",
-          data = vStateDTO
+          data = objIds.ToList()
         };
-
-        vStateDTO.states = toUpdate;
-
         await SendPacket(packet);
       }
     }
@@ -504,7 +490,20 @@ namespace LeafletAlarms.Services
       }
     }
 
-    private void OnSetIds(List<string> ids)
+    private async Task UpdateOwners()
+    {
+      List<string> ids;
+      lock (_locker)
+      {
+        ids = _dicIds.ToList();
+      }
+      var owners_and_views = await _mapService.GetOwnersAndViewsAsync(ids);
+      lock (_locker)
+      {
+        _dicOwnersAndViews = owners_and_views;
+      }
+    }
+    private async Task OnSetIds(List<string> ids)
     {
       lock (_locker)
       {
@@ -521,6 +520,8 @@ namespace LeafletAlarms.Services
         }
         _pub.Publish(Topics.CheckStatesByIds, newIds.ToList());
       }
+
+      await UpdateOwners();
     }
   }
 }

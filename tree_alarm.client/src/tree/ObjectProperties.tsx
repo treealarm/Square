@@ -55,16 +55,6 @@ export function ObjectProperties() {
     appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   }
 
-  function handleChangeParentId(e: any) {
-    const { target: { value } } = e;
-    var copy = DeepCopy(objProps);
-    if (copy == null) {
-      return;
-    }
-    copy.parent_id = value;
-    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
-  }
-
   function handleChangeProp(e: any) {
     const { target: { id, value } } = e;
     let copy = DeepCopy(objProps);
@@ -193,14 +183,23 @@ export function ObjectProperties() {
 
 
   const handleSelect = (id: string | null) => {
-    const event = {
-      target: {
-        value: id
-      }
-    } as React.ChangeEvent<HTMLInputElement>;
-    handleChangeParentId(event);
+    var copy = DeepCopy(objProps);
+    if (copy == null) {
+      return;
+    }
+    copy.parent_id = id;
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
   };
 
+  const handleSelectOwner = (id: string | null) => {
+    var copy = DeepCopy(objProps);
+    if (copy == null) {
+      return;
+    }
+    copy.owner_id = id;
+    appDispatch(ObjPropsStore.setObjPropsLocally(copy));
+  };
+  
   return (
     <Box sx={{
       width: '100%',
@@ -266,7 +265,23 @@ export function ObjectProperties() {
             excludeId={objProps.id}
             onSelect={handleSelect}
           />
-          </ListItem>
+        </ListItem>
+
+        <ListItem>
+          <TextField
+            fullWidth
+            label='OwnerId'
+            size="small"
+            value={objProps.owner_id ? objProps.owner_id : ''}
+            inputProps={{ readOnly: true }}>
+          </TextField>
+          <ObjectSelector
+            selectedId={objProps.owner_id ?? null}
+            excludeId={objProps.id}
+            onSelect={handleSelectOwner}
+          />
+        </ListItem>
+
         <ListItem>
           <TextField size="small"
           fullWidth

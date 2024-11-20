@@ -1,7 +1,4 @@
-﻿using DbLayer.Models;
-using Domain;
-using Domain.GeoDBDTO;
-using Domain.GeoDTO;
+﻿using Domain;
 using Domain.ObjectInterfaces;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
@@ -58,6 +55,34 @@ namespace DbLayer.Services
 
         _markerCollection.Indexes.CreateOneAsync(indexModel);
       }
+
+      {
+        // Индекс для запросов по комбинации id и owner_id
+        IndexKeysDefinition<DBMarker> compositeKeys = Builders<DBMarker>.IndexKeys
+            .Ascending(d => d.id)
+            .Ascending(d => d.owner_id);
+
+        var compositeIndexModel = new CreateIndexModel<DBMarker>(
+            compositeKeys, new CreateIndexOptions
+            {
+              Name = "owner_id"
+            });
+
+        _markerCollection.Indexes.CreateOneAsync(compositeIndexModel);
+
+        // Индекс для запросов только по owner_id
+        IndexKeysDefinition<DBMarker> ownerKey = Builders<DBMarker>.IndexKeys
+            .Ascending(d => d.owner_id);
+
+        var ownerIndexModel = new CreateIndexModel<DBMarker>(
+            ownerKey, new CreateIndexOptions
+            {
+              Name = "owner"
+            });
+
+        _markerCollection.Indexes.CreateOneAsync(ownerIndexModel);
+      }
+
       {
         var keys = Builders<DBMarkerProperties>.IndexKeys.Combine(
           Builders<DBMarkerProperties>.IndexKeys
@@ -499,5 +524,81 @@ namespace DbLayer.Services
 
       return ret;
     }
+
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetOwnersAsync(List<string> ids)
+    {
+      var list_objects = await _markerCollection
+        .Find(
+         i =>
+          ids.Contains(i.id))
+        .ToListAsync();
+
+      var views = list_objects
+        .Where(i => !string.IsNullOrEmpty(i.owner_id));
+
+      if (!views.Any())
+      {
+        return ConvertMarkerListDB2DTO(list_objects);
+      }
+
+      var owners = list_objects
+        .Where(i => string.IsNullOrEmpty(i.owner_id));
+
+      var owner_ids = views.Select(i => i.owner_id);
+
+      // Search only real objects which doesn't have any owner
+      // and as a result return owners of objects
+      var owners_db = await _markerCollection
+        .Find(
+         i => 
+         string.IsNullOrEmpty(i.owner_id) && 
+          owner_ids.Contains(i.id))
+        .ToListAsync();
+
+      owners = owners.Union(owners_db);
+      return ConvertMarkerListDB2DTO(owners.ToList());
+    }
+
+    public async Task<Dictionary<string, BaseMarkerDTO>> GetOwnersAndViewsAsync(List<string> ids)
+    {
+      // Получаем все маркеры с указанными ID
+      var listObjects = await _markerCollection
+          .Find(i => ids.Contains(i.id))
+          .ToListAsync();
+
+      // Находим представления (маркеры с owner_id)
+      var views = listObjects
+          .Where(i => !string.IsNullOrEmpty(i.owner_id))
+          .ToList();
+
+      if (!views.Any())
+      {
+        return ConvertMarkerListDB2DTO(listObjects);
+      }
+      // Находим владельцев (owner_id = null) и собираем owner_ids для следующего поиска
+      var owners = listObjects
+          .Where(i => string.IsNullOrEmpty(i.owner_id))
+          .ToList();
+
+      var ownerIds = views
+          .Select(i => i.owner_id)
+          .ToList();
+
+      // Запрашиваем владельцев из базы, если есть ownerIds
+      var ownersDb = ownerIds.Any()
+          ? await _markerCollection
+              .Find(i => string.IsNullOrEmpty(i.owner_id) && ownerIds.Contains(i.id))
+              .ToListAsync()
+          : new List<DBMarker>();
+
+      // Объединяем найденные маркеры (владельцев и представления)
+      var allObjects = views
+          .Union(ownersDb)
+          .ToList();
+
+      // Конвертируем в DTO и возвращаем
+      return ConvertMarkerListDB2DTO(allObjects);
+    }
+
   }
 }

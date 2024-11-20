@@ -59,7 +59,7 @@ namespace BlinkService
 
       for (int i = 0; i < initialAlarmedStates.Count; i += maxProcess)
       {
-        await ProcessStates(initialAlarmedStates.Skip(i).Take(maxProcess).ToList());
+        await ProcessStates(initialAlarmedStates.Values.Skip(i).Take(maxProcess).ToList());
       }
       // Start timer after processing initial states.
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
@@ -227,7 +227,7 @@ namespace BlinkService
     {
       var objStates = await _stateService.GetStatesAsync(objIds);
 
-      await ProcessStates(objStates);
+      await ProcessStates(objStates.Values.ToList());
     }
 
     private async void DoWork()

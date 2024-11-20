@@ -183,14 +183,14 @@ namespace DbLayer.Services
       return (long)objsToUpdate.Count;
     }
 
-    List<ObjectStateDTO> ConvertListStateDB2DTO(List<DBObjectState> dbo)
+    Dictionary<string, ObjectStateDTO> ConvertListStateDB2DTO(List<DBObjectState> dbo)
     {
       if (dbo == null)
       {
         return null;
       }
 
-      var newObjs = new List<ObjectStateDTO>();
+      var newObjs = new Dictionary<string, ObjectStateDTO>();
 
       foreach (var dbObj in dbo)
       {
@@ -199,7 +199,7 @@ namespace DbLayer.Services
           id = dbObj.id,
           states = dbObj.states
         };
-        newObjs.Add(dto);
+        newObjs.Add(dbObj.id, dto);
       }
       return newObjs;
     }
@@ -272,7 +272,7 @@ namespace DbLayer.Services
       return newObjs;
     }
 
-    public async Task<List<ObjectStateDTO>> GetStatesAsync(List<string> ids)
+    public async Task<Dictionary<string, ObjectStateDTO>> GetStatesAsync(List<string> ids)
     {
       List<DBObjectState> obj = null;
 
@@ -391,9 +391,9 @@ namespace DbLayer.Services
       return retVal;
     }
 
-    public async Task<List<ObjectStateDTO>> GetAlarmedStates(List<string> statesFilter)
+    public async Task<Dictionary<string, ObjectStateDTO>> GetAlarmedStates(List<string> statesFilter)
     {     
-      var retVal = new List<ObjectStateDTO>();
+      var retVal = new Dictionary<string, ObjectStateDTO>();
 
       var alarmedDescr = await GetAlarmStatesDescr(statesFilter);
 
@@ -419,7 +419,7 @@ namespace DbLayer.Services
         while (available)
         {
           var states = cursor.Current.ToList();
-          retVal.AddRange(ConvertListStateDB2DTO(states));
+          retVal.Union(ConvertListStateDB2DTO(states));
           available = await cursor.MoveNextAsync();
         }
       }

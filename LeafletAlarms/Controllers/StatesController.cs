@@ -4,6 +4,8 @@ using Domain.States;
 using Domain.StateWebSock;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 
 namespace LeafletAlarms.Controllers
 {
@@ -36,11 +38,78 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpPost()]
+    [Route("GetAlarmedStates")]
+    public async Task<List<AlarmState>> GetAlarmedStates(List<string> ids)
+    {
+      var owners_and_views = await _mapService.GetOwnersAndViewsAsync(ids);
+
+      var owners = owners_and_views.Where(i => string.IsNullOrEmpty(i.Value.owner_id)).ToDictionary();
+
+      var data = await _stateService.GetAlarmStatesAsync(owners.Keys.ToList());
+
+      var retval = new List<AlarmState>();
+
+      foreach (var id in ids)
+      {
+        if (owners_and_views.TryGetValue(id, out var view))
+        {
+          if (data.TryGetValue(id, out var state))
+          {
+            retval.Add(state);
+          }
+          else if (!string.IsNullOrEmpty(view.owner_id))
+          {
+            if (data.TryGetValue(view.owner_id, out var state_owner))
+            {
+              retval.Add(new AlarmState()
+              {
+                id = id,
+                alarm = state_owner.alarm               
+              }
+              );
+            }
+          }
+        }
+      }
+      return retval;
+    }
+
+    [HttpPost()]
     [Route("GetStates")]
     public async Task<List<ObjectStateDTO>> GetStates(List<string> ids)
     {
-      var data = await _stateService.GetStatesAsync(ids);
-      return data;
+      var owners_and_views = await _mapService.GetOwnersAndViewsAsync(ids);
+
+      var owners = owners_and_views.Where(i => string.IsNullOrEmpty(i.Value.owner_id)).ToDictionary();
+
+      var data = await _stateService.GetStatesAsync(owners.Keys.ToList());
+
+      var retval = new List<ObjectStateDTO>();
+
+      foreach (var id in ids)
+      {
+        if (owners_and_views.TryGetValue(id, out var view)) 
+        { 
+          if (data.TryGetValue(id, out var state))
+          {
+            retval.Add(state);
+          }
+          else if (!string.IsNullOrEmpty(view.owner_id))
+          {
+            if (data.TryGetValue(view.owner_id, out var state_owner))
+            {
+              retval.Add(new ObjectStateDTO()
+                {
+                  id = id,
+                  states = state_owner.states,
+                  timestamp = state_owner.timestamp,
+                }
+              );
+            }
+          }
+        }
+      }
+      return retval;
     }
 
     [HttpPost]
@@ -49,8 +118,8 @@ namespace LeafletAlarms.Controllers
     public async Task<ActionResult<MarkersVisualStatesDTO>> GetVisualStates(List<string> objIds)
     {
       var objsToUpdate = await _mapService.GetAsync(objIds);
-      var objStates = await _stateService.GetStatesAsync(objIds);
-      var alarmStates = await _stateService.GetAlarmStatesAsync(objIds);
+      var objStates = await GetStates(objIds);
+      var alarmStates = await GetAlarmedStates(objIds);
 
       var setStateDescriptions = new HashSet<string>();
 
@@ -69,7 +138,7 @@ namespace LeafletAlarms.Controllers
 
       MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
       vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
-      vStateDTO.alarmed_objects = alarmStates.Values.ToList();
+      vStateDTO.alarmed_objects = alarmStates;
 
       vStateDTO.states_descr.AddRange(
           await _stateService.GetStateDescrAsync(setStateDescriptions.ToList()));

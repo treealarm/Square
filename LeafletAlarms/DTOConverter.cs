@@ -10,7 +10,8 @@ namespace LeafletAlarms
       {
         id = marker.id,
         name = marker.name,
-        parent_id = marker.parent_id
+        parent_id = marker.parent_id,
+        owner_id = marker.owner_id
       };
     }
 
@@ -20,7 +21,8 @@ namespace LeafletAlarms
       {
         id = marker.id,
         name = marker.name,
-        parent_id = marker.parent_id
+        parent_id = marker.parent_id,
+        owner_id = marker.owner_id
       };
     }
   }

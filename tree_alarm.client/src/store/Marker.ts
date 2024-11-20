@@ -17,6 +17,7 @@ export type LatLngPair = [number, number];
 export interface Marker {
   id: string | null;
   parent_id?: string | null;
+  owner_id?: string | null;
   name: string;
 }
 
@@ -148,10 +149,7 @@ export interface IFigures {
   add_tracks?: boolean;
 }
 
-export interface TreeMarker {
-  id: string;
-  parent_id?: string | null;
-  name: string;
+export interface TreeMarker extends Marker {
   has_children?: boolean;
 }
 
