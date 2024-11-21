@@ -1,6 +1,4 @@
-﻿using DataChangeLayer;
-using DbLayer.Services;
-using Domain.OptionsModels;
+﻿using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

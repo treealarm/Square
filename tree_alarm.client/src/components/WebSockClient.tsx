@@ -56,7 +56,7 @@ export function WebSockClient() {
           appDispatch(MarkersStore.deleteMarkersLocally(received.data));
           break;
         case "set_alarm_states":
-          appDispatch(MarkersVisualStore.updateMarkersAlarmStates(received.data));
+          appDispatch(MarkersVisualStore.requestAndUpdateMarkersVisualStates(received.data));
           break;
         case "update_viewbox":
           appDispatch(MarkersStore.initiateUpdateAll());

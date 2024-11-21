@@ -55,11 +55,6 @@ const stateSlice = createSlice({
   name: 'StateStates',
   initialState: unloadedState,
   reducers: {
-    updateMarkersAlarmStates(state: MarkersVisualStates, action: PayloadAction<AlarmObject[]>) {
-      var newAlarms = state.visualStates.alarmed_objects.filter(a => action.payload.find(d => d.id == a.id) == null);
-      newAlarms = [... newAlarms, ...action.payload];
-      state.visualStates.alarmed_objects = newAlarms;
-    }
   }
   ,
   extraReducers: (builder) => {
@@ -85,11 +80,15 @@ const stateSlice = createSlice({
           .filter(item => null == action.payload.states_descr.find(i => i.id == item.id));
         newDescrs = [...newDescrs, ...action.payload.states_descr];
 
+        var newAlarms = state.visualStates.alarmed_objects.filter(a => action.payload.alarmed_objects.find(d => d.id == a.id) == null);
+        newAlarms = [...newAlarms, ...action.payload.alarmed_objects];
+        state.visualStates.alarmed_objects = newAlarms;
+
         state.visualStates.states = newStates;
-        state.visualStates.states_descr = newDescrs; 
+        state.visualStates.states_descr = newDescrs;
+        state.visualStates.alarmed_objects = newAlarms; 
       })
   },
 })
 
-export const { updateMarkersAlarmStates } = stateSlice.actions
 export const reducer = stateSlice.reducer

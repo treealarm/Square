@@ -5,11 +5,8 @@ using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Text.Json;
-using static StackExchange.Redis.Role;
 
 namespace LeafletAlarms.Services
 {
@@ -151,7 +148,7 @@ namespace LeafletAlarms.Services
 
           if (ids != null)
           {
-            OnSetIds(ids);
+            await OnSetIds(ids);
           }
         }
 
@@ -400,26 +397,31 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public async Task OnStateChanged(List<ObjectStateDTO> states)
+    public HashSet<string> GetOwnersAndViews(IEnumerable<string> ids)
     {
       HashSet<string> objIds = new HashSet<string>();
 
       lock (_locker)
       {
-        foreach (var state in states)
+        foreach (var id in ids)
         {
-          if (_dicOwnersAndViews.TryGetValue(state.id, out var marker))
+          if (_dicOwnersAndViews.TryGetValue(id, out var marker))
           {
-              var views = _dicOwnersAndViews.Values
-                .Where(i => i.owner_id == marker.id)
-                .Select(i => i.id)
-                ;
-              objIds.UnionWith(views);
-              objIds.Add(state.id);
+            var views = _dicOwnersAndViews.Values
+              .Where(i => i.owner_id == marker.id)
+              .Select(i => i.id)
+              ;
+            objIds.UnionWith(views);
+            objIds.Add(id);
           }
         }
-        
       }
+      return objIds;
+    }
+    
+    public async Task OnStateChanged(List<ObjectStateDTO> states)
+    {
+      HashSet<string> objIds = GetOwnersAndViews(states.Select(i=>i.id));
 
       if (objIds.Count > 0)
       {
@@ -432,25 +434,14 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public async Task OnBlinkStateChanged(List<AlarmState> alarms)
+    public async Task OnBlinkStateChanged(List<AlarmState> states)
     {
-      var toUpdate = new List<AlarmState>();
-
-      lock (_locker)
-      {
-        foreach (var state in alarms)
-        {
-          if (_dicIds.Contains(state.id))
-          {
-            toUpdate.Add(state);
-          }
-        }
-      }
+      HashSet<string> objIds = GetOwnersAndViews(states.Select(i => i.id));
 
       StateBaseDTO packet = new StateBaseDTO()
       {
         action = "set_alarm_states",
-        data = toUpdate
+        data = objIds
       };
 
       await SendPacket(packet);
