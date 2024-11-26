@@ -2,6 +2,7 @@
 import * as React from "react";
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import * as MarkersStore from '../store/MarkersStates';
+import * as ValuesStore from '../store/ValuesStates';
 import { Box, Button, Tooltip } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -64,6 +65,10 @@ export function WebSockClient() {
         case "update_routes_by_tracks":
           setUpdatedTracks(received.data as string[]);
           break;
+        case "on_values_changed":
+          appDispatch(ValuesStore.fetchValuesByIds(received.data));
+          break;
+          
         default:
           console.log("Unknown action:", received.action);
       }

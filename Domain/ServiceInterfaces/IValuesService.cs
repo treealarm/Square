@@ -8,7 +8,7 @@ namespace Domain.ServiceInterfaces
   public interface IValuesService
   {
     public Task<Dictionary<string, ValueDTO>> GetListByIdsAsync(List<string> ids);
-    public Task<Dictionary<string, ValueDTO>> GetListByOwnerAsync(string owner);
+    public Task<Dictionary<string, ValueDTO>> GetListByOwnersAsync(List<string> owners);
   }
 
   internal interface IValuesServiceInternal

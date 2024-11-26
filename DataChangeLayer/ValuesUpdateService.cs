@@ -1,4 +1,5 @@
-﻿using Domain.ServiceInterfaces;
+﻿using Domain.PubSubTopics;
+using Domain.ServiceInterfaces;
 using Domain.Values;
 
 namespace DataChangeLayer
@@ -23,7 +24,8 @@ namespace DataChangeLayer
 
     public async Task UpdateValues(List<ValueDTO> obj2UpdateIn)
     {
-      await _valuesService.UpdateListAsync( obj2UpdateIn );
+      await _valuesService.UpdateListAsync(obj2UpdateIn);
+      await _pub.Publish(Topics.OnValuesChanged, obj2UpdateIn);
     }
   }
 }

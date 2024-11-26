@@ -5,9 +5,78 @@ import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../store/configureStore';
 import { useCallback, useEffect, useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
-import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, TreeMarker } from '../store/Marker';
+
+import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
+
+
+const getValueByRegion = (
+  region: IDiagramTypeRegionDTO,
+  cur_values: IValueDTO[],
+  zoom: number,
+  parent_coord: IDiagramCoord
+) => {
+  if (!region || !cur_values) {
+    return null;
+  }
+
+  // Находим значение, соответствующее региону
+  const region_value = cur_values.find(v => v.name === region.id);
+
+  if (!region_value) {
+    return null;
+  }
+
+  var coord = region?.geometry;
+
+  if (region?.geometry != null) {
+    var w = parent_coord.width;
+    var h = parent_coord.height;
+    coord = {
+      top: h * region.geometry.top,
+      left: w * region.geometry.left,
+      height: h * region.geometry.height,
+      width: w * region.geometry.width
+    };
+  }
+
+  // Создаем компонент, который будет отображать значение региона
+  return (
+    <Box
+      key={"box for region " + region_value.id}
+      sx={{
+        padding: 0,
+        margin: 0,
+        position: 'absolute',
+        top: coord.top * zoom + 'px', // Сдвиг от верхнего края
+        left: coord.left * zoom + 'px', // Сдвиг от левого края
+        height: coord.height * zoom + 'px',
+        width: coord.width * zoom + 'px',
+        backgroundColor: 'green',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'left',
+        alignItems: 'left',
+        overflow: 'hidden', // Обрезаем текст, если он выходит за пределы
+      }}
+    >
+      <Typography
+        variant="body2"
+        component="span"
+        color="black"
+        sx={{
+          whiteSpace: 'nowrap', // Запрещаем перенос строк
+          overflow: 'hidden',   // Обрезаем переполненный текст
+          textOverflow: 'ellipsis', // Добавляем многоточие, если текст не помещается
+        }}
+      >
+        {`${region_value.name}: ${region_value.value}`}
+      </Typography>
+    </Box>
+  );
+};
+
 
 interface IDiagramElement {
   diagram: IDiagramDTO;
@@ -24,12 +93,15 @@ export default function DiagramElement(props: IDiagramElement) {
   const diagram_content = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
+  const values = useSelector((state: ApplicationState) => state?.valuesStates?.values);
+
+
   const { diagram, parent, getColor, parent_coord, zoom } = props;
 
+  const cur_values: IValueDTO[] = values?.filter(v => v.owner_id == diagram?.id) ?? [];
 
   const children: TreeMarker[] = diagram_content?.children?.filter(i => i.parent_id === diagram?.id) || [];
   const childrenDiagrams = diagram_content?.content?.filter(e => children.some(c => c.id === e.id)) || null;
-
 
   const appDispatch = useAppDispatch();
 
@@ -143,6 +215,8 @@ export default function DiagramElement(props: IDiagramElement) {
             objectFit: 'fill'
           }} />
 
+        {diagram_type?.regions?.map((region) => getValueByRegion(region, cur_values, zoom, coord))}
+
         {
           childrenDiagrams?.map((dgr) =>
             <DiagramElement
@@ -153,7 +227,9 @@ export default function DiagramElement(props: IDiagramElement) {
               z_index={props.z_index + 1}
               getColor={props.getColor}
               key={dgr?.id} />
-          )}
+          )
+        }
+
         {
           color == null ? null :
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"

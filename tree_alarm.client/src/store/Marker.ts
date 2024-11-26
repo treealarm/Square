@@ -432,3 +432,12 @@ export interface ILevelDTO {
   zoom_min?: number | null;
   zoom_max?: number | null;
 }
+
+export interface IValueDTO {
+  id: string;
+  owner_id: string;
+  name: string;
+  value: any;
+  min: any;
+  max: any;
+}

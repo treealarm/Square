@@ -1,5 +1,4 @@
-﻿using Domain.Diagram;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -118,6 +117,31 @@ namespace Domain
       dto.CopyAllToJson(dbo);
       return dbo;
     }
+
+    public static T CloneObject<T>(T source) where T : new()
+    {
+      if (source == null)
+      {
+        return default;
+      }
+
+      // Создание нового экземпляра типа T
+      var clone = new T();
+
+      // Копирование всех свойств из исходного объекта в новый объект
+      var properties = typeof(T).GetProperties();
+      foreach (var property in properties)
+      {
+        if (property.CanWrite)
+        {
+          var value = property.GetValue(source);
+          property.SetValue(clone, value);
+        }
+      }
+
+      return clone;
+    }
+
     public static void CopyAllTo<T, T1>(this T source, T1 target)
     {
       var type = typeof(T);

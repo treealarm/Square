@@ -2,6 +2,7 @@
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
+using Domain.Values;
 using PubSubLib;
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
@@ -38,6 +39,7 @@ namespace LeafletAlarms.Services
       _sub.Subscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
       _sub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+      _sub.Subscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
 
     ~WebSockListService()
@@ -46,6 +48,7 @@ namespace LeafletAlarms.Services
       _sub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
       _sub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
+      _sub.Unsubscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
@@ -133,6 +136,19 @@ namespace LeafletAlarms.Services
       }
     }
 
+    public async Task OnValuesChanged(string channel, string message)
+    {
+      var state = JsonSerializer.Deserialize<List<ValueDTO>>(message);
+      if (state == null)
+      {
+        return;
+      }
+
+      foreach (var sock in StateSockets)
+      {
+        await sock.Value.OnValuesChanged(state);
+      }
+    }
     public async Task OnBlinkStateChanged(string channel, string message)
     {
       var state = JsonSerializer.Deserialize<List<AlarmState>>(message);
@@ -147,6 +163,7 @@ namespace LeafletAlarms.Services
         await sock.Value.OnBlinkStateChanged(state);
       }
     }
+
 
     async Task NewRoutBuilt(string channel, string message)
     {

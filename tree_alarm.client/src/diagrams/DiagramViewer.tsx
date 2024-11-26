@@ -1,4 +1,5 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import * as React from 'react';
 import { useCallback, useEffect, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
@@ -6,6 +7,8 @@ import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker'
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
+import * as ValuesStore from '../store/ValuesStates';
+
 import { useState } from 'react';
 import { Box, ButtonGroup, IconButton } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
@@ -31,11 +34,8 @@ export default function DiagramViewer() {
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
   const cur_diagram = cur_diagram_content?.content.find(e => e.id == cur_diagram_content?.diagram_id);
-  //const cur_diagram_children: TreeMarker[] =
-  //  cur_diagram_content?.children.filter(e => e.parent_id === cur_diagram_content?.diagram_id) ?? [];
 
-
-  //const content = cur_diagram_content?.content.filter(e => cur_diagram_children.some(c => c.id === e.id)) ?? null;
+  const object_ids = cur_diagram_content?.content?.map(arr => arr.id) || [];
 
   const [currentPaperProps, setCurrentPaperProps] = useState({
     paper_width: 1000,
@@ -43,7 +43,13 @@ export default function DiagramViewer() {
     background_img: null
   });
 
- 
+  useEffect(
+    () => {
+      if (object_ids.length == 0) {
+        return;
+      }
+      appDispatch(ValuesStore.fetchValuesByOwners(object_ids));
+    }, [object_ids]);
 
   useEffect(
     () => {
@@ -52,7 +58,7 @@ export default function DiagramViewer() {
       }
       var objArray2: string[] = [];
       cur_diagram_content?.content?.forEach(arr => objArray2.push(arr.id));
-      appDispatch<any>(MarkersVisualStore.requestMarkersVisualStates(objArray2));
+      appDispatch(MarkersVisualStore.requestMarkersVisualStates(objArray2));
     }, [cur_diagram_content?.content, appDispatch]);
 
 
@@ -227,21 +233,7 @@ export default function DiagramViewer() {
               z_index={1}
               getColor={getColor}
               key={'base diagram'} />
-          
-            
 
-          {
-            //content?.map((dgr, index) =>
-            //  <DiagramElement
-            //    diagram={dgr}
-            //    parent={cur_diagram}
-            //    parent_coord={coord}
-            //    zoom={zoom}
-            //    z_index={2}
-            //    getColor={getColor}
-            //    key={index} />
-            //)
-          }
 
         </Box>
       </Box>

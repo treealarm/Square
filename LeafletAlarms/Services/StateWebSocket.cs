@@ -5,6 +5,7 @@ using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
+using Domain.Values;
 using System.Net.WebSockets;
 using System.Text.Json;
 
@@ -432,6 +433,25 @@ namespace LeafletAlarms.Services
         };
         await SendPacket(packet);
       }
+    }
+
+    public async Task OnValuesChanged(List<ValueDTO> states)
+    {
+      HashSet<string> objIds = GetOwnersAndViews(states.Select(i => i.owner_id));
+
+      var value_ids = states.Where(i => objIds.Contains(i.owner_id)).Select(v => v.id);
+
+      if (!value_ids.Any())
+      {
+        return;
+      }
+      StateBaseDTO packet = new StateBaseDTO()
+      {
+        action = "on_values_changed",
+        data = value_ids.ToList()
+      };
+
+      await SendPacket(packet);
     }
 
     public async Task OnBlinkStateChanged(List<AlarmState> states)

@@ -214,9 +214,9 @@ namespace DbLayer.Services
        ConvertDTO2DB);
     }
 
-    public async Task<Dictionary<string, ValueDTO>> GetListByOwnerAsync(string owner)
+    public async Task<Dictionary<string, ValueDTO>> GetListByOwnersAsync(List<string> owners)
     {
-      var retVal = await Coll.Find(i => i.owner_id == owner).ToListAsync();
+      var retVal = await Coll.Find(i => owners.Contains(i.owner_id)).ToListAsync();
       return ConvertListDB2DTO(retVal);
     }
   }

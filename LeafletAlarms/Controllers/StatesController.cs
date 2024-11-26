@@ -2,10 +2,7 @@
 using Domain.ServiceInterfaces;
 using Domain.States;
 using Domain.StateWebSock;
-using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 
 namespace LeafletAlarms.Controllers
 {
