@@ -8,6 +8,7 @@ namespace DbLayer.Models
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
+    [BsonIgnoreIfNull]
     public string id { get; set; }
   }
 }

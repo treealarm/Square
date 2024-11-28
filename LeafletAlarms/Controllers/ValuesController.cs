@@ -1,9 +1,7 @@
 ﻿using Domain;
 using Domain.ServiceInterfaces;
-using Domain.States;
 using Domain.Values;
 using Microsoft.AspNetCore.Mvc;
-using static StackExchange.Redis.Role;
 
 namespace LeafletAlarms.Controllers
 {
@@ -82,9 +80,17 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("UpdateValues")]
-    public void UpdateValues([FromBody] List<ValueDTO> values)
+    public async Task UpdateValues([FromBody] List<ValueDTO> values)
     {
-      _valuesUpdateService.UpdateValues(values);
+      await _valuesUpdateService.UpdateValues(values);
+    }
+
+    [HttpPost]
+    [Route("UpdateValuesFilteredByName")]
+    public async Task<List<ValueDTO>> UpdateValuesFilteredByName(List<ValueDTO> values)
+    {
+      var dicUpdated =  await _valuesUpdateService.UpdateValuesFilteredByNameAsync(values);
+      return dicUpdated.Values.ToList();
     }
 
     [HttpDelete()]

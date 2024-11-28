@@ -1,4 +1,5 @@
-﻿using DbLayer.Models.Values;
+﻿using DbLayer.Models;
+using DbLayer.Models.Values;
 using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
@@ -174,7 +175,7 @@ namespace DbLayer.Services
 
       var dbo = new DBValue()
       {
-        id = dto.id,
+        id = string.IsNullOrEmpty(dto.id) ? null : dto.id,
         max = ConvertToBsonValue(dto.max),
         min = ConvertToBsonValue(dto.min),
         name = dto.name,
@@ -218,6 +219,55 @@ namespace DbLayer.Services
     {
       var retVal = await Coll.Find(i => owners.Contains(i.owner_id)).ToListAsync();
       return ConvertListDB2DTO(retVal);
+    }
+
+
+    public async Task<Dictionary<string, ValueDTO>> UpdateValuesFilteredByNameAsync(List<ValueDTO> obj2UpdateIn)
+    {
+      var bulkWrites = new List<WriteModel<DBValue>>();
+
+      foreach (var item in obj2UpdateIn)
+      {
+        var updatedObj = ConvertDTO2DB(item);
+        // Создание фильтра
+        var filter = !string.IsNullOrEmpty(updatedObj.id)
+            ? Builders<DBValue>.Filter.Eq(x => x.id, updatedObj.id)
+            : Builders<DBValue>.Filter.Where(x => x.owner_id == updatedObj.owner_id && x.name == updatedObj.name);
+
+        // Удаляем id перед upsert, если он пустой
+        if (string.IsNullOrEmpty(updatedObj.id))
+        {
+          updatedObj.id = null;
+        }
+
+        // Создаём запрос
+        var request = new ReplaceOneModel<DBValue>(filter, updatedObj)
+        {
+          IsUpsert = true
+        };
+        bulkWrites.Add(request);
+      }
+
+      // Выполняем BulkWrite
+      var retDocuments = await Coll.BulkWriteAsync(bulkWrites);
+
+      var filter_check = Builders<DBValue>.Filter.Or(
+        obj2UpdateIn.Select(item =>
+            Builders<DBValue>.Filter.And(
+                Builders<DBValue>.Filter.Eq(x => x.owner_id, item.owner_id),
+                Builders<DBValue>.Filter.Eq(x => x.name, item.name)
+            )
+        ).ToArray()
+      );
+      var documents = await Coll.Find(filter_check).ToListAsync();
+      var dbUpdated = new Dictionary<string, ValueDTO>();
+
+      foreach (var doc in documents)
+      {
+          dbUpdated[doc.id] = ConvertDB2DTO(doc);          
+      }
+
+      return dbUpdated;
     }
   }
 }

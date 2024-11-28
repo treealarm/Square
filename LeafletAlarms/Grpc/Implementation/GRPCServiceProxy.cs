@@ -8,6 +8,8 @@ using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
 using Domain.ServiceInterfaces;
 using Domain.Events;
+using Domain.Rights;
+using Domain.Values;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
@@ -16,17 +18,20 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly ITracksUpdateService _trackUpdateService;
     private readonly IStatesUpdateService _statesUpdateService;
     private readonly IEventsUpdateService _eventsUpdateService;
+    private readonly IValuesUpdateService _valuesUpdateService;
     private readonly FileSystemService _fs;
     public GRPCServiceProxy(
       ITracksUpdateService trackUpdateService,
       IStatesUpdateService statesUpdateService,
       IEventsUpdateService eventsUpdateService,
+      IValuesUpdateService valuesUpdateService,
       FileSystemService fs
     )
     {
       _trackUpdateService = trackUpdateService;
       _statesUpdateService = statesUpdateService;
       _eventsUpdateService = eventsUpdateService;
+      _valuesUpdateService = valuesUpdateService;
       _fs = fs;
     }
     private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
@@ -287,5 +292,84 @@ namespace LeafletAlarms.Grpc.Implementation
       var count = await _eventsUpdateService.AddEvents(list);
       return new BoolValue() { Value = count == list.Count};
     }
+
+    private object GetValueFromProto(ValueProtoType e)
+    {
+      if (e.HasIntValue)
+      {
+        return e.IntValue;
+      }
+      else if (e.HasStringValue)
+      {
+        return e.StringValue;
+      }
+      else if (e.HasDoubleValue)
+      {
+        return e.DoubleValue;
+      }
+      // Добавьте обработку других типов по необходимости
+
+      return null; // Возвращаем null, если значение отсутствует или не поддерживается
+    }
+
+    private ValueProtoType SetValueToValueType(object value)
+    {
+      ValueProtoType valueType = new ValueProtoType();
+
+      if (value is double doubleValue)
+      {
+        valueType.DoubleValue = doubleValue;
+      }
+      else if (value is int intValue)
+      {
+        valueType.IntValue = intValue;
+      }
+      else if (value is string stringValue)
+      {
+        valueType.StringValue = stringValue;
+      }
+      else
+      {
+        throw new ArgumentException("Unsupported value type");
+      }
+
+      return valueType;
+    }
+
+    public async Task<ValuesProto> UpdateValues(ValuesProto request)
+    {
+      ValuesProto response = new ValuesProto();
+
+      var toUpdate = new List<ValueDTO>();
+
+      foreach(var e in request.Values)
+      {
+        toUpdate.Add(new ValueDTO()
+        {
+          id = e.Id,
+          name = e.Name,
+          owner_id = e.OwnerId,
+          value = GetValueFromProto(e.Value),
+          min = GetValueFromProto(e.Min),
+          max = GetValueFromProto(e.Max)
+        });
+      }
+      var updated = await _valuesUpdateService.UpdateValuesFilteredByNameAsync(toUpdate);
+
+      foreach (var e in updated.Values)
+      {
+        response.Values.Add(new ValueProto()
+        {
+          Id = e.id,
+          OwnerId = e.owner_id,
+          Name = e.name,
+          Value = SetValueToValueType(e.value),
+          Max = SetValueToValueType(e.max),
+          Min = SetValueToValueType(e.min)
+        });
+      }
+
+      return response;
+    } 
   }
 }

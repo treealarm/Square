@@ -1,7 +1,5 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using DbLayer.Models;
+﻿using DbLayer.Models;
 using Domain;
-using Domain.Diagram;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
@@ -19,6 +17,7 @@ namespace DbLayer.Services
         where T_DB : BaseEntity
         where T_DTO : BaseObjectDTO
     {
+      ids.RemoveAll(i => string.IsNullOrEmpty(i));
       var dbObjs = await collection.Find(s => ids.Contains(s.id)).ToListAsync();
 
       return convertListFunc(dbObjs);

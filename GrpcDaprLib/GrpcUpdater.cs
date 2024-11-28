@@ -104,5 +104,16 @@ namespace GrpcDaprLib
       var result = await _client.UpdateEventsAsync(events);
       return result.Value;
     }
+
+    public async Task<ValuesProto?> UpdateValues(ValuesProto events)
+    {
+      if (_client == null)
+      {
+        return null;
+      }
+
+      var result = await _client.UpdateValuesAsync(events);
+      return result;
+    }
   }
 }

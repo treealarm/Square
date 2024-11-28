@@ -5,6 +5,7 @@ using Domain.ServiceInterfaces;
 using Domain.States;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;

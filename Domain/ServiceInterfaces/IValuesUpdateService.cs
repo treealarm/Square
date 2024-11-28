@@ -9,5 +9,6 @@ namespace Domain.ServiceInterfaces
   {
     public Task UpdateValues(List<ValueDTO> obj2UpdateIn);
     public Task RemoveValues(List<string> ids);
+    public Task<Dictionary<string, ValueDTO>> UpdateValuesFilteredByNameAsync(List<ValueDTO> obj2UpdateIn);
   }
 }

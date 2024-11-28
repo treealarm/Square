@@ -242,11 +242,30 @@ namespace DbLayer.Services
 
     private static void Log<T>(FilterDefinition<T> filter)
     {
-      var serializerRegistry = BsonSerializer.SerializerRegistry;
-      var documentSerializer = serializerRegistry.GetSerializer<T>();
-      var rendered = filter.Render(documentSerializer, serializerRegistry);
-      Debug.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
-      Debug.WriteLine("");
+      try
+      {
+        // Получаем сериализатор для типа DBGeoObject
+        var serializerRegistry = BsonSerializer.SerializerRegistry;
+        var documentSerializer = serializerRegistry.GetSerializer<T>();
+
+        // Создаем параметры для рендеринга
+        var renderArgs = new RenderArgs<T>
+        {
+          DocumentSerializer = documentSerializer,
+          // Можно добавить другие параметры, если это нужно, например, настройки сериализации.
+        };
+
+        // Рендерим фильтр
+        var rendered = filter.Render(renderArgs);
+
+        // Выводим фильтр в формате JSON с отступами для читаемости
+        Debug.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
+        Debug.WriteLine("");
+      }
+      catch (Exception ex)
+      {
+        Debug.WriteLine($"Ошибка при логировании фильтра: {ex.Message}");
+      }
     }
 
     public async Task<List<TrackPointDTO>> GetFirstTracksByTime(

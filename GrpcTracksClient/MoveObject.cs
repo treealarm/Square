@@ -364,19 +364,35 @@ namespace GrpcTracksClient
     {
       using var client = new GrpcUpdater();
       client.Connect(null);
-
+      Random random = new Random();
+      
       while (_working)
       {
-        ProtoFigures figs = new ProtoFigures();
+        var valuesToSend = new ValuesProto();
+
+        var figs = new ProtoFigures();
 
         lock (_figsToSend)
         {
           foreach (var f in _figsToSend)
           {
             figs.Figs.Add(f);
+
+            double randomValue = 50 + (random.NextDouble() * 20);
+
+            valuesToSend.Values.Add(new ValueProto()
+            {
+              OwnerId = f.Id,
+              Name = "speed",
+              Value = new ValueProtoType() { DoubleValue = randomValue },
+              Min = new ValueProtoType() { DoubleValue = 0 }, 
+              Max = new ValueProtoType() { DoubleValue = 100 }
+            });
           }
           _figsToSend = new List<ProtoFig>();
         }
+
+       
 
         if (figs.Figs.Any())
         { 
@@ -384,6 +400,7 @@ namespace GrpcTracksClient
           {
             figs.AddTracks = true;
             var newFigs = await client.Move(figs);
+            var vals = await client.UpdateValues(valuesToSend);
           }
           catch (Exception ex)
           {

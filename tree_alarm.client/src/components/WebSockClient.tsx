@@ -43,7 +43,7 @@ export function WebSockClient() {
   }, []);
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
-      console.log(event.data);
+      //console.log(event.data);
       const received = JSON.parse(event.data);
 
       switch (received.action) {

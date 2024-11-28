@@ -34,5 +34,10 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       return await _proxy.UpdateEvents(request);
     }
+
+    public override async Task<ValuesProto> UpdateValues(ValuesProto request, ServerCallContext context)
+    {
+      return await _proxy.UpdateValues(request);
+    }
   }
 }

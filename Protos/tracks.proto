@@ -11,7 +11,10 @@ service TreeAlarmsGrpcService {
 	rpc UpdateFigures (ProtoFigures) returns (ProtoFigures);
 	rpc UpdateStates (ProtoObjectStates) returns (google.protobuf.BoolValue);
 	rpc UpdateTracks (TrackPointsProto) returns (google.protobuf.BoolValue);	
-	rpc UpdateEvents (EventsProto) returns (google.protobuf.BoolValue);	
+	rpc UpdateEvents (EventsProto) returns (google.protobuf.BoolValue);
+
+  //Values
+  rpc UpdateValues (ValuesProto) returns (ValuesProto);
 }
 
 
@@ -101,4 +104,28 @@ message EventProto
 message EventsProto
 {
 	repeated EventProto events = 1;
+}
+
+message ValueProtoType {
+  oneof value {
+    double double_value = 1;
+    int32 int_value = 2;
+    string string_value = 3;
+  }
+}
+
+// Values 
+message ValueProto 
+{
+  string id = 1;        // Уникальный идентификатор объекта
+  string owner_id = 2;  // Объект, который владеет этим значением
+  string name = 3;      // Название значения
+
+  ValueProtoType value = 4; 
+  ValueProtoType min = 5;
+  ValueProtoType max = 6;
+}
+
+message ValuesProto {
+  repeated ValueProto values = 1;
 }
