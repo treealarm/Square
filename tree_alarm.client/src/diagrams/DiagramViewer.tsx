@@ -36,6 +36,7 @@ export default function DiagramViewer() {
   const cur_diagram = cur_diagram_content?.content.find(e => e.id == cur_diagram_content?.diagram_id);
 
   const object_ids = cur_diagram_content?.content?.map(arr => arr.id) || [];
+  const update_values_periodically = useSelector((state: ApplicationState) => state?.valuesStates?.update_values_periodically);
 
   const [currentPaperProps, setCurrentPaperProps] = useState({
     paper_width: 1000,
@@ -49,7 +50,7 @@ export default function DiagramViewer() {
         return;
       }
       appDispatch(ValuesStore.fetchValuesByOwners(object_ids));
-    }, [object_ids]);
+    }, [object_ids, update_values_periodically]);
 
   useEffect(
     () => {
@@ -59,7 +60,7 @@ export default function DiagramViewer() {
       var objArray2: string[] = [];
       cur_diagram_content?.content?.forEach(arr => objArray2.push(arr.id));
       appDispatch(MarkersVisualStore.requestMarkersVisualStates(objArray2));
-    }, [cur_diagram_content?.content, appDispatch]);
+    }, [cur_diagram_content?.content]);
 
 
   useEffect(

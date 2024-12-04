@@ -35,6 +35,7 @@ namespace LeafletAlarms.Services
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
     private object _locker = new object();
     private BoxDTO _currentBox;
+    private bool _update_values_periodically = true;
     public BoxDTO CurrentBox
     {
       get
@@ -131,7 +132,7 @@ namespace LeafletAlarms.Services
       {
         string s = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-        StateBaseDTO json = JsonSerializer.Deserialize<StateBaseDTO>(s);
+        var json = JsonSerializer.Deserialize<StateBaseReceiveDTO>(s);
 
         if (json.action.ToString() == "set_box")
         {
@@ -151,6 +152,11 @@ namespace LeafletAlarms.Services
           {
             await OnSetIds(ids);
           }
+        }
+
+        if (json.action.ToString() == "update_values_periodically")
+        {
+          _update_values_periodically = JsonSerializer.Deserialize<bool>(json.data.ToString());
         }
 
         var replay = JsonSerializer.SerializeToUtf8Bytes(json);
@@ -437,6 +443,10 @@ namespace LeafletAlarms.Services
 
     public async Task OnValuesChanged(List<ValueDTO> states)
     {
+      if (!_update_values_periodically)
+      {
+        return;
+      }
       HashSet<string> objIds = GetOwnersAndViews(states.Select(i => i.owner_id));
 
       var value_ids = states.Where(i => objIds.Contains(i.owner_id)).Select(v => v.id);

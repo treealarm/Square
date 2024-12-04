@@ -1,16 +1,17 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { DoFetch } from './Fetcher';
-import { ApplicationState } from './index';
 import { IValueDTO } from './Marker';
 
 export interface ValuesState {
   values: IValueDTO[];
+  update_values_periodically : boolean;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: ValuesState = {
   values: [],
+  update_values_periodically: true,
   loading: false,
   error: null,
 };
@@ -68,7 +69,11 @@ export const deleteValues = createAsyncThunk<string[], string[]>(
 const valuesSlice = createSlice({
   name: 'values',
   initialState,
-  reducers: {},
+  reducers: {
+    set_update_values(state: ValuesState, action: PayloadAction<boolean>) {
+      state.update_values_periodically = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchValuesByOwners.pending, (state) => {
@@ -130,5 +135,9 @@ const valuesSlice = createSlice({
       });
   },
 });
+
+export const {
+  set_update_values,
+} = valuesSlice.actions
 
 export const reducer = valuesSlice.reducer

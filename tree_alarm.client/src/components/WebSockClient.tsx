@@ -23,7 +23,7 @@ export function WebSockClient() {
   const cur_diagram = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
   const markers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
   const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
-
+  const update_values_periodically = useSelector((state: ApplicationState) => state?.valuesStates?.update_values_periodically);
   const [isConnected, setIsConnected] = useState(false);
   const [updatedTracks, setUpdatedTracks] = useState<string[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -37,10 +37,12 @@ export function WebSockClient() {
   }, [onTracksUpdated, updatedTracks]);
 
   const handleOpen = useCallback(() => setIsConnected(true), []);
+
   const handleClose = useCallback(() => {
     setIsConnected(false);
     setTimeout(() => connect(), 1000);
   }, []);
+
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
       //console.log(event.data);
@@ -78,24 +80,42 @@ export function WebSockClient() {
   }, [appDispatch]);
 
   const connect = useCallback(() => {
+    if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+      console.log("WebSocket already connected or connecting.");
+      return;
+    }
+
     const ws = new WebSocket(getWebSocketUrl());
     ws.onopen = handleOpen;
     ws.onclose = handleClose;
     ws.onmessage = handleMessage;
+
+    // Очистка предыдущего WebSocket
+    if (socket) {
+      socket.onopen = null;
+      socket.onclose = null;
+      socket.onmessage = null;
+      socket.close();
+    }
+
     setSocket(ws);
-  }, [handleOpen, handleClose, handleMessage]);
+  }, [socket, handleOpen, handleClose, handleMessage]);
 
   const disconnect = useCallback(() => {
     if (socket) {
+      socket.onopen = null;
+      socket.onclose = null;
+      socket.onmessage = null;
       socket.close();
       setSocket(null);
     }
   }, [socket]);
 
+
   useEffect(() => {
     connect();
     return () => disconnect();
-  }, []);
+  }, [connect, disconnect]);
 
   const safeSend = (data: any) => {
     try {
@@ -119,6 +139,13 @@ export function WebSockClient() {
       safeSend(message);
     }
   }, [cur_diagram, isConnected]);
+
+  useEffect(() => {
+    const message = { action: "update_values_periodically", data: JSON.stringify(update_values_periodically) };
+    safeSend(message);
+  }, [update_values_periodically]);
+
+  
 
   const sendPing = () => {
     const message = { action: "ping", data: `ping ${new Date().toISOString()}` };
