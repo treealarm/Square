@@ -7,7 +7,7 @@ import { useAppDispatch } from '../store/configureStore';
 import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
-
+import * as ValuesStore from '../store/ValuesStates';
 import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
 
 
@@ -93,12 +93,13 @@ export default function DiagramElement(props: IDiagramElement) {
   const diagram_content = useSelector((state: ApplicationState) => state?.diagramsStates?.cur_diagram_content);
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
 
-  const values = useSelector((state: ApplicationState) => state?.valuesStates?.values);
-
+  const valuesMap: Record<string, IValueDTO[]>|null = useSelector((state: ApplicationState) => state?.valuesStates?.valuesMap) ?? null;
+  
 
   const { diagram, parent, getColor, parent_coord, zoom } = props;
 
-  const cur_values: IValueDTO[] = values?.filter(v => v.owner_id == diagram?.id) ?? [];
+  const cur_values: IValueDTO[] = useSelector(ValuesStore.selectValuesMapForOwner(diagram.id)) ?? [];
+ 
 
   const children: TreeMarker[] = diagram_content?.children?.filter(i => i.parent_id === diagram?.id) || [];
   const childrenDiagrams = diagram_content?.content?.filter(e => children.some(c => c.id === e.id)) || null;
@@ -119,6 +120,10 @@ export default function DiagramElement(props: IDiagramElement) {
       console.log("selecting diagram:", diagram_id);
     }, [appDispatch]);
 
+  useEffect(
+    () => {
+      console.log(valuesMap);
+    }, [valuesMap]);
   useEffect(
     () => {
       var newCoord = diagram.geometry;

@@ -56,14 +56,14 @@ namespace LeafletAlarms.Services
     {
       var con = context as HttpContext;
 
-      StateWebSocket stateWs = new StateWebSocket(
-       con,
-        webSocket,
-        _geoService,
-        _levelService,
-        _stateService,
-        _mapService,
-        _pub
+      var stateWs = new StateWebSocket(
+          con,
+          webSocket,
+          _geoService,
+          _levelService,
+          _stateService,
+          _mapService,
+          _pub
       );
 
       StateSockets.TryAdd(con.Connection.Id, stateWs);
@@ -72,30 +72,34 @@ namespace LeafletAlarms.Services
       {
         await stateWs.ProcessAcceptedSocket();
       }
-      catch(Exception ex)
+      catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine($"Error occurred while processing WebSocket. {ex}");
       }
-      
-      try
+      finally
       {
-        if (!webSocket.CloseStatus.HasValue)
+        try
         {
-          await webSocket
-            .CloseAsync(
-            WebSocketCloseStatus.InternalServerError,
-            "",
-            CancellationToken.None
-          );
-        }        
+          if (webSocket.State != WebSocketState.Closed && webSocket.State != WebSocketState.CloseSent)
+          {
+            await webSocket.CloseAsync(
+                WebSocketCloseStatus.InternalServerError,
+                "An error occurred",
+                CancellationToken.None
+            );
+          }
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"Error occurred while closing WebSocket.{ex.Message}");
+        }
+        finally
+        {
+          StateSockets.TryRemove(con.Connection.Id, out _);
+        }
       }
-      catch(Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-
-      StateSockets.TryRemove(con.Connection.Id, out var sock);
     }
+
 
     public async Task OnUpdateTrackPosition(string channel, string message)
     {

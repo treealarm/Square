@@ -378,15 +378,26 @@ namespace GrpcTracksClient
           {
             figs.Figs.Add(f);
 
-            double randomValue = 50 + (random.NextDouble() * 20);
+            var randomValue = random.Next(50, 80);
 
             valuesToSend.Values.Add(new ValueProto()
             {
               OwnerId = f.Id,
               Name = "speed",
-              Value = new ValueProtoType() { DoubleValue = randomValue },
-              Min = new ValueProtoType() { DoubleValue = 0 }, 
-              Max = new ValueProtoType() { DoubleValue = 100 }
+              Value = new ValueProtoType() { IntValue = randomValue},
+              Min = new ValueProtoType() { IntValue = 0 }, 
+              Max = new ValueProtoType() { IntValue = 100 }
+            });
+
+            randomValue = random.Next(80, 110);
+
+            valuesToSend.Values.Add(new ValueProto()
+            {
+              OwnerId = f.Id,
+              Name = "temperature",
+              Value = new ValueProtoType() { IntValue = randomValue },
+              Min = new ValueProtoType() { IntValue = 0 },
+              Max = new ValueProtoType() { IntValue = 200 }
             });
           }
           _figsToSend = new List<ProtoFig>();

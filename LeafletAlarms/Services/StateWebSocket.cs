@@ -447,18 +447,18 @@ namespace LeafletAlarms.Services
       {
         return;
       }
+
       HashSet<string> objIds = GetOwnersAndViews(states.Select(i => i.owner_id));
 
-      var value_ids = states.Where(i => objIds.Contains(i.owner_id)).Select(v => v.id);
-
-      if (!value_ids.Any())
+      if (!objIds.Any())
       {
         return;
       }
+
       StateBaseDTO packet = new StateBaseDTO()
       {
         action = "on_values_changed",
-        data = value_ids.ToList()
+        data = objIds
       };
 
       await SendPacket(packet);

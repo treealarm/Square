@@ -42,6 +42,19 @@ export interface IPolygonCoord extends IGeometryDTO<typeof PolygonType, LatLngPa
 export interface IPolylineCoord extends IGeometryDTO<typeof LineStringType, LatLngPair[]> {
 }
 
+export function calculateCenter<T extends GeometryType>(
+  geometry: IGeometryDTO<T>
+): LatLngPair | null {
+  if (geometry.type === PointType) {
+    return geometry.coord as LatLngPair; // Для точки, coord — это уже координаты
+  } else if (geometry.type === PolygonType || geometry.type === LineStringType) {
+    const coords = geometry.coord as LatLngPair[];
+    return coords.length > 0 ? coords[0] : null; // Берем первую точку массива
+  }
+  return null; // Если тип геометрии неизвестен
+}
+
+
 export function getGeometryType(geometry: any): IGeometryDTO<any, any> | null {
   if (!geometry || typeof geometry !== 'object') {
     return null; // Явно возвращаем null для недопустимых значений

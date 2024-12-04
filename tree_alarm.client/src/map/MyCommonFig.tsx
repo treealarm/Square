@@ -1,11 +1,15 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Circle, Marker, Polygon, Polyline } from "react-leaflet";
-import { ICircle, ICommonFig, IGeometryDTO, IPolygon, IPolyline, LineStringType, PointType, PolygonType, getExtraProp } from "../store/Marker";
-import React, { useMemo } from "react";
+import { Circle, Marker, Polygon, Polyline, Tooltip } from "react-leaflet";
+import { ICircle, ICommonFig, IGeometryDTO, IPolygon, IPolyline, IValueDTO, LineStringType, PointType, PolygonType, calculateCenter, getExtraProp } from "../store/Marker";
+import React, { useEffect, useMemo, useState } from "react";
 import * as L from 'leaflet';
 import { useAppDispatch } from "../store/configureStore";
 import * as GuiStore from '../store/GUIStates';
-
+import * as ValuesStore from '../store/ValuesStates';
+import { useSelector } from "react-redux";
+import { ApplicationState } from "../store";
 function MyPolygon(props: any) {
 
   var fig: IPolygon = props.marker;
@@ -129,7 +133,24 @@ export function MyCommonFig(props: any) {
   var fig: ICommonFig = props.marker;
   var geo: IGeometryDTO = fig?.geometry;
 
+  const update_values_periodically = useSelector((state: ApplicationState) => state?.valuesStates?.update_values_periodically);
+  const cur_values: IValueDTO[] = useSelector(ValuesStore.selectValuesMapForOwner(fig.id ?? '')) ?? [];
+  const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
+
   const appDispatch = useAppDispatch();
+
+  const [tooltipOpacity, setTooltipOpacity] = useState(0.7);
+
+  useEffect(() => {
+    // Обновляем состояние opacity, когда selected_id изменяется
+    if (!selected_id || selected_id=='') {
+      setTooltipOpacity(0.7);
+    }
+    else {
+      setTooltipOpacity(selected_id == fig.id ? 1.0 : 0.5);
+    }
+    
+  }, [selected_id, fig.id]);
 
   const eventHandlers = useMemo(
     () => ({
@@ -140,36 +161,56 @@ export function MyCommonFig(props: any) {
     [props.marker.id],
   );
 
+  
   if (props.hidden == true) {
     return null;
   }
-
-
 
   if (geo?.type == null) {
     return null;
   }
 
-  if (geo.type == PointType) {
-    return (
-      <MyCircle {...props} eventHandlers={eventHandlers} >
+  const center = calculateCenter(geo);
 
-      </MyCircle>
-    );
-  }
+  return (<React.Fragment>
+    {geo.type === PointType && <MyCircle {...props} eventHandlers={eventHandlers} />}
+    {geo.type === PolygonType && <MyPolygon {...props} eventHandlers={eventHandlers} />}
+    {geo.type === LineStringType && <MyPolyline {...props} eventHandlers={eventHandlers} />}
 
-  if (geo.type == PolygonType) {
-    return (
-      <MyPolygon {...props} eventHandlers={eventHandlers}>
-      </MyPolygon>
-    );
-  }
+    {/* Рендеринг значений как маркеров */}
+    {(update_values_periodically && cur_values.length > 0) && (
+      <Marker
+        position={center} // Позиция маркера
+        opacity={0} // Скрыть маркер
+        key={fig.id}
+        eventHandlers={eventHandlers}
+      >
+        <Tooltip
+          direction="right"
+          offset={[0, 0]}
+          opacity= {0.7}
+          permanent>
+          <div style={{
+            border: selected_id === fig.id ? '1px solid black' : '',
+            textAlign: 'left', whiteSpace: 'normal', maxWidth: '300px', overflowY: 'auto'}}>
+            <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+              {cur_values.map(value => (
+                <li key={value.id} style={{ margin: 0, padding: '0px 0', whiteSpace: 'nowrap' }}>
+                  {`${value.name}: ${value.value}`}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Tooltip>
 
-  if (geo.type == LineStringType) {
-    return (
-      <MyPolyline {...props} eventHandlers={eventHandlers}>
-      </MyPolyline>
-    );
-  }
-  return null;
+
+
+      </Marker>
+    )}
+
+
+
+
+  </React.Fragment>
+);
 }

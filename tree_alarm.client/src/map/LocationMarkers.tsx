@@ -7,10 +7,10 @@ import * as MarkersStore from '../store/MarkersStates';
 import * as GuiStore from '../store/GUIStates';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
 import { ApplicationState } from '../store';
-import { BoundBox, getExtraProp, IObjProps } from '../store/Marker';
+import { BoundBox, getExtraProp, ICommonFig, IObjProps } from '../store/Marker';
 
 
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   useMap,
   useMapEvents,
@@ -42,6 +42,8 @@ export function LocationMarkers() {
   const objProps = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps);
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
 
+  const [selectedMarker, setSelectedMarker] = useState<ICommonFig | null>(null)
+
   parentMap.attributionControl.options.prefix = 
     '<a href="https://www.leftfront.org" title="A JavaScript library for interactive maps">' + '<img width="12" height="8" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg"></img>' + 'LeafletAlarms</a>';
 
@@ -63,6 +65,13 @@ export function LocationMarkers() {
 
     appDispatch(MarkersStore.fetchMarkersByBox(boundBox));
   },[appDispatch, parentMap, searchFilter?.applied, searchFilter?.property_filter])
+
+  useEffect(() => {
+    const marker = markers?.figs.find((marker) => marker.id === selected_id);
+    if (marker) {
+      setSelectedMarker(marker);
+    }
+  }, [selected_id, markers?.figs]);
 
   useEffect(() => {
     RequestMarkersByBox(null);
@@ -189,16 +198,30 @@ export function LocationMarkers() {
     <React.Fragment>
       {
         searchFilter?.show_objects != false &&
-        markers?.figs?.map((marker) =>
-          <MyCommonFig
-            key={marker.id} 
-            marker={marker}
-            hidden={marker.id == hidden_id}
-            pathOptions={getColor(marker)}
-          >
-          </MyCommonFig>
-        )}
-    
+        markers?.figs.map((marker) => {
+          // Пропускаем выделенный маркер при рендеринге
+          if (marker.id === selected_id) return null;
+
+          return (
+            <MyCommonFig
+              key={marker.id}
+              marker={marker}
+              hidden={marker.id == hidden_id}
+              pathOptions={getColor(marker)}
+            />
+          );
+        })
+      }
+
+      {/* Отдельно рендерим выбранный маркер */}
+      {selectedMarker && (
+        <MyCommonFig
+          key={selectedMarker.id}
+          marker={selectedMarker}
+          hidden={selectedMarker.id == hidden_id}
+          pathOptions={getColor(selectedMarker)}
+        />
+      )}
     </React.Fragment>
   );
 }

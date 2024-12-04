@@ -68,7 +68,7 @@ export function WebSockClient() {
           setUpdatedTracks(received.data as string[]);
           break;
         case "on_values_changed":
-          appDispatch(ValuesStore.fetchValuesByIds(received.data));
+          appDispatch(ValuesStore.fetchValuesByOwners(received.data));
           break;
           
         default:
