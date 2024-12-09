@@ -8,8 +8,10 @@ using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
 using Domain.ServiceInterfaces;
 using Domain.Events;
-using Domain.Rights;
 using Domain.Values;
+using Domain.DiagramType;
+using Domain.Diagram;
+using static Google.Rpc.Context.AttributeContext.Types;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
@@ -19,12 +21,16 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly IStatesUpdateService _statesUpdateService;
     private readonly IEventsUpdateService _eventsUpdateService;
     private readonly IValuesUpdateService _valuesUpdateService;
+    private readonly IDiagramTypeUpdateService _diagramTypeUpdateService;
+    private readonly IDiagramUpdateService _diagramUpdateService;
     private readonly FileSystemService _fs;
     public GRPCServiceProxy(
       ITracksUpdateService trackUpdateService,
       IStatesUpdateService statesUpdateService,
       IEventsUpdateService eventsUpdateService,
       IValuesUpdateService valuesUpdateService,
+      IDiagramTypeUpdateService diagramTypeUpdateService,
+      IDiagramUpdateService diagramUpdateService,
       FileSystemService fs
     )
     {
@@ -32,6 +38,8 @@ namespace LeafletAlarms.Grpc.Implementation
       _statesUpdateService = statesUpdateService;
       _eventsUpdateService = eventsUpdateService;
       _valuesUpdateService = valuesUpdateService;
+      _diagramTypeUpdateService = diagramTypeUpdateService;
+      _diagramUpdateService = diagramUpdateService;
       _fs = fs;
     }
     private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
@@ -58,7 +66,7 @@ namespace LeafletAlarms.Grpc.Implementation
       {
         var c = geometry.Coord.FirstOrDefault();
 
-        if ( c == null )
+        if (c == null)
         {
           return null;
         }
@@ -98,7 +106,7 @@ namespace LeafletAlarms.Grpc.Implementation
           newFigDto.zoom_level = fig.ZoomLevel;
           newFigDto.geometry = CoordsFromProto2DTO(fig.Geometry);
 
-          if (newFigDto.geometry == null )
+          if (newFigDto.geometry == null)
           {
             Console.Error.WriteLine($"{newFigDto.name} geometry == null");
             continue;
@@ -249,7 +257,7 @@ namespace LeafletAlarms.Grpc.Implementation
           prop_name = e.PropName,
           str_val = Path.Combine(mainFolder, path, fileName),
           visual_type = "image_fs"
-        };       
+        };
       }
 
       return new ObjExtraPropertyDTO()
@@ -260,11 +268,24 @@ namespace LeafletAlarms.Grpc.Implementation
       };
     }
 
+    public async Task<BoolValue> UploadFile(UploadFileProto request)
+    {      
+      var path = await _fs.Upload(
+        request.MainFolder, 
+        request.Path, 
+        request.FileName, 
+        request.FileData.ToByteArray());
+
+      return new BoolValue()
+      {
+        Value = !string.IsNullOrWhiteSpace(path)
+      };
+    }
     public async Task<BoolValue> UpdateEvents(EventsProto request)
     {
       var list = new List<EventDTO>();
 
-      foreach(var ev in request.Events)
+      foreach (var ev in request.Events)
       {
         var pEvent = new EventDTO();
 
@@ -290,7 +311,7 @@ namespace LeafletAlarms.Grpc.Implementation
         list.Add(pEvent);
       }
       var count = await _eventsUpdateService.AddEvents(list);
-      return new BoolValue() { Value = count == list.Count};
+      return new BoolValue() { Value = count == list.Count };
     }
 
     private object GetValueFromProto(ValueProtoType e)
@@ -342,7 +363,7 @@ namespace LeafletAlarms.Grpc.Implementation
 
       var toUpdate = new List<ValueDTO>();
 
-      foreach(var e in request.Values)
+      foreach (var e in request.Values)
       {
         toUpdate.Add(new ValueDTO()
         {
@@ -370,6 +391,112 @@ namespace LeafletAlarms.Grpc.Implementation
       }
 
       return response;
-    } 
+    }
+
+    public async Task<DiagramTypesProto> UpdateDiagramTypes(DiagramTypesProto request)
+    {
+      var response = new DiagramTypesProto();
+
+      // Преобразуем request в список DiagramTypeDTO
+      List<DiagramTypeDTO> dgr_types = request.DiagramTypes
+          .Select(proto => new DiagramTypeDTO
+          {
+            id = proto.Id,
+            name = proto.Name,
+            src = proto.Src,
+            regions = proto.Regions?.Select(region => new DiagramTypeRegionDTO
+            {
+              id = region.Id,
+              geometry = region.Geometry != null ? new DiagramCoordDTO
+              {
+                top = region.Geometry.Top,
+                left = region.Geometry.Left,
+                width = region.Geometry.Width,
+                height = region.Geometry.Height
+              } : null
+            }).ToList()
+          }).ToList();
+
+      // Вызываем метод сервиса
+      var updatedDiagramTypes = await _diagramTypeUpdateService.UpdateDiagramTypes(dgr_types);
+
+      response.DiagramTypes.AddRange(
+          updatedDiagramTypes.dgr_types
+            .Select(dto => new DiagramTypeProto
+            {
+              Id = dto.id,
+              Name = dto.name,
+              Src = dto.src,
+              Regions = {
+            dto.regions?.Select(region => new DiagramTypeRegionProto
+            {
+              Id = region.id,
+              Geometry = region.geometry != null ? new DiagramCoordProto
+              {
+                Top = region.geometry.top,
+                Left = region.geometry.left,
+                Width = region.geometry.width,
+                Height = region.geometry.height
+              } : null
+            })
+              }
+            }).ToList()
+      );
+      return response;
+    }
+
+    // Метод конвертации из Protobuf в DTO
+    private DiagramDTO ConvertToDiagramDTO(DiagramProto proto)
+    {
+      return new DiagramDTO
+      {
+        id = proto.Id,
+        geometry = proto.Geometry != null ? new DiagramCoordDTO
+        {
+          top = proto.Geometry.Top,
+          left = proto.Geometry.Left,
+          width = proto.Geometry.Width,
+          height = proto.Geometry.Height
+        } : null,
+        region_id = proto.RegionId,
+        dgr_type = proto.DgrType,
+        background_img = proto.BackgroundImg
+      };
+    }
+
+    // Метод конвертации из DTO в Protobuf
+    private DiagramProto ConvertToDiagramProto(DiagramDTO dto)
+    {
+      return new DiagramProto
+      {
+        Id = dto.id,
+        Geometry = dto.geometry != null ? new DiagramCoordProto
+        {
+          Top = dto.geometry.top,
+          Left = dto.geometry.left,
+          Width = dto.geometry.width,
+          Height = dto.geometry.height
+        } : null,
+        RegionId = dto.region_id,
+        DgrType = dto.dgr_type,
+        BackgroundImg = dto.background_img
+      };
+    }
+
+    // Функция для обновления диаграмм
+    public async Task<DiagramsProto> UpdateDiagrams(DiagramsProto request)
+    {
+      var diagrams = request.Diagrams
+          .Select(proto => ConvertToDiagramDTO(proto))
+          .ToList();
+
+      var updatedDiagrams = await _diagramUpdateService.UpdateDiagrams(diagrams);
+
+      var response = new DiagramsProto();
+      response.Diagrams.AddRange(updatedDiagrams.Select(dto => ConvertToDiagramProto(dto)));
+
+      return response;
+    }
   }
+
 }

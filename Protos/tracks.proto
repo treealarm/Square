@@ -3,6 +3,8 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
+import "diagrams.proto";
+
 option csharp_namespace = "LeafletAlarmsGrpc";
 
 package tracks;
@@ -15,6 +17,11 @@ service TreeAlarmsGrpcService {
 
   //Values
   rpc UpdateValues (ValuesProto) returns (ValuesProto);
+  rpc UpdateDiagramTypes(diagrams.DiagramTypesProto) returns (diagrams.DiagramTypesProto);
+  rpc UpdateDiagrams(diagrams.DiagramsProto) returns (diagrams.DiagramsProto);
+
+  rpc UploadFile(UploadFileProto) returns (google.protobuf.BoolValue);
+  
 }
 
 
@@ -128,4 +135,11 @@ message ValueProto
 
 message ValuesProto {
   repeated ValueProto values = 1;
+}
+
+message UploadFileProto {
+  string main_folder = 1;   // Основная папка
+  string path = 2;          // Путь внутри основной папки
+  string file_name = 3;     // Имя файла
+  bytes file_data = 4;      // Данные файла в формате Base64 (байтовый массив)
 }

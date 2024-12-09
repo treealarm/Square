@@ -10,7 +10,8 @@ while (true)
       UpdateSADTracks.Move(),
       MoveObject.Move(),
       StateObject.Change(),
-      EventAdd.Add()
+      EventAdd.Add(),
+      DiagramUpdater.UploadDiagramsAsync()
     };
 
     Task.WaitAll(tasks.ToArray());

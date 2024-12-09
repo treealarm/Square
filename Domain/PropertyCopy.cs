@@ -118,7 +118,7 @@ namespace Domain
       return dbo;
     }
 
-    public static T CloneObject<T>(T source) where T : new()
+    public static T? CloneObject<T>(T source) where T : new()
     {
       if (source == null)
       {

@@ -39,5 +39,18 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       return await _proxy.UpdateValues(request);
     }
+    public override async Task<DiagramTypesProto> UpdateDiagramTypes(DiagramTypesProto request, ServerCallContext context)
+    {
+      return await _proxy.UpdateDiagramTypes(request);
+    }
+    public override async Task<DiagramsProto> UpdateDiagrams(DiagramsProto request, ServerCallContext context)
+    {
+      return await _proxy.UpdateDiagrams(request);
+    }
+
+    public override async Task<BoolValue> UploadFile(UploadFileProto request, ServerCallContext context)
+    {
+      return await _proxy.UploadFile(request);
+    }
   }
 }

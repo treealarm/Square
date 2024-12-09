@@ -11,7 +11,6 @@ namespace GrpcTracksClient
     {
       var rnd = new Random();
       using var client = new GrpcUpdater();
-      client.Connect(null);
       
       for (int j = 0; j < 100000; j++)
       {

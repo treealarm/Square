@@ -1,6 +1,8 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
+using System;
+using System.Threading.Tasks;
 using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace GrpcDaprLib
@@ -9,6 +11,8 @@ namespace GrpcDaprLib
   {
     private GrpcChannel? _channel = null;
     private TreeAlarmsGrpcServiceClient? _client = null;
+
+    public string GRPC_DST { get; private set; } = string.Empty;
 
     public static string GetGrpcMainUrl()
     {
@@ -29,8 +33,7 @@ namespace GrpcDaprLib
       return string.Empty;
     }
 
-    public string GRPC_DST { get; private set; } = string.Empty;// = $"http://leafletalarmsservice:5000";
-    public void Connect(string endPoint)
+    public GrpcUpdater(string? endPoint = null)
     {
       GRPC_DST = GetGrpcMainUrl();
 
@@ -43,26 +46,16 @@ namespace GrpcDaprLib
       _client = new TreeAlarmsGrpcServiceClient(_channel);
     }
 
-    public bool IsConnected()
-    {
-      return _client != null;
-    }
     public void Dispose()
     {
-      if (_channel != null)
-      {
-        _channel.Dispose();
-        _channel = null;
-      }
+      _channel?.Dispose();
+      _channel = null;
       _client = null;
     }
 
     public async Task<ProtoFigures?> Move(ProtoFigures figs, Metadata? meta = null)
     {
-      if (_client == null)
-      {
-        return null;
-      }
+      if (_client == null) return null;
       try
       {
         var newFigs = await _client.UpdateFiguresAsync(figs, meta);
@@ -77,10 +70,7 @@ namespace GrpcDaprLib
 
     public async Task<bool?> UpdateTracks(TrackPointsProto figs)
     {
-      if (_client == null)
-      {
-        return null;
-      }
+      if (_client == null) return null;
 
       var newFigs = await _client.UpdateTracksAsync(figs);
       return newFigs.Value;
@@ -96,10 +86,7 @@ namespace GrpcDaprLib
 
     public async Task<bool?> AddEvents(EventsProto events)
     {
-      if (_client == null)
-      {
-        return null;
-      }
+      if (_client == null) return null;
 
       var result = await _client.UpdateEventsAsync(events);
       return result.Value;
@@ -107,12 +94,25 @@ namespace GrpcDaprLib
 
     public async Task<ValuesProto?> UpdateValues(ValuesProto events)
     {
-      if (_client == null)
-      {
-        return null;
-      }
+      if (_client == null) return null;
 
       var result = await _client.UpdateValuesAsync(events);
+      return result;
+    }
+
+    public async Task<bool?> UploadFile(UploadFileProto file_data)
+    {
+      if (_client == null) return null;
+
+      var result = await _client.UploadFileAsync(file_data);
+      return result.Value;
+    }
+
+    public async Task<DiagramTypesProto?> UpdateDiagramTypes(DiagramTypesProto d_type)
+    {
+      if (_client == null) return null;
+
+      var result = await _client.UpdateDiagramTypesAsync(d_type);
       return result;
     }
   }

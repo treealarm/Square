@@ -9,7 +9,6 @@ namespace GrpcTracksClient
     public static async Task Change()
     {
       using var client = new GrpcUpdater();
-      client.Connect(null);
       var states = new ProtoObjectStates();
 
       var state = new ProtoObjectState();

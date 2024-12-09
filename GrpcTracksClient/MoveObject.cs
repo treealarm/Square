@@ -186,7 +186,6 @@ namespace GrpcTracksClient
       };
 
       using var client = new GrpcUpdater();
-      client.Connect(null);
       var step = 0.0001;
 
       for (int i = 0; i < 1000000; i++)
@@ -230,12 +229,6 @@ namespace GrpcTracksClient
       }
     }
 
-
-
-    static string LongTo24String(long number)
-    {
-      return "1111" + number.ToString("D20");
-    }
     private static Random _random = new Random();
 
     static double GetRandomDouble(double min, double max)
@@ -254,8 +247,8 @@ namespace GrpcTracksClient
         @"images/car_red_256.png",
         @"images/car_taxi.png",
         @"images/car_police.png"};
-      var fig_Id = LongTo24String(number); //"6423e54d513bfe83e9d59794";
-      var fig_Name = "TestCar" + number.ToString();
+      var fig_Id = Utils.LongTo24String(number); //"6423e54d513bfe83e9d59794";
+      var fig_Name = "Car " + number.ToString();
 
       for (int h = 0; h < 10; h++)
       {
@@ -363,7 +356,6 @@ namespace GrpcTracksClient
     private static async Task CarFigureSender()
     {
       using var client = new GrpcUpdater();
-      client.Connect(null);
       Random random = new Random();
       
       while (_working)

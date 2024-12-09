@@ -6,5 +6,5 @@ namespace Domain.DiagramType
     {
         public string? id { get; set; }
         public DiagramCoordDTO? geometry { get; set; }
-  }
+    }
 }

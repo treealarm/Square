@@ -55,13 +55,7 @@ namespace GrpcTracksClient
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);
 
-      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);      
-
-      if (!_client.IsConnected())
-      {
-        _client.Connect(null);
-      }      
-
+      var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
       foreach (var c in coords?.coord)
       {
         foreach (var f in fig.Location.Coord)

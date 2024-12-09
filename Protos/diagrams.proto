@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option csharp_namespace = "LeafletAlarmsGrpc";
+package diagrams;
+
+message DiagramTypeProto {
+    string id = 1;
+    string name = 2;
+    string src = 3;
+    repeated DiagramTypeRegionProto regions = 4;
+}
+
+message DiagramTypeRegionProto {
+    string id = 1;
+    DiagramCoordProto geometry = 2;
+}
+
+message DiagramCoordProto {
+    double top = 1;
+    double left = 2;
+    double width = 3;
+    double height = 4;
+}
+
+message DiagramTypesProto {
+    repeated DiagramTypeProto diagram_types = 1;
+}
+
+
+////////////////////////////////////////////
+
+
+// Сообщение для диаграммы
+message DiagramProto {
+  string id = 1;
+  DiagramCoordProto geometry = 2;
+  string region_id = 3;
+  string dgr_type = 4;
+  string background_img = 5;
+}
+
+// Ответ для метода UpdateDiagrams
+message DiagramsProto {
+  repeated DiagramProto diagrams = 1;
+}
