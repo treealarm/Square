@@ -1,6 +1,7 @@
 ﻿using GrpcDaprLib;
 using GrpcTracksClient;
 using LeafletAlarmsGrpc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class DiagramUpdater
 {
@@ -11,6 +12,8 @@ public class DiagramUpdater
 
   public static async Task UploadDiagramsAsync()
   {
+    const string TeslaCar = "Tesla_Car";
+
     await Task.Delay(1000);
     try
     {
@@ -29,6 +32,7 @@ public class DiagramUpdater
 
       // Загружаем файл
       await client.UploadFile(protoUploadFile);
+      
 
       Console.WriteLine("File uploaded.");
       var d_type = new DiagramTypesProto();
@@ -36,7 +40,7 @@ public class DiagramUpdater
         new DiagramTypeProto()
         {
           Id = Utils.LongTo24String(1),
-          Name = "Tesla_Car",
+          Name = TeslaCar,
           Src = $"{protoUploadFile.MainFolder}/{protoUploadFile.Path}/{protoUploadFile.FileName}",
           Regions =  
           { 
@@ -45,10 +49,10 @@ public class DiagramUpdater
               Id = "speed",
               Geometry = new DiagramCoordProto()
               {
-                Left = 0,
-                Top = 1,
-                Height = 0.3,
-                Width = 0.5
+                Left = 0.1,
+                Top = 0.7,
+                Height = 0.1,
+                Width = 0.2
               }
             },
             new DiagramTypeRegionProto()
@@ -56,10 +60,10 @@ public class DiagramUpdater
               Id = "temperature",
               Geometry = new DiagramCoordProto()
               {
-                Left = 0,
-                Top = 1.4,
-                Height = 0.3,
-                Width = 0.5
+                Left = 0.1,
+                Top = 0.9,
+                Height = 0.1,
+                Width = 0.2
               }
             }
           }
@@ -67,6 +71,26 @@ public class DiagramUpdater
       );
 
       await client.UpdateDiagramTypes(d_type);
+
+      var diag = new DiagramsProto();
+
+      for (long carId = 1; carId < MoveObject.MaxCars; carId++)
+      {
+        diag.Diagrams.Add(new DiagramProto()
+        {
+          DgrType = TeslaCar,
+          Id = Utils.LongTo24String(carId),
+          Geometry = new DiagramCoordProto()
+          {
+            Left = 50,
+            Top = 50,
+            Width = 690,
+            Height = 400          
+          }
+        });
+      }
+      await client.UpdateDiagrams(diag);
+
     }
     catch (Exception ex)
     {

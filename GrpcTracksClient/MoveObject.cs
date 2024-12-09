@@ -7,7 +7,7 @@ namespace GrpcTracksClient
   internal class MoveObject
   {
     private static ValhallaRouter _router = new ValhallaRouter();
-
+    public static int MaxCars = 50;
     public static async Task Move()
     {     
       //var resourceName = $"GrpcTracksClient.JSON.SAD.json";
@@ -18,7 +18,7 @@ namespace GrpcTracksClient
 
       List<Task> listCarsTasks = new List<Task>();
 
-      for (long carId = 1; carId < 50; carId++)
+      for (long carId = 1; carId < MaxCars; carId++)
       {
         try
         {
@@ -235,6 +235,7 @@ namespace GrpcTracksClient
     {
       return min + (_random.NextDouble() * (max - min));
     }
+
     public static async Task MoveGrpcCar(long number)
     { 
       var endLat = GetRandomDouble(55.750, 55.770);

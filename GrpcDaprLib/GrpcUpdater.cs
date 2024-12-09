@@ -115,5 +115,13 @@ namespace GrpcDaprLib
       var result = await _client.UpdateDiagramTypesAsync(d_type);
       return result;
     }
+
+    public async Task<DiagramsProto?> UpdateDiagrams(DiagramsProto diag)
+    {
+      if (_client == null) return null;
+
+      var result = await _client.UpdateDiagramsAsync(diag);
+      return result;
+    }
   }
 }
