@@ -214,7 +214,8 @@ namespace DbLayer.Services
           dbo.regions.Add(new DBDiagramTypeRegion()
           {
             geometry = item.geometry.CopyAll<DiagramCoordDTO, DBDiagramCoord>(),
-            id = item.id
+            id = item.id,
+            styles = new Dictionary<string, string>(item.styles)
           });
         }
       }      
@@ -246,7 +247,8 @@ namespace DbLayer.Services
           dto.regions.Add(new DiagramTypeRegionDTO() 
           {
              id= item.id,
-             geometry = item.geometry.CopyAll<DBDiagramCoord, DiagramCoordDTO>()
+             geometry = item.geometry.CopyAll<DBDiagramCoord, DiagramCoordDTO>(),
+             styles = new Dictionary<string, string>(item.styles)
           });
         }
 

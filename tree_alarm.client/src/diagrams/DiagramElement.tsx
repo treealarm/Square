@@ -1,11 +1,12 @@
-﻿import * as React from 'react';
+﻿/* eslint-disable no-undef */
+import * as React from 'react';
 
 import { ApplicationState } from '../store/index';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../store/configureStore';
 import { useCallback, useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
 import * as ValuesStore from '../store/ValuesStates';
 import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
@@ -41,6 +42,12 @@ const getValueByRegion = (
     };
   }
 
+  const defaultStyles = {
+    color: region.styles?.color || 'black',
+    fontSize: region.styles?.fontSize || '14px',
+    backgroundColor: region.styles?.backgroundColor || 'transparent',
+  };
+
   // Создаем компонент, который будет отображать значение региона
   return (
     <Box
@@ -49,31 +56,24 @@ const getValueByRegion = (
         padding: 0,
         margin: 0,
         position: 'absolute',
-        top: coord.top * zoom + 'px', // Сдвиг от верхнего края
-        left: coord.left * zoom + 'px', // Сдвиг от левого края
+        top: coord.top * zoom + 'px',
+        left: coord.left * zoom + 'px',
         height: coord.height * zoom + 'px',
         width: coord.width * zoom + 'px',
-        backgroundColor: 'green',
+        ...defaultStyles,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'left',
         alignItems: 'left',
-        overflow: 'hidden', // Обрезаем текст, если он выходит за пределы
+        overflow: 'hidden',
       }}
     >
-      <Typography
-        variant="body2"
-        component="span"
-        color="black"
-        sx={{
-          whiteSpace: 'nowrap', // Запрещаем перенос строк
-          overflow: 'hidden',   // Обрезаем переполненный текст
-          textOverflow: 'ellipsis', // Добавляем многоточие, если текст не помещается
-        }}
-      >
-        {`${region_value.name}: ${region_value.value}`}
-      </Typography>
+      {
+        `${region_value.name}: ${region_value.value}`
+      }      
+      
     </Box>
+
   );
 };
 

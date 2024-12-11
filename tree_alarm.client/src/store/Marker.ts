@@ -389,6 +389,12 @@ export interface IDiagramFullDTO {
 export interface IDiagramTypeRegionDTO {
   id: string;
   geometry: IDiagramCoord;
+  styles?: {
+    color?: string;
+    fontSize?: string;
+    backgroundColor?: string;
+    [key: string]: any; // Дополнительные стили
+  };
 }
 export interface IDiagramTypeDTO {
   id?: string|null;

@@ -413,22 +413,23 @@ namespace LeafletAlarms.Grpc.Implementation
                 left = region.Geometry.Left,
                 width = region.Geometry.Width,
                 height = region.Geometry.Height
-              } : null
+              } : null,
+              styles = region.Styles.ToDictionary()
             }).ToList()
           }).ToList();
 
       // Вызываем метод сервиса
       var updatedDiagramTypes = await _diagramTypeUpdateService.UpdateDiagramTypes(dgr_types);
 
-      response.DiagramTypes.AddRange(
-          updatedDiagramTypes.dgr_types
-            .Select(dto => new DiagramTypeProto
-            {
-              Id = dto.id,
-              Name = dto.name,
-              Src = dto.src,
-              Regions = {
-            dto.regions?.Select(region => new DiagramTypeRegionProto
+      foreach (var dto in updatedDiagramTypes.dgr_types)
+      {
+        var regionsList = new List<DiagramTypeRegionProto>();
+
+        if (dto.regions != null)
+        {
+          foreach (var region in dto.regions)
+          {
+            var diagramRegion = new DiagramTypeRegionProto
             {
               Id = region.id,
               Geometry = region.geometry != null ? new DiagramCoordProto
@@ -437,11 +438,34 @@ namespace LeafletAlarms.Grpc.Implementation
                 Left = region.geometry.left,
                 Width = region.geometry.width,
                 Height = region.geometry.height
-              } : null
-            })
-              }
-            }).ToList()
-      );
+              } : null,
+            
+            };
+
+            foreach (var pair in region.styles) 
+            {
+              diagramRegion.Styles.Add(pair.Key, pair.Value);
+            }
+            
+            regionsList.Add(diagramRegion);
+          }
+        }
+
+        var diagramTypeProto = new DiagramTypeProto
+        {
+          Id = dto.id,
+          Name = dto.name,
+          Src = dto.src,
+        };
+
+        foreach(var region in regionsList)
+        {
+          diagramTypeProto.Regions.Add(region);
+        }
+        
+        response.DiagramTypes.Add(diagramTypeProto);
+      }
+
       return response;
     }
 
