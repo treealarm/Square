@@ -457,6 +457,4 @@ export interface IValueDTO {
   owner_id: string;
   name: string;
   value: any;
-  min: any;
-  max: any;
 }

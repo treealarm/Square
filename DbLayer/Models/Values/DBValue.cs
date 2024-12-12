@@ -11,9 +11,5 @@ namespace DbLayer.Models.Values
     public string name { get; set; }
     [BsonIgnoreIfNull]
     public BsonValue value { get; set; }
-    [BsonIgnoreIfNull]
-    public BsonValue min { get; set; }
-    [BsonIgnoreIfNull]
-    public BsonValue max { get; set; }
   }
 }

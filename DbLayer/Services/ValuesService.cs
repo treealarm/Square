@@ -176,8 +176,6 @@ namespace DbLayer.Services
       var dbo = new DBValue()
       {
         id = string.IsNullOrEmpty(dto.id) ? null : dto.id,
-        max = ConvertToBsonValue(dto.max),
-        min = ConvertToBsonValue(dto.min),
         name = dto.name,
         owner_id = dto.owner_id,
         value = ConvertToBsonValue(dto.value)
@@ -196,8 +194,6 @@ namespace DbLayer.Services
       var dto = new ValueDTO()
       {
         id = dbo.id,
-        max = ConvertFromBsonValue(dbo.max),
-        min = ConvertFromBsonValue(dbo.min),
         name = dbo.name,
         owner_id = dbo.owner_id,
         value = ConvertFromBsonValue(dbo.value)

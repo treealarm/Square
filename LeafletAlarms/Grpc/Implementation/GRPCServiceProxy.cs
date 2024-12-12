@@ -371,8 +371,6 @@ namespace LeafletAlarms.Grpc.Implementation
           name = e.Name,
           owner_id = e.OwnerId,
           value = GetValueFromProto(e.Value),
-          min = GetValueFromProto(e.Min),
-          max = GetValueFromProto(e.Max)
         });
       }
       var updated = await _valuesUpdateService.UpdateValuesFilteredByNameAsync(toUpdate);
@@ -385,8 +383,6 @@ namespace LeafletAlarms.Grpc.Implementation
           OwnerId = e.owner_id,
           Name = e.name,
           Value = SetValueToValueType(e.value),
-          Max = SetValueToValueType(e.max),
-          Min = SetValueToValueType(e.min)
         });
       }
 
