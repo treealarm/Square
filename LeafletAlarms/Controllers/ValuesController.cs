@@ -15,8 +15,8 @@ namespace LeafletAlarms.Controllers
     private readonly IMapService _mapService;
     public ValuesController(
       IMapService mapService,
-     IValuesService valuesService,
-     IValuesUpdateService valuesUpdateService
+      IValuesService valuesService,
+      IValuesUpdateService valuesUpdateService
     )
     {
       _mapService = mapService;

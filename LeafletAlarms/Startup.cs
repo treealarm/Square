@@ -307,9 +307,9 @@ namespace LeafletAlarms
 
       app.Use(async (context, next) =>
       {
-        try
+        if (context.Request.Path == "/state")
         {
-          if (context.Request.Path == "/state")
+          try
           {
             if (context.WebSockets.IsWebSocketRequest)
             {
@@ -324,16 +324,16 @@ namespace LeafletAlarms
               context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             }
           }
-          else
+          catch (Exception ex)
           {
-            await next();
+            Console.WriteLine("App USE Error:" + ex.ToString());
           }
         }
-        catch ( Exception ex )
+        else
         {
-          Console.WriteLine("App USE Error:" + ex.ToString() );
+          await next();
         }
-        
+
       });
       app.MapControllers();
       app.MapFallbackToFile("/index.html");

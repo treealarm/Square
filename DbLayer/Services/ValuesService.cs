@@ -1,6 +1,4 @@
-﻿using DbLayer.Models;
-using DbLayer.Models.Values;
-using Domain;
+﻿using DbLayer.Models.Values;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Domain.Values;
