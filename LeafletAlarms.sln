@@ -23,7 +23,7 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "tree_alarm.client", "tree_a
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataChangeLayer", "DataChangeLayer\DataChangeLayer.csproj", "{9E8FC7DA-56B8-4C6D-A471-68D16F5248D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlinkService", "BlinkService\BlinkService.csproj", "{1D6A7494-7645-4087-A9E8-FC7A1FC239F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlinkService", "BlinkService\BlinkService.csproj", "{1D6A7494-7645-4087-A9E8-FC7A1FC239F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +77,10 @@ Global
 		{1D6A7494-7645-4087-A9E8-FC7A1FC239F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D6A7494-7645-4087-A9E8-FC7A1FC239F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D6A7494-7645-4087-A9E8-FC7A1FC239F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Debug|Any CPU.ActiveCfg = Debug
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Debug|Any CPU.Build.0 = Debug
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.ActiveCfg = Release
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

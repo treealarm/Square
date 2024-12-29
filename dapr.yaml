@@ -1,0 +1,13 @@
+version: 1
+apps:
+  - appDirPath: ./grpctracksclient/
+    appID: grpctracksclient
+    appProtocol: grpc
+    command: ["dotnet", "run"]
+    env_file:
+      - global.env
+      - .env
+  - appID: leafletalarms
+    appProtocol: grpc
+    appDirPath: ./leafletalarms/
+    command: ["dotnet", "run"]

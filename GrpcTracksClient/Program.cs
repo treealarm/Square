@@ -1,24 +1,33 @@
 ﻿using GrpcTracksClient;
 
-while (true)
+var cancellationTokenSource = new CancellationTokenSource();
+var cancellationToken = cancellationTokenSource.Token;
+
+var tasks = new List<Task>
 {
+    RunTaskWithRetry(() => UpdateSADTracks.Move(), "UpdateSADTracks.Move", cancellationToken),
+    RunTaskWithRetry(() => MoveObject.Move(), "MoveObject.Move", cancellationToken),
+    RunTaskWithRetry(() => StateObject.Change(), "StateObject.Change", cancellationToken),
+    RunTaskWithRetry(() => EventAdd.Add(), "EventAdd.Add", cancellationToken),
+    RunTaskWithRetry(() => DiagramUpdater.UploadDiagramsAsync(), "DiagramUpdater.UploadDiagramsAsync", cancellationToken)
+};
 
-  try
+// Ожидание завершения всех задач (или их отмены)
+await Task.WhenAll(tasks);
+
+async Task RunTaskWithRetry(Func<Task> taskFunc, string taskName, CancellationToken token)
+{
+  while (!token.IsCancellationRequested)
   {
-    var tasks = new List<Task>
+    try
     {
-      UpdateSADTracks.Move(),
-      MoveObject.Move(),
-      StateObject.Change(),
-      EventAdd.Add(),
-      DiagramUpdater.UploadDiagramsAsync()
-    };
-
-    Task.WaitAll(tasks.ToArray());
-  }
-  catch (Exception ex)
-  {
-    Logger.LogException(ex);
-    await Task.Delay(1000);
+      await taskFunc();
+    }
+    catch (Exception ex)
+    {
+      Logger.LogException(ex);
+      await Task.Delay(1000, token); // Задержка перед повторной попыткой
+    }
   }
 }
+
