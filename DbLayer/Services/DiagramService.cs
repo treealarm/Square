@@ -61,6 +61,10 @@ namespace DbLayer.Services
 
     async Task IDiagramServiceInternal.UpdateListAsync(List<DiagramDTO> newObjs) 
     {
+      if (newObjs.Count == 0)
+      {
+        return;
+      }
       var dbUpdated = new Dictionary<DiagramDTO, DBDiagram>();
       var bulkWrites = new List<WriteModel<DBDiagram>>();
 

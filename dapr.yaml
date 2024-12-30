@@ -1,13 +1,13 @@
+#https://docs.dapr.io/developing-applications/local-development/multi-app-dapr-run/multi-app-template/
 version: 1
 apps:
   - appDirPath: ./grpctracksclient/
     appID: grpctracksclient
     appProtocol: grpc
     command: ["dotnet", "run"]
-    env_file:
-      - global.env
-      - .env
   - appID: leafletalarms
     appProtocol: grpc
+    appPort: 5000
     appDirPath: ./leafletalarms/
     command: ["dotnet", "run"]
+

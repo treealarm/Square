@@ -6,7 +6,8 @@ var cancellationToken = cancellationTokenSource.Token;
 var tasks = new List<Task>
 {
     RunTaskWithRetry(() => UpdateSADTracks.Move(), "UpdateSADTracks.Move", cancellationToken),
-    RunTaskWithRetry(() => MoveObject.Move(), "MoveObject.Move", cancellationToken),
+    RunTaskWithRetry(() => MoveObject.MoveCars(cancellationToken), "MoveObject.MoveCars", cancellationToken),
+    RunTaskWithRetry(() => MoveObject.MovePolygons(), "MoveObject.MovePolygons", cancellationToken),
     RunTaskWithRetry(() => StateObject.Change(), "StateObject.Change", cancellationToken),
     RunTaskWithRetry(() => EventAdd.Add(), "EventAdd.Add", cancellationToken),
     RunTaskWithRetry(() => DiagramUpdater.UploadDiagramsAsync(), "DiagramUpdater.UploadDiagramsAsync", cancellationToken)

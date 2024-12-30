@@ -129,8 +129,6 @@ message ValueProto
   string name = 3;      // Название значения
 
   ValueProtoType value = 4; 
-  ValueProtoType min = 5;
-  ValueProtoType max = 6;
 }
 
 message ValuesProto {

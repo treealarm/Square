@@ -36,10 +36,10 @@ namespace ValhallaLib
     {
       var allVars = Environment.GetEnvironmentVariables();
 
-      foreach(var key in allVars.Keys)
-      {
-        Console.WriteLine($"{key}- {allVars[key]}");
-      }
+      //foreach(var key in allVars.Keys)
+      //{
+      //  Console.WriteLine($"{key}- {allVars[key]}");
+      //}
       if (int.TryParse(Environment.GetEnvironmentVariable("VALHALLA_PORT"), out var VALHALLA_PORT))
       {
         Console.WriteLine($"valhalla port:{VALHALLA_PORT}");

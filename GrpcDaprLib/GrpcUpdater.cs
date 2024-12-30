@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Dapr.Client;
+using Grpc.Core;
 using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
 using System;
@@ -12,16 +13,21 @@ namespace GrpcDaprLib
     private GrpcChannel? _channel = null;
     private TreeAlarmsGrpcServiceClient? _client = null;
 
+    private CallInvoker _daprClient = null;
+
     public string GRPC_DST { get; private set; } = string.Empty;
+    public string DAPR_GRPC_PORT { get; private set; } = string.Empty;
+    
 
     public static string GetGrpcMainUrl()
     {
       var allVars = Environment.GetEnvironmentVariables();
 
-      foreach (var key in allVars.Keys)
-      {
-        Console.WriteLine($"{key}- {allVars[key]}");
-      }
+      //foreach (var key in allVars.Keys)
+      //{
+      //  Console.WriteLine($"{key}- {allVars[key]}");
+      //}
+
       if (int.TryParse(Environment.GetEnvironmentVariable("GRPC_MAIN_PORT"), out var GRPC_MAIN_PORT))
       {
         Console.WriteLine($"GRPC_MAIN_PORT port:{GRPC_MAIN_PORT}");
@@ -42,8 +48,10 @@ namespace GrpcDaprLib
         GRPC_DST = endPoint;
       }
 
-      _channel = GrpcChannel.ForAddress(GRPC_DST);
-      _client = new TreeAlarmsGrpcServiceClient(_channel);
+      _daprClient = DaprClient.CreateInvocationInvoker(appId: "leafletalarms");
+
+      //_channel = GrpcChannel.ForAddress(GRPC_DST);
+      _client = new TreeAlarmsGrpcServiceClient(_daprClient);
     }
 
     public void Dispose()
