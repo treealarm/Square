@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using GrpcTracksClient;
 using LeafletAlarmsGrpc;
+using System;
 using System.Xml.Linq;
 using ValhallaLib;
 
@@ -24,11 +25,14 @@ public class MovingCar
   private double _segmentDistance;
   private double _azimuth;
   private ProtoFig _figure;
+  private readonly string _id;
+  private double _speed_ms = 0;
 
   public MovingCar(ValhallaRouter router, long number)
   {
     _router = router;
     _number = number;
+    _id = Utils.LongTo24String(_number);
     _color = GenerateRandomColor();
     _carIndex = _random.Next(0, _carImages.Length);
     _currentPosition = GenerateRandomStartPosition();
@@ -39,7 +43,7 @@ public class MovingCar
   {
     var fig = new ProtoFig
     {
-      Id = Utils.LongTo24String(_number),
+      Id = _id,
       Name = "Car " + _number,
       Geometry = new ProtoGeometry { Type = "Point" }
     };
@@ -72,8 +76,9 @@ public class MovingCar
     }
 
     // Выполняем шаг
-    var curStepDistance = GetRandomDouble(7, 12); // Speed in m/s
-    _currentDistance += curStepDistance;
+    _speed_ms = GetRandomDouble(7, 12); // Speed in m/s so it is meeters per second
+
+    _currentDistance += _speed_ms;
     if (_currentDistance > _segmentDistance)
     {
       _currentDistance = _segmentDistance + 0.1; // Не выходить за пределы сегмента
@@ -82,7 +87,7 @@ public class MovingCar
     var curCoords = GeoCalculator.CalculateCoordinates(
         _currentPosition.Lat,
         _currentPosition.Lon,
-        curStepDistance,
+        _speed_ms,
         _azimuth
     );
 
@@ -92,6 +97,28 @@ public class MovingCar
     return CreateFigure();
   }
 
+  public ValuesProto GetValuesToSend()
+  {
+    var valuesToSend = new ValuesProto();
+    var randomValue = _random.Next(50, 80);
+
+    valuesToSend.Values.Add(new ValueProto()
+    {
+      OwnerId = _id,
+      Name = "speed",
+      Value = new ValueProtoType() { IntValue = (int)(_speed_ms * 3.6) },
+    });
+
+    randomValue = _random.Next(80, 110);
+
+    valuesToSend.Values.Add(new ValueProto()
+    {
+      OwnerId = _id,
+      Name = "temperature",
+      Value = new ValueProtoType() { IntValue = randomValue },
+    });
+    return valuesToSend;
+  }
   private async Task GenerateNewRouteAsync()
   {
     var endLat = GetRandomDouble(55.750, 55.770);

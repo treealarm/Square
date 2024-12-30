@@ -1,6 +1,7 @@
 ﻿using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using System.Diagnostics.Metrics;
+using System.Linq;
 using ValhallaLib;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -27,27 +28,60 @@ namespace GrpcTracksClient
         }
       }
 
+      using var client = new GrpcUpdater();
+
       while (!token.IsCancellationRequested)
       {
+        var figs = new ProtoFigures();
+        figs.AddTracks = true;
+
+        var valuesToSend = new ValuesProto();
+
         try
         {
           // Запускаем DoOneStep для всех машин и собираем результаты
           var tasks = listCars.Select(car => car.DoOneStep()).ToList();
           var results = await Task.WhenAll(tasks);
 
+          var values = listCars.Select(car => car.GetValuesToSend()).ToList();
+
+          foreach(var vals in values)
+          {
+            foreach(var val in vals.Values)
+            {
+              valuesToSend.Values.Add(val);
+            }
+          }
+          
           // Обрабатываем результаты
           foreach (var result in results)
           {
             if (result != null) // Проверяем результат, если нужно
             {
-              // Здесь можно добавить логику обработки результата
-              AddFigToSend(result);
+              figs.Figs.Add(result);
             }
           }
         }
         catch (Exception ex)
         {
           Logger.LogException(ex); // Логируем исключения
+        }
+
+
+        try
+        {
+          if (figs.Figs.Any())
+          {
+            var newFigs = await client.Move(figs);            
+          }
+          if (valuesToSend.Values.Any())
+          {
+            var vals = await client.UpdateValues(valuesToSend);
+          }            
+        }
+        catch (Exception ex)
+        {
+          Logger.LogException(ex);
         }
 
         await Task.Delay(1000); // Задержка между итерациями и скорость в метрах в секунду
@@ -61,9 +95,7 @@ namespace GrpcTracksClient
       //var s = await ResourceLoader.GetResource(resourceName);
 
       //var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
-      var figSenderTask = CarFigureSender();
-
-      
+    
 
       try
       {
@@ -78,9 +110,6 @@ namespace GrpcTracksClient
           Logger.LogException(ex.InnerException);
         }
       }
-
-      
-      Task.WaitAll(figSenderTask);
     }
 
 
@@ -268,74 +297,6 @@ namespace GrpcTracksClient
     static double GetRandomDouble(double min, double max)
     {
       return min + (_random.NextDouble() * (max - min));
-    }
-
-    static List<ProtoFig> _figsToSend = new List<ProtoFig>();
-    private static int AddFigToSend(ProtoFig f)
-    {
-      lock (_figsToSend)
-      {
-        _figsToSend.Add(f);
-        return _figsToSend.Count;
-      }
-    }
-
-    private static bool _working = true;
-    private static async Task CarFigureSender()
-    {
-      using var client = new GrpcUpdater();
-      Random random = new Random();
-      
-      while (_working)
-      {
-        var valuesToSend = new ValuesProto();
-
-        var figs = new ProtoFigures();
-
-        lock (_figsToSend)
-        {
-          foreach (var f in _figsToSend)
-          {
-            figs.Figs.Add(f);
-
-            var randomValue = random.Next(50, 80);
-
-            valuesToSend.Values.Add(new ValueProto()
-            {
-              OwnerId = f.Id,
-              Name = "speed",
-              Value = new ValueProtoType() { IntValue = randomValue},
-            });
-
-            randomValue = random.Next(80, 110);
-
-            valuesToSend.Values.Add(new ValueProto()
-            {
-              OwnerId = f.Id,
-              Name = "temperature",
-              Value = new ValueProtoType() { IntValue = randomValue },
-            });
-          }
-          _figsToSend = new List<ProtoFig>();
-        }
-
-       
-
-        if (figs.Figs.Any())
-        { 
-          try
-          {
-            figs.AddTracks = true;
-            var newFigs = await client.Move(figs);
-            var vals = await client.UpdateValues(valuesToSend);
-          }
-          catch (Exception ex)
-          {
-            Logger.LogException(ex);
-          }
-        }
-        await Task.Delay(500);
-      }
     }
   }
 }
