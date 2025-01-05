@@ -1,0 +1,73 @@
+﻿syntax = "proto3";
+
+package object_actions;
+
+// Перечисление типов параметров
+enum ProtoParameterType {
+  UNKNOWN = 0;
+  STRING = 1;
+  INT = 2;
+  DOUBLE = 3;
+  COORDINATES = 4; // Например, список координат lat, lon
+}
+
+// Сообщение, описывающее координаты
+message ProtoCoordinate {
+  double lat = 1; // Широта
+  double lon = 2; // Долгота
+}
+
+message ProtoCoordinates {
+  repeated ProtoCoordinate coordinates = 1;
+}
+
+// Тип значения параметра (oneof для поддержки различных типов значений)
+message ProtoActionValue {
+  oneof value {
+    double double_value = 1;
+    int32 int_value = 2;
+    string string_value = 3;
+    ProtoCoordinates coordinates = 4; // Список координат lat, lon
+  }
+}
+
+// Сообщение, описывающее параметры действия
+message ProtoActionParameter {
+  string name = 1;         // Имя параметра
+  ProtoParameterType type = 2; // Тип параметра из перечисления
+  ProtoActionValue cur_val = 3;
+}
+
+// Сообщение, описывающее действие
+message ProtoAction {
+  string name = 1;                     // уникальное имя действия
+  repeated ProtoActionParameter parameters = 2; // Список параметров для действия
+}
+
+// Запрос для вызова действия
+message ProtoExecuteActionRequest {
+  string action_id = 1;               // Идентификатор действия
+  map<string, ProtoActionValue> parameters = 2; // Параметры действия в виде ключ-значение
+}
+
+// Ответ после выполнения действия
+message ProtoExecuteActionResponse {
+  bool success = 1;  // Успешность выполнения действия
+  string message = 2; // Сообщение о результате выполнения
+}
+
+// Запрос для получения доступных действий
+message ProtoGetAvailableActionsRequest {
+  string object_id = 1; // ID объекта, для которого нужно получить список действий
+}
+
+// Ответ с доступными действиями
+message ProtoGetAvailableActionsResponse {
+  repeated ProtoAction actions = 1; // Список доступных действий
+}
+
+// Сервис для работы с действиями
+service ActionsService {
+  rpc GetAvailableActions (ProtoGetAvailableActionsRequest) returns (ProtoGetAvailableActionsResponse);
+  rpc ExecuteAction (ProtoExecuteActionRequest) returns (ProtoExecuteActionResponse); // Новый метод для выполнения действий
+}

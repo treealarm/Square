@@ -2,21 +2,22 @@
 using GrpcDaprLib;
 using GrpcTracksClient;
 using LeafletAlarmsGrpc;
-using static System.Net.Mime.MediaTypeNames;
-using System.Drawing;
 
-public class DiagramUpdater
+static public class DiagramUpdater
 {
 
-  public DiagramUpdater()
-  {
-  }
+  static bool _successfull = false;
 
   public static async Task UploadDiagramsAsync()
   {
     const string TeslaCar = "Tesla_Car";
 
     await Task.Delay(1000);
+
+    if (_successfull)
+    {
+      return;
+    }
     try
     {
       var protoUploadFile = new UploadFileProto()
@@ -107,7 +108,8 @@ public class DiagramUpdater
     catch (Exception ex)
     {
       Console.WriteLine($"Error UploadDiagrams: {ex.Message}");
-      
+      return;
     }
+    _successfull = true;
   }
 }

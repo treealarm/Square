@@ -4,6 +4,7 @@ apps:
   - appDirPath: ./grpctracksclient/
     appID: grpctracksclient
     appProtocol: grpc
+    appPort: 5001
     command: ["dotnet", "run"]
   - appID: leafletalarms
     appProtocol: grpc

@@ -1,7 +1,11 @@
-﻿using Domain.Integro;
+﻿using Dapr.Client;
+using Domain.Integro;
 using Domain.ServiceInterfaces;
 using Domain.Values;
+using Grpc.Core;
 using Microsoft.AspNetCore.Mvc;
+using ObjectActions;
+using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace LeafletAlarms.Controllers
 {
@@ -22,6 +26,26 @@ namespace LeafletAlarms.Controllers
       _mapService = mapService;
       _integroUpdateService = integroUpdateService;
       _integroService = integroService;
+    }
+
+    [HttpGet()]
+    [Route("GetAvailableActions")]
+    public async Task<List<string>> GetAvailableActions(string id)
+    {
+      var _daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
+      ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(_daprClient);
+      var request = new ProtoGetAvailableActionsRequest();
+      request.ObjectId = id;
+      var response = await _client.GetAvailableActionsAsync(request);
+
+
+      var dic = new List<string>();
+
+      foreach (var action in response.Actions)
+      {
+        dic.Add(action.Name);
+      }
+      return dic;
     }
 
     [HttpPost()]

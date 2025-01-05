@@ -1,33 +1,31 @@
 ﻿using GrpcDaprLib;
 using LeafletAlarmsGrpc;
-using System.Diagnostics.Metrics;
-using System.Linq;
 using ValhallaLib;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GrpcTracksClient
 {
-  internal class MoveObject
+  internal static class MoveObject
   {
     private static ValhallaRouter _router = new ValhallaRouter();
     public static int MaxCars = 50;
-    public static async Task MoveCars(CancellationToken token)
+    private static Dictionary<string, MovingCar> _cars = new Dictionary<string, MovingCar>();
+    static  MoveObject()
     {
-      List<MovingCar> listCars = new List<MovingCar>();
-
       for (long carId = 0; carId < MaxCars; carId++)
       {
         try
         {
           var movingCar = new MovingCar(_router, carId + 1);
-          listCars.Add(movingCar);
+          _cars.Add(movingCar.Id, movingCar);
         }
         catch (Exception ex)
         {
           Logger.LogException(ex);
         }
       }
-
+    }
+    public static async Task MoveCars(CancellationToken token)
+    {
       using var client = new GrpcUpdater();
 
       while (!token.IsCancellationRequested)
@@ -40,10 +38,10 @@ namespace GrpcTracksClient
         try
         {
           // Запускаем DoOneStep для всех машин и собираем результаты
-          var tasks = listCars.Select(car => car.DoOneStep()).ToList();
+          var tasks = _cars.Values.Select(car => car.DoOneStep()).ToList();
           var results = await Task.WhenAll(tasks);
 
-          var values = listCars.Select(car => car.GetValuesToSend()).ToList();
+          var values = _cars.Values.Select(car => car.GetValuesToSend()).ToList();
 
           foreach(var vals in values)
           {

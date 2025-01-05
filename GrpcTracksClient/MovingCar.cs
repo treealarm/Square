@@ -1,8 +1,5 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using GrpcTracksClient;
+﻿using GrpcTracksClient;
 using LeafletAlarmsGrpc;
-using System;
-using System.Xml.Linq;
 using ValhallaLib;
 
 public class MovingCar
@@ -27,6 +24,7 @@ public class MovingCar
   private ProtoFig _figure;
   private readonly string _id;
   private double _speed_ms = 0;
+  public string Id { get { return _id; } }
 
   public MovingCar(ValhallaRouter router, long number)
   {
