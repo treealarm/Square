@@ -13,18 +13,18 @@ namespace GrpcDaprLib
 
     private CallInvoker? _daprClient = null;
 
-    public static int GetGrpcAppPort()
+    public static int GetAppPort(string env_name = "APP_PORT",int def_val = 5001)
     {
-      var allVars = Environment.GetEnvironmentVariables();
-      if (int.TryParse(Environment.GetEnvironmentVariable("APP_PORT"), out var GRPC_CLIENT_PORT))
+      //var allVars = Environment.GetEnvironmentVariables();
+      if (int.TryParse(Environment.GetEnvironmentVariable(env_name), out var port))
       {
-        Console.WriteLine($"GRPC_CLIENT_PORT port:{GRPC_CLIENT_PORT}");
-        var builder = new UriBuilder("http", "leafletalarmsservice", GRPC_CLIENT_PORT);
+        Console.WriteLine($"{env_name} port:{port}");
+        var builder = new UriBuilder("http", "leafletalarmsservice", port);
 
-        return GRPC_CLIENT_PORT;
+        return port;
       }
-      Console.Error.WriteLine("GRPC_CLIENT_PORT return empty string");
-      return 5001;
+      Console.Error.WriteLine("{env_name} return empty string");
+      return def_val;
     }
 
     public GrpcUpdater(string? endPoint = null)

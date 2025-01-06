@@ -19,11 +19,12 @@ services:
       #- ASPNETCORE_URLS=http://+:8000;http://+:${GRPC_MAIN_PORT}
       #- Kestrel__Endpoints__gRPC__Url=http://*:${GRPC_MAIN_PORT}
       #- Kestrel__Endpoints__gRPC__Protocols=Http2
-      - Kestrel__Endpoints__Http__Url=http://*:8000
+      #- Kestrel__Endpoints__Http__Url=http://*:8000
       - APP_PORT=${GRPC_MAIN_PORT}
+      - HTTP_PORT=${HTTP_PORT} 
     ports:
-      - "8000:8000"
       - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
+      - ${HTTP_PORT}:${HTTP_PORT}
     env_file:
       - global.env
       - .env

@@ -5,10 +5,10 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
-        "VALHALLA_PORT": "8012"
+        "VALHALLA_PORT": "8012",
+        "HTTP_PORT": "8000"
       },
-      "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:8000"
+      "dotnetRunMessages": true
     },
     "Docker": {
       "commandName": "Docker",
