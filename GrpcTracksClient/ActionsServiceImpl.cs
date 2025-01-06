@@ -11,6 +11,7 @@ namespace GrpcTracksClient
       ProtoGetAvailableActionsRequest request, 
       ServerCallContext context)
     {
+      await Task.Delay(0);
       var retVal = new ProtoGetAvailableActionsResponse();
       retVal.Actions.Add(new ProtoAction() { Name = "test1"});
       retVal.Actions.Add(new ProtoAction() { Name = "test2" });
@@ -19,6 +20,7 @@ namespace GrpcTracksClient
 
     public override async Task<ProtoExecuteActionResponse> ExecuteAction(ProtoExecuteActionRequest request, ServerCallContext context)
     {
+      await Task.Delay(0);
       var retVal = new ProtoExecuteActionResponse();
       return retVal;
     }

@@ -1,4 +1,4 @@
- 
+﻿ 
 services:
   leafletalarmsservice:
     image: ${DOCKER_REGISTRY-}leafletalarms
@@ -12,20 +12,32 @@ services:
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
       - ./leaflet_data:/leaflet_data
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      #- ASPNETCORE_URLS=http://+:8000;http://+:${GRPC_MAIN_PORT}
+      #- Kestrel__Endpoints__gRPC__Url=http://*:${GRPC_MAIN_PORT}
+      #- Kestrel__Endpoints__gRPC__Protocols=Http2
+      - Kestrel__Endpoints__Http__Url=http://*:8000
+      - APP_PORT=${GRPC_MAIN_PORT}
+    ports:
+      - "8000:8000"
+      - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
     env_file:
       - global.env
       - .env
-    environment:
-      DaprSettings__reddis_endpoint: "redisservice:${REDIS_PORT}"
 
   leafletalarms-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "-app-id", "leafletalarms", "-app-port", "${GRPC_MAIN_PORT}", "-app-protocol", "grpc" ]
+    command: [ "./daprd", "--app-id", "leafletalarms", "--app-port", "${GRPC_MAIN_PORT}", "--app-protocol", "grpc" ]
     depends_on:
       - leafletalarmsservice
+    # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
     network_mode: "service:leafletalarmsservice"
     env_file:
       - .env
+
 
   grpctracksclient:
     image: ${DOCKER_REGISTRY-}grpctracksclient
@@ -36,25 +48,23 @@ services:
       - global.env
       - .env
     environment:
-      - VALHALLA_PORT:${VALHALLA_PORT}
+      - VALHALLA_PORT=${VALHALLA_PORT}
+      - APP_PORT=${DAPR_CLI_PORT}
     depends_on:
       - valhallaservice
+    ports:
+      - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
 
   grpctracksclient-dapr:
     image: "daprio/daprd:latest"
-    command: [ 
-      "./daprd", 
-      "--app-id", "grpctracksclient",
-      "--dapr-grpc-port","${DAPR_CLI_PORT}",
-      ]
+    command: ["./daprd","--app-id", "grpctracksclient","--app-port", "50007", "--app-protocol", "grpc" ]
     depends_on:
       - grpctracksclient
-    #network_mode: "service:grpctracksclient"
+    # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
+    network_mode: "service:grpctracksclient"
     env_file:
       - global.env
       - .env
-    ports:
-      - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
 
   blinkservice:
     image: ${DOCKER_REGISTRY-}blinkservice
@@ -65,7 +75,7 @@ services:
       - global.env
       - .env
     environment:
-      DaprSettings__reddis_endpoint: "redisservice:${REDIS_PORT}"
+      - DaprSettings__reddis_endpoint=redisservice:${REDIS_PORT}
   
   mongoservice:
     image : mongo

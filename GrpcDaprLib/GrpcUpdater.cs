@@ -2,55 +2,34 @@
 using Grpc.Core;
 using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
-using System;
-using System.Threading.Tasks;
 using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace GrpcDaprLib
 {
   public class GrpcUpdater : IDisposable
-  {
+  {    
     private GrpcChannel? _channel = null;
     private TreeAlarmsGrpcServiceClient? _client = null;
 
-    private CallInvoker _daprClient = null;
+    private CallInvoker? _daprClient = null;
 
-    public string GRPC_DST { get; private set; } = string.Empty;
-    public string DAPR_GRPC_PORT { get; private set; } = string.Empty;
-    
-
-    public static string GetGrpcMainUrl()
+    public static int GetGrpcAppPort()
     {
       var allVars = Environment.GetEnvironmentVariables();
-
-      //foreach (var key in allVars.Keys)
-      //{
-      //  Console.WriteLine($"{key}- {allVars[key]}");
-      //}
-
-      if (int.TryParse(Environment.GetEnvironmentVariable("GRPC_MAIN_PORT"), out var GRPC_MAIN_PORT))
+      if (int.TryParse(Environment.GetEnvironmentVariable("APP_PORT"), out var GRPC_CLIENT_PORT))
       {
-        Console.WriteLine($"GRPC_MAIN_PORT port:{GRPC_MAIN_PORT}");
-        var builder = new UriBuilder("http", "leafletalarmsservice", GRPC_MAIN_PORT);
-        Console.WriteLine(builder.ToString());
-        return builder.ToString();
+        Console.WriteLine($"GRPC_CLIENT_PORT port:{GRPC_CLIENT_PORT}");
+        var builder = new UriBuilder("http", "leafletalarmsservice", GRPC_CLIENT_PORT);
+
+        return GRPC_CLIENT_PORT;
       }
-      Console.Error.WriteLine("GetDaprProxyPort return empty string");
-      return string.Empty;
+      Console.Error.WriteLine("GRPC_CLIENT_PORT return empty string");
+      return 5001;
     }
 
     public GrpcUpdater(string? endPoint = null)
     {
-      GRPC_DST = GetGrpcMainUrl();
-
-      if (!string.IsNullOrEmpty(endPoint))
-      {
-        GRPC_DST = endPoint;
-      }
-
       _daprClient = DaprClient.CreateInvocationInvoker(appId: "leafletalarms");
-
-      //_channel = GrpcChannel.ForAddress(GRPC_DST);
       _client = new TreeAlarmsGrpcServiceClient(_daprClient);
     }
 

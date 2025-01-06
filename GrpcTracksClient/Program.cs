@@ -1,4 +1,5 @@
-﻿using GrpcTracksClient;
+﻿using GrpcDaprLib;
+using GrpcTracksClient;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 
@@ -7,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавляем gRPC в DI-контейнер
 builder.Services.AddGrpc();
 
-var port = GetGrpcAppPort();
+var port = GrpcUpdater.GetGrpcAppPort();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -44,19 +45,7 @@ await Task.WhenAll(tasks);
 
 await appTask;
 
-int GetGrpcAppPort()
-{
-  var allVars = Environment.GetEnvironmentVariables();
-  if (int.TryParse(Environment.GetEnvironmentVariable("APP_PORT"), out var GRPC_CLIENT_PORT))
-  {
-    Console.WriteLine($"GRPC_CLIENT_PORT port:{GRPC_CLIENT_PORT}");
-    var builder = new UriBuilder("http", "leafletalarmsservice", GRPC_CLIENT_PORT);
 
-    return GRPC_CLIENT_PORT;
-  }
-  Console.Error.WriteLine("GRPC_CLIENT_PORT return empty string");
-  return 5001;
-}
 async Task RunTaskWithRetry(Func<Task> taskFunc, string taskName, CancellationToken token)
 {
   while (!token.IsCancellationRequested)
