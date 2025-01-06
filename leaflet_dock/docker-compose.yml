@@ -1,16 +1,6 @@
- 
+﻿ 
 services:
   leafletalarmsservice:
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:8000;http://+:${GRPC_MAIN_PORT}
-      - Kestrel__Endpoints__gRPC__Url=http://*:${GRPC_MAIN_PORT}
-      - Kestrel__Endpoints__gRPC__Protocols=Http2
-      - Kestrel__Endpoints__Http__Url=http://*:8000
-      #- REACT_APP_AUTH_SERVER_URL=http://localhost1:8080/
-    ports:
-      - "8000:8000"
-      - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
     image: pruginkad/leafletalarms:latest
     restart: unless-stopped
     depends_on:
@@ -19,8 +9,29 @@ services:
      - redisservice
     volumes:
       - ./leaflet_data:/leaflet_data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      #- ASPNETCORE_URLS=http://+:8000;http://+:${GRPC_MAIN_PORT}
+      #- Kestrel__Endpoints__gRPC__Url=http://*:${GRPC_MAIN_PORT}
+      #- Kestrel__Endpoints__gRPC__Protocols=Http2
+      #- Kestrel__Endpoints__Http__Url=http://*:8000
+      - APP_PORT=${GRPC_MAIN_PORT}
+      - HTTP_PORT=${HTTP_PORT} 
+    ports:
+      - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
+      - ${HTTP_PORT}:${HTTP_PORT}
     env_file:
       - global.env
+      - .env
+
+  leafletalarms-dapr:
+    image: "daprio/daprd:latest"
+    command: [ "./daprd", "--app-id", "leafletalarms", "--app-port", "${GRPC_MAIN_PORT}", "--app-protocol", "grpc" ]
+    depends_on:
+      - leafletalarmsservice
+    # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
+    network_mode: "service:leafletalarmsservice"
+    env_file:
       - .env
 
 
@@ -33,11 +44,25 @@ services:
       - global.env
       - .env
     environment:
-      - VALHALLA_PORT:${VALHALLA_PORT}
+      - VALHALLA_PORT=${VALHALLA_PORT}
+      - APP_PORT=${DAPR_CLI_PORT}
     depends_on:
       - valhallaservice
       - leafletalarmsservice
- 
+    ports:
+      - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
+
+  grpctracksclient-dapr:
+    image: "daprio/daprd:latest"
+    command: ["./daprd","--app-id", "grpctracksclient","--app-port", "50007", "--app-protocol", "grpc" ]
+    depends_on:
+      - grpctracksclient
+    # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
+    network_mode: "service:grpctracksclient"
+    env_file:
+      - global.env
+      - .env
+
   blinkservice:
     image: pruginkad/blinkservice:latest
     build:
@@ -45,7 +70,10 @@ services:
       dockerfile: BlinkService/Dockerfile
     env_file:
       - global.env
-
+      - .env
+    environment:
+      - DaprSettings__reddis_endpoint=redisservice:${REDIS_PORT}
+  
   mongoservice:
     image : mongo
     container_name: mongodb
@@ -60,10 +88,13 @@ services:
   redisservice:
     image: redis
     restart: unless-stopped
+    command: ["redis-server", "--port", "${REDIS_PORT}"]
     environment:
      - ALLOW_EMPTY_PASSWORD=yes
+    env_file:
+      - .env
     ports:
-     - "6379:6379"
+     - ${REDIS_PORT}:${REDIS_PORT}
 
 # START keycloack
   postgresservice:
