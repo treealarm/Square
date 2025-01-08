@@ -19,8 +19,6 @@ namespace GrpcDaprLib
       if (int.TryParse(Environment.GetEnvironmentVariable(env_name), out var port))
       {
         Console.WriteLine($"{env_name} port:{port}");
-        var builder = new UriBuilder("http", "leafletalarmsservice", port);
-
         return port;
       }
       Console.Error.WriteLine("{env_name} return empty string");

@@ -1,3 +1,4 @@
+using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
 using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
@@ -56,6 +57,7 @@ namespace LeafletAlarms
 
       services.AddHostedService<InitHostedService>();
 
+      services.AddDaprPubSubClient();
       services.AddSingleton<ISubService, SubService>();
       services.AddSingleton<IPubService, PubService>(); 
 

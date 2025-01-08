@@ -1,49 +1,36 @@
-﻿using Domain.OptionsModels;
+﻿using Dapr.Messaging.PublishSubscribe;
+using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
-using Microsoft.Extensions.Options;
-using StackExchange.Redis;
 using System.Collections.Concurrent;
-using System.Text.Json;
+using System.Text;
 
 namespace PubSubLib
 {
   public class SubService: ISubService, IDisposable
-  { 
-    private string? redisConnectionString;
-
+  {
+    private string _pubsub_name;
     private object _locker = new object();
-    private ConnectionMultiplexer _redis;
+    private readonly DaprPublishSubscribeClient _messagingClient;
 
     private Dictionary<string, HashSet<Func<string, string, Task>>> _topics =
       new Dictionary<string, HashSet<Func<string, string, Task>>>();
 
-    private static ConcurrentDictionary<string, RedisChannel> _channels 
-      = new ConcurrentDictionary<string, RedisChannel>();
+    private static ConcurrentDictionary<string, string> _channels 
+      = new ConcurrentDictionary<string, string>();
+    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-    private static RedisChannel GetLiteralChannel(string channel)
+    public SubService(DaprPublishSubscribeClient messagingClient)
     {
-      RedisChannel redisChan;
-
-      if (!_channels.TryGetValue(channel, out redisChan))
+      _pubsub_name = Environment.GetEnvironmentVariable("PUBSUB_NAME") ?? "";
       {
-        redisChan = RedisChannel.Literal(channel);
-        _channels.TryAdd(channel, redisChan);
+        Console.WriteLine($"SubService PUBSUB_NAME:{_pubsub_name}");
       }
-      return redisChan;
+      _messagingClient = messagingClient;
     }
 
-    public SubService(IOptions<DaprSettings> daprSettings)
+    private async Task<TopicResponseAction> OnMessage(string channel, string message)
     {
-      redisConnectionString = daprSettings?.Value.reddis_endpoint;
-
-      ConfigurationOptions configuration = new ConfigurationOptions();
-      configuration.AbortOnConnectFail = false;
-      configuration.EndPoints.Add(redisConnectionString ?? string.Empty);
-      _redis = ConnectionMultiplexer.Connect(configuration);
-    }
-
-    private void RedisHandler(RedisChannel channel, RedisValue message)
-    {
+      TopicResponseAction retVal = TopicResponseAction.Success;
       List<Func<string, string, Task>>? topicList = null;
 
       lock (_locker)
@@ -56,7 +43,7 @@ namespace PubSubLib
 
       if (topicList != null)
       {
-        Task.Run(() =>
+        await Task.Run(() =>
         {
           var sChan = channel.ToString();
           var sMsg = message.ToString();
@@ -74,6 +61,7 @@ namespace PubSubLib
           }
         });
       }
+      return retVal;
     }
 
     public async Task Subscribe(string channel, Func<string, string, Task> handler)
@@ -98,8 +86,28 @@ namespace PubSubLib
       {
         try
         {
-          ISubscriber subScriber = _redis.GetSubscriber();
-          await subScriber.SubscribeAsync(GetLiteralChannel(channel), RedisHandler);
+          async Task<TopicResponseAction> HandleMessageAsync(TopicMessage message, CancellationToken cancellationToken)
+          {
+            try
+            {              
+              var data = Encoding.UTF8.GetString(message.Data.Span);
+              return await OnMessage(message.Topic, data);
+            }
+            catch
+            {
+              return TopicResponseAction.Retry;
+            }
+          }
+
+          // Создаем подписку
+         
+          await _messagingClient.SubscribeAsync(
+              _pubsub_name,
+              channel,
+              new DaprSubscriptionOptions(new MessageHandlingPolicy(TimeSpan.FromSeconds(10), TopicResponseAction.Retry)),
+              HandleMessageAsync,
+              _cancellationTokenSource.Token
+          );
         }
         catch(Exception ex)
         { 
@@ -110,6 +118,7 @@ namespace PubSubLib
 
     public async Task Unsubscribe(string channel, Func<string, string, Task> handler)
     {
+      await Task.Delay(0);
       int count = 0;
 
       lock (_locker)
@@ -119,18 +128,22 @@ namespace PubSubLib
           topic.Remove(handler);
           count = topic.Count;
         }
+        if (count == 0)
+        {
+          _topics.Remove(channel);
+        }
+        if (_topics.Count == 0)
+        {
+          _cancellationTokenSource.Cancel();
+        }
       }
 
-      if (count == 0)
-      {
-        ISubscriber subScriber = _redis.GetSubscriber();
-        await subScriber.UnsubscribeAsync(GetLiteralChannel(channel), RedisHandler);
-      }            
+                 
     }
 
     public void Dispose()
     {
-      _redis?.Dispose();
+
     }
   }
 }

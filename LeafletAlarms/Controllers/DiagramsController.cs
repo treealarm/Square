@@ -2,7 +2,6 @@
 using Domain.Diagram;
 using Domain.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
-using Pipelines.Sockets.Unofficial.Arenas;
 
 namespace LeafletAlarms.Controllers
 {

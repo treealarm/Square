@@ -1,49 +1,31 @@
-﻿using Domain.OptionsModels;
+﻿using Dapr.Client;
+using Domain;
+using Domain.OptionsModels;
+using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
-using StackExchange.Redis;
 using System.Collections.Concurrent;
-using System.Text.Json;
 
 namespace PubSubLib
 {
   public class PubService : IPubService
   {
-    private string? redisConnectionString;
+    private DaprClient _client;
+    private string _pubsub_name;
 
-    private ConnectionMultiplexer _redis;
-    private static ConcurrentDictionary<string, RedisChannel> _channels
-      = new ConcurrentDictionary<string, RedisChannel>();
     public PubService(IOptions<DaprSettings>? daprSettings)
     {
-      redisConnectionString = daprSettings?.Value.reddis_endpoint;
-
-      ConfigurationOptions configuration = new ConfigurationOptions();
-      configuration.AbortOnConnectFail = false;
-      configuration.EndPoints.Add(redisConnectionString??string.Empty);
-      _redis = ConnectionMultiplexer.Connect(configuration);
-    }
-
-    private static RedisChannel GetLiteralChannel(string channel)
-    {
-      RedisChannel redisChan;
-
-      if (!_channels.TryGetValue(channel, out redisChan))
+      _pubsub_name = Environment.GetEnvironmentVariable("PUBSUB_NAME") ?? "";
       {
-        redisChan = RedisChannel.Literal(channel);
-        _channels.TryAdd(channel, redisChan);
+        Console.WriteLine($"PubService PUBSUB_NAME:{_pubsub_name}");
       }
-      return redisChan;
+      _client = new DaprClientBuilder().Build();
     }
     public async Task<long> Publish<T>(string channel, T message) where T : class
     {
       try
       {
-        ISubscriber sub = _redis.GetSubscriber();
-        return await sub.PublishAsync(
-          GetLiteralChannel(channel),
-          JsonSerializer.Serialize(message),
-          CommandFlags.FireAndForget);
+        await _client.PublishEventAsync(_pubsub_name, channel, message);
       }
       catch (Exception ex)
       {

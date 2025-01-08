@@ -1,4 +1,5 @@
-﻿using Domain.OptionsModels;
+﻿using Dapr.Messaging.PublishSubscribe.Extensions;
+using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ namespace BlinkService
         services.AddSingleton<IMongoClient>(s =>
            new MongoClient(mapDbSection.Get<MapDatabaseSettings>().ConnectionString)
         );
+        services.AddDaprPubSubClient();
         services.AddSingleton<ISubService, SubService>();
         services.AddSingleton<IPubService, PubService>();
         DbLayer.ServicesConfigurator.ConfigureServices(services);

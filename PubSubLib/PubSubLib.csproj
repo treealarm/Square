@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0-preview.3.24172.9" />
-    <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
+    <None Include="..\leaflet_dock\treealarm_pubsub.yaml" Link="treealarm_pubsub.yaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapr.Client" Version="1.14.0" />
+    <PackageReference Include="Dapr.Messaging" Version="1.15.0-rc01" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
