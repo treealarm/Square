@@ -1,5 +1,8 @@
-﻿using GrpcDaprLib;
+﻿using Domain.ServiceInterfaces;
+using Google.Api;
+using GrpcDaprLib;
 using GrpcTracksClient;
+using GrpcTracksClient.Services;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 
@@ -18,12 +21,19 @@ builder.WebHost.ConfigureKestrel(options =>
   });
 });
 
+
+builder.Services.AddSingleton<MoveObjectService>();
+builder.Services.AddSingleton<IMoveObjectService>(provider => provider.GetRequiredService<MoveObjectService>());
+builder.Services.AddSingleton<IObjectActions>(provider => provider.GetRequiredService<MoveObjectService>());
+builder.Services.AddHostedService<HostedServiceImp>();
+
 // Создаём приложение
 var app = builder.Build();
 
-
 // Регистрируем gRPC-сервис
 app.MapGrpcService<ActionsServiceImpl>();
+
+
 
 var cancellationTokenSource = new CancellationTokenSource();
 var cancellationToken = cancellationTokenSource.Token;
@@ -32,12 +42,10 @@ var appTask = app.RunAsync();
 
 var tasks = new List<Task>
 {
-    RunTaskWithRetry(() => UpdateSADTracks.Move(), "UpdateSADTracks.Move", cancellationToken),
-    RunTaskWithRetry(() => MoveObject.MoveCars(cancellationToken), "MoveObject.MoveCars", cancellationToken),
-    RunTaskWithRetry(() => MoveObject.MovePolygons(), "MoveObject.MovePolygons", cancellationToken),
-    RunTaskWithRetry(() => StateObject.Change(), "StateObject.Change", cancellationToken),
-    RunTaskWithRetry(() => EventAdd.Add(), "EventAdd.Add", cancellationToken),
-    RunTaskWithRetry(() => DiagramUpdater.UploadDiagramsAsync(), "DiagramUpdater.UploadDiagramsAsync", cancellationToken)
+    Utils.RunTaskWithRetry(() => UpdateSADTracks.Move(), "UpdateSADTracks.Move", cancellationToken),
+    Utils.RunTaskWithRetry(() => StateObject.Change(), "StateObject.Change", cancellationToken),
+    Utils.RunTaskWithRetry(() => EventAdd.Add(), "EventAdd.Add", cancellationToken),
+    Utils.RunTaskWithRetry(() => DiagramUpdater.UploadDiagramsAsync(), "DiagramUpdater.UploadDiagramsAsync", cancellationToken)
 };
 
 // Ожидание завершения всех задач (или их отмены)
@@ -45,20 +53,4 @@ await Task.WhenAll(tasks);
 
 await appTask;
 
-
-async Task RunTaskWithRetry(Func<Task> taskFunc, string taskName, CancellationToken token)
-{
-  while (!token.IsCancellationRequested)
-  {
-    try
-    {
-      await taskFunc();
-    }
-    catch (Exception ex)
-    {
-      Logger.LogException(ex);
-      await Task.Delay(1000, token); // Задержка перед повторной попыткой
-    }
-  }
-}
 

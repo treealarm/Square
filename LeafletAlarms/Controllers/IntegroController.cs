@@ -32,8 +32,8 @@ namespace LeafletAlarms.Controllers
     [Route("GetAvailableActions")]
     public async Task<List<string>> GetAvailableActions(string id)
     {
-      var _daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
-      ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(_daprClient);
+      var daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
+      ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
       var request = new ProtoGetAvailableActionsRequest();
       request.ObjectId = id;
       var response = await _client.GetAvailableActionsAsync(request);
@@ -41,11 +41,29 @@ namespace LeafletAlarms.Controllers
 
       var dic = new List<string>();
 
-      foreach (var action in response.Actions)
+      foreach (var action in response.ActionsDescr)
       {
         dic.Add(action.Name);
       }
       return dic;
+    }
+
+    [HttpPost()]
+    [Route("ExecuteActions")]
+    public async Task<bool> ExecuteActions(string id, List<string> actions)
+    {
+      var daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
+      ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
+      var request = new ProtoExecuteActionRequest();
+
+      foreach (var action in actions)
+      {
+        request.Actions.Add(new ProtoActionExe() { Name = action, ObjectId = id });
+      }
+      
+      var response = await _client.ExecuteActionsAsync(request);
+
+      return response.Success;
     }
 
     [HttpPost()]

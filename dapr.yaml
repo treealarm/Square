@@ -3,15 +3,15 @@ version: 1
 #common:
   #resourcesPath: ./leaflet_dock/
 apps:
-  - appDirPath: ./grpctracksclient/
-    appID: grpctracksclient
-    appProtocol: grpc
-    appPort: 50007
-    command: ["dotnet", "run"]
   - appID: leafletalarms
     appProtocol: grpc
     appPort: 5000
     appDirPath: ./leafletalarms/
+    command: ["dotnet", "run"]
+  - appDirPath: ./grpctracksclient/
+    appID: grpctracksclient
+    appProtocol: grpc
+    appPort: 50007
     command: ["dotnet", "run"]
   - appID: blinkservice
     appProtocol: grpc

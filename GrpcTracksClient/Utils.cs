@@ -12,5 +12,20 @@ namespace GrpcTracksClient
     {
       return "1111" + number.ToString("D20");
     }
+    public static async Task RunTaskWithRetry(Func<Task> taskFunc, string taskName, CancellationToken token)
+    {
+      while (!token.IsCancellationRequested)
+      {
+        try
+        {
+          await taskFunc();
+        }
+        catch (Exception ex)
+        {
+          Logger.LogException(ex);
+          await Task.Delay(1000, token); // Задержка перед повторной попыткой
+        }
+      }
+    }
   }
 }

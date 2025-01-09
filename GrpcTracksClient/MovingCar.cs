@@ -37,6 +37,7 @@ public class MovingCar
     _figure = CreateFigure();
   }
 
+  public E_CarStates CarState { get; set; } = E_CarStates.Free;
   private ProtoFig CreateFigure()
   {
     var fig = new ProtoFig

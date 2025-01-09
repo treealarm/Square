@@ -38,16 +38,21 @@ message ProtoActionParameter {
   ProtoActionValue cur_val = 3;
 }
 
-// Сообщение, описывающее действие
-message ProtoAction {
+
+message ProtoActionDescription {
   string name = 1;                     // уникальное имя действия
   repeated ProtoActionParameter parameters = 2; // Список параметров для действия
 }
 
+message ProtoActionExe {
+  string object_id = 1; // ID объекта,
+  string name = 2;                     // уникальное имя действия
+  map<string, ProtoActionValue> parameters = 3; // Параметры действия в виде ключ-значение
+}
+
 // Запрос для вызова действия
 message ProtoExecuteActionRequest {
-  string action_id = 1;               // Идентификатор действия
-  map<string, ProtoActionValue> parameters = 2; // Параметры действия в виде ключ-значение
+  repeated ProtoActionExe actions = 1;               // Действия выполнять по порядку
 }
 
 // Ответ после выполнения действия
@@ -63,11 +68,11 @@ message ProtoGetAvailableActionsRequest {
 
 // Ответ с доступными действиями
 message ProtoGetAvailableActionsResponse {
-  repeated ProtoAction actions = 1; // Список доступных действий
+  repeated ProtoActionDescription actions_descr = 1; // Список доступных действий
 }
 
 // Сервис для работы с действиями
 service ActionsService {
   rpc GetAvailableActions (ProtoGetAvailableActionsRequest) returns (ProtoGetAvailableActionsResponse);
-  rpc ExecuteAction (ProtoExecuteActionRequest) returns (ProtoExecuteActionResponse); // Новый метод для выполнения действий
+  rpc ExecuteActions (ProtoExecuteActionRequest) returns (ProtoExecuteActionResponse); // Новый метод для выполнения действий
 }

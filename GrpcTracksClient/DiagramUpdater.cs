@@ -1,5 +1,4 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using GrpcDaprLib;
+﻿using GrpcDaprLib;
 using GrpcTracksClient;
 using LeafletAlarmsGrpc;
 
@@ -87,7 +86,7 @@ static public class DiagramUpdater
 
       var diag = new DiagramsProto();
 
-      for (long carId = 1; carId < MoveObject.MaxCars; carId++)
+      for (long carId = 1; carId < IMoveObjectService.MaxCars; carId++)
       {
         diag.Diagrams.Add(new DiagramProto()
         {
