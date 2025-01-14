@@ -2,15 +2,6 @@
 
 package object_actions;
 
-// Перечисление типов параметров
-enum ProtoParameterType {
-  UNKNOWN = 0;
-  STRING = 1;
-  INT = 2;
-  DOUBLE = 3;
-  COORDINATES = 4; // Например, список координат lat, lon
-}
-
 // Сообщение, описывающее координаты
 message ProtoCoordinate {
   double lat = 1; // Широта
@@ -34,8 +25,7 @@ message ProtoActionValue {
 // Сообщение, описывающее параметры действия
 message ProtoActionParameter {
   string name = 1;         // Имя параметра
-  ProtoParameterType type = 2; // Тип параметра из перечисления
-  ProtoActionValue cur_val = 3;
+  ProtoActionValue cur_val = 2;
 }
 
 
@@ -47,7 +37,7 @@ message ProtoActionDescription {
 message ProtoActionExe {
   string object_id = 1; // ID объекта,
   string name = 2;                     // уникальное имя действия
-  map<string, ProtoActionValue> parameters = 3; // Параметры действия в виде ключ-значение
+  repeated ProtoActionParameter parameters = 3; // Параметры действия
 }
 
 // Запрос для вызова действия

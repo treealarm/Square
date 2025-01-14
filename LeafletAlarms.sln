@@ -25,11 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataChangeLayer", "DataChan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlinkService", "BlinkService\BlinkService.csproj", "{1D6A7494-7645-4087-A9E8-FC7A1FC239F9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6928F9BD-162F-45E8-A8BB-A502CCD2CE00}"
-	ProjectSection(SolutionItems) = preProject
-		dapr.yaml = dapr.yaml
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,11 +1,9 @@
 ﻿using Dapr.Client;
 using Domain.Integro;
 using Domain.ServiceInterfaces;
-using Domain.Values;
-using Grpc.Core;
+using LeafletAlarms.Grpc;
 using Microsoft.AspNetCore.Mvc;
 using ObjectActions;
-using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace LeafletAlarms.Controllers
 {
@@ -30,7 +28,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetAvailableActions")]
-    public async Task<List<string>> GetAvailableActions(string id)
+    public async Task<List<ActionDescrDTO>> GetAvailableActions(string id)
     {
       var daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
       ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
@@ -39,18 +37,29 @@ namespace LeafletAlarms.Controllers
       var response = await _client.GetAvailableActionsAsync(request);
 
 
-      var dic = new List<string>();
+      var retActions = new List<ActionDescrDTO>();
 
       foreach (var action in response.ActionsDescr)
       {
-        dic.Add(action.Name);
+        var actionDescr = new ActionDescrDTO()
+        {
+          name = action.Name,
+        };
+
+        foreach (var param in action.Parameters)
+        {
+          var dto = ProtoToDTOConverter.ConvertToActionParameterDTO(param);
+
+          actionDescr.parameters.Add(dto);
+        }
+        retActions.Add(actionDescr);
       }
-      return dic;
+      return retActions;
     }
 
     [HttpPost()]
     [Route("ExecuteActions")]
-    public async Task<bool> ExecuteActions(string id, List<string> actions)
+    public async Task<bool> ExecuteActions(List<ActionExeDTO> actions)
     {
       var daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
       ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
@@ -58,7 +67,17 @@ namespace LeafletAlarms.Controllers
 
       foreach (var action in actions)
       {
-        request.Actions.Add(new ProtoActionExe() { Name = action, ObjectId = id });
+        var act_exe = new ProtoActionExe() 
+        { 
+          Name = action.name, 
+          ObjectId = action.object_id
+        };
+
+        foreach(var p in action.parameters)
+        {
+          act_exe.Parameters.Add(ProtoToDTOConverter.ConvertToProtoActionParameter(p));
+        }
+        request.Actions.Add(act_exe);
       }
       
       var response = await _client.ExecuteActionsAsync(request);
