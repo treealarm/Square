@@ -51,6 +51,7 @@ services:
     environment:
       - VALHALLA_PORT=${VALHALLA_PORT}
       - APP_PORT=${DAPR_CLI_PORT}
+      - APP_ID=${TRACKS_CLIENT_APP_ID}
     depends_on:
       - valhallaservice
     ports:
@@ -58,7 +59,7 @@ services:
 
   grpctracksclient-dapr:
     image: "daprio/daprd:latest"
-    command: ["./daprd","--app-id", "grpctracksclient","--app-port", "50007", "--app-protocol", "grpc" ]
+    command: ["./daprd","--app-id", "${TRACKS_CLIENT_APP_ID}","--app-port", "50007", "--app-protocol", "grpc" ]
     depends_on:
       - grpctracksclient
     # нужно указать network_mode чтобы коляска имела доступ к портам сервиса

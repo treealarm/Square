@@ -8,6 +8,7 @@ namespace GrpcDaprLib
 {
   public class GrpcUpdater : IDisposable
   {    
+    public string AppId { get; set; } = string.Empty;
     private GrpcChannel? _channel = null;
     private TreeAlarmsGrpcServiceClient? _client = null;
 
@@ -29,6 +30,9 @@ namespace GrpcDaprLib
     {
       _daprClient = DaprClient.CreateInvocationInvoker(appId: "leafletalarms");
       _client = new TreeAlarmsGrpcServiceClient(_daprClient);
+
+      AppId = Environment.GetEnvironmentVariable("APP_ID") ?? string.Empty;
+      Console.WriteLine($"APP_ID:{AppId}");    
     }
 
     public void Dispose()
@@ -107,6 +111,14 @@ namespace GrpcDaprLib
 
       var result = await _client.UpdateDiagramsAsync(diag);
       return result;
+    }
+
+    public async Task<bool?> UpdateIntegro(UpdateIntegroRequest integro)
+    {
+      if (_client == null) return null;
+
+      var result = await _client.UpdateIntegroAsync(integro);
+      return result.Value;
     }
   }
 }

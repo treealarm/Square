@@ -2,6 +2,7 @@
 using Domain.Integro;
 using Domain.ServiceInterfaces;
 using LeafletAlarms.Grpc;
+using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
 using ObjectActions;
 
@@ -11,26 +12,32 @@ namespace LeafletAlarms.Controllers
   [ApiController]
   public class IntegroController : ControllerBase
   {
-    private readonly IMapService _mapService;
     private readonly IIntegroUpdateService _integroUpdateService;
     private readonly IIntegroService _integroService;
-
+    private readonly IDaprClientService _daprClientService;
     public IntegroController(
-      IMapService mapService,
       IIntegroUpdateService integroUpdateService,
-      IIntegroService integroService
+      IIntegroService integroService,
+      IDaprClientService daprClientService
     )
     {
-      _mapService = mapService;
       _integroUpdateService = integroUpdateService;
       _integroService = integroService;
+      _daprClientService = daprClientService;
+    }
+
+    async Task<Dictionary<string,IntegroDTO>> GetAppIdByObjectId(List<string> object_ids)
+    {
+      return await _integroService.GetListByIdsAsync(object_ids);
     }
 
     [HttpGet()]
     [Route("GetAvailableActions")]
     public async Task<List<ActionDescrDTO>> GetAvailableActions(string id)
     {
-      var daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
+      var app_ids = await GetAppIdByObjectId(new List<string> { id });
+
+      var daprClient = _daprClientService.GetDaprClient(app_ids.Keys.FirstOrDefault());
       ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
       var request = new ProtoGetAvailableActionsRequest();
       request.ObjectId = id;
@@ -61,7 +68,10 @@ namespace LeafletAlarms.Controllers
     [Route("ExecuteActions")]
     public async Task<bool> ExecuteActions(List<ActionExeDTO> actions)
     {
-      var daprClient = DaprClient.CreateInvocationInvoker(appId: "grpctracksclient");
+      var app_ids = await GetAppIdByObjectId(actions.Select(i=> i.object_id).ToList());
+
+
+      var daprClient = _daprClientService.GetDaprClient("grpctracksclient");
       ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
       var request = new ProtoExecuteActionRequest();
 

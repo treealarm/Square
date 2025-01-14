@@ -12,6 +12,8 @@ using Domain.Values;
 using Domain.DiagramType;
 using Domain.Diagram;
 using static Google.Rpc.Context.AttributeContext.Types;
+using Grpc.Core;
+using Domain.Integro;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
@@ -23,6 +25,7 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly IValuesUpdateService _valuesUpdateService;
     private readonly IDiagramTypeUpdateService _diagramTypeUpdateService;
     private readonly IDiagramUpdateService _diagramUpdateService;
+    private readonly IIntegroUpdateService _integroUpdateService;
     private readonly FileSystemService _fs;
     public GRPCServiceProxy(
       ITracksUpdateService trackUpdateService,
@@ -31,7 +34,8 @@ namespace LeafletAlarms.Grpc.Implementation
       IValuesUpdateService valuesUpdateService,
       IDiagramTypeUpdateService diagramTypeUpdateService,
       IDiagramUpdateService diagramUpdateService,
-      FileSystemService fs
+      FileSystemService fs,
+      IIntegroUpdateService integroUpdateService
     )
     {
       _trackUpdateService = trackUpdateService;
@@ -40,6 +44,7 @@ namespace LeafletAlarms.Grpc.Implementation
       _valuesUpdateService = valuesUpdateService;
       _diagramTypeUpdateService = diagramTypeUpdateService;
       _diagramUpdateService = diagramUpdateService;
+      _integroUpdateService = integroUpdateService;
       _fs = fs;
     }
     private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
@@ -516,6 +521,24 @@ namespace LeafletAlarms.Grpc.Implementation
       response.Diagrams.AddRange(updatedDiagrams.Select(dto => ConvertToDiagramProto(dto)));
 
       return response;
+    }
+
+    public async Task<BoolValue> UpdateIntegro(UpdateIntegroRequest request)
+    {
+      List<IntegroDTO> dto = new List<IntegroDTO>();
+
+      foreach(var i in request.Objects)
+      {
+        dto.Add(new IntegroDTO()
+        {
+          id = i.ObjectId,
+          i_name = i.IName
+        });
+      }
+      var ret = new BoolValue();
+      ret.Value = true;
+      await _integroUpdateService.UpdateIntegros(dto);
+      return ret;
     }
   }
 

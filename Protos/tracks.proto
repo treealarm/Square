@@ -21,7 +21,7 @@ service TreeAlarmsGrpcService {
   rpc UpdateDiagrams(diagrams.DiagramsProto) returns (diagrams.DiagramsProto);
 
   rpc UploadFile(UploadFileProto) returns (google.protobuf.BoolValue);
-  
+  rpc UpdateIntegro (UpdateIntegroRequest) returns (google.protobuf.BoolValue);
 }
 
 
@@ -140,4 +140,13 @@ message UploadFileProto {
   string path = 2;          // Путь внутри основной папки
   string file_name = 3;     // Имя файла
   bytes file_data = 4;      // Данные файла в формате Base64 (байтовый массив)
+}
+
+message IntegroProto{
+  string object_id = 1;
+  string i_name = 2;
+}
+
+message UpdateIntegroRequest{
+  repeated IntegroProto objects = 1;
 }

@@ -72,6 +72,7 @@ namespace LeafletAlarms
       
 
       services.AddSingleton<GRPCServiceProxy>();
+      services.AddSingleton<IDaprClientService, DaprClientService>();
       services.AddSingleton<FileSystemService>();
 
       services.AddSingleton<ValhallaRouter>();
