@@ -64,35 +64,65 @@ namespace LeafletAlarms.Controllers
       return retActions;
     }
 
+    public static Dictionary<string, List<ActionExeDTO>> GroupActionsByIntegration(
+    List<ActionExeDTO> actions,
+    Dictionary<string, IntegroDTO> id2integration)
+    {
+      var groupedActions = new Dictionary<string, List<ActionExeDTO>>();
+
+      foreach (var action in actions)
+      {
+        // Проверяем, есть ли интеграция для текущего object_id
+        if (id2integration.TryGetValue(action.object_id ?? "", out var integration))
+        {
+          // Если интеграция найдена, добавляем действие в соответствующую группу
+          if (!groupedActions.ContainsKey(integration.i_name ?? ""))
+          {
+            groupedActions[integration.i_name ?? ""] = new List<ActionExeDTO>();
+          }
+
+          groupedActions[integration.i_name ?? ""].Add(action);
+        }
+      }
+
+      return groupedActions;
+    }
+
+
     [HttpPost()]
     [Route("ExecuteActions")]
     public async Task<bool> ExecuteActions(List<ActionExeDTO> actions)
     {
-      var app_ids = await GetAppIdByObjectId(actions.Select(i=> i.object_id).ToList());
+      var id2integration = await GetAppIdByObjectId(actions.Select(i=> i.object_id).ToList());
+      var groupedActions = GroupActionsByIntegration(actions, id2integration);
+      bool succ = true;
 
-
-      var daprClient = _daprClientService.GetDaprClient("grpctracksclient");
-      ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
-      var request = new ProtoExecuteActionRequest();
-
-      foreach (var action in actions)
+      foreach (var group in groupedActions)
       {
-        var act_exe = new ProtoActionExe() 
-        { 
-          Name = action.name, 
-          ObjectId = action.object_id
-        };
+        var daprClient = _daprClientService.GetDaprClient(group.Key);
+        ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
+        var request = new ProtoExecuteActionRequest();
 
-        foreach(var p in action.parameters)
+        foreach (var action in group.Value)
         {
-          act_exe.Parameters.Add(ProtoToDTOConverter.ConvertToProtoActionParameter(p));
-        }
-        request.Actions.Add(act_exe);
-      }
-      
-      var response = await _client.ExecuteActionsAsync(request);
+          var act_exe = new ProtoActionExe()
+          {
+            Name = action.name,
+            ObjectId = action.object_id
+          };
 
-      return response.Success;
+          foreach (var p in action.parameters)
+          {
+            act_exe.Parameters.Add(ProtoToDTOConverter.ConvertToProtoActionParameter(p));
+          }
+          request.Actions.Add(act_exe);
+        }
+
+        var response = await _client.ExecuteActionsAsync(request);
+        succ|= response.Success;
+      }      
+
+      return succ;
     }
 
     [HttpPost()]
