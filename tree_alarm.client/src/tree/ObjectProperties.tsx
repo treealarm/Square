@@ -31,6 +31,7 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import { ControlSelector } from '../prop_controls/control_selector';
 import { ObjectSelector } from '../components/ObjectSelector';
 import SelectedObjectGeoEditor from './SelectedObjectGeoEditor';
+import { ActionsControl } from '../actions/ActionsControl';
 
 export function ObjectProperties() {
 
@@ -331,7 +332,9 @@ export function ObjectProperties() {
             </IconButton>
           </Tooltip>
         </ListItem>
-
+        <ListItem>
+          <ActionsControl></ActionsControl>
+        </ListItem>
       </List>
     </Box>
   );

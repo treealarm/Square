@@ -35,16 +35,22 @@ namespace LeafletAlarms.Controllers
     [Route("GetAvailableActions")]
     public async Task<List<ActionDescrDTO>> GetAvailableActions(string id)
     {
+      var retActions = new List<ActionDescrDTO>();
+
+      if (string.IsNullOrEmpty(id))
+      {
+        return retActions;
+      }
       var app_ids = await GetAppIdByObjectId(new List<string> { id });
 
-      var daprClient = _daprClientService.GetDaprClient(app_ids.Keys.FirstOrDefault());
+      var daprClient = _daprClientService.GetDaprClient(app_ids.Values.Select(i=>i.i_name).FirstOrDefault());
       ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
       var request = new ProtoGetAvailableActionsRequest();
       request.ObjectId = id;
       var response = await _client.GetAvailableActionsAsync(request);
 
 
-      var retActions = new List<ActionDescrDTO>();
+      
 
       foreach (var action in response.ActionsDescr)
       {

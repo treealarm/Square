@@ -458,3 +458,20 @@ export interface IValueDTO {
   name: string;
   value: any;
 }
+export interface IActionParameterDTO {
+  name: string;
+  type: string;
+  cur_val: string | number | null;
+}
+
+export interface IActionDescrDTO {
+  name: string;
+  parameters: IActionParameterDTO[];
+}
+
+export interface IActionExeDTO {
+  object_id: string;
+  name: string;
+  parameters?: IActionParameterDTO[];
+}
+

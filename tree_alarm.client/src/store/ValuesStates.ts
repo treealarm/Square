@@ -2,6 +2,7 @@
 import { DoFetch } from './Fetcher';
 import { IValueDTO } from './Marker';
 import { ApplicationState } from '.';
+import { ApiValuesRootString } from './constants';
 
 export interface ValuesState {
   valuesMap: Record<string, IValueDTO[]>;
@@ -20,7 +21,7 @@ const initialState: ValuesState = {
 export const fetchValuesByOwners = createAsyncThunk<IValueDTO[], string[]>(
   'values/fetchByOwners',
   async (owners: string[]) => {
-    const fetched = await DoFetch('/api/Values/GetByOwners', {
+    const fetched = await DoFetch(ApiValuesRootString+'/GetByOwners', {
       method: 'POST',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(owners),
@@ -33,7 +34,7 @@ export const fetchValuesByOwners = createAsyncThunk<IValueDTO[], string[]>(
 export const updateValues = createAsyncThunk<void, IValueDTO[]>(
   'values/updateValues',
   async (values: IValueDTO[]) => {
-    await DoFetch('/api/Values/UpdateValues', {
+    await DoFetch(ApiValuesRootString+'/UpdateValues', {
       method: 'POST',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(values),
@@ -44,7 +45,7 @@ export const updateValues = createAsyncThunk<void, IValueDTO[]>(
 export const deleteValues = createAsyncThunk<string[], string[]>(
   'values/deleteValues',
   async (ids: string[]) => {
-    await DoFetch('/api/Values/DeleteValues', {
+    await DoFetch(ApiValuesRootString+'/DeleteValues', {
       method: 'DELETE',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(ids),
