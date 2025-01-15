@@ -46,87 +46,57 @@ namespace LeafletAlarms.Grpc
       // Создание ProtoActionParameter
       var protoActionParameter = new ProtoActionParameter
       {
-        Name = dto.name
+        Name = dto.name,
+        CurVal = new ProtoActionValue()
+        {
+          
+        }
       };
 
-      // Конвертация типа и значения
-      if (dto.type != null && dto.cur_val != null)
+      if (dto.cur_val == null)
       {
-        protoActionParameter.CurVal = dto.type switch
+        return protoActionParameter;
+      }
+
+      object cur_val;
+
+      if (dto.cur_val is JsonElement jsonElement)
+      {
+        // Преобразуем JsonElement в строку для дальнейшей обработки
+        cur_val = jsonElement.ValueKind switch
         {
-          "double" => new ProtoActionValue { DoubleValue = Convert.ToDouble(dto.cur_val) },
-          "int" => new ProtoActionValue { IntValue = Convert.ToInt32(dto.cur_val) },
-          "string" => new ProtoActionValue { StringValue = dto.cur_val.ToString() },
-          "coordinates" => new ProtoActionValue { Coordinates = ConvertToProtoCoordinates(dto.cur_val as List<Geo2DCoordDTO>) },
-          _ => new ProtoActionValue() // Пустое значение для неизвестного типа
+          JsonValueKind.String => jsonElement.GetString(),
+          JsonValueKind.Number when jsonElement.TryGetDouble(out var d) => d,
+          JsonValueKind.Number when jsonElement.TryGetInt32(out var i) => i,
+          JsonValueKind.Array => jsonElement, // Оставляем для обработки как массив
+          _ => jsonElement.ToString() // Если это что-то другое, конвертируем в строку
         };
       }
       else
-        if (dto.cur_val != null)
       {
-        if (dto.cur_val is JsonElement jsonElement)
-        {
-          // Проверяем тип с использованием JsonElement
-          switch (jsonElement.ValueKind)
-          {
-            case JsonValueKind.Number:
-              if (jsonElement.TryGetInt32(out var intValue))
-              {
-                // Если значение можно представить как int, устанавливаем его в IntValue
-                protoActionParameter.CurVal = new ProtoActionValue { IntValue = intValue };
-              }
-              else if (jsonElement.TryGetInt64(out var longValue))
-              {
-                // Если значение можно представить как long (например, большие целые числа), устанавливаем его в IntValue
-                protoActionParameter.CurVal = new ProtoActionValue { IntValue = (int)longValue }; // Можно также оставить long, если нужно
-              }
-              else if (jsonElement.TryGetDouble(out var doubleValue))
-              {
-                // Если это число с плавающей запятой, устанавливаем в DoubleValue
-                protoActionParameter.CurVal = new ProtoActionValue { DoubleValue = doubleValue };
-              }
-              break;
-
-
-            case JsonValueKind.String:
-              protoActionParameter.CurVal = new ProtoActionValue { StringValue = jsonElement.GetString() };
-              break;
-
-            case JsonValueKind.Array:
-              var geoCoords = JsonSerializer.Deserialize<List<Geo2DCoordDTO>>(jsonElement.GetRawText());
-              protoActionParameter.CurVal = new ProtoActionValue { Coordinates = ConvertToProtoCoordinates(geoCoords) };
-              break;
-
-            default:
-              protoActionParameter.CurVal = new ProtoActionValue(); // Пустое значение для неизвестного типа
-              break;
-          }
-        }
-        else
-        {
-          // На случай, если dto.cur_val не является JsonElement, можем попробовать другие типы
-          if (dto.cur_val is double doubleVal)
-          {
-            protoActionParameter.CurVal = new ProtoActionValue { DoubleValue = doubleVal };
-          }
-          else if (dto.cur_val is int intVal)
-          {
-            protoActionParameter.CurVal = new ProtoActionValue { IntValue = intVal };
-          }
-          else if (dto.cur_val is string strVal)
-          {
-            protoActionParameter.CurVal = new ProtoActionValue { StringValue = strVal };
-          }
-          else if (dto.cur_val is List<Geo2DCoordDTO> coordinates)
-          {
-            protoActionParameter.CurVal = new ProtoActionValue { Coordinates = ConvertToProtoCoordinates(coordinates) };
-          }
-          else
-          {
-            protoActionParameter.CurVal = new ProtoActionValue(); // Пустое значение для неизвестного типа
-          }
-        }
+        cur_val = dto.cur_val;
       }
+
+      protoActionParameter.CurVal = dto.type switch
+      {
+        "double" when double.TryParse(cur_val?.ToString(), out var d) =>
+            new ProtoActionValue { DoubleValue = d },
+
+        "int" when int.TryParse(cur_val?.ToString(), out var i) =>
+            new ProtoActionValue { IntValue = i },
+
+        "string" =>
+            new ProtoActionValue { StringValue = cur_val?.ToString() },
+
+        "coordinates" when cur_val is JsonElement element && element.ValueKind == JsonValueKind.Array =>
+            new ProtoActionValue { Coordinates = ConvertToProtoCoordinates(element.Deserialize<List<Geo2DCoordDTO>>()) },
+
+        "coordinates" when cur_val is List<Geo2DCoordDTO> coords =>
+            new ProtoActionValue { Coordinates = ConvertToProtoCoordinates(coords) },
+
+        _ => new ProtoActionValue() // Пустое значение для неизвестного типа
+      };
+
 
       return protoActionParameter;
     }

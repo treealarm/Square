@@ -39,7 +39,7 @@ export function ActionsControl() {
 
   return (
     <div>
-      <List>
+      <List dense>
         {actions.map((action) => (
           <ListItem key={action.name}>
             <Button onClick={() => {
@@ -59,7 +59,7 @@ export function ActionsControl() {
             <TextField
               key={param.name}
               label={param.name}
-              value={param.cur_val || ''}
+              value={param.cur_val ?? ''}
               onChange={(e) =>
                 setParameters((prev) =>
                   prev.map((p, i) => (i === index ? { ...p, cur_val: e.target.value } : p))

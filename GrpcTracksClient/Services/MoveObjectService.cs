@@ -320,7 +320,7 @@ namespace GrpcTracksClient.Services
       {
         var action = new ProtoActionDescription
         {
-          Name = car.CarState.HasFlag(E_CarStates.Occupated) ? "Free" : "Occupate"
+          Name = car.CarState.HasFlag(E_CarStates.Occupated) ? "Free" : "Occupate"          
         };
         action.Parameters.Add(new ProtoActionParameter()
         {
@@ -331,6 +331,34 @@ namespace GrpcTracksClient.Services
           }
         });
         retVal.ActionsDescr.Add(action);
+
+        var action1 = new ProtoActionDescription
+        {
+          Name = "SetCounter"
+        };
+        action1.Parameters.Add(new ProtoActionParameter()
+        {
+          Name = "Counter",
+          CurVal = new ProtoActionValue()
+          {
+            IntValue = car.Counter
+          }
+        });
+        action1.Parameters.Add(new ProtoActionParameter()
+        {
+          Name = "FakeParam",
+          CurVal = new ProtoActionValue()
+          {
+            StringValue = "Fake Value"
+          }
+        });
+        retVal.ActionsDescr.Add(action1);
+
+        var action2 = new ProtoActionDescription
+        {
+          Name = "NoParam"
+        };
+        retVal.ActionsDescr.Add(action2);
       }
       return retVal;
     }
@@ -344,6 +372,8 @@ namespace GrpcTracksClient.Services
 
       foreach (var action in request.Actions)
       {
+        Console.WriteLine($"ExecuteActions {action.ObjectId} {action.Name}");
+
         if (_cars.TryGetValue(action.ObjectId, out var car))
         {
           if (action.Name == "Free")
@@ -354,6 +384,11 @@ namespace GrpcTracksClient.Services
           {
             car.CarState = E_CarStates.Occupated;
           }
+          if (action.Name == "SetCounter")
+          {
+            car.Counter = action.Parameters.Where(i=>i.Name == "Counter").FirstOrDefault()?.CurVal.IntValue??0;
+          }
+          
         }
         else
         {

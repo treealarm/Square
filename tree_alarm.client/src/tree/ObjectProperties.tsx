@@ -1,4 +1,5 @@
-﻿/* eslint-disable react-hooks/exhaustive-deps */
+﻿/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
 
 import { useEffect, useCallback, useMemo} from 'react';
@@ -208,10 +209,13 @@ export function ObjectProperties() {
       bgcolor: 'background.paper',
       overflow: 'auto',
       height: '100%',
+      boxSizing: 'border-box',
       border: 1
     }}>
 
-      <List dense>
+      <List
+        dense
+      >
         <ListItem>
           <ButtonGroup variant="contained" aria-label="properties pannel">
 
