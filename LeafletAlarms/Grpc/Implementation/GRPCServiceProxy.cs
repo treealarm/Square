@@ -14,6 +14,7 @@ using Domain.Diagram;
 using static Google.Rpc.Context.AttributeContext.Types;
 using Grpc.Core;
 using Domain.Integro;
+using Common;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
@@ -47,7 +48,7 @@ namespace LeafletAlarms.Grpc.Implementation
       _integroUpdateService = integroUpdateService;
       _fs = fs;
     }
-    private GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
+    public static GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
     {
       GeometryDTO geo;
 
@@ -88,6 +89,43 @@ namespace LeafletAlarms.Grpc.Implementation
         return null;
       }
       return geo;
+    }
+
+    public static ProtoGeometry ConvertGeoDTO2Proto(GeometryDTO location)
+    {
+      ProtoGeometry protoGeometry = new ProtoGeometry();
+
+      if (location is GeometryCircleDTO point)
+      {
+        protoGeometry.Type = "Point";  // Устанавливаем тип
+        protoGeometry.Coord.Add(
+            new ProtoCoord { Lat = point.coord.Lat, Lon = point.coord.Lon });
+      }
+
+      if (location is GeometryPolygonDTO polygon)
+      {
+        protoGeometry.Type = "Polygon";  // Устанавливаем тип
+
+        foreach (var coord in polygon.coord)
+        {
+          protoGeometry.Coord.Add(new ProtoCoord { Lat = coord.Lat, Lon = coord.Lon });
+        }
+
+        // Закрываем полигон, добавив первую координату в конец списка
+        protoGeometry.Coord.Add(new ProtoCoord { Lat = polygon.coord[0].Lat, Lon = polygon.coord[0].Lon });
+      }
+
+      if (location is GeometryPolylineDTO line)
+      {
+        protoGeometry.Type = "LineString";  // Устанавливаем тип
+
+        foreach (var coord in line.coord)
+        {
+          protoGeometry.Coord.Add(new ProtoCoord { Lat = coord.Lat, Lon = coord.Lon });
+        }
+      }
+
+      return protoGeometry;
     }
 
     public async Task<ProtoFigures> UpdateFigures(ProtoFigures request)

@@ -3,7 +3,7 @@
 import { useState, useEffect, MouseEvent } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Popover, Button, IconButton } from '@mui/material';
+import { Popover, Button, IconButton, Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { MyCommonFig } from '../map/MyCommonFig';
 import { useSelector } from 'react-redux';
@@ -42,9 +42,7 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
   function OnClick(newPos: LatLngPair) {
     setPosition(newPos); // Сохраняем новые координаты
 
-    let updatedCoord: LatLngPair | LatLngPair[] | null;
-
-    var updatedFig: ICommonFig | null = DeepCopy(curFig);
+    let updatedCoord: LatLngPair | LatLngPair[] | null;    
 
     // Проверяем тип геометрии и обновляем `coord` в зависимости от этого
     if (curFig?.geometry?.type === PointType) {
@@ -58,8 +56,15 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
     } else {
       updatedCoord = null; // Если тип неизвестен
     }
-    updatedFig.geometry.coord = updatedCoord;
-    setCurFig(updatedFig); // Сохраняем обновлённую фигуру в состоянии
+
+    if (curFig) {
+      var updatedFig: ICommonFig | null = DeepCopy(curFig);
+      if (updatedFig) {
+        updatedFig.geometry.coord = updatedCoord;
+        setCurFig(updatedFig); // Сохраняем обновлённую фигуру в состоянии
+      }      
+    }
+    
   }
 
   useEffect(() => {
@@ -144,13 +149,16 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
             key={1}
           />
             <LocationMarker />
-            <MyCommonFig
-              key={curFig?.id}
-              marker={curFig}
-              hidden={false}
-              pathOptions={{}}
-            >
-            </MyCommonFig>
+            {
+              curFig ? (
+                <MyCommonFig
+                  key={curFig?.id}
+                  marker={curFig}
+                  hidden={false}
+                  pathOptions={{}}
+                />
+              ) : null
+            }
           </MapContainer>
 
           <div style={{ marginTop: 10 }}>
@@ -171,6 +179,12 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
               } style={{ marginLeft: 10 }}>
               Cancel
             </Button>
+
+            {/* Добавление отображения текущих координат рядом с кнопкой */}
+            <Box ml={2}>
+              <span>Lat: {position[0]}, Lon: {position[1]}</span>
+            </Box>
+
           </div>
         </div>
       </Popover>

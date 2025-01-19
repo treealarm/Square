@@ -147,20 +147,23 @@ export function MyCommonFig(props: any) {
       setTooltipOpacity(0.7);
     }
     else {
-      setTooltipOpacity(selected_id == fig.id ? 1.0 : 0.5);
+      setTooltipOpacity(selected_id == fig?.id ? 1.0 : 0.5);
     }
     
-  }, [selected_id, fig.id]);
+  }, [selected_id, fig?.id]);
 
   const eventHandlers = useMemo(
     () => ({
       click() {
-        appDispatch(GuiStore.selectTreeItem(props.marker.id));
+        appDispatch(GuiStore.selectTreeItem(props.marker?.id));
       }
     }),
-    [props.marker.id],
+    [props.marker?.id],
   );
 
+  if (fig == null) {
+    return null;
+  }
   
   if (props.hidden == true) {
     return null;
@@ -182,7 +185,7 @@ export function MyCommonFig(props: any) {
       <Marker
         position={center} // Позиция маркера
         opacity={0} // Скрыть маркер
-        key={fig.id}
+        key={fig?.id ?? 'unknown_id'}
         eventHandlers={eventHandlers}
       >
         <Tooltip
@@ -191,7 +194,7 @@ export function MyCommonFig(props: any) {
           opacity= {0.7}
           permanent>
           <div style={{
-            border: selected_id === fig.id ? '1px solid black' : '',
+            border: selected_id === fig?.id ? '1px solid black' : '',
             textAlign: 'left', whiteSpace: 'normal', maxWidth: '300px', overflowY: 'auto'}}>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
               {cur_values.map(value => (

@@ -468,7 +468,7 @@ export interface IValueDTO {
 export interface IActionParameterDTO {
   name: string;
   type: string;
-  cur_val: string | number | null;
+  cur_val: string | number | IPointCoord |null;
 }
 
 export interface IActionDescrDTO {

@@ -2,6 +2,7 @@
 using System.Web;
 using System.Text.Json;
 using System.Net.Http.Headers;
+using Common;
 
 namespace ValhallaLib
 {
@@ -83,7 +84,7 @@ namespace ValhallaLib
         int v = result & 1;
         return previous + (v > 0 ? ~(result >> 1) : (result >> 1));
     }
-    private List<ProtoCoord> decode(string? encoded) 
+    private List<Common.ProtoCoord> decode(string? encoded) 
     {
       if (encoded == null)
       {

@@ -1,16 +1,7 @@
 ﻿syntax = "proto3";
-
+import "common.proto";
 package object_actions;
 
-// Сообщение, описывающее координаты
-message ProtoCoordinate {
-  double lat = 1; // Широта
-  double lon = 2; // Долгота
-}
-
-message ProtoCoordinates {
-  repeated ProtoCoordinate coordinates = 1;
-}
 
 // Тип значения параметра (oneof для поддержки различных типов значений)
 message ProtoActionValue {
@@ -18,7 +9,7 @@ message ProtoActionValue {
     double double_value = 1;
     int32 int_value = 2;
     string string_value = 3;
-    ProtoCoordinates coordinates = 4; // Список координат lat, lon
+    common.ProtoGeometry coordinates = 4; // Список координат lat, lon
   }
 }
 

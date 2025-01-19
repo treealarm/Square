@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+ï»¿/* eslint-disable no-unused-vars */
 import * as React from 'react';
 import { TextField, Box, IconButton, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -25,7 +25,7 @@ const CoordInput = ({ index, lat, lng, onCoordChange, onRemoveCoord }: CoordInpu
   };
 
   const handleMapSelection = (selectedLat: number, selectedLng: number) => {
-    onCoordChange(index, selectedLat, selectedLng); // Èçìåíåíèå êîîðäèíàò íà îñíîâå âûáîðà íà êàðòå
+    onCoordChange(index, selectedLat, selectedLng); // Ð˜Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚ Ð½Ð° Ð¾ÑÐ½Ð¾Ð²Ðµ Ð²Ñ‹Ð±Ð¾Ñ€Ð° Ð½Ð° ÐºÐ°Ñ€Ñ‚Ðµ
   };
 
   return (
@@ -41,7 +41,7 @@ const CoordInput = ({ index, lat, lng, onCoordChange, onRemoveCoord }: CoordInpu
       />
       <TextField
         size="small"
-        label={`Lng ${index}`}
+        label={`Lon ${index}`}
         type="number"
         value={lng}
         onChange={handleLngChange}
@@ -58,16 +58,17 @@ const CoordInput = ({ index, lat, lng, onCoordChange, onRemoveCoord }: CoordInpu
         </IconButton>
       )}
 
-        <CoordSelector
-          lat={lat}  // Ïåðåäàåì òåêóùèå êîîðäèíàòû
+      <CoordSelector
+        lat={lat}  // ÐŸÐµÑ€ÐµÐ´Ð°ÐµÐ¼ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹
         lon={lng}
-        index={index }
-          onConfirm={(newLat, newLng) => {
-            handleMapSelection(newLat, newLng); // Îáðàáîòêà âûáðàííûõ íà êàðòå êîîðäèíàò
-          }}
-        />
+        index={index}
+        onConfirm={(newLat, newLng) => {
+          handleMapSelection(newLat, newLng); // ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ñ… Ð½Ð° ÐºÐ°Ñ€Ñ‚Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚
+        }}
+      />
     </Box>
   );
+
 };
 
 export default CoordInput;

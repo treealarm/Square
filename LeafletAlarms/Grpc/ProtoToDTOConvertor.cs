@@ -1,5 +1,7 @@
-﻿using Domain.GeoDBDTO;
+﻿using Common;
+using Domain.GeoDBDTO;
 using Domain.Integro;
+using LeafletAlarms.Grpc.Implementation;
 using ObjectActions;
 using System.Text.Json;
 
@@ -17,7 +19,7 @@ namespace LeafletAlarms.Grpc
         ProtoActionValue.ValueOneofCase.DoubleValue => ("double", (object)value.DoubleValue),
         ProtoActionValue.ValueOneofCase.IntValue => ("int", (object)value.IntValue),
         ProtoActionValue.ValueOneofCase.StringValue => ("string", (object)value.StringValue),
-        ProtoActionValue.ValueOneofCase.Coordinates => ("coordinates", ConvertCoordinates(value.Coordinates)),
+        ProtoActionValue.ValueOneofCase.Coordinates => ("coordinates", GRPCServiceProxy.CoordsFromProto2DTO(value.Coordinates)),
         _ => ("unknown", null) // Если значение не задано
       };
 
@@ -30,16 +32,6 @@ namespace LeafletAlarms.Grpc
       };
     }
 
-    private static List<Geo2DCoordDTO> ConvertCoordinates(ProtoCoordinates coordinates)
-    {
-      return coordinates.Coordinates
-          .Select(coord => new Geo2DCoordDTO
-          {
-            Lat = coord.Lat,
-            Lon = coord.Lon
-          })
-          .ToList();
-    }
 
     public static ProtoActionParameter ConvertToProtoActionParameter(ActionParameterDTO dto)
     {
@@ -68,7 +60,7 @@ namespace LeafletAlarms.Grpc
           JsonValueKind.String => jsonElement.GetString(),
           JsonValueKind.Number when jsonElement.TryGetDouble(out var d) => d,
           JsonValueKind.Number when jsonElement.TryGetInt32(out var i) => i,
-          JsonValueKind.Array => jsonElement, // Оставляем для обработки как массив
+          JsonValueKind.Object => jsonElement, // Оставляем для обработки как object
           _ => jsonElement.ToString() // Если это что-то другое, конвертируем в строку
         };
       }
@@ -88,34 +80,17 @@ namespace LeafletAlarms.Grpc
         "string" =>
             new ProtoActionValue { StringValue = cur_val?.ToString() },
 
-        "coordinates" when cur_val is JsonElement element && element.ValueKind == JsonValueKind.Array =>
-            new ProtoActionValue { Coordinates = ConvertToProtoCoordinates(element.Deserialize<List<Geo2DCoordDTO>>()) },
+        "coordinates" when cur_val is JsonElement element && element.ValueKind == JsonValueKind.Object =>
+            new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(element.Deserialize<GeometryDTO>()) },
 
-        "coordinates" when cur_val is List<Geo2DCoordDTO> coords =>
-            new ProtoActionValue { Coordinates = ConvertToProtoCoordinates(coords) },
+        "coordinates" when cur_val is GeometryDTO coords =>
+            new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(coords) },
 
         _ => new ProtoActionValue() // Пустое значение для неизвестного типа
       };
 
 
       return protoActionParameter;
-    }
-
-    private static ProtoCoordinates ConvertToProtoCoordinates(List<Geo2DCoordDTO> coords)
-    {
-      var protoCoordinates = new ProtoCoordinates();
-      if (coords != null)
-      {
-        foreach (var coord in coords)
-        {
-          protoCoordinates.Coordinates.Add(new ProtoCoordinate
-          {
-            Lat = coord.Lat,
-            Lon = coord.Lon
-          });
-        }
-      }
-      return protoCoordinates;
     }
 
   }

@@ -1,0 +1,13 @@
+﻿syntax = "proto3";
+
+package common;
+
+message ProtoCoord {
+	double lat = 1;
+	double lon = 2;
+}
+
+message ProtoGeometry {			
+	repeated ProtoCoord coord = 1;
+	string type = 2;
+}

@@ -1,4 +1,5 @@
-﻿using GrpcTracksClient;
+﻿using Common;
+using GrpcTracksClient;
 using LeafletAlarmsGrpc;
 using ValhallaLib;
 
@@ -40,6 +41,18 @@ public class MovingCar
   public E_CarStates CarState { get; set; } = E_CarStates.Free;
   public int Counter { get; set; } = 0;
   public string StringParam { get; set; } = string.Empty;
+  public ProtoCoord CurrentPos 
+  {
+    get
+    {
+      return _currentPosition;
+    }
+    set
+    {
+      _currentPosition = value;
+    }
+  }
+    
   private ProtoFig CreateFigure()
   {
     var fig = new ProtoFig

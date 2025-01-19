@@ -4,7 +4,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 import "diagrams.proto";
-
+import "common.proto";
 option csharp_namespace = "LeafletAlarmsGrpc";
 
 package tracks;
@@ -31,18 +31,8 @@ message ProtoObjExtraProperty {
 	string visual_type = 3;
 }
 
-message ProtoCoord {
-	double lat = 1;
-	double lon = 2;
-}
-
-message ProtoGeometry {			
-	repeated ProtoCoord coord = 1;
-	string type = 2;
-}
-
 message ProtoFig {
-	ProtoGeometry geometry = 1;
+	common.ProtoGeometry geometry = 1;
 	optional double radius = 2;
 	optional string zoom_level = 3;
 	repeated ProtoObjExtraProperty extra_props = 4;
@@ -74,7 +64,7 @@ message ProtoObjectStates
 message ProtoGeoObject
 {
   optional string id = 1;
-  ProtoGeometry location = 2;
+  common.ProtoGeometry location = 2;
   optional double radius = 3;
   optional string zoom_level = 4;
 }

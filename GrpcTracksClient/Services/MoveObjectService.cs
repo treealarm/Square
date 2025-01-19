@@ -1,4 +1,5 @@
-﻿using GrpcDaprLib;
+﻿using Common;
+using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using ObjectActions;
 using ValhallaLib;
@@ -310,7 +311,7 @@ namespace GrpcTracksClient.Services
       return min + _random.NextDouble() * (max - min);
     }
 
-
+    private static string CarParamsActionName = "SetCarParams";
 
     public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
     {
@@ -324,10 +325,10 @@ namespace GrpcTracksClient.Services
         };
        
         retVal.ActionsDescr.Add(action);
-
+        /////Car params
         var action1 = new ProtoActionDescription
         {
-          Name = "SetCounter"
+          Name = CarParamsActionName
         };
         action1.Parameters.Add(new ProtoActionParameter()
         {
@@ -345,7 +346,22 @@ namespace GrpcTracksClient.Services
             StringValue = car.StringParam
           }
         });
+
+        var coordParam = new ProtoActionParameter()
+        {
+          Name = nameof(car.CurrentPos),
+          CurVal = new ProtoActionValue()
+          {
+            Coordinates = new ProtoGeometry()
+            {
+              Type = "Point"
+            }
+          }
+        };
+        coordParam.CurVal.Coordinates.Coord.Add(car.CurrentPos);
+        action1.Parameters.Add(coordParam);
         retVal.ActionsDescr.Add(action1);
+        ///End  car params
 
         var action2 = new ProtoActionDescription
         {
@@ -385,13 +401,19 @@ namespace GrpcTracksClient.Services
           {
             car.CarState = E_CarStates.Occupated;
           }
-          if (action.Name == "SetCounter")
+          if (action.Name == CarParamsActionName)
           {
             car.Counter = action.Parameters.Where(i=>i.Name == "Counter").FirstOrDefault()?.CurVal.IntValue??0;
             var stringVal = action.Parameters.Where(i => i.Name == nameof(car.StringParam)).FirstOrDefault()?.CurVal.StringValue ?? null;
             if (stringVal != null)
             {
               car.StringParam = stringVal;
+            }
+
+            var coordVal = action.Parameters.Where(i => i.Name == nameof(car.CurrentPos)).FirstOrDefault()?.CurVal.Coordinates ?? null;
+            if (coordVal != null)
+            {
+              car.CurrentPos = coordVal.Coord.FirstOrDefault();
             }
           }
           if (action.Name == "SetString")

@@ -24,6 +24,9 @@
     <Protobuf Include="..\Protos\actions.proto">
       <Link>Proto\actions.proto</Link>
     </Protobuf>
+    <Protobuf Include="..\Protos\common.proto" GrpcServices="None">
+      <Link>Proto\common.proto</Link>
+    </Protobuf>
     <Protobuf Include="..\Protos\diagrams.proto" GrpcServices="None">
       <Link>Proto\diagrams.proto</Link>
     </Protobuf>
