@@ -18,7 +18,7 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, Re
   const appDispatch = useAppDispatch();
 
   var components = props.components.filter(e => e != null);
-  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
+  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels)??[];
 
   if (components.length == 0) {
     return null;
@@ -40,15 +40,20 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, Re
       togglePanels = IPanelTypes.panels.filter(p =>
         p.panelId == IPanelTypes.search ||
         p.panelId == IPanelTypes.properties ||
-        p.panelId == IPanelTypes.track_props
+        p.panelId == IPanelTypes.track_props ||
+        p.panelId == IPanelTypes.actions
       );
 
       if (component[0].panelId == IPanelTypes.search) {
-        togglePanels.unshift(
-          IPanelTypes.panels.find(p =>
-            p.panelId == IPanelTypes.search_result)
+        const searchResultPanel = IPanelTypes.panels.find(
+          p => p.panelId == IPanelTypes.search_result
         );
+
+        if (searchResultPanel) {
+          togglePanels.unshift(searchResultPanel);
+        }
       }
+
     }
 
     if (component[0].panelId == IPanelTypes.tree) {

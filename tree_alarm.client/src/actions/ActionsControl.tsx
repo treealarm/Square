@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from 'react';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
 import {
   List,
   ListItem,
@@ -7,6 +8,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   TextField,
+  Box,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { IActionDescrDTO, IActionParameterDTO, IActionExeDTO } from '../store/Marker';
@@ -23,23 +25,21 @@ export function ActionsControl() {
 
   const [expandedAction, setExpandedAction] = useState<string | null>(null);
   const [actionParameters, setActionParameters] = useState<Record<string, IActionParameterDTO[]>>({});
-  const [numAction, setNumAction] = useState<number>(0); // Для перезапроса данных
+  const [numAction, setNumAction] = useState<number>(0);
 
-  // Загружаем доступные действия при изменении selected_id или numAction
   useEffect(() => {
     if (selected_id) {
       appDispatch(ActionsStore.fetchAvailableActions(selected_id));
     }
   }, [selected_id, numAction]);
 
-  // Сбрасываем параметры действий при изменении списка actions
   useEffect(() => {
     const updatedParameters: Record<string, IActionParameterDTO[]> = {};
     actions.forEach((action) => {
       updatedParameters[action.name] = action.parameters.map((p) => ({ ...p }));
     });
     setActionParameters(updatedParameters);
-    setExpandedAction(null); // Закрываем аккордеон, так как данные обновились
+    setExpandedAction(null);
   }, [actions]);
 
   const executeAction = async (action: IActionDescrDTO) => {
@@ -54,8 +54,8 @@ export function ActionsControl() {
 
     await appDispatch(ActionsStore.executeAction(payload));
 
-    setNumAction(numAction + 1); // Перезапрос действий после выполнения
-    setExpandedAction(null); // Схлопываем аккордеон
+    setNumAction(numAction + 1);
+    setExpandedAction(null);
   };
 
   const handleAccordionChange = (action: IActionDescrDTO) => {
@@ -72,18 +72,19 @@ export function ActionsControl() {
   };
 
   return (
-    <div>
+    <Box sx={{ padding: 2 }}>
       <List dense>
         {actions.map((action) => (
-          <ListItem key={action.name}>
+          <ListItem key={action.name} sx={{ padding: 0 }}>
             <Accordion
               expanded={expandedAction === action.name}
               onChange={() => handleAccordionChange(action)}
+              sx={{ width: '100%' }}
             >
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 {action.name}
               </AccordionSummary>
-              <AccordionDetails>
+              <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {actionParameters[action.name]?.map((param, index) => (
                   <TextField
                     key={param.name}
@@ -100,7 +101,7 @@ export function ActionsControl() {
                   onClick={() => executeAction(action)}
                   color="primary"
                   variant="contained"
-                  style={{ marginTop: '10px' }}
+                  fullWidth
                 >
                   Execute
                 </Button>
@@ -109,6 +110,6 @@ export function ActionsControl() {
           </ListItem>
         ))}
       </List>
-    </div>
+    </Box>
   );
 }

@@ -39,6 +39,7 @@ public class MovingCar
 
   public E_CarStates CarState { get; set; } = E_CarStates.Free;
   public int Counter { get; set; } = 0;
+  public string StringParam { get; set; } = string.Empty;
   private ProtoFig CreateFigure()
   {
     var fig = new ProtoFig

@@ -35,7 +35,7 @@ namespace LeafletAlarms.Services
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
     private object _locker = new object();
     private BoxDTO _currentBox;
-    private bool _update_values_periodically = true;
+    private bool _update_values_periodically = false;
     public BoxDTO CurrentBox
     {
       get

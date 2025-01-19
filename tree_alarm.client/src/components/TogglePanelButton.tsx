@@ -11,7 +11,7 @@ import { PanelIcon } from "./PanelIcon";
 export const TogglePanelButton = (props: { panel: IPanelsStatesDTO }) => {
   const appDispatch = useAppDispatch();
 
-  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
+  const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels)??[];
 
   var thisPanel = panels.find(p => p.panelId == props.panel.panelId);
 

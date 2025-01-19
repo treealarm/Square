@@ -322,14 +322,7 @@ namespace GrpcTracksClient.Services
         {
           Name = car.CarState.HasFlag(E_CarStates.Occupated) ? "Free" : "Occupate"          
         };
-        action.Parameters.Add(new ProtoActionParameter()
-        {
-          Name = "availability",
-          CurVal = new ProtoActionValue()
-          {
-            StringValue = car.CarState.HasFlag(E_CarStates.Occupated) ? "Free" : "Occupated"
-          }
-        });
+       
         retVal.ActionsDescr.Add(action);
 
         var action1 = new ProtoActionDescription
@@ -346,18 +339,26 @@ namespace GrpcTracksClient.Services
         });
         action1.Parameters.Add(new ProtoActionParameter()
         {
-          Name = "FakeParam",
+          Name = nameof(car.StringParam),
           CurVal = new ProtoActionValue()
           {
-            StringValue = "Fake Value"
+            StringValue = car.StringParam
           }
         });
         retVal.ActionsDescr.Add(action1);
 
         var action2 = new ProtoActionDescription
         {
-          Name = "NoParam"
+          Name = "SetString"
         };
+        action2.Parameters.Add(new ProtoActionParameter()
+        {
+          Name = nameof(car.StringParam),
+          CurVal = new ProtoActionValue()
+          {
+            StringValue = car.StringParam
+          }
+        });
         retVal.ActionsDescr.Add(action2);
       }
       return retVal;
@@ -387,8 +388,18 @@ namespace GrpcTracksClient.Services
           if (action.Name == "SetCounter")
           {
             car.Counter = action.Parameters.Where(i=>i.Name == "Counter").FirstOrDefault()?.CurVal.IntValue??0;
+            var stringVal = action.Parameters.Where(i => i.Name == nameof(car.StringParam)).FirstOrDefault()?.CurVal.StringValue ?? null;
+            if (stringVal != null)
+            {
+              car.StringParam = stringVal;
+            }
           }
-          
+          if (action.Name == "SetString")
+          {
+            car.StringParam = action.Parameters
+              .Where(i => i.Name == nameof(car.StringParam))
+              .FirstOrDefault()?.CurVal.StringValue ?? string.Empty;            
+          }
         }
         else
         {

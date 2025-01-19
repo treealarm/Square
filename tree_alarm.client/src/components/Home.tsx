@@ -20,6 +20,7 @@ import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
 import DiagramViewer from "../diagrams/DiagramViewer";
 import { ObjectPropertiesUpdater } from "./ObjectPropertiesUpdater";
+import { ActionsControl } from '../actions/ActionsControl';
 
 const LeftPanel = () => {
 
@@ -47,40 +48,30 @@ const LeftPanel = () => {
 };
 
 const RightPanel = () => {
-
   const panels = useSelector((state: ApplicationState) => state?.panelsStates?.panels);
-
-
-  var components: Array<[IPanelsStatesDTO, React.ReactElement]> = panels.map((datum) => {
-
-    if (datum.panelId == IPanelTypes.properties) {
-      return [datum, (
-        <ObjectProperties key={datum.panelId} />
-      )];
-    }
-
-    if (datum.panelId == IPanelTypes.search) {
-      return [datum, (
-        <RetroSearch key={datum.panelId} />
-      )];
-    }
-
-    if (datum.panelId == IPanelTypes.rights) {
-      return [datum, (
-        <ObjectRights key={datum.panelId} />
-      )];
-    }
-
-    if (datum.panelId == IPanelTypes.track_props) {
-      return [datum, (
-        <TrackProps key={datum.panelId} />
-      )];
-    }
+  if (!panels) {
     return null;
-  });
+  }
 
-  return (<AccordionPanels components={components} />);
+  const panelComponents: Record<string, React.ReactElement> = {
+    [IPanelTypes.properties.toString()]: <ObjectProperties />,
+    [IPanelTypes.search.toString()]: <RetroSearch />,
+    [IPanelTypes.rights.toString()]: <ObjectRights />,
+    [IPanelTypes.track_props.toString()]: <TrackProps />,
+    [IPanelTypes.actions.toString()]: <ActionsControl />,
+  };
+
+  const components: Array<[IPanelsStatesDTO, React.ReactElement]> = panels
+    .filter(datum => panelComponents[datum.panelId.toString()]) // Проверяем существование компонента
+    .map(datum => [
+      datum,
+      React.cloneElement(panelComponents[datum.panelId.toString()], { key: datum.panelId }),
+    ]);
+
+  return <AccordionPanels components={components} />;
 };
+
+
 
 export function Home() {
 

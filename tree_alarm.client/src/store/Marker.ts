@@ -331,6 +331,7 @@ export class IPanelTypes{
   static track_props: string = 'track_props';
 
   static rights: string = 'rights';
+  static actions: string = 'actions';
 
   static panels: IPanelsStatesDTO[] = [
     {
@@ -363,6 +364,12 @@ export class IPanelTypes{
     {
       panelId: IPanelTypes.rights,
       panelValue: 'Rights',
+      panelType: EPanelType.Right
+    }
+    ,
+    {
+      panelId: IPanelTypes.actions,
+      panelValue: 'Actions',
       panelType: EPanelType.Right
     }
   ];

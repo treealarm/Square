@@ -13,7 +13,7 @@ export interface ValuesState {
 
 const initialState: ValuesState = {
   valuesMap: {},
-  update_values_periodically: true,
+  update_values_periodically: false,
   loading: false,
   error: null,
 };

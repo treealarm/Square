@@ -1,49 +1,24 @@
-﻿import AccountTreeIcon from '@mui/icons-material/AccountTree';
+﻿import React from 'react';
+
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import DataObjectIcon from '@mui/icons-material/DataObject';
 import LockPersonIcon from '@mui/icons-material/LockPerson';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import SearchIcon from '@mui/icons-material/Search';
 import SummarizeIcon from '@mui/icons-material/Summarize';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import { IPanelTypes } from '../store/Marker';
 
-export function PanelIcon(props: { panelId: string }) {
+const panelIcons: Record<string, React.ReactElement> = {
+  [IPanelTypes.tree]: <AccountTreeIcon />,
+  [IPanelTypes.search_result]: <ManageSearchIcon />,
+  [IPanelTypes.properties]: <DataObjectIcon />,
+  [IPanelTypes.search]: <SearchIcon />,
+  [IPanelTypes.track_props]: <SummarizeIcon />,
+  [IPanelTypes.rights]: <LockPersonIcon />,
+  [IPanelTypes.actions]: <SportsEsportsIcon />,
+};
 
-  if (props.panelId == IPanelTypes.tree) {
-    return (
-      <AccountTreeIcon />
-    );
-  }
-
-  if (props.panelId == IPanelTypes.search_result) {
-    return (
-      <ManageSearchIcon />
-    );
-  }
-
-  if (props.panelId == IPanelTypes.properties) {
-    return (
-      <DataObjectIcon />
-    );
-  }
-
-  if (props.panelId == IPanelTypes.search) {
-    return (
-      <SearchIcon />
-    );
-  }
-
-  if (props.panelId == IPanelTypes.track_props) {
-    return (
-      <SummarizeIcon />
-    );
-  }
-
-  if (props.panelId == IPanelTypes.rights) {
-    return (
-      <LockPersonIcon />
-    );
-  }
-  return (
-    <div />
-  );
+export function PanelIcon({ panelId }: { panelId: string }) {
+  return panelIcons[panelId] || <div />;
 }
