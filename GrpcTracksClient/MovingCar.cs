@@ -38,21 +38,34 @@ public class MovingCar
     _figure = CreateFigure();
   }
 
-  public E_CarStates CarState { get; set; } = E_CarStates.Free;
-  public int Counter { get; set; } = 0;
-  public string StringParam { get; set; } = string.Empty;
-  public ProtoCoord CurrentPos 
+  private E_CarStates _carState = E_CarStates.Free;
+  public E_CarStates CarState
   {
-    get
-    {
-      return _currentPosition;
-    }
+    get => _carState;
     set
     {
-      _currentPosition = value;
+      _carState = value;
+      if (_carState == E_CarStates.Free)
+      {
+        Task.Run(() => GenerateNewRouteAsync()); // Генерируем случайный маршрут
+      }
     }
   }
-    
+  public int Counter { get; set; } = 0;
+  public string StringParam { get; set; } = string.Empty;
+  public ProtoCoord DestinationPos
+  {
+    get => _currentPosition;
+    set
+    {
+      if (CarState != E_CarStates.Occupated)
+      {
+        CarState = E_CarStates.Occupated;
+      }
+      Task.Run(() => GenerateNewRouteAsync(value)); // Строим маршрут до заданной точки
+    }
+  }
+
   private ProtoFig CreateFigure()
   {
     var fig = new ProtoFig
@@ -73,9 +86,15 @@ public class MovingCar
 
   public async Task<ProtoFig> DoOneStep()
   {
+
     // Если текущий маршрут завершён, создаём новый
     if (_currentRouteIndex >= _route.Count - 1 && _currentDistance >= _segmentDistance)
     {
+      if (CarState == E_CarStates.Occupated)
+      {
+        // Машина достигла конечной точки в режиме Occupated
+        return CreateFigure();
+      }
       await GenerateNewRouteAsync();
     }
 
@@ -133,14 +152,26 @@ public class MovingCar
     });
     return valuesToSend;
   }
-  private async Task GenerateNewRouteAsync()
+  private async Task GenerateNewRouteAsync(ProtoCoord targetPoint = null)
   {
-    var endLat = GetRandomDouble(55.750, 55.770);
-    var endLon = GetRandomDouble(37.567, 37.680);
+    if (targetPoint!=null)
+    {
+      // Если задана конечная точка, строим маршрут к ней
+      _route = await _router.GetRoute(_currentPosition, targetPoint);
+    }
+    else
+    {
+      // Случайная конечная точка для свободного состояния
+      var endLat = GetRandomDouble(55.750, 55.770);
+      var endLon = GetRandomDouble(37.567, 37.680);
+      _route = await _router.GetRoute(_currentPosition, new ProtoCoord { Lat = endLat, Lon = endLon });
+    }
 
-    _route = await _router.GetRoute(_currentPosition, new ProtoCoord { Lat = endLat, Lon = endLon });
     _currentRouteIndex = 0;
-    PrepareNextSegment();
+    if (_route.Count > 1)
+    {
+      PrepareNextSegment();
+    }
   }
 
   private void PrepareNextSegment()

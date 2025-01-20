@@ -349,7 +349,7 @@ namespace GrpcTracksClient.Services
 
         var coordParam = new ProtoActionParameter()
         {
-          Name = nameof(car.CurrentPos),
+          Name = nameof(car.DestinationPos),
           CurVal = new ProtoActionValue()
           {
             Coordinates = new ProtoGeometry()
@@ -358,7 +358,7 @@ namespace GrpcTracksClient.Services
             }
           }
         };
-        coordParam.CurVal.Coordinates.Coord.Add(car.CurrentPos);
+        coordParam.CurVal.Coordinates.Coord.Add(car.DestinationPos);
         action1.Parameters.Add(coordParam);
         retVal.ActionsDescr.Add(action1);
         ///End  car params
@@ -410,10 +410,10 @@ namespace GrpcTracksClient.Services
               car.StringParam = stringVal;
             }
 
-            var coordVal = action.Parameters.Where(i => i.Name == nameof(car.CurrentPos)).FirstOrDefault()?.CurVal.Coordinates ?? null;
+            var coordVal = action.Parameters.Where(i => i.Name == nameof(car.DestinationPos)).FirstOrDefault()?.CurVal.Coordinates ?? null;
             if (coordVal != null)
             {
-              car.CurrentPos = coordVal.Coord.FirstOrDefault();
+              car.DestinationPos = coordVal.Coord.FirstOrDefault();
             }
           }
           if (action.Name == "SetString")
