@@ -1,10 +1,11 @@
-﻿using Dapr.Client;
-using Domain.Integro;
+﻿using Domain.Integro;
 using Domain.ServiceInterfaces;
 using LeafletAlarms.Grpc;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
 using ObjectActions;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace LeafletAlarms.Controllers
 {
@@ -30,6 +31,35 @@ namespace LeafletAlarms.Controllers
     {
       return await _integroService.GetListByIdsAsync(object_ids);
     }
+
+    [HttpGet()]
+    [Route("GenerateObjectId")]
+    public string GenerateObjectId(string input, string version)
+    {
+      if (string.IsNullOrEmpty(input))
+      {
+        input = string.Empty;
+      }
+      if (string.IsNullOrEmpty(version))
+      {
+        version = string.Empty;
+      }
+      string GetHash(string data, int length)
+      {
+        using (var md5 = MD5.Create())
+        {
+          var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(data));
+          // Получаем нужное количество символов из хэша
+          return BitConverter.ToString(hash, 0, length).Replace("-", "").ToLowerInvariant();
+        }
+      }
+
+      // Получаем хэш для input и version
+      string inputHash = GetHash(input + version, 12);
+
+      return inputHash;
+    }
+
 
     [HttpGet()]
     [Route("GetAvailableActions")]
