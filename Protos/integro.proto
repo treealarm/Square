@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "LeafletAlarmsGrpc";
+
+package integro;
+
+service IntegroService {
+  rpc GenerateObjectId (GenerateObjectIdRequest) returns (GenerateObjectIdResponse);
+  rpc UpdateIntegro (UpdateIntegroRequest) returns (google.protobuf.BoolValue);  
+}
+
+message IntegroProto{
+  string object_id = 1;
+  string i_name = 2;
+}
+
+message UpdateIntegroRequest{
+  repeated IntegroProto objects = 1;
+}
+
+message GenerateObjectIdData {
+  string input = 1;
+  string version = 2;
+  string object_id = 3;
+}
+
+message GenerateObjectIdRequest {
+  repeated GenerateObjectIdData input = 1;
+}
+
+message GenerateObjectIdResponse {
+  repeated GenerateObjectIdData output = 1;  // Возвращаемая строка (ObjectId)
+}

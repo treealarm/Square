@@ -27,11 +27,11 @@ public class MovingCar
   private double _speed_ms = 0;
   public string Id { get { return _id; } }
 
-  public MovingCar(ValhallaRouter router, long number)
+  public MovingCar(ValhallaRouter router, long number, string id)
   {
     _router = router;
     _number = number;
-    _id = Utils.LongTo24String(_number);
+    _id = id;
     _color = GenerateRandomColor();
     _carIndex = _random.Next(0, _carImages.Length);
     _currentPosition = GenerateRandomStartPosition();

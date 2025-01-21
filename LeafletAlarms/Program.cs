@@ -32,4 +32,5 @@ var app = builder.Build();
 startup.Configure(app, builder.Environment);
 
 app.MapGrpcService<TracksGrpcImp>();
+app.MapGrpcService<IntegroGrpcImp>();
 app.Run();

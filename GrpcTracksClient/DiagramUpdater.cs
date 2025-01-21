@@ -30,7 +30,7 @@ static public class DiagramUpdater
         File.ReadAllBytes($"files/{protoUploadFile.FileName}"));
 
       // Создаем клиента gRPC и подключаемся
-      using var client = new GrpcUpdater();
+      using var client = Utils.Client;
 
       // Загружаем файл
       await client.UploadFile(protoUploadFile);
@@ -40,7 +40,7 @@ static public class DiagramUpdater
 
       var d_type = new DiagramTypeProto()
       {
-        Id = Utils.LongTo24String(1),
+        Id = await Utils.GenerateObjectId("car", 1),
         Name = TeslaCar,
         Src = $"{protoUploadFile.MainFolder}/{protoUploadFile.Path}/{protoUploadFile.FileName}",
       };
@@ -91,7 +91,7 @@ static public class DiagramUpdater
         diag.Diagrams.Add(new DiagramProto()
         {
           DgrType = TeslaCar,
-          Id = Utils.LongTo24String(carId),
+          Id = await Utils.GenerateObjectId("car", carId),
           Geometry = new DiagramCoordProto()
           {
             Left = 50,

@@ -11,8 +11,6 @@ using Domain.Events;
 using Domain.Values;
 using Domain.DiagramType;
 using Domain.Diagram;
-using static Google.Rpc.Context.AttributeContext.Types;
-using Grpc.Core;
 using Domain.Integro;
 using Common;
 
@@ -559,24 +557,6 @@ namespace LeafletAlarms.Grpc.Implementation
       response.Diagrams.AddRange(updatedDiagrams.Select(dto => ConvertToDiagramProto(dto)));
 
       return response;
-    }
-
-    public async Task<BoolValue> UpdateIntegro(UpdateIntegroRequest request)
-    {
-      List<IntegroDTO> dto = new List<IntegroDTO>();
-
-      foreach(var i in request.Objects)
-      {
-        dto.Add(new IntegroDTO()
-        {
-          id = i.ObjectId,
-          i_name = i.IName
-        });
-      }
-      var ret = new BoolValue();
-      ret.Value = true;
-      await _integroUpdateService.UpdateIntegros(dto);
-      return ret;
     }
   }
 

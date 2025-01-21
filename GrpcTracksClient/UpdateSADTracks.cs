@@ -8,7 +8,7 @@ namespace GrpcTracksClient
 {
   internal class UpdateSADTracks
   {
-    static GrpcUpdater _client = new GrpcUpdater();
+    static GrpcUpdater _client = Utils.Client;
     public static async Task Move()
     {
       var figs = new TrackPointsProto();

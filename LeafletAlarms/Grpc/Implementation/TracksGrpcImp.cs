@@ -52,10 +52,5 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       return await _proxy.UploadFile(request);
     }
-
-    public override async Task<BoolValue> UpdateIntegro(UpdateIntegroRequest request, ServerCallContext context)
-    {
-      return await _proxy.UpdateIntegro(request);
-    }
   }
 }

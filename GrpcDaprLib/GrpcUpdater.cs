@@ -2,6 +2,7 @@
 using Grpc.Core;
 using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
+using static LeafletAlarmsGrpc.IntegroService;
 using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace GrpcDaprLib
@@ -11,8 +12,16 @@ namespace GrpcDaprLib
     public string AppId { get; set; } = string.Empty;
     private GrpcChannel? _channel = null;
     private TreeAlarmsGrpcServiceClient? _client = null;
+    private IntegroServiceClient? _integroClient = null;
 
     private CallInvoker? _daprClient = null;
+    public bool IsDead
+    {
+      get
+      {
+        return _integroClient != null && _integroClient != null;
+      } 
+    }
 
     public static int GetAppPort(string env_name = "APP_PORT",int def_val = 5001)
     {
@@ -26,10 +35,11 @@ namespace GrpcDaprLib
       return def_val;
     }
 
-    public GrpcUpdater(string? endPoint = null)
+    public GrpcUpdater()
     {
       _daprClient = DaprClient.CreateInvocationInvoker(appId: "leafletalarms");
       _client = new TreeAlarmsGrpcServiceClient(_daprClient);
+      _integroClient = new IntegroServiceClient (_daprClient);
 
       AppId = Environment.GetEnvironmentVariable("APP_ID") ?? string.Empty;
       Console.WriteLine($"APP_ID:{AppId}");    
@@ -115,10 +125,20 @@ namespace GrpcDaprLib
 
     public async Task<bool?> UpdateIntegro(UpdateIntegroRequest integro)
     {
-      if (_client == null) return null;
+      if (_integroClient == null) return null;
 
-      var result = await _client.UpdateIntegroAsync(integro);
+      var result = await _integroClient.UpdateIntegroAsync(integro);
       return result.Value;
+    }
+
+    public async Task<string?> GenerateObjectId(string input)
+    {
+      if (_integroClient == null) return null;
+
+      GenerateObjectIdRequest generateObjectIdRequest = new GenerateObjectIdRequest();
+      generateObjectIdRequest.Input.Add(new GenerateObjectIdData() { Input = input , Version = "1.0"});
+      var result = await _integroClient.GenerateObjectIdAsync(generateObjectIdRequest);
+      return result.Output.FirstOrDefault()?.ObjectId;
     }
   }
 }

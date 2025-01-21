@@ -1,5 +1,4 @@
 ﻿using Common;
-using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using ObjectActions;
 using ValhallaLib;
@@ -13,22 +12,31 @@ namespace GrpcTracksClient.Services
     private Dictionary<string, MovingCar> _cars = new Dictionary<string, MovingCar>();
     public MoveObjectService()
     {
-      for (long carId = 0; carId < IMoveObjectService.MaxCars; carId++)
-      {
-        try
-        {
-          var movingCar = new MovingCar(_router, carId + 1);
-          _cars.Add(movingCar.Id, movingCar);
-        }
-        catch (Exception ex)
-        {
-          Logger.LogException(ex);
-        }
-      }
+      
     }
     public async Task MoveCars(CancellationToken token)
     {
-      using var client = new GrpcUpdater();
+      while (_cars.Count == 0 && !token.IsCancellationRequested) 
+      {
+        for (long carId = 0; carId < IMoveObjectService.MaxCars; carId++)
+        {
+          try
+          {
+            var carNum = carId + 1;
+            var carUid = await Utils.GenerateObjectId("car", carNum);
+            var movingCar = new MovingCar(_router, carNum, carUid);
+            _cars.Add(movingCar.Id, movingCar);
+          }
+          catch (Exception ex)
+          {
+            Logger.LogException(ex);
+            _cars.Clear();
+          }
+        }
+        await Task.Delay(1000);
+      }      
+
+      using var client = Utils.Client;
       bool inited = false;
       while (!token.IsCancellationRequested)
       {
@@ -187,7 +195,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.618727730916895
       });
 
-      using var client = new GrpcUpdater();
+      using var client = Utils.Client;
 
       double step = 0.001;
 
@@ -260,7 +268,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.621130
       };
 
-      using var client = new GrpcUpdater();
+      using var client = Utils.Client;
       var step = 0.0001;
 
       for (int i = 0; i < 1000000; i++)

@@ -11,9 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="Data\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Data\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>  
 
