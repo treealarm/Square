@@ -1,0 +1,77 @@
+﻿syntax = "proto3";
+
+package analytics.api.stream;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "media.proto";
+
+//
+// Media Stream Message 
+//
+// Encapsulates different kinds of payloads that can be exchanged by the client and server.
+//
+// Key aspects:
+//
+//   1) MediaStreamDescriptor MUST be the first message exchanged from both parties.
+//   2) Messages containing shared memory reference MUST be acknowledged
+//      a) This ensures release of shared memory when processing sample references.
+//      b) Acknowledgments can be sent as part of a payload, thus reducing the traffic in half.
+//   3) It is encouraged that servers process messages asynchronously and possibly in parallel, 
+//      in order to leverage pipelining and achieve best performance.
+//
+message StreamMessage {
+
+  uint64 sequence_number = 1;       // Monotonically increasing directional message identifier starting from 1 when the gRPC connection is created
+  uint64 ack_sequence_number = 2;   // 0 if this message is not referencing any sent message.
+
+  // Possible payloads are strongly defined by the contract below
+  oneof payload {
+    StreamDescriptor stream_descriptor = 5;
+    MediaSample media_sample = 6;
+  }
+}
+
+// 
+// Media Stream Descriptor 
+//
+// Describes the media type that will flow in a single direction of the stream.
+//
+message StreamDescriptor {
+  string stream_id = 1;                             // Unique stream identifier.
+  media.MediaDescriptor media_descriptor = 5;       // Session media information.
+}
+
+//
+// Media Sample 
+//
+// Encapsulates a media sample or chunk transfer.
+//
+message MediaSample {
+  google.protobuf.Duration duration = 2;  // Optional. Duration of this packet.
+  google.protobuf.Timestamp pts = 3;      // Presentation timestamp; the time at which the decompressed packet will be presented to the user.
+  google.protobuf.Timestamp dts = 4;      // Optional. Decompression timestamp; the time at which the packet is decompressed.
+  uint64 pos = 5;                         // Optional. Position in stream.
+  bytes content = 10;
+}
+
+enum StartPosition {
+  SP_EXACT = 0;
+  SP_PREV_KEY_FRAME = 1;  ///< on keyframe for position one frame back, early samples are marked as preroll
+  SP_NEXT_KEY_FRAME = 2;  ///< on the nearest keyframe after the given position
+};
+
+enum PlayDirection {
+  PD_FORWARD = 0;
+  PD_REVERSE = 1;
+};
+
+enum PlayMode {
+  PM_NORMAL = 0;
+  PM_KEYFRAMES = 1;
+};
+
+message FrameRate {
+  float fps = 1;
+}
+

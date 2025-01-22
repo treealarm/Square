@@ -1,0 +1,50 @@
+﻿syntax = "proto3";
+
+package analytics.api.media;
+
+import "primitives.proto";
+
+
+enum MediaType {
+  MT_DATA = 0;
+  MT_AUDIO = 1;
+  MT_VIDEO = 2;
+}
+
+//
+// Media information
+//
+message MediaDescriptor {
+
+  uint32 codec = 1; // AVCodecID
+
+  oneof media_format {
+    DataFormat data_format = 3;
+    AudioFormat audio_format = 4;
+    VideoFormat video_format = 5;
+  }
+};
+
+//
+// Video Frame Format information
+//
+message VideoFormat {
+
+  // Frame Dimensions in pixels
+  primitives.Dimensions dimensions = 3;
+}
+
+message AudioFormat {
+
+  uint32 channels = 1;
+}
+
+message DataFormat {
+
+  enum Format {
+    FORMAT_TEXT = 0;
+    FORMAT_ANALYTIC = 1;
+  }
+
+  Format format = 1;
+}

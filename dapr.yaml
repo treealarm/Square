@@ -17,4 +17,8 @@ apps:
     appProtocol: grpc
     appDirPath: ./blinkservice/
     command: ["dotnet", "run"]
+  - appID: aasubservice
+    appProtocol: grpc
+    appDirPath: ./aasubservice/
+    command: ["dotnet", "run"]
 

@@ -1,0 +1,109 @@
+﻿syntax = "proto3";
+
+package analytics.api.primitives;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+message TimeRange {
+  google.protobuf.Timestamp begin = 1;
+  google.protobuf.Timestamp end = 2;
+}
+
+//
+// Generic Dimensions message
+//
+message Dimensions {
+  uint64 width = 1;
+  uint64 height = 2;
+};
+
+//
+// Generic point.
+//
+// - Values are normalized between 0.0 and 1.0 as fraction of the input image.
+message Point {
+  float x = 1;
+  float y = 2;
+}
+
+//
+// Generic rectangle for region bounding boxes
+//
+// - Values are normalized between 0.0 and 1.0 as fraction of the input image.
+// - Extensions which are receiving padded images (pillarbox or letterbox) should return the bounding boxes
+//   based on the padded image. The Live Video Analytics pipeline will adjust the bounding boxes based on
+//   the padding before publishing the inferences. For example, if the image has .2 padding on the left and
+//   right sides of the image, the rectangle (0.2, 0.0, 0.6, 1.0) will be adjusted to (0.0, 0.0, 1.0, 1.0)
+//   by Live Video Analytics.
+//
+message Rectangle {
+  float l = 1;              // Left:    distance from the image's left edge to the rectangle's left edge
+  float t = 2;              // Top:     distance from the image's top edge to the rectangle's top edge
+  float w = 3;              // Width:   rectangle width
+  float h = 4;              // Height:  rectangle height
+}
+
+//
+// Generic ellipse.
+//
+message Ellipse {
+  Point center = 1;
+  float xr = 2;
+  float yr = 3;
+}
+
+enum NormalDirection {
+  Left = 0;
+  Right = 1;
+  Bidirectional = 2;
+}
+
+message Polyline {
+  repeated Point points = 1;
+  bool closed = 2;
+  NormalDirection direction = 3;
+}
+
+//
+// Generic polygon.
+//
+// - Values are normalized between 0.0 and 1.0 as fraction of the input image.
+message Polygon {
+  repeated Point points = 1;
+}
+
+//
+// Generic mask.
+//
+message Mask {
+  repeated float data = 1;
+  Dimensions dimensions = 2;
+}
+
+message HsvColorRange {
+  message ValueRange {
+    float min = 1;
+    float max = 2;
+  }
+
+  ValueRange hue = 1;
+  ValueRange saturation = 2;
+  ValueRange value = 3;
+}
+
+message GeoPosition {
+  float latitude = 1;
+  float longitude = 2;
+}
+
+message Temperature {
+  enum TemperatureUnit {
+    CELSIUS = 0;
+    FAHRENHEIT = 1;
+    KELVIN = 2;
+  }
+
+  float value = 1;
+  TemperatureUnit unit = 2;
+}

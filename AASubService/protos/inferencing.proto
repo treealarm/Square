@@ -1,0 +1,120 @@
+﻿syntax = "proto3";
+
+
+package analytics.api.inferencing;
+
+import "primitives.proto";
+
+
+// MediaSample payload
+message AnalyticSample {
+  repeated Inference inferences = 1;
+}
+
+//
+// Wrapper for different inference result types
+//
+message Inference {
+  string inference_id = 3;                 // Optional intra-frame inference identifier
+  repeated string related_inferences = 4;  // Set of related inferences
+  string sequence_id = 14;                 // Optional inter-frame sequence identifier
+
+  oneof value {                            // Must match type
+    Classification classification = 5;
+    Entity entity = 7;
+    Text text = 8;
+    Event event = 9;
+    InferenceOther other = 13;
+  }
+
+  // Complementary data that can be used to augment the original inference. These
+  // are transmitted opaquely through the pipeline and are meant for application
+  // consumption only.
+  map<string, string> extensions = 15;
+}
+
+//
+// Classification
+//
+message Classification {
+  Tag tag = 1;                        // Class tag. Examples: daylight, moonlight, etc.
+  repeated Attribute attributes = 2;  // Additional entity attributes. Examples: isBlackWhite=false
+}
+
+//
+// Entity Detection & Identification
+//
+message Entity {
+  Tag tag = 1;                        // Entity tag. Examples: person, bicycle, car, ...
+  repeated Attribute attributes = 2;  // Additional entity attributes. Examples: color=red, body=sedan, etc.
+  oneof roi {
+    primitives.Rectangle box = 3;      // Entity bounding box
+    primitives.Polygon polygon = 4;    // Entity bounding polygon
+    Keypoints keypoints = 5;          // Entity keypoints
+    primitives.Mask mask = 6;          // Entity segmentation mask
+  }
+  string id = 10;                     // Optional id for entity identification
+}
+
+//
+// OCR and Captions
+//
+message Text {
+  string value = 1;             // Inferred text
+  string language = 2;          // Optional BCP47 Language Code (https://tools.ietf.org/html/bcp47)
+}
+
+//
+// Generic Events
+//
+message Event {
+  string name = 1;                      // Event name
+  map<string, string> properties = 7;   // Event properties
+}
+
+//
+// Generic content to be returned as inference results.
+//
+message InferenceOther {
+  string content_type = 1;      // Content type (IANA Media Type identifier: https://www.iana.org/assignments/media-types/media-types.xhtml)
+  bytes content_bytes = 2;      // Content Bytes. For textual formats which do not specify an encoding, UTF-8 should be used.
+}
+
+//
+// Generic attributes. Attributes are use to augment an entity.
+//
+message Attribute {
+  string name = 1;            // Attribute name: color, make, model, load_capacity etc.
+  float confidence = 3;       // Confidence (normalized between 0.0 and 1.0)
+  oneof value {
+    string text = 4;          // Attribute value: red, honda, civic, etc.
+    int64 numeric = 5;        // Attribute value: 10, -100.
+    double floating = 6;      // Attribute value: 12.345.
+    bool boolean = 7;         // Attribute value: true, false.
+    bytes identification = 8; // Attribute value: identification vector.
+  }
+}
+
+//
+// Generic tags.
+//
+message Tag {
+  string value = 2;         // Tag value
+  float confidence = 3;     // Confidence (normalized between 0.0 and 1.0)
+}
+
+//
+// Generic keypoint.
+//
+// - Values are normalized between 0.0 and 1.0 as fraction of the input image.
+message Keypoint {
+  Tag tag = 1;
+  primitives.Point point = 2;
+}
+
+//
+// Generic keypoints.
+//
+message Keypoints {
+  repeated Keypoint keypoint = 1;
+}
