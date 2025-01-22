@@ -101,7 +101,7 @@ namespace LeafletAlarms.Services
     }
 
 
-    public async Task OnUpdateTrackPosition(string channel, string message)
+    public async Task OnUpdateTrackPosition(string channel, byte[] message)
     {
       var movedMarkers = JsonSerializer.Deserialize<List<TrackPointDTO>>(message);
 
@@ -125,7 +125,7 @@ namespace LeafletAlarms.Services
       }
     }    
 
-    public async Task OnStateChanged(string channel, string message)
+    public async Task OnStateChanged(string channel, byte[] message)
     {
       var state = JsonSerializer.Deserialize<List<ObjectStateDTO>>(message);
 
@@ -140,7 +140,7 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public async Task OnValuesChanged(string channel, string message)
+    public async Task OnValuesChanged(string channel, byte[] message)
     {
       var state = JsonSerializer.Deserialize<List<ValueDTO>>(message);
       if (state == null)
@@ -153,7 +153,7 @@ namespace LeafletAlarms.Services
         await sock.Value.OnValuesChanged(state);
       }
     }
-    public async Task OnBlinkStateChanged(string channel, string message)
+    public async Task OnBlinkStateChanged(string channel, byte[] message)
     {
       var state = JsonSerializer.Deserialize<List<AlarmState>>(message);
 
@@ -169,7 +169,7 @@ namespace LeafletAlarms.Services
     }
 
 
-    async Task NewRoutBuilt(string channel, string message)
+    async Task NewRoutBuilt(string channel, byte[] message)
     {
       var routEnds = JsonSerializer.Deserialize<List<string>>(message);
 

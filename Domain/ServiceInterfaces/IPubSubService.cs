@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 
 namespace Domain.ServiceInterfaces
 {
+  public delegate Task MessageHandler(string channel, byte[] message);
   public interface ISubService
   {
-    public Task Subscribe(string channel, Func<string, string, Task> handler);
-    public Task Unsubscribe(string channel, Func<string, string, Task> handler);
+    public Task Subscribe(string channel, MessageHandler handler);
+    public Task Unsubscribe(string channel, MessageHandler handler);
   }
   public interface IPubService
   {

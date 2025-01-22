@@ -55,7 +55,7 @@ namespace AASubService
         await Task.Delay(1000);
       }
     }
-    public async Task OnValuesChanged(string channel, string message)
+    public async Task OnValuesChanged(string channel, byte[] message)
     {
       var state = JsonSerializer.Deserialize<List<ValueDTO>>(message);
       if (state == null)

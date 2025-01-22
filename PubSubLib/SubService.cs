@@ -1,8 +1,6 @@
 ﻿using Dapr.Messaging.PublishSubscribe;
-using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using System.Collections.Concurrent;
-using System.Text;
 
 namespace PubSubLib
 {
@@ -10,12 +8,13 @@ namespace PubSubLib
   {
     private string _pubsub_name;
     private object _locker = new object();
-    private readonly DaprPublishSubscribeClient _messagingClient;
+    private readonly DaprPublishSubscribeClient _messagingClient;    
 
-    private Dictionary<string, HashSet<Func<string, string, Task>>> _topics =
-      new Dictionary<string, HashSet<Func<string, string, Task>>>();
+    private Dictionary<string, HashSet<MessageHandler>> _topics =
+        new Dictionary<string, HashSet<MessageHandler>>();
 
-    private static ConcurrentDictionary<string, string> _channels 
+
+  private static ConcurrentDictionary<string, string> _channels 
       = new ConcurrentDictionary<string, string>();
     private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
@@ -28,10 +27,10 @@ namespace PubSubLib
       _messagingClient = messagingClient;
     }
 
-    private async Task<TopicResponseAction> OnMessage(string channel, string message)
+    private async Task<TopicResponseAction> OnMessage(string channel, byte[] message)
     {
       TopicResponseAction retVal = TopicResponseAction.Success;
-      List<Func<string, string, Task>>? topicList = null;
+      List<MessageHandler>? topicList = null;
 
       lock (_locker)
       {
@@ -46,13 +45,12 @@ namespace PubSubLib
         await Task.Run(() =>
         {
           var sChan = channel.ToString();
-          var sMsg = message.ToString();
 
           foreach (var action in topicList)
           {
             try
             {
-              action(sChan, sMsg);
+              action(sChan, message);
             }
             catch(Exception ex)
             {
@@ -64,17 +62,17 @@ namespace PubSubLib
       return retVal;
     }
 
-    public async Task Subscribe(string channel, Func<string, string, Task> handler)
+    public async Task Subscribe(string channel, MessageHandler handler)
     {
       int count = 0;
 
       lock (_locker)
       {
-        HashSet<Func<string, string,Task>>? topic = null;
+        HashSet<MessageHandler>? topic = null;
 
         if (!_topics.TryGetValue(channel, out topic))
         {
-          topic = new HashSet<Func<string, string, Task>>();
+          topic = new HashSet<MessageHandler>();
           _topics.Add(channel, topic);
         }
 
@@ -90,8 +88,8 @@ namespace PubSubLib
           {
             try
             {              
-              var data = Encoding.UTF8.GetString(message.Data.Span);
-              return await OnMessage(message.Topic, data);
+              //var data = Encoding.UTF8.GetString(message.Data.Span);
+              return await OnMessage(message.Topic, message.Data.Span.ToArray());
             }
             catch
             {
@@ -116,7 +114,7 @@ namespace PubSubLib
       }      
     }
 
-    public async Task Unsubscribe(string channel, Func<string, string, Task> handler)
+    public async Task Unsubscribe(string channel, MessageHandler handler)
     {
       await Task.Delay(0);
       int count = 0;

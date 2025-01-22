@@ -32,7 +32,7 @@ namespace BlinkService
       _stateUpdateService = stateUpdateService;
     }
 
-    private async Task CheckStatesByIds(string channel, string message)
+    private async Task CheckStatesByIds(string channel, byte[] message)
     {
       var ids = JsonSerializer.Deserialize<List<string>>(message);
 
