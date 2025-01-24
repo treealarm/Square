@@ -1,6 +1,7 @@
 ﻿using Dapr.Messaging.PublishSubscribe;
 using Domain.ServiceInterfaces;
 using System.Collections.Concurrent;
+using System.Text;
 
 namespace PubSubLib
 {

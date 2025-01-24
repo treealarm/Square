@@ -27,5 +27,7 @@ builder.Services.AddDaprPubSubClient();
 builder.Services.AddSingleton<ISubService, SubService>();
 builder.Services.AddSingleton<IPubService, PubService>();
 builder.Services.AddHostedService<HostedService>();
+builder.Services.AddHostedService<TestPubHostedService>();
+
 var app = builder.Build();
 app.Run();

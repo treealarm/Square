@@ -22,7 +22,19 @@ namespace PubSubLib
     {
       try
       {
-        await _client.PublishEventAsync(pubsub_name, channel, message);
+        if (message is byte[] byteArray)
+        {
+          await _client.PublishByteEventAsync(
+            pubsub_name, 
+            channel,
+            byteArray,
+            "application/octet-stream"
+          );
+        }
+        else
+        {
+          await _client.PublishEventAsync(pubsub_name, channel, message);
+        }
       }
       catch (Exception ex)
       {

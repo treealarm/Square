@@ -5,7 +5,6 @@ using Domain.ServiceInterfaces;
 using Domain.Values;
 using System.Text;
 using System.Text.Json;
-using static Google.Rpc.Context.AttributeContext.Types;
 
 namespace AASubService
 {
@@ -29,12 +28,14 @@ namespace AASubService
       // Start timer after processing initial states.
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
-      await _sub.Subscribe(Topics.OnValuesChanged, OnValuesChanged);
+     // await _sub.Subscribe(Topics.OnValuesChanged, OnValuesChanged);
+      await _sub.Subscribe("lukich", "media", OnAAMessage);
     }
 
     async Task IHostedService.StopAsync(CancellationToken cancellationToken)
     {
-      await _sub.Unsubscribe(Topics.OnValuesChanged, OnValuesChanged);
+      //await _sub.Unsubscribe(Topics.OnValuesChanged, OnValuesChanged);
+      await _sub.Unsubscribe("lukich", "media", OnAAMessage);
 
       _cancellationToken.Cancel();
       _timer?.Wait();
@@ -70,17 +71,17 @@ namespace AASubService
     private readonly Queue<KeyValuePair<ulong, Sample>> _analyticQueue = new();
     private MediaDescriptor _descriptor;
 
-    public async Task OnAAMessage(string channel, string message)
+    public async Task OnAAMessage(string channel, byte[] message)
     {
       // Преобразуем строку в StreamMessage
       StreamMessage streamMessage;
       try
       {
-        streamMessage = StreamMessage.Parser.ParseFrom(Encoding.UTF8.GetBytes(message));
+        streamMessage = StreamMessage.Parser.ParseFrom(message);
       }
-      catch
+      catch(Exception ex)
       {
-        throw new ArgumentException("Failed to parse request");
+        throw ex;
       }
 
       lock (_mutex)
@@ -123,13 +124,36 @@ namespace AASubService
           throw new ArgumentException("Media sample content is empty");
         }
 
+        // Сохраняем изображение, если оно есть
+        var contentBytes = mediaSample.Content.ToByteArray();
+
+        // Предполагаем, что контент — это JPEG-изображение
+        try
+        {
+          var fileName = $"image_{DateTime.UtcNow:yyyyMMdd_HHmmssfff}.jpeg";
+          var filePath = Path.Combine("images", fileName);
+
+          // Убедимся, что каталог существует
+          Directory.CreateDirectory("images");
+
+          // Записываем изображение на диск
+          await File.WriteAllBytesAsync(filePath, contentBytes);
+
+          Console.WriteLine($"Image saved: {filePath}");
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"Failed to save image: {ex.Message}");
+        }
+
         // Добавляем образец в очередь
         lock (_mutex)
         {
-          var sample = new Sample(ToTimestamp(mediaSample.Pts), mediaSample.Content.ToByteArray());
+          var sample = new Sample(ToTimestamp(mediaSample.Pts), contentBytes);
           _analyticQueue.Enqueue(new KeyValuePair<ulong, Sample>(streamMessage.SequenceNumber, sample));
         }
       }
+
       else
       {
         throw new ArgumentException("Unknown message type");
