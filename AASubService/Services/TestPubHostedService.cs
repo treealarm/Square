@@ -1,10 +1,8 @@
-﻿using Analytics.Api.Inferencing;
-using Analytics.Api.Primitives;
+﻿using Analytics.Api.Primitives;
 using Analytics.Api.Stream;
 using Domain.ServiceInterfaces;
 using Google.Protobuf;
 using ImageLib;
-using Attribute = Analytics.Api.Inferencing.Attribute;
 
 namespace AASubService
 {
