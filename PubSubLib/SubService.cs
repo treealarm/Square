@@ -20,21 +20,23 @@ namespace PubSubLib
 
     public SubService(DaprPublishSubscribeClient messagingClient)
     {
-      _pubsub_name = Environment.GetEnvironmentVariable("PUBSUB_NAME") ?? "";
-      {
-        Console.WriteLine($"SubService PUBSUB_NAME:{_pubsub_name}");
-      }
+        _pubsub_name = Environment.GetEnvironmentVariable("PUBSUB_NAME") ?? "";
+        {
+          Console.WriteLine($"SubService PUBSUB_NAME:{_pubsub_name}");
+        }
+      
       _messagingClient = messagingClient;
     }
 
-    private async Task<TopicResponseAction> OnMessage(string channel, byte[] message)
+    private async Task<TopicResponseAction> OnMessage(string pubsub_name, string channel, byte[] message)
     {
       TopicResponseAction retVal = TopicResponseAction.Success;
       List<MessageHandler>? topicList = null;
+      var key = pubsub_name + channel;
 
       lock (_locker)
       {
-        if (_topics.TryGetValue(channel.ToString(), out var topic))
+        if (_topics.TryGetValue(key, out var topic))
         {
           topicList = topic.ToList();
         }
@@ -62,18 +64,19 @@ namespace PubSubLib
       return retVal;
     }
 
-    public async Task Subscribe(string channel, MessageHandler handler)
+    public async Task Subscribe(string pubsub_name, string channel, MessageHandler handler)
     {
       int count = 0;
+      var key = pubsub_name + channel;
 
       lock (_locker)
       {
         HashSet<MessageHandler>? topic = null;
 
-        if (!_topics.TryGetValue(channel, out topic))
+        if (!_topics.TryGetValue(key, out topic))
         {
           topic = new HashSet<MessageHandler>();
-          _topics.Add(channel, topic);
+          _topics.Add(key, topic);
         }
 
         topic.Add(handler);
@@ -87,9 +90,9 @@ namespace PubSubLib
           async Task<TopicResponseAction> HandleMessageAsync(TopicMessage message, CancellationToken cancellationToken)
           {
             try
-            {              
+            {
               //var data = Encoding.UTF8.GetString(message.Data.Span);
-              return await OnMessage(message.Topic, message.Data.Span.ToArray());
+              return await OnMessage(message.PubSubName, message.Topic, message.Data.Span.ToArray());
             }
             catch
             {
@@ -98,45 +101,51 @@ namespace PubSubLib
           }
 
           // Создаем подписку
-         
+
           await _messagingClient.SubscribeAsync(
-              _pubsub_name,
+              pubsub_name,
               channel,
               new DaprSubscriptionOptions(new MessageHandlingPolicy(TimeSpan.FromSeconds(10), TopicResponseAction.Retry)),
               HandleMessageAsync,
               _cancellationTokenSource.Token
           );
         }
-        catch(Exception ex)
-        { 
+        catch (Exception ex)
+        {
           Console.WriteLine(ex.ToString());
         }
-      }      
+      }
+    }
+    public async Task Subscribe(string channel, MessageHandler handler)
+    {
+         await Subscribe(_pubsub_name, channel, handler);
     }
 
-    public async Task Unsubscribe(string channel, MessageHandler handler)
+    public async Task Unsubscribe(string pubsub_name, string channel, MessageHandler handler)
     {
       await Task.Delay(0);
       int count = 0;
-
+      var key = pubsub_name + channel;
       lock (_locker)
       {
-        if (_topics.TryGetValue(channel, out var topic))
+        if (_topics.TryGetValue(key, out var topic))
         {
           topic.Remove(handler);
           count = topic.Count;
         }
         if (count == 0)
         {
-          _topics.Remove(channel);
+          _topics.Remove(key);
         }
         if (_topics.Count == 0)
         {
           _cancellationTokenSource.Cancel();
         }
       }
-
-                 
+    }
+    public async Task Unsubscribe(string channel, MessageHandler handler)
+    {
+      await Unsubscribe(_pubsub_name, channel, handler);
     }
 
     public void Dispose()

@@ -1,10 +1,7 @@
 ﻿using Dapr.Client;
-using Domain;
 using Domain.OptionsModels;
-using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
-using System.Collections.Concurrent;
 
 namespace PubSubLib
 {
@@ -21,17 +18,22 @@ namespace PubSubLib
       }
       _client = new DaprClientBuilder().Build();
     }
-    public async Task<long> Publish<T>(string channel, T message) where T : class
+    public async Task<long> Publish<T>(string pubsub_name, string channel, T message) where T : class
     {
       try
       {
-        await _client.PublishEventAsync(_pubsub_name, channel, message);
+        await _client.PublishEventAsync(pubsub_name, channel, message);
       }
       catch (Exception ex)
       {
         Console.WriteLine(ex.ToString());
       }
       return 0;
+    }
+    public async Task<long> Publish<T>(string channel, T message) where T : class
+    {
+      
+      return await Publish(_pubsub_name, channel, message);
     }
   }
 }
