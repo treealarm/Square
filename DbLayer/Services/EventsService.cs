@@ -56,11 +56,11 @@ namespace DbLayer.Services
         {
           var createOptions = new CreateCollectionOptions();
 
-          var timeField = nameof(DBEvent.timestamp);
-          var metaField = nameof(DBEvent.meta);
+          //var timeField = nameof(DBEvent.timestamp);
+          //var metaField = nameof(DBEvent.meta);
 
-          createOptions.TimeSeriesOptions =
-            new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
+          //createOptions.TimeSeriesOptions =
+          //  new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
 
           mongoDatabase.CreateCollection(
           EventsCollectionName,
@@ -94,6 +94,19 @@ namespace DbLayer.Services
 
         _coll.Indexes.CreateOne(indexModel);
       }
+
+      {
+        var keys = Builders<DBEvent>.IndexKeys.Text(d => d.event_name);
+
+        var indexModel = new CreateIndexModel<DBEvent>(
+            keys,
+            new CreateIndexOptions { Name = "text_event_name" }
+        );
+
+        _coll.Indexes.CreateOne(indexModel);
+      }
+
+
       {
         IndexKeysDefinition<DBEvent> keys =
                 new IndexKeysDefinitionBuilder<DBEvent>()
@@ -333,6 +346,8 @@ namespace DbLayer.Services
           filter = CreateOrAddFilter(filter, f1);
         }
       }
+
+      var ret_json = Utils.Log(filter);
 
       var options = new FindOptions()
       {

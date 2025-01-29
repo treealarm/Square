@@ -407,30 +407,7 @@ namespace DbLayer.Services
 
     private static void Log(FilterDefinition<DBGeoObject> filter)
     {
-      try
-      {
-        // Получаем сериализатор для типа DBGeoObject
-        var serializerRegistry = BsonSerializer.SerializerRegistry;
-        var documentSerializer = serializerRegistry.GetSerializer<DBGeoObject>();
-
-        // Создаем параметры для рендеринга
-        var renderArgs = new RenderArgs<DBGeoObject>
-        {
-          DocumentSerializer = documentSerializer,
-          // Можно добавить другие параметры, если это нужно, например, настройки сериализации.
-        };
-
-        // Рендерим фильтр
-        var rendered = filter.Render(renderArgs);
-
-        // Выводим фильтр в формате JSON с отступами для читаемости
-        Debug.WriteLine(rendered.ToJson(new JsonWriterSettings { Indent = true }));
-        Debug.WriteLine("");
-      }
-      catch (Exception ex)
-      {
-        Debug.WriteLine($"Ошибка при логировании фильтра: {ex.Message}");
-      }
+      Utils.Log(filter);
     }
 
   }
