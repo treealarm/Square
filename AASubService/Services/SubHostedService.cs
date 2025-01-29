@@ -1,21 +1,44 @@
 ﻿using Analytics.Api.Media;
 using Analytics.Api.Stream;
-using Domain.PubSubTopics;
 using Domain.ServiceInterfaces;
 using Domain.Values;
-using System.Text;
+using GrpcDaprLib;
+using LeafletAlarmsGrpc;
 using System.Text.Json;
 
 namespace AASubService
 {
-  internal class HostedService : IHostedService, IDisposable
+  internal class SubHostedService : IHostedService, IDisposable
   {
+    private static GrpcUpdater? _client;
+    private static Dictionary<string, string> _idsCash = new Dictionary<string, string>();
+    private static readonly object _lock = new object(); // Для синхронизации
+
+    // Метод для доступа к клиенту
+    public static GrpcUpdater Client
+    {
+      get
+      {
+        // Проверяем, если клиент не существует или мертв, создаем новый
+        if (_client == null || _client.IsDead)
+        {
+          lock (_lock)
+          {
+            if (_client == null || _client.IsDead)
+            {
+              _client = new GrpcUpdater();  // Инициализация нового клиента
+            }
+          }
+        }
+        return _client;
+      }
+    }
+
     private Task? _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-
     private readonly ISubService _sub;
-   
-    public HostedService(
+
+    internal SubHostedService(
       ISubService sub
     )
     {
@@ -66,13 +89,9 @@ namespace AASubService
       await Task.Delay(1);
     }
 
-    private const int QUEUE_LIMIT = 100;
-    private readonly object _mutex = new object();
-    private readonly Queue<KeyValuePair<ulong, Sample>> _analyticQueue = new();
-    private MediaDescriptor _descriptor;
-
     public async Task OnAAMessage(string channel, byte[] message)
     {
+      await Task.Delay(0);
       // Преобразуем строку в StreamMessage
       StreamMessage streamMessage;
       try
@@ -81,19 +100,10 @@ namespace AASubService
       }
       catch(Exception ex)
       {
-        throw ex;
+        Console.WriteLine(ex.ToString());
+        throw;
       }
 
-      lock (_mutex)
-      {
-        // Проверяем лимит очереди
-        if (_analyticQueue.Count > QUEUE_LIMIT)
-        {
-          // Сообщение об отклонении из-за переполнения
-          Console.WriteLine("Queue limit reached. Dropping message.");
-          return;
-        }
-      }
 
       if (streamMessage.PayloadCase == StreamMessage.PayloadOneofCase.StreamDescriptor)
       {
@@ -108,12 +118,7 @@ namespace AASubService
         {
           throw new NotSupportedException("Raw video format not yet implemented");
         }
-
-        // Обновляем дескриптор в потокобезопасной манере
-        lock (_mutex)
-        {
-          _descriptor = descriptor;
-        }
+       
       }
       else if (streamMessage.PayloadCase == StreamMessage.PayloadOneofCase.MediaSample)
       {
@@ -137,21 +142,20 @@ namespace AASubService
           Directory.CreateDirectory("images");
 
           // Записываем изображение на диск
-          await File.WriteAllBytesAsync(filePath, contentBytes);
+          //await File.WriteAllBytesAsync(filePath, contentBytes);
+          //Console.WriteLine($"Image saved: {filePath}");
 
-          Console.WriteLine($"Image saved: {filePath}");
+          var client = Client;
+          if (client != null) 
+          {
+            var newEv = new EventProto();
+          }
         }
         catch (Exception ex)
         {
           Console.WriteLine($"Failed to save image: {ex.Message}");
         }
 
-        // Добавляем образец в очередь
-        lock (_mutex)
-        {
-          var sample = new Sample(ToTimestamp(mediaSample.Pts), contentBytes);
-          _analyticQueue.Enqueue(new KeyValuePair<ulong, Sample>(streamMessage.SequenceNumber, sample));
-        }
       }
 
       else
@@ -167,9 +171,5 @@ namespace AASubService
     {
       return timestamp.ToDateTime();
     }
-
-    // Пример структуры для образца
-    private record Sample(DateTime Timestamp, byte[] Content);
-
   }
 }

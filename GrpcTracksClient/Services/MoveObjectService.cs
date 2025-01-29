@@ -36,7 +36,7 @@ namespace GrpcTracksClient.Services
         await Task.Delay(1000);
       }      
 
-      using var client = Utils.Client;
+      var client = Utils.Client;
       bool inited = false;
       while (!token.IsCancellationRequested)
       {
@@ -195,7 +195,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.618727730916895
       });
 
-      using var client = Utils.Client;
+      var client = Utils.Client;
 
       double step = 0.001;
 
@@ -268,7 +268,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.621130
       };
 
-      using var client = Utils.Client;
+      var client = Utils.Client;
       var step = 0.0001;
 
       for (int i = 0; i < 1000000; i++)

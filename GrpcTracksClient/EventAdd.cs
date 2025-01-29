@@ -10,7 +10,7 @@ namespace GrpcTracksClient
     public static async Task Add()
     {
       var rnd = new Random();
-      using var client = Utils.Client;
+      var client = Utils.Client;
       
       for (int j = 0; j < 100000; j++)
       {

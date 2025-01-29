@@ -30,7 +30,7 @@ static public class DiagramUpdater
         File.ReadAllBytes($"files/{protoUploadFile.FileName}"));
 
       // Создаем клиента gRPC и подключаемся
-      using var client = Utils.Client;
+      var client = Utils.Client;
 
       // Загружаем файл
       await client.UploadFile(protoUploadFile);

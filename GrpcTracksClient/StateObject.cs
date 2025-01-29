@@ -8,7 +8,7 @@ namespace GrpcTracksClient
   {
     public static async Task Change()
     {
-      using var client = Utils.Client;
+      var client = Utils.Client;
       var states = new ProtoObjectStates();
 
       var state = new ProtoObjectState();
