@@ -1,4 +1,8 @@
-﻿import Box from '@mui/material/Box';
+﻿/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+import * as React from 'react';
+
+import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';

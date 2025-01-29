@@ -19,7 +19,7 @@ namespace GrpcDaprLib
     {
       get
       {
-        return _integroClient != null && _integroClient != null;
+        return _integroClient == null || _client == null;
       } 
     }
 

@@ -2,6 +2,7 @@
 using Analytics.Api.Stream;
 using Domain.ServiceInterfaces;
 using Domain.Values;
+using Google.Protobuf.WellKnownTypes;
 using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using System.Text.Json;
@@ -38,7 +39,7 @@ namespace AASubService
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
     private readonly ISubService _sub;
 
-    internal SubHostedService(
+    public SubHostedService(
       ISubService sub
     )
     {
@@ -135,13 +136,9 @@ namespace AASubService
         // Предполагаем, что контент — это JPEG-изображение
         try
         {
-          var fileName = $"image_{DateTime.UtcNow:yyyyMMdd_HHmmssfff}.jpeg";
-          var filePath = Path.Combine("images", fileName);
-
-          // Убедимся, что каталог существует
-          Directory.CreateDirectory("images");
-
-          // Записываем изображение на диск
+          //var fileName = $"image_{DateTime.UtcNow:yyyyMMdd_HHmmssfff}.jpeg";
+          //var filePath = Path.Combine("images", fileName);
+          //Directory.CreateDirectory("images");
           //await File.WriteAllBytesAsync(filePath, contentBytes);
           //Console.WriteLine($"Image saved: {filePath}");
 
@@ -149,6 +146,30 @@ namespace AASubService
           if (client != null) 
           {
             var newEv = new EventProto();
+            newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
+
+            newEv.Meta = new EventMetaProto();
+
+            newEv.EventPriority = (int)LogLevel.Critical;
+            newEv.EventName = "lukich";
+
+            newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
+            {
+              PropName = "lukich1",
+              StrVal = $"lukich2"
+            });
+
+            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            {
+              PropName = "license_image",
+              StrVal = Convert.ToBase64String(contentBytes),
+              VisualType = "base64image_fs"
+            });
+            newEv.ObjectId = "64270c097a71c88757377dcf";
+
+            var events = new EventsProto();
+            events.Events.Add(newEv);
+            var result = await client.AddEvents(events);
           }
         }
         catch (Exception ex)
@@ -162,8 +183,6 @@ namespace AASubService
       {
         throw new ArgumentException("Unknown message type");
       }
-
-      Console.WriteLine("Message processed successfully");
     }
 
     // Метод преобразования временной метки

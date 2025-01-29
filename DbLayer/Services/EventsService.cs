@@ -272,7 +272,7 @@ namespace DbLayer.Services
             available = await storedCursor.Cursor.MoveNextAsync();
           }          
 
-          if (!available)
+          if (!available && prevList != null)
           {
             return DBListToDTO(prevList);
           }

@@ -27,7 +27,7 @@ namespace GrpcTracksClient
           
           newEv.EventPriority = rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
           newEv.EventName = 
-            $"Camera #{i} sensor{j} event {((LogLevel)newEv.EventPriority).ToString()}";
+            $"Camera #{i} sensor {j} event {((LogLevel)newEv.EventPriority).ToString()}";
 
           newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
           {

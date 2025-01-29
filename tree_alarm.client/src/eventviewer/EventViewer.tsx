@@ -1,4 +1,5 @@
-﻿import { useSelector } from "react-redux";
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import { useSelector } from "react-redux";
 
 import {
   Box, ToggleButton, ButtonGroup, Grid, IconButton, Toolbar, Tooltip
@@ -37,6 +38,18 @@ export function EventViewer() {
 
   const timeoutIdRef = useRef<any>(null);
 
+  const setLocalFilter = useCallback((newFilter: SearchFilterDTO) => {
+
+    var idFromStorage = sessionStorage.getItem("ID_KEY");
+    if (idFromStorage == null) {
+      idFromStorage = uuidv4();
+      sessionStorage.setItem("ID_KEY", idFromStorage);
+    }
+    newFilter.search_id = idFromStorage;
+
+    appDispatch(EventsStore.set_local_filter(newFilter));
+  }, [])
+
   useEffect(() => {
     if (timeoutIdRef.current != null) {
       clearTimeout(timeoutIdRef.current);
@@ -53,7 +66,7 @@ export function EventViewer() {
     }, 1000);
 
     return () => clearTimeout(timeoutIdRef.current);
-  }, [appDispatch, searchFilter, setLocalFilter]);
+  }, [searchFilter, setLocalFilter]);
 
   useEffect(() => {
     // Just reserve cursor if exist.
@@ -82,18 +95,6 @@ export function EventViewer() {
       clearInterval(interval);
     };
   }, [appDispatch, searchFilter]);
-
-  const setLocalFilter = useCallback((newFilter: SearchFilterDTO)=> {
-
-    var idFromStorage = sessionStorage.getItem("ID_KEY");
-    if (idFromStorage == null) {
-      idFromStorage = uuidv4();
-      sessionStorage.setItem("ID_KEY", idFromStorage);
-    }
-    newFilter.search_id = idFromStorage;
-
-    appDispatch(EventsStore.set_local_filter(newFilter));
-  },[appDispatch])
 
   const handleChange1 = (newValue: Dayjs | null) => {
     try {

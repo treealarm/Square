@@ -1,8 +1,10 @@
-﻿using Analytics.Api.Primitives;
+﻿using Analytics.Api.Inferencing;
+using Analytics.Api.Primitives;
 using Analytics.Api.Stream;
 using Domain.ServiceInterfaces;
 using Google.Protobuf;
 using ImageLib;
+using Attribute = Analytics.Api.Inferencing.Attribute;
 
 namespace AASubService
 {
@@ -77,44 +79,34 @@ namespace AASubService
         // Публикуем сообщение для media
         await _pub.Publish("lukich", "media", msg.ToByteArray());
 
-        //// Создаём сообщение для аналитики (выделенная область)
-        //var analyticSample = new AnalyticSample
-        //{
-        //  Inferences = { new Inference
-        //    {
-        //        InferenceId = "inference-12345",
-        //        SequenceId = "sequence-001",
+        // Создаём сообщение для аналитики (выделенная область)
+        var analyticSample = new AnalyticSample
+        {
+          Inferences = { new Inference
+            {
+                InferenceId = "inference-12345",
+                SequenceId = "sequence-001",
 
-        //        Entity = new Entity
-        //        {
-        //          Tag = new Tag { Value = "object", Confidence = 0.99f },
-        //          Attributes = 
-        //          { new Attribute 
-        //            { 
-        //              Name = "type", 
-        //              Confidence = 1.0f, 
-        //              Text = "car" 
-        //            } 
-        //          },
-        //          Box = rectangle  // Выделенная область на изображении
-        //        }
+                Entity = new Entity
+                {
+                  Tag = new Tag { Value = "object", Confidence = 0.99f },
+                  Attributes =
+                  { new Attribute
+                    {
+                      Name = "type",
+                      Confidence = 1.0f,
+                      Text = "car"
+                    }
+                  },
+                  Box = rectangle  // Выделенная область на изображении
+                }
 
-        //    }}
-        //};
+            }}
+        };
 
-        //// Публикуем сообщение аналитики
-        //await _pub.Publish("lukich", "analytics", analyticSample);
+        // Публикуем сообщение аналитики
+        await _pub.Publish("lukich", "analytics", analyticSample);
       }
     }
-
-    //private async void DoWork()
-    //{
-    //  while (!_cancellationToken.IsCancellationRequested)
-    //  {
-    //    await Task.Delay(1000);
-    //    var msg = new StreamMessage();
-    //    await _pub.Publish("lukich", "media", msg);
-    //  }
-    //}
   }
 }
