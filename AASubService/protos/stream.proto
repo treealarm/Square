@@ -40,6 +40,11 @@ message StreamMessage {
 message StreamDescriptor {
   string stream_id = 1;                             // Unique stream identifier.
   media.MediaDescriptor media_descriptor = 5;       // Session media information.
+  map<string, string> extensions = 15;
+  //extensions содержит поле id
+  //для дочерних потоков (аналитика и прочее)
+  //extensions содержит parent_id
+  //кроме того еще поле gps
 }
 
 //
