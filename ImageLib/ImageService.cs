@@ -36,5 +36,26 @@ using SixLabors.ImageSharp.Processing;
         }
       }
     }
+
+    static public bool IsValidImage(byte[] imageBytes)
+    {
+      try
+      {
+        using (var ms = new MemoryStream(imageBytes))
+        {
+          // Пытаемся загрузить изображение с помощью Image
+          var image = Image.Load(ms);  // Попытка загрузить изображение
+
+          // Если изображение загружается без исключений, значит оно валидное
+          Console.WriteLine("Изображение валидное");
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+        return false;
+      }
+      return true;
+    }
   }
 }

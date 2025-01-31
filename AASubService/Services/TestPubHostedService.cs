@@ -1,7 +1,8 @@
-﻿using Analytics.Api.Inferencing;
+﻿using AASubService.Services;
+using Analytics.Api.Inferencing;
+using Analytics.Api.Media;
 using Analytics.Api.Primitives;
 using Analytics.Api.Stream;
-using Domain.ServiceInterfaces;
 using Google.Protobuf;
 using ImageLib;
 using Attribute = Analytics.Api.Inferencing.Attribute;
@@ -12,13 +13,17 @@ namespace AASubService
   {
     private Task? _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-
-    private readonly IPubService _pub;
+    ulong _mediaSequenceNumber = 2;
+    ulong _analyticsSequenceNumber = 2;
+    private readonly IPubServiceLu _pub;
+    private readonly string _topic_name;
     public TestPubHostedService(
-      IPubService pub
+      IPubServiceLu pub
     )
     {
       _pub = pub;
+      _topic_name = Environment.GetEnvironmentVariable("TOPIC_NAME") ?? "media";
+      Console.WriteLine($"TestPubService TOPIC_NAME:{_topic_name}");
     }
 
     async Task IHostedService.StartAsync(CancellationToken cancellationToken)
@@ -43,70 +48,106 @@ namespace AASubService
       _timer?.Dispose();
     }
 
-    private async void DoWork()
+    private async Task PublishDescriptor(string streamId)
     {
-      while (!_cancellationToken.IsCancellationRequested)
+      var descriptor = new StreamMessage
       {
-        await Task.Delay(1000);
-
-        // Генерация картинки JPEG
-        var jpegImage = ImageService.GenerateJpegImage();
-
-        // Выделение области на картинке (например, прямоугольник)
-        var rectangle = new Rectangle
+        SequenceNumber = 1,
+        AckSequenceNumber = 0,
+        StreamDescriptor = new StreamDescriptor
         {
-          L = 0.1f, // Отступ от левого края (10% от ширины)
-          T = 0.1f, // Отступ от верхнего края (10% от высоты)
-          W = 0.5f, // Ширина прямоугольника (50% от ширины картинки)
-          H = 0.5f  // Высота прямоугольника (50% от высоты картинки)
-        };
+          StreamId = streamId,
+          MediaDescriptor = new MediaDescriptor()
+        }
+      };
+      await _pub.Publish(_topic_name, descriptor.ToByteArray());
+    }
 
-        // Создаём сообщение для MediaSample
-        var msg = new StreamMessage
+    private async Task PublishImage(string streamId)
+    {
+      var jpegImage = ImageService.GenerateJpegImage();
+      var base64Image = Convert.ToBase64String(jpegImage);
+
+      var mediaMsg = new StreamMessage
+      {
+        SequenceNumber = _mediaSequenceNumber++,
+        AckSequenceNumber = 0,
+        MediaSample = new MediaSample
         {
-          SequenceNumber = (ulong)DateTime.UtcNow.Ticks,
-          AckSequenceNumber = 0,
-          MediaSample = new MediaSample
-          {
-            Duration = new Google.Protobuf.WellKnownTypes.Duration { Seconds = 1 },
-            Pts = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow),
-            Dts = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow.AddSeconds(-1)),
-            Pos = 100,
-            Content = ByteString.CopyFrom(jpegImage)  // Передаём JPEG картинку как контент
-          }
-        };
+          Duration = new Google.Protobuf.WellKnownTypes.Duration { Seconds = 1 },
+          Pts = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow),
+          Dts = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow.AddSeconds(-1)),
+          Pos = 100,
+          Content = ByteString.CopyFromUtf8(base64Image)
+        }
+      };
+      await _pub.Publish(_topic_name, mediaMsg.ToByteArray());
+    }
 
-        // Публикуем сообщение для media
-        await _pub.Publish("lukich", "media", msg.ToByteArray());
-
-        // Создаём сообщение для аналитики (выделенная область)
-        var analyticSample = new AnalyticSample
+    private async Task PublishAnalytic(string streamId)
+    {
+      var analyticSample = new AnalyticSample
+      {
+        Inferences =
         {
-          Inferences = { new Inference
+            new Inference
             {
                 InferenceId = "inference-12345",
                 SequenceId = "sequence-001",
-
                 Entity = new Entity
                 {
-                  Tag = new Tag { Value = "object", Confidence = 0.99f },
-                  Attributes =
-                  { new Attribute
+                    Tag = new Tag { Value = "object", Confidence = 0.99f },
+                    Attributes =
                     {
-                      Name = "type",
-                      Confidence = 1.0f,
-                      Text = "car"
+                        new Attribute
+                        {
+                            Name = "type",
+                            Confidence = 1.0f,
+                            Text = "car"
+                        }
+                    },
+                    Box = new Rectangle
+                    {
+                        L = 0.1f, T = 0.1f, W = 0.5f, H = 0.5f
                     }
-                  },
-                  Box = rectangle  // Выделенная область на изображении
                 }
+            }
+        }
+      };
 
-            }}
-        };
+      var analyticContent = Convert.ToBase64String(analyticSample.ToByteArray());
 
-        // Публикуем сообщение аналитики
-        await _pub.Publish("lukich", "analytics", analyticSample);
+      var analyticMsg = new StreamMessage
+      {
+        SequenceNumber = _analyticsSequenceNumber++,
+        AckSequenceNumber = 0,
+        MediaSample = new MediaSample
+        {
+          Duration = new Google.Protobuf.WellKnownTypes.Duration { Seconds = 1 },
+          Pts = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.UtcNow),
+          Content = ByteString.CopyFromUtf8(analyticContent)
+        }
+      };
+      await _pub.Publish(_topic_name, analyticMsg.ToByteArray());
+    }
+
+    private async void DoWork()
+    {
+      var mediaStreamId = Guid.NewGuid().ToString();
+      var analyticsStreamId = Guid.NewGuid().ToString();
+
+      // Отправляем StreamDescriptor для каждого потока
+      await PublishDescriptor( mediaStreamId);
+      await PublishDescriptor(analyticsStreamId);
+      
+
+      while (!_cancellationToken.IsCancellationRequested)
+      {
+        await Task.Delay(1000);
+        await PublishImage(mediaStreamId);
+        await PublishAnalytic(analyticsStreamId);
       }
     }
+
   }
 }

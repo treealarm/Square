@@ -1,0 +1,29 @@
+﻿using Dapr.Messaging.PublishSubscribe;
+using Domain.ServiceInterfaces;
+using PubSubLib;
+
+namespace AASubService.Services
+{
+  public interface ISubServiceLu : ISubService 
+  {
+
+  }
+
+  public class SubServiceLu : SubService, ISubServiceLu
+  {
+    public SubServiceLu(DaprPublishSubscribeClient messagingClient) : base(messagingClient) 
+    {
+      _pubsub_name = "lukich";
+    }
+  }
+
+  public interface IPubServiceLu : IPubService { }
+
+  public class PubServiceLu : PubService, IPubServiceLu
+  {
+    public PubServiceLu() : base()
+    {
+      _pubsub_name = "lukich";
+    }
+  }
+}

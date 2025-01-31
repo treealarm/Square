@@ -291,7 +291,8 @@ namespace LeafletAlarms.Grpc.Implementation
         var path = DateTime.UtcNow.ToString("yyyyMMdd");
         var fileName = Guid.NewGuid().ToString();
         const string mainFolder = "events";
-        await _fs.Upload(mainFolder, path, fileName, Convert.FromBase64String(e.StrVal));
+        var bytes = Convert.FromBase64String(e.StrVal);
+        await _fs.Upload(mainFolder, path, fileName, bytes);
 
         return new ObjExtraPropertyDTO()
         {
@@ -328,28 +329,51 @@ namespace LeafletAlarms.Grpc.Implementation
 
       foreach (var ev in request.Events)
       {
-        var pEvent = new EventDTO();
-
-        pEvent.timestamp = ev.Timestamp.ToDateTime();
-        pEvent.meta = new EventMetaDTO();
-
-        pEvent.id = ev.Id;
-        pEvent.object_id = ev.ObjectId;
-        pEvent.event_name = ev.EventName;
-        pEvent.event_priority = ev.EventPriority;
-        pEvent.meta.extra_props = new List<ObjExtraPropertyDTO>();
-
-        foreach (var e in ev.Meta.ExtraProps)
+        try
         {
-          pEvent.meta.extra_props.Add(await ProcessProperty(e));
-        }
-        pEvent.meta.not_indexed_props = new List<ObjExtraPropertyDTO>();
+          var pEvent = new EventDTO();
 
-        foreach (var e in ev.Meta.NotIndexedProps)
-        {
-          pEvent.meta.not_indexed_props.Add(await ProcessProperty(e));
+          pEvent.timestamp = ev.Timestamp.ToDateTime();
+          pEvent.meta = new EventMetaDTO();
+
+          pEvent.id = ev.Id;
+          pEvent.object_id = ev.ObjectId;
+          pEvent.event_name = ev.EventName;
+          pEvent.event_priority = ev.EventPriority;
+          pEvent.meta.extra_props = new List<ObjExtraPropertyDTO>();
+
+          foreach (var e in ev.Meta.ExtraProps)
+          {
+            try
+            {
+              var new_e = await ProcessProperty(e);
+              pEvent.meta.extra_props.Add(new_e);
+            }
+            catch (Exception ex)
+            {
+              Console.Error.WriteLine(ex.ToString());
+            }
+          }
+          pEvent.meta.not_indexed_props = new List<ObjExtraPropertyDTO>();
+
+          foreach (var e in ev.Meta.NotIndexedProps)
+          {
+            try
+            {
+              var new_e = await ProcessProperty(e);
+              pEvent.meta.not_indexed_props.Add(new_e);
+            }
+            catch (Exception ex)
+            {
+              Console.Error.WriteLine(ex.ToString());
+            }
+          }
+          list.Add(pEvent);
         }
-        list.Add(pEvent);
+        catch (Exception ex)
+        {
+          Console.Error.WriteLine(ex.ToString());
+        }
       }
       var count = await _eventsUpdateService.AddEvents(list);
       return new BoolValue() { Value = count == list.Count };

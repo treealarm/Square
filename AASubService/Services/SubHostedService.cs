@@ -1,9 +1,10 @@
-﻿using Analytics.Api.Media;
+﻿using AASubService.Services;
+using Analytics.Api.Media;
 using Analytics.Api.Stream;
-using Domain.ServiceInterfaces;
 using Domain.Values;
 using Google.Protobuf.WellKnownTypes;
 using GrpcDaprLib;
+using ImageLib;
 using LeafletAlarmsGrpc;
 using System.Text.Json;
 
@@ -37,13 +38,17 @@ namespace AASubService
 
     private Task? _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-    private readonly ISubService _sub;
-
+    private readonly ISubServiceLu _sub;
+    private readonly string _topic_name;
     public SubHostedService(
-      ISubService sub
+      ISubServiceLu sub
     )
     {
       _sub = sub;
+      _topic_name = Environment.GetEnvironmentVariable("TOPIC_NAME") ?? "media";
+      {
+        Console.WriteLine($"TestPubService TOPIC_NAME:{_topic_name}");
+      }
     }
 
     async Task IHostedService.StartAsync(CancellationToken cancellationToken)
@@ -52,14 +57,13 @@ namespace AASubService
       // Start timer after processing initial states.
       _timer = new Task(() => DoWork(), _cancellationToken.Token);
       _timer.Start();
-     // await _sub.Subscribe(Topics.OnValuesChanged, OnValuesChanged);
-      await _sub.Subscribe("lukich", "media", OnAAMessage);
+      await _sub.Subscribe(_topic_name, OnAAMessage);
     }
 
     async Task IHostedService.StopAsync(CancellationToken cancellationToken)
     {
       //await _sub.Unsubscribe(Topics.OnValuesChanged, OnValuesChanged);
-      await _sub.Unsubscribe("lukich", "media", OnAAMessage);
+      await _sub.Unsubscribe(_topic_name, OnAAMessage);
 
       _cancellationToken.Cancel();
       _timer?.Wait();
@@ -79,15 +83,6 @@ namespace AASubService
       {
         await Task.Delay(1000);
       }
-    }
-    public async Task OnValuesChanged(string channel, byte[] message)
-    {
-      var state = JsonSerializer.Deserialize<List<ValueDTO>>(message);
-      if (state == null)
-      {
-        return;
-      }
-      await Task.Delay(1);
     }
 
     public async Task OnAAMessage(string channel, byte[] message)
@@ -119,7 +114,6 @@ namespace AASubService
         {
           throw new NotSupportedException("Raw video format not yet implemented");
         }
-       
       }
       else if (streamMessage.PayloadCase == StreamMessage.PayloadOneofCase.MediaSample)
       {
@@ -130,18 +124,11 @@ namespace AASubService
           throw new ArgumentException("Media sample content is empty");
         }
 
-        // Сохраняем изображение, если оно есть
-        var contentBytes = mediaSample.Content.ToByteArray();
+        
 
         // Предполагаем, что контент — это JPEG-изображение
         try
         {
-          //var fileName = $"image_{DateTime.UtcNow:yyyyMMdd_HHmmssfff}.jpeg";
-          //var filePath = Path.Combine("images", fileName);
-          //Directory.CreateDirectory("images");
-          //await File.WriteAllBytesAsync(filePath, contentBytes);
-          //Console.WriteLine($"Image saved: {filePath}");
-
           var client = Client;
           if (client != null) 
           {
@@ -159,12 +146,21 @@ namespace AASubService
               StrVal = $"lukich2"
             });
 
-            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            // Сохраняем изображение, если оно есть
+            string base64Image = mediaSample.Content.ToStringUtf8();
+            byte[] imageBytes = Convert.FromBase64String(base64Image);
+
+            if (ImageService.IsValidImage(imageBytes))
             {
-              PropName = "license_image",
-              StrVal = Convert.ToBase64String(contentBytes),
-              VisualType = "base64image_fs"
-            });
+              newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+              {
+                PropName = "license_image",
+                StrVal = base64Image,
+                VisualType = "base64image_fs"
+              });
+            }
+
+            
             newEv.ObjectId = "64270c097a71c88757377dcf";
 
             var events = new EventsProto();
@@ -183,12 +179,6 @@ namespace AASubService
       {
         throw new ArgumentException("Unknown message type");
       }
-    }
-
-    // Метод преобразования временной метки
-    private DateTime ToTimestamp(Google.Protobuf.WellKnownTypes.Timestamp timestamp)
-    {
-      return timestamp.ToDateTime();
     }
   }
 }

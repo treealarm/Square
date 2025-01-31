@@ -7,7 +7,7 @@ namespace PubSubLib
 {
   public class SubService: ISubService, IDisposable
   {
-    private string _pubsub_name;
+    protected string _pubsub_name;
     private object _locker = new object();
     private readonly DaprPublishSubscribeClient _messagingClient;    
 

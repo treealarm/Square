@@ -1,8 +1,8 @@
 
 using AASubService;
+using AASubService.Services;
 using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain.ServiceInterfaces;
-using Google.Api;
 using GrpcDaprLib;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using PubSubLib;
@@ -24,8 +24,8 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 builder.Services.AddDaprPubSubClient();
-builder.Services.AddSingleton<ISubService, SubService>();
-builder.Services.AddSingleton<IPubService, PubService>();
+builder.Services.AddSingleton<ISubServiceLu, SubServiceLu>();
+builder.Services.AddSingleton<IPubServiceLu, PubServiceLu>();
 builder.Services.AddHostedService<SubHostedService>();
 builder.Services.AddHostedService<TestPubHostedService>();
 

@@ -8,9 +8,9 @@ namespace PubSubLib
   public class PubService : IPubService
   {
     private DaprClient _client;
-    private string _pubsub_name;
+    protected string _pubsub_name;
 
-    public PubService(IOptions<DaprSettings>? daprSettings)
+    public PubService()
     {
       _pubsub_name = Environment.GetEnvironmentVariable("PUBSUB_NAME") ?? "";
       {
