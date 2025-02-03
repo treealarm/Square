@@ -81,103 +81,65 @@ namespace DbLayer.Services
     }
     private void CreateIndexes()
     {
+      // Вспомогательная функция для создания индекса
+      void CreateIndex(IndexKeysDefinition<DBEvent> keys, string indexName)
       {
-        IndexKeysDefinition<DBEvent> keys =
-                new IndexKeysDefinitionBuilder<DBEvent>()
-                  .Ascending(d => d.id)
-                ;
-
-        var indexModel = new CreateIndexModel<DBEvent>(
-          keys, new CreateIndexOptions()
-          { Name = "id" }
-        );
-
+        var indexModel = new CreateIndexModel<DBEvent>(keys, new CreateIndexOptions { Name = indexName });
         _coll.Indexes.CreateOne(indexModel);
       }
 
-      {
-        var keys = Builders<DBEvent>.IndexKeys.Text(d => d.event_name);
+      // Индекс для поля timestamp (по возрастанию и убыванию)
+      CreateIndex(
+          Builders<DBEvent>.IndexKeys.Ascending(d => d.timestamp),
+          "ts_asc"
+      );
+      CreateIndex(
+          Builders<DBEvent>.IndexKeys.Descending(d => d.timestamp),
+          "ts_desc"
+      );
 
-        var indexModel = new CreateIndexModel<DBEvent>(
-            keys,
-            new CreateIndexOptions { Name = "text_event_name" }
-        );
+      // Индекс для текстового поиска по event_name (по возрастанию и убыванию)
+      CreateIndex(
+          Builders<DBEvent>.IndexKeys.Ascending(d => d.event_name),
+          "en_asc"
+      );
+      CreateIndex(
+          Builders<DBEvent>.IndexKeys.Descending(d => d.event_name),
+          "en_desc"
+      );
 
-        _coll.Indexes.CreateOne(indexModel);
-      }
+      // Индекс для поля object_id (по возрастанию и убыванию)
+      CreateIndex(
+          new IndexKeysDefinitionBuilder<DBEvent>().Ascending(d => d.object_id),
+          "oid_asc"
+      );
+      CreateIndex(
+          new IndexKeysDefinitionBuilder<DBEvent>().Descending(d => d.object_id),
+          "oid_desc"
+      );
 
+      // Индекс для поля event_priority (по возрастанию и убыванию)
+      CreateIndex(
+          new IndexKeysDefinitionBuilder<DBEvent>().Ascending(d => d.event_priority),
+          "epr_asc"
+      );
+      CreateIndex(
+          new IndexKeysDefinitionBuilder<DBEvent>().Descending(d => d.event_priority),
+          "epr_desc"
+      );
 
-      {
-        IndexKeysDefinition<DBEvent> keys =
-                new IndexKeysDefinitionBuilder<DBEvent>()
-                  .Ascending(d => d.timestamp)
-                ;
-
-        var indexModel = new CreateIndexModel<DBEvent>(
-          keys, new CreateIndexOptions()
-          { Name = "ts" }
-        );
-
-        _coll.Indexes.CreateOne(indexModel);
-      }
-
-      {
-        IndexKeysDefinition<DBEvent> keys =
-                new IndexKeysDefinitionBuilder<DBEvent>()
-                  .Ascending(d => d.object_id)
-                ;
-
-        var indexModel = new CreateIndexModel<DBEvent>(
-          keys, new CreateIndexOptions()
-          { Name = "oid" }
-        );
-
-        _coll.Indexes.CreateOne(indexModel);
-      }
-
-      {
-        IndexKeysDefinition<DBEvent> keys =
-                new IndexKeysDefinitionBuilder<DBEvent>()
-                  .Ascending(d => d.event_name)
-                ;
-
-        var indexModel = new CreateIndexModel<DBEvent>(
-          keys, new CreateIndexOptions()
-          { Name = "en" }
-        );
-
-        _coll.Indexes.CreateOne(indexModel);
-      }
-
-      {
-        IndexKeysDefinition<DBEvent> keys =
-                new IndexKeysDefinitionBuilder<DBEvent>()
-                  .Ascending(d => d.event_priority)
-                ;
-
-        var indexModel = new CreateIndexModel<DBEvent>(
-          keys, new CreateIndexOptions()
-          { Name = "epr" }
-        );
-
-        _coll.Indexes.CreateOne(indexModel);
-      }
-
-      {
-        var keys = Builders<DBEvent>.IndexKeys.Combine(
-          Builders<DBEvent>.IndexKeys
-          .Ascending($"{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}"),
-          Builders<DBEvent>.IndexKeys
-          .Ascending($"{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.str_val)}"));
-
-        var indexModel = new CreateIndexModel<DBEvent>(
-           keys, new CreateIndexOptions()
-           { Name = "ep" }
-         );
-
-        _coll.Indexes.CreateOne(indexModel);
-      }
+      // Индекс для поля meta.extra_props.prop_name и meta.extra_props.str_val
+      CreateIndex(
+          Builders<DBEvent>.IndexKeys.Combine(
+              Builders<DBEvent>.IndexKeys.Ascending($"{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}"),
+              Builders<DBEvent>.IndexKeys.Ascending($"{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.str_val)}")
+          ),
+          "ep"
+      );
     }
+
+
+
     private EventDTO ConvertDB2DTO(DBEvent db_event)
     {
       if (db_event == null)
