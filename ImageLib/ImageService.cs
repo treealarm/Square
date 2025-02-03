@@ -43,11 +43,7 @@ using SixLabors.ImageSharp.Processing;
       {
         using (var ms = new MemoryStream(imageBytes))
         {
-          // Пытаемся загрузить изображение с помощью Image
-          var image = Image.Load(ms);  // Попытка загрузить изображение
-
-          // Если изображение загружается без исключений, значит оно валидное
-          Console.WriteLine("Изображение валидное");
+          var image = Image.Load(ms); 
         }
       }
       catch (Exception ex)
