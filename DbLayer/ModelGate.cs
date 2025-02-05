@@ -194,29 +194,20 @@ namespace DbLayer
             CultureInfo.InvariantCulture,
             out var result))
           {
-            newProp.str_val = new BsonDocument(
-            "str_val",
-            result
-            );
+            newProp.str_val = result;
           }
          }
         else
         if (prop.visual_type == BsonType.DateTime.ToString())
         {
-          newProp.str_val = new BsonDocument(
-            "str_val",
-            DateTime
+          newProp.str_val = DateTime
               .Parse(prop.str_val)
-              .ToUniversalTime()
-            );
+              .ToUniversalTime();
         }
 
         if (newProp.str_val == null)
         {
-          newProp.str_val = new BsonDocument(
-            "str_val",
-            prop.str_val
-            );
+          newProp.str_val = prop.str_val;
         }
         ep_db.Add(newProp);
       }
@@ -250,7 +241,7 @@ namespace DbLayer
         ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
         {
           prop_name = prop.prop_name,
-          str_val = prop.str_val.GetValue("str_val", string.Empty).ToString(),
+          str_val = prop.str_val.ToString(),
           visual_type = GetDefaultVisualType(prop)
         };
         retVal.Add(newProp);

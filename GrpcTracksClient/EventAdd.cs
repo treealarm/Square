@@ -17,7 +17,7 @@ namespace GrpcTracksClient
         await Task.Delay(1);
         var events = new EventsProto();       
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 1; i < 99; i++)
         {
           var newEv = new EventProto();
           
@@ -31,9 +31,18 @@ namespace GrpcTracksClient
 
           newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
           {
-            PropName = "indexed_prop",
-            StrVal = $"you can search me {i}"
+            PropName = $"p{0}",
+            StrVal = $"{i}"
           });
+
+          for (var k = 1; k < 3; k++)
+          {
+            newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
+            {
+              PropName = $"p{k}",
+              StrVal = $"{DateTime.Now.Second}"
+            });
+          }          
           
 
           if (i <= 1)
@@ -59,7 +68,7 @@ namespace GrpcTracksClient
             newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
             {
               PropName = "event_descr",
-              StrVal = $"you can't search me"
+              StrVal = $"you can't search me {i}"
             });
           }
 

@@ -1,4 +1,5 @@
-﻿/* eslint-disable react-hooks/exhaustive-deps */
+﻿/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useSelector } from "react-redux";
 
 import {
@@ -19,13 +20,30 @@ import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { EventProperties } from "./EventProperties";
 import EventTable from "./EventTable";
-import { DeepCopy, SearchFilterDTO, uuidv4 } from "../store/Marker";
+import { DeepCopy, ObjPropsSearchDTO, SearchFilterDTO, uuidv4 } from "../store/Marker";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { PropertyFilterEditor } from "./PropertyFilterEditor";
+
+const TimePicker = ({ label, value, onChange }: { label: string, value: string | null, onChange: (newValue: Dayjs | null) => void }) => (
+  <DateTimePicker
+    label={label}
+    value={dayjs(value)}
+    onChange={onChange}
+    format={INPUT_DATETIME_FORMAT}
+    slotProps={{
+      textField: { size: 'small' },
+      actionBar: {
+        actions: ['accept', 'cancel', 'clear', 'today']
+      }
+    }}
+  />
+);
+
 
 export function EventViewer() {
 
@@ -33,7 +51,7 @@ export function EventViewer() {
   //const guid = useId();
   //console.log("guid=", guid);
   const [autoUpdate, setAutoUpdate] = useState(false);
-  const searchFilter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
+  const searchFilter: SearchFilterDTO|null = useSelector((state: ApplicationState) => state?.eventsStates?.filter)??null;
   const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching);
 
   const timeoutIdRef = useRef<any>(null);
@@ -99,9 +117,11 @@ export function EventViewer() {
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
       var newFilter = DeepCopy(searchFilter);
-      newFilter.time_start = newValue? newValue.toISOString() : null;
-      newFilter.forward = 0;// replace cursor
-      setLocalFilter(newFilter);
+      if (newFilter) {
+        newFilter.time_start = newValue ? newValue.toISOString() : null;
+        newFilter.forward = 0;// replace cursor
+        setLocalFilter(newFilter);
+      }      
     }
     catch (err) {
       console.log(err);
@@ -126,6 +146,7 @@ export function EventViewer() {
     newFilter.start_id = "";
     setLocalFilter(newFilter);
   }
+
   function handleChangeTextSearch(e: any) {
     const { target: { value } } = e;
     var newFilter = DeepCopy(searchFilter);
@@ -134,7 +155,7 @@ export function EventViewer() {
     setLocalFilter(newFilter);
   }
 
-  const OnNavigate = (next: number) => {
+  function OnNavigate (next: number){
 
     if (next == 0) {
       setAutoUpdate(!autoUpdate);
@@ -143,6 +164,14 @@ export function EventViewer() {
     newFilter.forward = next;
     setLocalFilter(newFilter);
   }
+
+  const handleFilterChange = useCallback((updatedFilterData: ObjPropsSearchDTO) => {
+    var newFilter = DeepCopy(searchFilter);
+    newFilter.forward = 0; // replace cursor
+    newFilter.property_filter = updatedFilterData;
+    setLocalFilter(newFilter);
+  }, [searchFilter]);
+
 
   return (
     <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
@@ -200,33 +229,10 @@ export function EventViewer() {
                   onChange={handleChangeTextSearch}
                 />
 
+              <PropertyFilterEditor onChange={handleFilterChange} />
+              <TimePicker label="begin" value={searchFilter?.time_start} onChange={handleChange1} />
+              <TimePicker label="end" value={searchFilter?.time_end} onChange={handleChange2} />
 
-                <DateTimePicker
-                  label="begin"
-                  value={dayjs(searchFilter?.time_start)}
-                  onChange={handleChange1}
-                  views={['year', 'month', 'day', 'hours', 'minutes', 'seconds']}
-                  format={INPUT_DATETIME_FORMAT}
-                  slotProps={{
-                    textField: { size: 'small' },
-                    actionBar: {
-                      actions: ['accept','cancel','clear','today']
-                    }
-                  }}
-                />
-
-                <DateTimePicker
-                  label="end"
-                  value={dayjs(searchFilter?.time_end)}
-                  onChange={handleChange2}
-                  format={INPUT_DATETIME_FORMAT}
-                  slotProps={{
-                    textField: { size: 'small' },
-                    actionBar: {
-                      actions: ['accept', 'cancel', 'clear', 'today']
-                    }
-                  }}
-                />
               </Stack>
 
           </Toolbar>

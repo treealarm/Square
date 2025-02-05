@@ -19,20 +19,13 @@ namespace DbLayer
       string s = string.Empty;
       try
       {
-        // Получаем сериализатор для типа T
-        var serializerRegistry = BsonSerializer.SerializerRegistry;
-        var documentSerializer = serializerRegistry.GetSerializer<T>();
+        // Преобразуем фильтр в BsonDocument, что позволяет обрабатывать различные типы данных без специфичных сериализаторов
+        var rendered = filter.Render(new RenderArgs<T>());
 
-        var renderArgs = new RenderArgs<T>
-        {
-          DocumentSerializer = documentSerializer,
-          // Можно добавить другие параметры, если это нужно, например, настройки сериализации.
-        };
-        // Рендерим фильтр
-        var rendered = filter.Render(renderArgs);
-
-        // Выводим фильтр в формате JSON с отступами для читаемости
+        // Преобразуем в JSON строку с отступами для читаемости
         s = rendered.ToJson(new JsonWriterSettings { Indent = true });
+
+        // Выводим результат
         Debug.WriteLine(s);
         Debug.WriteLine("");
       }

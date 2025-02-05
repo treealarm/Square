@@ -129,13 +129,21 @@ namespace DbLayer.Services
       );
 
       // Индекс для поля meta.extra_props.prop_name и meta.extra_props.str_val
-      CreateIndex(
-          Builders<DBEvent>.IndexKeys.Combine(
-              Builders<DBEvent>.IndexKeys.Ascending($"{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}"),
-              Builders<DBEvent>.IndexKeys.Ascending($"{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.str_val)}")
-          ),
-          "ep"
+
+      var val1 = $"{nameof(DBEvent.meta)}.{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}";
+      var val2 = $"{nameof(DBEvent.meta)}.{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.str_val)}";
+      var indexModel = new CreateIndexModel<DBEvent>(
+        Builders<DBEvent>.IndexKeys.Combine(
+            Builders<DBEvent>.IndexKeys.Ascending(val1),
+            Builders<DBEvent>.IndexKeys.Ascending(val2)
+        ),
+        new CreateIndexOptions
+        {
+          Name = "ep",
+          Unique = false // Убедитесь, что индекс не уникальный, если не нужно
+        }
       );
+      _coll.Indexes.CreateOne(indexModel);
     }
 
 
@@ -208,18 +216,21 @@ namespace DbLayer.Services
       return list.Count;
     }
 
-    private FilterDefinition<DBEvent> CreateOrAddFilter(FilterDefinition<DBEvent> filter, FilterDefinition<DBEvent> filter2add)
+    private FilterDefinition<T> CreateOrAddFilter<T>(FilterDefinition<T> filter, FilterDefinition<T> filter2add)
     {
-      if (filter == null || filter == FilterDefinition<DBEvent>.Empty)
+      if (filter == null || filter == FilterDefinition<T>.Empty)
       {
-        filter = filter2add;
+        // Если фильтр пустой или null, просто присваиваем новый фильтр
+        return filter2add;
       }
       else
       {
-        filter = filter & filter2add;
+        // Иначе соединяем старый и новый фильтры с помощью логического И (AND)
+        return Builders<T>.Filter.And(filter, filter2add);
       }
-      return filter;
     }
+
+
     public async Task<List<EventDTO>> GetEventsByFilter(SearchFilterDTO filter_in)
     {
       var storedCursor = _cursors.Get(filter_in.search_id, filter_in.GetHashCode());
@@ -290,24 +301,29 @@ namespace DbLayer.Services
       {
         foreach (var prop in filter_in.property_filter.props)
         {
-          var request =
-            string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
-            prop.prop_name,
-            prop.str_val);
+          if (string.IsNullOrEmpty(prop.prop_name))
+          {
+            continue;
+          }
 
-          var f1 = Builders<DBEvent>
-            .Filter
-            .ElemMatch(t => t.meta.extra_props, request)
-            ;
+          if (string.IsNullOrEmpty(prop.str_val))
+          {
+            prop.str_val = string.Empty;
+          }
 
-          var metaValue = new BsonDocument(
-              "str_val",
-              prop.str_val
-              );
+          var f1 = Builders<DBEvent>.Filter.ElemMatch(
+              t => t.meta.extra_props,
+              Builders<DBObjExtraProperty>.Filter.And(
+                  Builders<DBObjExtraProperty>.Filter.Eq(e => e.prop_name, prop.prop_name),
+                  Builders<DBObjExtraProperty>.Filter.Eq(e => e.str_val, prop.str_val)
+              )
+          );
 
+          // Объединяем этот фильтр с основным фильтром
           filter = CreateOrAddFilter(filter, f1);
         }
       }
+
 
       var ret_json = Utils.Log(filter);
 
