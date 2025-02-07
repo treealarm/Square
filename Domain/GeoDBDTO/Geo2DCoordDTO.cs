@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Domain.GeoDBDTO
+namespace Domain
 {
   // This class is for leaflet, so Y goes first in array.
   public class Geo2DCoordDTO : List<double>

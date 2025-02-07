@@ -1,4 +1,4 @@
-﻿using Domain.ServiceInterfaces;
+﻿using Domain;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DataChangeLayer
@@ -17,7 +17,7 @@ namespace DataChangeLayer
       
       services.AddSingleton<IValuesUpdateService, ValuesUpdateService>();
       services.AddSingleton<IIntegroUpdateService, IntegroUpdateService>();
-      
+      services.AddSingleton<IGroupUpdateService, GroupUpdateService>();
     }
    }
 }

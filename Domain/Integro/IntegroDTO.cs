@@ -1,5 +1,5 @@
 ﻿
-namespace Domain.Integro
+namespace Domain
 {
   public record IntegroDTO : BaseObjectDTO
   {

@@ -1,6 +1,6 @@
-﻿using System;
+﻿
 
-namespace Domain.OptionsModels
+namespace Domain
 {
   public class MapDatabaseSettings
   {
@@ -26,6 +26,7 @@ namespace Domain.OptionsModels
     public string EventsCollectionName { get; set; } = "Events";
     public string ValuesCollectionName { get; set; } = "Values";
     public string IntegroCollectionName { get; set; } = "Integro";
+    public string GroupsCollectionName { get; set; } = "Groups";
 
   }
 }

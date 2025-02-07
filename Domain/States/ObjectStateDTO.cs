@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Domain.States
+namespace Domain
 {
   public class ObjectStateDTO
   {

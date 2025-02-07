@@ -1,8 +1,5 @@
 ﻿using DbLayer.Models;
 using Domain;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
-using Domain.States;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;

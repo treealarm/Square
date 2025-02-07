@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Domain.Rights
+namespace Domain
 {
   public class ObjectRightsDTO
   {

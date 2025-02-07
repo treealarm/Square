@@ -1,8 +1,8 @@
-﻿using Domain.GeoDTO;
+﻿
 using System;
 using System.Collections.Generic;
 
-namespace Domain.StateWebSock
+namespace Domain
 {
   public class TrackPointDTO
   {

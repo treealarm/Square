@@ -1,4 +1,4 @@
-﻿namespace Domain.Values
+﻿namespace Domain
 {
   public record ValueDTO: BaseObjectDTO
   {

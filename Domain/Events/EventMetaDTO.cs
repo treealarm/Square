@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Domain.Events
+namespace Domain
 {
   public class EventMetaDTO
   {

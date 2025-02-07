@@ -1,12 +1,10 @@
 ﻿using AASubService.Services;
 using Analytics.Api.Media;
 using Analytics.Api.Stream;
-using Domain.Values;
 using Google.Protobuf.WellKnownTypes;
 using GrpcDaprLib;
 using ImageLib;
 using LeafletAlarmsGrpc;
-using System.Text.Json;
 
 namespace AASubService
 {

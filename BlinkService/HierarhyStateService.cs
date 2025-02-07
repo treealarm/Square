@@ -1,7 +1,4 @@
 ﻿using Domain;
-using Domain.PubSubTopics;
-using Domain.ServiceInterfaces;
-using Domain.States;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
 

@@ -1,7 +1,5 @@
 ﻿using DbLayer.Models;
-using Domain.OptionsModels;
-using Domain.Rights;
-using Domain.ServiceInterfaces;
+using Domain;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System;

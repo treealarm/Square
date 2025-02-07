@@ -1,4 +1,4 @@
-﻿namespace DbLayer.Models.Integro
+﻿namespace DbLayer.Models
 {
   internal record DBIntegro : BaseEntity
   {

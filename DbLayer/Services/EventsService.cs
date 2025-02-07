@@ -1,9 +1,6 @@
 ﻿
 using DbLayer.Models;
 using Domain;
-using Domain.Events;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;

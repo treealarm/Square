@@ -1,4 +1,4 @@
-﻿namespace Domain.States
+﻿namespace Domain
 {
   public class ObjectStateDescriptionDTO
   {

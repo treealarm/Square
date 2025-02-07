@@ -1,11 +1,4 @@
 ﻿using Domain;
-using Domain.GeoDBDTO;
-using Domain.GeoDTO;
-using Domain.PubSubTopics;
-using Domain.ServiceInterfaces;
-using Domain.States;
-using Domain.StateWebSock;
-using Domain.Values;
 using System.Net.WebSockets;
 using System.Text.Json;
 

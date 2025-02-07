@@ -1,5 +1,5 @@
-﻿using Domain.Integro;
-using Domain.ServiceInterfaces;
+﻿
+using Domain;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using LeafletAlarmsGrpc;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Domain.NonDto
+namespace Domain
 {
   public class TracksUpdatedEvent
   {

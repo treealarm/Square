@@ -1,7 +1,7 @@
 ﻿using System.Net.WebSockets;
 using System.Threading.Tasks;
 
-namespace Domain.StateWebSock
+namespace Domain
 {
   public interface IWebSockList
   {

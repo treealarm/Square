@@ -1,6 +1,6 @@
-﻿using Domain.DiagramType;
+﻿using Domain;
 
-namespace Domain.Diagram
+namespace Domain
 {
   public record DiagramFullDTO
   {

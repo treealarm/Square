@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Domain.ObjectInterfaces
+namespace Domain
 {
     public interface IObjectProps
     {

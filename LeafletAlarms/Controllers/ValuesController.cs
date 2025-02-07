@@ -1,6 +1,4 @@
 ﻿using Domain;
-using Domain.ServiceInterfaces;
-using Domain.Values;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeafletAlarms.Controllers

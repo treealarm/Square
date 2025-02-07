@@ -1,7 +1,6 @@
-﻿using Domain.States;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Domain.StateWebSock
+namespace Domain
 {
   public class MarkersVisualStatesDTO
   {

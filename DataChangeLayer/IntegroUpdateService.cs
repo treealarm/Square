@@ -1,6 +1,4 @@
-﻿using Domain.Integro;
-using Domain.PubSubTopics;
-using Domain.ServiceInterfaces;
+﻿using Domain;
 
 namespace DataChangeLayer
 {

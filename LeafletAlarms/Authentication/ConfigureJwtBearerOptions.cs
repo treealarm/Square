@@ -1,13 +1,7 @@
-﻿using DbLayer.Services;
-using Domain.ServiceInterfaces;
+﻿
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System.Threading.Tasks;
-using System;
-using Microsoft.Extensions.Configuration;
-using System.Text;
 using System.Net;
 
 namespace LeafletAlarms.Authentication

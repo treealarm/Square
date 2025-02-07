@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Domain.DiagramType;
+using Domain;
 
-namespace Domain.Diagram
+namespace Domain
 {
   public record DiagramContentDTO
   {

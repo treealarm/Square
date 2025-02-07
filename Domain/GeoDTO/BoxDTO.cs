@@ -1,5 +1,5 @@
 ﻿
-using Domain.GeoDBDTO;
+using Domain;
 using System.Collections.Generic;
 
 namespace Domain

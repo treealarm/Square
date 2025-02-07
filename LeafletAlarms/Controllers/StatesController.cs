@@ -1,7 +1,4 @@
 ﻿using Domain;
-using Domain.ServiceInterfaces;
-using Domain.States;
-using Domain.StateWebSock;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LeafletAlarms.Controllers

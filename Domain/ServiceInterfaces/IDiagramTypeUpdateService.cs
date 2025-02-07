@@ -1,9 +1,9 @@
 ﻿
-using Domain.DiagramType;
+
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Domain.ServiceInterfaces
+namespace Domain
 {
   public interface IDiagramTypeUpdateService
   {

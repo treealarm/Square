@@ -1,7 +1,7 @@
-﻿using Domain.GeoDTO;
+﻿
 using System;
 
-namespace Domain.StateWebSock
+namespace Domain
 {
   public class RoutLineDTO
   {

@@ -1,17 +1,10 @@
 ﻿using Domain;
-using Domain.GeoDTO;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
-using MongoDB.Bson.IO;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 

@@ -1,13 +1,6 @@
 ﻿using Common;
-using Domain.GeoDBDTO;
-using Domain.GeoDTO;
-using Domain.PubSubTopics;
-using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
-using LeafletAlarmsGrpc;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
-using System.Text.Json;
 using ValhallaLib;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using System.Collections.Generic;
 
-namespace DbLayer.Models.Integro
+namespace DbLayer.Models
 {
   internal record DBControl : BaseEntity
   {

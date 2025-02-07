@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
-namespace DbLayer.Models.Values
+namespace DbLayer.Models
 {
   internal record DBValue : BaseEntity
   {

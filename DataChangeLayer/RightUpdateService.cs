@@ -1,6 +1,6 @@
 ﻿
-using Domain.Rights;
-using Domain.ServiceInterfaces;
+using Domain;
+
 
 namespace DataChangeLayer
 {

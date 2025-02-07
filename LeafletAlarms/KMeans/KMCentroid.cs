@@ -1,8 +1,4 @@
 ﻿using Domain;
-using Domain.GeoDBDTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace LeafletAlarms.KMeans
 {

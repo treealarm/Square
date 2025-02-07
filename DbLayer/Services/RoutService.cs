@@ -1,9 +1,5 @@
 ﻿using DbLayer.Models;
-using Domain.GeoDBDTO;
-using Domain.GeoDTO;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
+using Domain;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;

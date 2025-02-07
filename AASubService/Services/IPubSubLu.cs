@@ -1,5 +1,5 @@
 ﻿using Dapr.Messaging.PublishSubscribe;
-using Domain.ServiceInterfaces;
+using Domain;
 using PubSubLib;
 
 namespace AASubService.Services

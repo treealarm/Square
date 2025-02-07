@@ -1,8 +1,5 @@
 using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;

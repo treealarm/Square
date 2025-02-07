@@ -1,8 +1,7 @@
 ﻿
 using System.Collections.Generic;
-using Domain.ObjectInterfaces;
 
-namespace Domain.GeoDTO
+namespace Domain
 {
   public record FigureZoomedDTO: BaseMarkerDTO, IObjectProps
   {

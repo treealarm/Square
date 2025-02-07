@@ -1,7 +1,7 @@
-﻿using Domain.ServiceInterfaces;
+﻿using Domain;
 using LeafletAlarms.Authentication;
 using System.Security.Claims;
-using static Domain.Rights.ObjectRightValueDTO;
+using static Domain.ObjectRightValueDTO;
 
 namespace LeafletAlarms.Services
 {  

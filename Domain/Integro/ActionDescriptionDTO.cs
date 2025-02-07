@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace Domain.Integro
+namespace Domain
 {
   public class ActionParameterDTO
   {

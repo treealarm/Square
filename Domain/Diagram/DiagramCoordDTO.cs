@@ -1,4 +1,4 @@
-﻿namespace Domain.Diagram
+﻿namespace Domain
 {
   public record DiagramCoordDTO
   {

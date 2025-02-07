@@ -1,8 +1,8 @@
-﻿using Domain.Diagram;
+﻿
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Domain.ServiceInterfaces
+namespace Domain
 {
   internal interface IDiagramServiceInternal
   {

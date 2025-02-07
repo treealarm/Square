@@ -1,4 +1,4 @@
-﻿using Domain.ServiceInterfaces;
+﻿using Domain;
 using MongoDB.Bson;
 
 namespace DbLayer.Services

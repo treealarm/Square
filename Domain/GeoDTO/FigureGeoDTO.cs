@@ -1,6 +1,4 @@
-﻿using Domain.GeoDBDTO;
-using Domain.GeoDTO;
-
+﻿
 namespace Domain
 {
   public record FigureGeoDTO : FigureZoomedDTO

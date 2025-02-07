@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Domain.Events
+namespace Domain
 {
   public class EventDTO
   {

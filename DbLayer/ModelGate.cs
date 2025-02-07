@@ -1,14 +1,11 @@
 ﻿using Domain;
-using Domain.GeoDBDTO;
-using Domain.GeoDTO;
 using MongoDB.Bson;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DbLayer
 {

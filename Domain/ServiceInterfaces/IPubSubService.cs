@@ -1,7 +1,7 @@
-﻿using System;
+﻿
 using System.Threading.Tasks;
 
-namespace Domain.ServiceInterfaces
+namespace Domain
 {
   public delegate Task MessageHandler(string channel, byte[] message);
   public interface ISubService

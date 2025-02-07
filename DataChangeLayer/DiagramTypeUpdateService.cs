@@ -1,5 +1,5 @@
-﻿using Domain.DiagramType;
-using Domain.ServiceInterfaces;
+﻿
+using Domain;
 
 namespace DataChangeLayer
 {

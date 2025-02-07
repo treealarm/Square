@@ -2,10 +2,8 @@
 using AASubService;
 using AASubService.Services;
 using Dapr.Messaging.PublishSubscribe.Extensions;
-using Domain.ServiceInterfaces;
 using GrpcDaprLib;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using PubSubLib;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);

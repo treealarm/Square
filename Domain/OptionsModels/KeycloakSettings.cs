@@ -1,4 +1,4 @@
-﻿namespace Domain.OptionsModels
+﻿namespace Domain
 {
   public class KeycloakSettings
   {

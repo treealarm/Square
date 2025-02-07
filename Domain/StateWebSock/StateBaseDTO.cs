@@ -1,4 +1,4 @@
-﻿namespace Domain.StateWebSock
+﻿namespace Domain
 {
   public class StateBaseDTO
   {  

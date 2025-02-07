@@ -1,5 +1,4 @@
-﻿using Domain.Rights;
-using Domain.ServiceInterfaces;
+﻿using Domain;
 using LeafletAlarms.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

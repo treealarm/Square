@@ -1,5 +1,5 @@
-﻿using Domain.GeoDBDTO;
-namespace Domain.GeoDTO
+﻿
+namespace Domain
 {
   public class GeoObjectDTO
   {

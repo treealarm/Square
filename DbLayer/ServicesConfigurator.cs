@@ -1,11 +1,6 @@
 ﻿using DbLayer.Services;
-using Domain.ServiceInterfaces;
+using Domain;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DbLayer
 {
@@ -40,6 +35,9 @@ namespace DbLayer
       services.AddSingleton<IIntegroService>(provider => provider.GetRequiredService<IntegroService>());
       services.AddSingleton<IIntegroServiceInternal>(provider => provider.GetRequiredService<IntegroService>());
 
+      services.AddSingleton<GroupsService>();
+      services.AddSingleton<IGroupsService>(provider => provider.GetRequiredService<GroupsService>());
+      services.AddSingleton<IIGroupsServiceInternal>(provider => provider.GetRequiredService<GroupsService>());
     }
   }
 }

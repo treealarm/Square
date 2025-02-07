@@ -1,7 +1,7 @@
-﻿using Domain.Diagram;
+﻿
 using System.Collections.Generic;
 
-namespace Domain.DiagramType
+namespace Domain
 {
     public record DiagramTypeRegionDTO
     {

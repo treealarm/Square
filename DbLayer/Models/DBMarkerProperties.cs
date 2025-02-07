@@ -7,6 +7,7 @@ namespace DbLayer
   internal class DBObjExtraProperty
   {
     public string prop_name { get; set; }
+    [BsonIgnoreIfNull]
     public BsonValue str_val { get; set; }
     [BsonIgnoreIfNull]
     public string visual_type { get; set; }    

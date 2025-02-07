@@ -1,5 +1,5 @@
-﻿using Domain.Events;
-using Domain.ServiceInterfaces;
+﻿
+using Domain;
 
 namespace DataChangeLayer
 {

@@ -1,4 +1,4 @@
-﻿namespace Domain.PubSubTopics
+﻿namespace Domain
 {
   public static class Topics
   {

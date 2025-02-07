@@ -1,11 +1,4 @@
-﻿using Domain.GeoDBDTO;
-using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
-using System.Threading;
+﻿using Domain;
 
 namespace LeafletAlarms.Services
 {

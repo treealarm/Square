@@ -1,11 +1,8 @@
-﻿using Domain.Integro;
-using Domain.ServiceInterfaces;
+﻿using Domain;
 using LeafletAlarms.Grpc;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
 using ObjectActions;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace LeafletAlarms.Controllers
 {

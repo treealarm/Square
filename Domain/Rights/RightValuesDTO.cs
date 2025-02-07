@@ -1,4 +1,4 @@
-﻿namespace Domain.Rights
+﻿namespace Domain
 {
   public class RightValuesDTO
   {

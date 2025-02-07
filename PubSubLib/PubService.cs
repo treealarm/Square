@@ -1,7 +1,5 @@
 ﻿using Dapr.Client;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
-using Microsoft.Extensions.Options;
+using Domain;
 
 namespace PubSubLib
 {

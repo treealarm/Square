@@ -1,18 +1,6 @@
-﻿using DbLayer.Services;
-using Domain;
-using Domain.GeoDBDTO;
-using Domain.GeoDTO;
-using Domain.NonDto;
-using Domain.ServiceInterfaces;
-using Domain.StateWebSock;
-using LeafletAlarms.Services;
+﻿using Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 
 namespace LeafletAlarms.Controllers

@@ -1,7 +1,4 @@
 ﻿using Domain;
-using Domain.ObjectInterfaces;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;

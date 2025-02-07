@@ -1,8 +1,7 @@
-﻿using Domain.States;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Domain.ServiceInterfaces
+namespace Domain
 {
   public interface IStateService
   {

@@ -1,6 +1,5 @@
 ﻿using Dapr.Messaging.PublishSubscribe.Extensions;
-using Domain.OptionsModels;
-using Domain.ServiceInterfaces;
+using Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

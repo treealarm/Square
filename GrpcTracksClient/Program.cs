@@ -1,6 +1,4 @@
-﻿using Domain.ServiceInterfaces;
-using Google.Api;
-using GrpcDaprLib;
+﻿using GrpcDaprLib;
 using GrpcTracksClient;
 using GrpcTracksClient.Services;
 using Microsoft.AspNetCore.Server.Kestrel.Core;

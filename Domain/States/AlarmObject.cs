@@ -1,5 +1,5 @@
 ﻿
-namespace Domain.States
+namespace Domain
 {
   public record AlarmObject: BaseMarkerDTO
   {

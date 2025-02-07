@@ -14,18 +14,23 @@ namespace DbLayer
       return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
     }
 
-    public static string Log<T>(FilterDefinition<T> filter)
+    public static string Log<BsonDocument>(FilterDefinition<BsonDocument> filter)
     {
       string s = string.Empty;
       try
       {
-        // Преобразуем фильтр в BsonDocument, что позволяет обрабатывать различные типы данных без специфичных сериализаторов
-        var rendered = filter.Render(new RenderArgs<T>());
+        var serializerRegistry = BsonSerializer.SerializerRegistry;
+        var documentSerializer = serializerRegistry.GetSerializer<BsonDocument>();
 
-        // Преобразуем в JSON строку с отступами для читаемости
+        var renderArgs = new RenderArgs<BsonDocument>
+        {
+          DocumentSerializer = documentSerializer
+        };
+
+        var rendered = filter.Render(renderArgs);
+
+        // Выводим фильтр в формате JSON с отступами для читаемости
         s = rendered.ToJson(new JsonWriterSettings { Indent = true });
-
-        // Выводим результат
         Debug.WriteLine(s);
         Debug.WriteLine("");
       }
@@ -37,4 +42,6 @@ namespace DbLayer
     }
 
   }
+
 }
+
