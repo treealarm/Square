@@ -12,5 +12,6 @@ export const ApiFileSystemRootString = 'api/files';
 export const ApiEventsRootString = 'api/events';
 export const ApiValuesRootString = 'api/values';
 export const ApiIntegroRootString = 'api/integro';
+export const ApiGroupsRootString = 'api/group';
 export const ApiDefaultPagingNum = 100;
 export const ApiDefaultMaxCountResult = 1000;

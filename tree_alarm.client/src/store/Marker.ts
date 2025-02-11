@@ -14,6 +14,10 @@ export function uuidv4() {
 
 export type LatLngPair = [number, number];
 
+export interface IBaseObject {
+  id: string | null;
+}
+
 export interface Marker {
   id: string | null;
   parent_id?: string | null;
@@ -484,3 +488,7 @@ export interface IActionExeDTO {
   parameters?: IActionParameterDTO[];
 }
 
+export interface IGroupDTO extends IBaseObject {
+  name: string;
+  objid: string;
+}
