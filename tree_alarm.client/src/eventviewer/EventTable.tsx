@@ -17,7 +17,7 @@ import { useAppDispatch } from '../store/configureStore';
 import * as EventsStore from '../store/EventsStates'
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { DeepCopy, IEventDTO, LogLevel, SearchFilterDTO } from '../store/Marker';
+import { DeepCopy, IEventDTO, LogLevel, SearchEventFilterDTO } from '../store/Marker';
 
 
 interface Column {
@@ -55,14 +55,14 @@ const columns: readonly Column[] = [
 
 interface IEventTableProps {
   // eslint-disable-next-line no-unused-vars
-  setLocalFilter: (newFilter: SearchFilterDTO) => any;
+  setLocalFilter: (newFilter: SearchEventFilterDTO) => any;
 }
 export default function EventTable(props: IEventTableProps) {
 
   const appDispatch = useAppDispatch();
 
   const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events);
-  const filter: SearchFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
+  const filter: SearchEventFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
   const selected_event: IEventDTO = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event);
 
   var order = filter.sort;

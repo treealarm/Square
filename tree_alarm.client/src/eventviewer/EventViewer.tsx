@@ -20,7 +20,7 @@ import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { EventProperties } from "./EventProperties";
 import EventTable from "./EventTable";
-import { DeepCopy, ObjPropsSearchDTO, SearchFilterDTO, uuidv4 } from "../store/Marker";
+import { DeepCopy, ObjPropsSearchDTO, SearchEventFilterDTO, uuidv4 } from "../store/Marker";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -51,12 +51,12 @@ export function EventViewer() {
   //const guid = useId();
   //console.log("guid=", guid);
   const [autoUpdate, setAutoUpdate] = useState(false);
-  const searchFilter: SearchFilterDTO|null = useSelector((state: ApplicationState) => state?.eventsStates?.filter)??null;
+  const searchFilter: SearchEventFilterDTO |null = useSelector((state: ApplicationState) => state?.eventsStates?.filter)??null;
   const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching);
 
   const timeoutIdRef = useRef<any>(null);
 
-  const setLocalFilter = useCallback((newFilter: SearchFilterDTO) => {
+  const setLocalFilter = useCallback((newFilter: SearchEventFilterDTO) => {
 
     var idFromStorage = sessionStorage.getItem("ID_KEY");
     if (idFromStorage == null) {

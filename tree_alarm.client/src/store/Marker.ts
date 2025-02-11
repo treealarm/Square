@@ -232,7 +232,9 @@ export interface SearchFilterDTO{
   count: number;
   sort?: ISortPair[];
 }
+export interface SearchEventFilterDTO extends SearchFilterDTO {
 
+}
 
 export interface BoxTrackDTO extends BoundBox
 {

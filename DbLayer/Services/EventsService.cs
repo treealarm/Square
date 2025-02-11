@@ -228,7 +228,7 @@ namespace DbLayer.Services
     }
 
 
-    public async Task<List<EventDTO>> GetEventsByFilter(SearchFilterDTO filter_in)
+    public async Task<List<EventDTO>> GetEventsByFilter(SearchEventFilterDTO filter_in)
     {
       var storedCursor = _cursors.Get(filter_in.search_id, filter_in.GetHashCode());
 

@@ -20,7 +20,7 @@ namespace LeafletAlarms.Controllers
     [HttpPost]
     [Route("GetByFilter")]
     public async Task<List<EventDTO>> GetByFilter(
-      SearchFilterDTO filter
+      SearchEventFilterDTO filter
     )
     {
       var retVal =  await _eventsService.GetEventsByFilter(filter);

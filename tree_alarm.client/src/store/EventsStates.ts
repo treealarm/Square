@@ -1,6 +1,6 @@
 ﻿import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { IEventDTO, SearchFilterDTO } from './Marker';
+import { IEventDTO, SearchEventFilterDTO } from './Marker';
 import { DoFetch } from './Fetcher';
 import { ApiDefaultPagingNum, ApiEventsRootString } from './constants';
 
@@ -8,7 +8,7 @@ import { ApiDefaultPagingNum, ApiEventsRootString } from './constants';
 
 export interface EventStates {
   events: IEventDTO[] | null;
-  filter: SearchFilterDTO;
+  filter: SearchEventFilterDTO;
   selected_event: IEventDTO | null;
   isFetching: boolean;
 }
@@ -28,9 +28,9 @@ const unloadedState: EventStates = {
   isFetching: false
 };
 
-export const fetchEventsByFilter = createAsyncThunk<IEventDTO[], SearchFilterDTO>(
+export const fetchEventsByFilter = createAsyncThunk<IEventDTO[], SearchEventFilterDTO>(
   'events/GetByFilter',
-  async (filter: SearchFilterDTO, { getState, dispatch }) => {
+  async (filter: SearchEventFilterDTO, { getState, dispatch }) => {
 
     //dispatch(setIsFetching(true));
 
@@ -69,7 +69,7 @@ const eventsSlice = createSlice({
   name: 'EventsStates',
   initialState: unloadedState,
   reducers: {
-    set_local_filter(state: EventStates, action: PayloadAction<SearchFilterDTO>) {
+    set_local_filter(state: EventStates, action: PayloadAction<SearchEventFilterDTO>) {
       state.filter = action.payload;
     },
     set_selected_event(state: EventStates, action: PayloadAction<IEventDTO|null>) {
