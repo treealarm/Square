@@ -227,17 +227,18 @@ export interface ISortPair {
   order: Order;
 }
 export interface SearchFilterDTO{
-  time_start?: string;
-  time_end?: string;
+  time_start?: string|null;
+  time_end?: string|null;
   property_filter?: ObjPropsSearchDTO;
-  search_id: string;
-  start_id?: string;
+  search_id: string|null;
+  start_id?: string|null;
   forward: number;
   count: number;
   sort?: ISortPair[];
 }
 export interface SearchEventFilterDTO extends SearchFilterDTO {
-
+  groups?: string[];
+  objects?: string[];
 }
 
 export interface BoxTrackDTO extends BoundBox

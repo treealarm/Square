@@ -16,6 +16,7 @@ namespace DbLayer.Services
     private IMongoCollection<DBEvent> _coll;
     private IMongoClient _mongoClient;
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
+    private readonly IGroupsService _groupsService;
     private TableCursors<DBEvent> _cursors = new TableCursors<DBEvent>();
     private IMongoCollection<DBEvent> Coll
     {
@@ -30,11 +31,13 @@ namespace DbLayer.Services
     }
     public EventsService(
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
-      IMongoClient mongoClient
+      IMongoClient mongoClient,
+      IGroupsService groupsService
     )
     {
       _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
       _mongoClient = mongoClient;
+      _groupsService = groupsService;
       CreateCollections();
     }
     private void CreateCollections()
@@ -78,6 +81,7 @@ namespace DbLayer.Services
     }
     private void CreateIndexes()
     {
+
       // Вспомогательная функция для создания индекса
       void CreateIndex(IndexKeysDefinition<DBEvent> keys, string indexName)
       {
@@ -285,6 +289,18 @@ namespace DbLayer.Services
         var fte = builder
         .Where(t => t.timestamp <= filter_in.time_end);
         filter = CreateOrAddFilter(filter, fte);
+      }
+
+      var objs2filter = filter_in.objects.ToList();
+
+      if (filter_in.groups.Count > 0)
+      {
+        var objs = await _groupsService.GetListByNamesAsync(filter_in.groups);
+        var ids = objs.Values.Select(t => t.objid).ToList();
+
+        var ftg = builder
+        .Where(t => ids.Contains(t.object_id));
+        filter = CreateOrAddFilter(filter, ftg);
       }
 
       if (!string.IsNullOrEmpty(filter_in.start_id))

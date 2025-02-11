@@ -9,6 +9,7 @@ namespace LeafletAlarms.Controllers
   {
     private readonly IEventsService _eventsService;
     private readonly IEventsUpdateService _eventsUpdateService;
+    
     public EventsController(
       IEventsService eventsService, 
       IEventsUpdateService eventsUpdateService)

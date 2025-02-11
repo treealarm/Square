@@ -7,9 +7,10 @@ import { KeyValueDTO, ObjPropsSearchDTO } from '../store/Marker';
 
 interface PropertyFilterEditorProps {
   onChange: (data: ObjPropsSearchDTO) => void;
+  btn_text: string;
 }
 
-export const PropertyFilterEditor = ({ onChange }: PropertyFilterEditorProps) => {
+export const PropertyFilterEditor = ({ onChange, btn_text }: PropertyFilterEditorProps) => {
   const [keyValuePairs, setKeyValuePairs] = useState<KeyValueDTO[]>([{ str_val: '', prop_name: '' }]);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -63,7 +64,7 @@ export const PropertyFilterEditor = ({ onChange }: PropertyFilterEditorProps) =>
       {/*  нопка дл€ открыти€ всплывающего окна */}
       <Tooltip title={keyValuePairs.map((pair) => `${pair.prop_name}: ${pair.str_val}`).join('\r\n')}>
         <Button onClick={togglePopper} variant="outlined">
-          Open Property Filter
+          {btn_text}
         </Button>
       </Tooltip>
 

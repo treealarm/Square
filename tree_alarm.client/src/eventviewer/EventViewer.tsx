@@ -1,4 +1,5 @@
-﻿/* eslint-disable no-unused-vars */
+﻿/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useSelector } from "react-redux";
 
@@ -28,6 +29,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PropertyFilterEditor } from "./PropertyFilterEditor";
+import { PropertyListEditor } from "./PropertyListEditor";
 
 const TimePicker = ({ label, value, onChange }: { label: string, value: string | null, onChange: (newValue: Dayjs | null) => void }) => (
   <DateTimePicker
@@ -52,7 +54,7 @@ export function EventViewer() {
   //console.log("guid=", guid);
   const [autoUpdate, setAutoUpdate] = useState(false);
   const searchFilter: SearchEventFilterDTO |null = useSelector((state: ApplicationState) => state?.eventsStates?.filter)??null;
-  const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching);
+  const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching) ?? false;
 
   const timeoutIdRef = useRef<any>(null);
 
@@ -105,7 +107,7 @@ export function EventViewer() {
     // Autoupdate
     const interval = setInterval(() => {
       if (searchFilter?.forward != 0) {
-        appDispatch(EventsStore.reserveCursor(searchFilter?.search_id));
+        appDispatch(EventsStore.reserveCursor(searchFilter?.search_id??''));
       }
     }
       , 30000);
@@ -131,9 +133,11 @@ export function EventViewer() {
   const handleChange2 = (newValue: Dayjs | null) => {
     try {
       var newFilter = DeepCopy(searchFilter);
-      newFilter.time_end = newValue ? newValue.toISOString() : null;
-      newFilter.forward = 0;// replace cursor
-      setLocalFilter(newFilter);
+      if (newFilter) {
+        newFilter.time_end = newValue ? newValue.toISOString() : null;
+        newFilter.forward = 0;// replace cursor
+        setLocalFilter(newFilter);
+      }
     }
     catch (err) {
       console.log(err);
@@ -142,17 +146,21 @@ export function EventViewer() {
 
   function clearTextSearch() {
     var newFilter = DeepCopy(searchFilter);
-    newFilter.forward = 0;// replace cursor
-    newFilter.start_id = "";
-    setLocalFilter(newFilter);
+    if (newFilter) {
+      newFilter.forward = 0;// replace cursor
+      newFilter.start_id = "";
+      setLocalFilter(newFilter);
+    }
   }
 
   function handleChangeTextSearch(e: any) {
     const { target: { value } } = e;
     var newFilter = DeepCopy(searchFilter);
-    newFilter.forward = 0;// replace cursor
-    newFilter.start_id = value;
-    setLocalFilter(newFilter);
+    if (newFilter) {
+      newFilter.forward = 0;// replace cursor
+      newFilter.start_id = value;
+      setLocalFilter(newFilter);
+    }
   }
 
   function OnNavigate (next: number){
@@ -161,17 +169,30 @@ export function EventViewer() {
       setAutoUpdate(!autoUpdate);
     }
     var newFilter = DeepCopy(searchFilter);
-    newFilter.forward = next;
-    setLocalFilter(newFilter);
+    if (newFilter) {
+      newFilter.forward = next;
+      setLocalFilter(newFilter);
+    }
   }
 
   const handleFilterChange = useCallback((updatedFilterData: ObjPropsSearchDTO) => {
     var newFilter = DeepCopy(searchFilter);
-    newFilter.forward = 0; // replace cursor
-    newFilter.property_filter = updatedFilterData;
-    setLocalFilter(newFilter);
+    if (newFilter) {
+      newFilter.forward = 0; // replace cursor
+      newFilter.property_filter = updatedFilterData;
+      setLocalFilter(newFilter);
+    }
   }, [searchFilter]);
 
+  const handleGroupsChange = useCallback((updatedFilterData: string[]) => {
+    var newFilter = DeepCopy(searchFilter);
+    if (newFilter) {
+      newFilter.forward = 0; // replace cursor
+      newFilter.groups = updatedFilterData;
+      setLocalFilter(newFilter);
+    }
+    
+  }, [searchFilter]);
 
   return (
     <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
@@ -207,8 +228,8 @@ export function EventViewer() {
                   </Tooltip>
                 </ButtonGroup>
 
-
-
+              <PropertyListEditor onChange={handleGroupsChange} btn_text={'Group filter'} />
+              <PropertyFilterEditor onChange={handleFilterChange} btn_text={'Propery filter'} />
                 <TextField
                   id="input-with-icon-textfield"
                   size="small"
@@ -220,7 +241,7 @@ export function EventViewer() {
                     ),
                     endAdornment: (
                       <IconButton onClick={() => clearTextSearch()}>
-                        {searchFilter?.start_id?.length > 0 ? <ClearOutlinedIcon /> : ''}
+                        {searchFilter?.start_id?.length??0 > 0 ? <ClearOutlinedIcon /> : ''}
                       </IconButton>
                     )
                   }}
@@ -229,7 +250,7 @@ export function EventViewer() {
                   onChange={handleChangeTextSearch}
                 />
 
-              <PropertyFilterEditor onChange={handleFilterChange} />
+              
               <TimePicker label="begin" value={searchFilter?.time_start} onChange={handleChange1} />
               <TimePicker label="end" value={searchFilter?.time_end} onChange={handleChange2} />
 
