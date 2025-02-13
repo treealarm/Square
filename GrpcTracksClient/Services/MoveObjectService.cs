@@ -96,6 +96,7 @@ namespace GrpcTracksClient.Services
                 IName = client.AppId,
                 ObjectId = fig.Id
               });
+              Console.WriteLine($"Register integro:{client.AppId}:{fig.Id}");
             }
             await client.UpdateIntegro(integroRequest);
             inited = true;

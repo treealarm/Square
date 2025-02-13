@@ -14,6 +14,11 @@ namespace LeafletAlarms.Services
 
     public CallInvoker GetDaprClient(string appId)
     {
+      if (string.IsNullOrEmpty(appId))
+      {
+        return null;
+      }
+
       if (!_clientCache.ContainsKey(appId))
       {
         // Создаём новый DaprClient, если его ещё нет в кэше

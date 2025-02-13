@@ -24,7 +24,6 @@ namespace DataChangeLayer
     public async Task UpdateIntegros(List<IntegroDTO> obj2UpdateIn)
     {
       await _integroService.UpdateListAsync(obj2UpdateIn);
-      await _pub.Publish(Topics.OnValuesChanged, obj2UpdateIn);
     }
   }
 }

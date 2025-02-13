@@ -44,7 +44,6 @@ namespace LeafletAlarms
       var mapDbSection = Configuration.GetSection("MapDatabase");
       services.Configure<MapDatabaseSettings>(mapDbSection);
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
-      services.Configure<DaprSettings>(Configuration.GetSection("DaprSettings"));
 
 
       services.AddSingleton<IMongoClient>(s =>
@@ -83,7 +82,7 @@ namespace LeafletAlarms
         setUpAction.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
         {
           Title = "MapApi",
-          Version = "1.1"
+          Version = "1.2"
         });
         setUpAction.ExampleFilters();
 

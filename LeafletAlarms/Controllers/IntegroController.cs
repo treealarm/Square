@@ -48,8 +48,15 @@ namespace LeafletAlarms.Controllers
         return retActions;
       }
       var app_ids = await GetAppIdByObjectId(new List<string> { id });
+      var key = app_ids.Values.Select(i => i.i_name).FirstOrDefault();
 
-      var daprClient = _daprClientService.GetDaprClient(app_ids.Values.Select(i=>i.i_name).FirstOrDefault());
+      var daprClient = _daprClientService.GetDaprClient(key);
+
+      if (daprClient == null)
+      {
+        throw new Exception($"daprClient:{key} not found");
+      }
+
       ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
       var request = new ProtoGetAvailableActionsRequest();
       request.ObjectId = id;
@@ -112,6 +119,11 @@ namespace LeafletAlarms.Controllers
       foreach (var group in groupedActions)
       {
         var daprClient = _daprClientService.GetDaprClient(group.Key);
+
+        if (daprClient == null)
+        {
+          throw new Exception($"daprClient:{group.Key} not found");
+        }
         ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
         var request = new ProtoExecuteActionRequest();
 

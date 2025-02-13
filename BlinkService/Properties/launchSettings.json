@@ -3,7 +3,6 @@
     "BlinkService": {
       "commandName": "Project",
       "environmentVariables": {
-        "DaprSettings__reddis_endpoint": "redisservice:6380",
         "MapDatabase__ConnectionString": "mongodb://mongoservice:27017",
         "MapDatabase__DatabaseName": "MapStore"
       }

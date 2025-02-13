@@ -1,7 +1,7 @@
 #https://docs.dapr.io/developing-applications/local-development/multi-app-dapr-run/multi-app-template/
 version: 1
 #common:
-  #resourcesPath: ./leaflet_dock/
+  #resourcesPath: ./leaflet_data/dapr_components/
 apps:
   - appID: leafletalarms
     appProtocol: grpc
@@ -11,7 +11,7 @@ apps:
   - appDirPath: ./grpctracksclient/
     appID: grpctracksclient
     appProtocol: grpc
-    appPort: 50007
+    appPort: 20007
     command: ["dotnet", "run"]
   - appID: blinkservice
     appProtocol: grpc

@@ -3,9 +3,10 @@ services:
   leafletalarmsservice:
     image: ${DOCKER_REGISTRY-}leafletalarms
     depends_on:
+     - redis
+     - placement
      - mongoservice
      - keycloakservice
-     - redisservice
      - blinkservice
     build:
       context: .
@@ -28,10 +29,21 @@ services:
     env_file:
       - global.env
       - .env
+    networks:
+      - my-dapr-network
 
   leafletalarms-dapr:
     image: "daprio/daprd:latest"
-    command: [ "./daprd", "--app-id", "leafletalarms", "--app-port", "${GRPC_MAIN_PORT}", "--app-protocol", "grpc" ]
+    command: [
+      "./daprd",
+      "--app-id", "leafletalarms",
+      "--app-port", "${GRPC_MAIN_PORT}",
+      "--app-protocol", "grpc",
+      "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--resources-path", "/components"
+    ]
+    volumes:
+        - "${DAPR_COMPONENTS}:/components"
     depends_on:
       - leafletalarmsservice
     # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
@@ -51,15 +63,27 @@ services:
     environment:
       - VALHALLA_PORT=${VALHALLA_PORT}
       - APP_PORT=${DAPR_CLI_PORT}
-      - APP_ID=${TRACKS_CLIENT_APP_ID}
     depends_on:
+      - redis
+      - placement
       - valhallaservice
     ports:
       - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
+    networks:
+      - my-dapr-network
 
   grpctracksclient-dapr:
     image: "daprio/daprd:latest"
-    command: ["./daprd","--app-id", "${TRACKS_CLIENT_APP_ID}","--app-port", "50007", "--app-protocol", "grpc" ]
+    command: [
+      "./daprd",
+      "--app-id", "${TRACKS_CLIENT_APP_ID}",
+      "--app-port", "${DAPR_CLI_PORT}",
+      "--app-protocol", "grpc",
+      "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--resources-path", "/components"
+      ]
+    volumes:
+        - "${DAPR_COMPONENTS}:/components"
     depends_on:
       - grpctracksclient
     # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
@@ -76,8 +100,32 @@ services:
     env_file:
       - global.env
       - .env
+    depends_on:
+      - redis
+      - placement    
     environment:
-      - DaprSettings__reddis_endpoint=redisservice:${REDIS_PORT}
+      - APP_ID=${BLINK_APP_ID}
+    networks:
+      - my-dapr-network
+
+  blinkservice-dapr:
+    image: "daprio/daprd:latest"
+    command: [
+      "./daprd",
+      "--app-id", "${BLINK_APP_ID}",
+      "--app-protocol", "grpc",
+      "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--resources-path", "/components"
+      ]
+    volumes:
+        - "${DAPR_COMPONENTS}:/components"
+    depends_on:
+      - blinkservice
+    # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
+    network_mode: "service:blinkservice"
+    env_file:
+      - global.env
+      - .env
   
   mongoservice:
     image : mongo
@@ -89,21 +137,12 @@ services:
     ports:
      - "27017:27017"
      #- "27018:27017"
-
-  redisservice:
-    image: redis
-    restart: unless-stopped
-    command: ["redis-server", "--port", "${REDIS_PORT}"]
-    environment:
-     - ALLOW_EMPTY_PASSWORD=yes
-    env_file:
-      - .env
-    ports:
-     - ${REDIS_PORT}:${REDIS_PORT}
+    networks:
+      - my-dapr-network
 
 # START keycloack
   postgresservice:
-    image: postgres
+    image: postgis/postgis
     restart: unless-stopped
     volumes:
       - ./leaflet_data/postgres_data:/var/lib/postgresql/data
@@ -113,6 +152,8 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - 5432:5432
+    networks:
+      - my-dapr-network
 
   keycloakservice:
     image: quay.io/keycloak/keycloak:latest
@@ -137,6 +178,8 @@ services:
       - 8080:8080
     depends_on:
       - postgresservice
+    networks:
+      - my-dapr-network
 # command2export realm:docker exec -ti leaflet-keycloakservice-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
 # END keycloak
 
@@ -148,3 +191,34 @@ services:
       - ${VALHALLA_PORT}:${VALHALLA_PORT}
     volumes:
       - ./leaflet_data/valhalla_custom_files/:/custom_files
+    networks:
+      - my-dapr-network
+
+  ############################
+  #DAPR SERVICES
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - my-dapr-network
+  ############################
+  # Redis state store
+  ############################
+  redis:
+    image: redis
+    restart: unless-stopped
+    environment:
+     - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+     - "${REDIS_PORT}:6379"
+    networks:
+      - my-dapr-network
+
+networks:
+  my-dapr-network:
+    driver: bridge
+
+

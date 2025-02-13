@@ -21,7 +21,6 @@ namespace BlinkService
 
         var mapDbSection = config.GetSection("MapDatabase");
         services.Configure<MapDatabaseSettings>(mapDbSection);
-        services.Configure<DaprSettings>(config.GetSection("DaprSettings"));
 
         services.AddSingleton<IMongoClient>(s =>
            new MongoClient(mapDbSection.Get<MapDatabaseSettings>().ConnectionString)
