@@ -41,8 +41,11 @@ const nodeModulesPath = path.resolve(__dirname, './node_modules');
 //}
 
 // Определяем целевую URL
-const target = env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:8000';
+//const target = env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:8000';
 
+const target = 'http://127.0.0.1:8000'; // Явно указываем localhost
+
+console.log(`search server on:${target}, env.ASPNETCORE_URLS:${env.ASPNETCORE_URLS}`);
 export default defineConfig({
   plugins: [
     plugin(),
