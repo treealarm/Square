@@ -1,13 +1,27 @@
 ﻿using DbLayer.Services;
 using Domain;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace DbLayer
 {
   public static class ServicesConfigurator
   {
-    public static void ConfigureServices(IServiceCollection services)
+    public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
+      var mapDbSection = configuration.GetSection("MapDatabase");
+
+      // Корректная регистрация IOptions<MapDatabaseSettings>
+      services.Configure<MapDatabaseSettings>(options => mapDbSection.Bind(options));
+
+      // Загружаем объект вручную, если нужно
+      var settings = mapDbSection.Get<MapDatabaseSettings>();
+
+      services.AddSingleton<IMongoClient>(s =>
+          new MongoClient(settings.ConnectionString) // Используем settings напрямую
+      );
+
       services.AddSingleton<IUtilService, UtilService>();
 
       services.AddSingleton<IMapService, MapService>();

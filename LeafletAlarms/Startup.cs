@@ -6,7 +6,6 @@ using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
-using MongoDB.Driver;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
@@ -41,15 +40,7 @@ namespace LeafletAlarms
 
       services.ConfigureJWT();
 
-      var mapDbSection = Configuration.GetSection("MapDatabase");
-      services.Configure<MapDatabaseSettings>(mapDbSection);
       services.Configure<RoutingSettings>(Configuration.GetSection("RoutingSettings"));
-
-
-      services.AddSingleton<IMongoClient>(s =>
-          new MongoClient(mapDbSection.Get<MapDatabaseSettings>().ConnectionString)
-      );
-
 
       services.AddHostedService<InitHostedService>();
 
@@ -57,7 +48,7 @@ namespace LeafletAlarms
       services.AddSingleton<ISubService, SubService>();
       services.AddSingleton<IPubService, PubService>(); 
 
-      DbLayer.ServicesConfigurator.ConfigureServices(services);
+      DbLayer.ServicesConfigurator.ConfigureServices(services, Configuration);
       DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
 
 

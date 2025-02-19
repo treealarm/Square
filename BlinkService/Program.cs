@@ -19,16 +19,10 @@ namespace BlinkService
       {
         var config = context.Configuration;
 
-        var mapDbSection = config.GetSection("MapDatabase");
-        services.Configure<MapDatabaseSettings>(mapDbSection);
-
-        services.AddSingleton<IMongoClient>(s =>
-           new MongoClient(mapDbSection.Get<MapDatabaseSettings>().ConnectionString)
-        );
         services.AddDaprPubSubClient();
         services.AddSingleton<ISubService, SubService>();
         services.AddSingleton<IPubService, PubService>();
-        DbLayer.ServicesConfigurator.ConfigureServices(services);
+        DbLayer.ServicesConfigurator.ConfigureServices(services, config);
         DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
         services.AddHostedService<HierarhyStateService>();
       })
