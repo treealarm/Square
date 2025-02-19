@@ -31,7 +31,7 @@ namespace GrpcDaprLib
         Console.WriteLine($"{env_name} port:{port}");
         return port;
       }
-      Console.Error.WriteLine("{env_name} return empty string");
+      Console.Error.WriteLine($"{env_name} return empty string using default {def_val}");
       return def_val;
     }
 

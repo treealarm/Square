@@ -7,16 +7,16 @@ import path from 'path';
 import { env } from 'process';
 import eslintPlugin from 'vite-plugin-eslint'
 
-// Ïîëó÷àåì àáñîëþòíûé ïóòü ê òåêóùåìó ôàéëó
+// ÐŸÐ¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð°Ð±ÑÐ¾Ð»ÑŽÑ‚Ð½Ñ‹Ð¹ Ð¿ÑƒÑ‚ÑŒ Ðº Ñ‚ÐµÐºÑƒÑ‰ÐµÐ¼Ñƒ Ñ„Ð°Ð¹Ð»Ñƒ
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-// Ïóòü ê ïàïêå `src`
+// ÐŸÑƒÑ‚ÑŒ Ðº Ð¿Ð°Ð¿ÐºÐµ `src`
 const srcPath = path.resolve(__dirname, './src');
 
-// Ïóòü ê ïàïêå `node_modules`
+// ÐŸÑƒÑ‚ÑŒ Ðº Ð¿Ð°Ð¿ÐºÐµ `node_modules`
 const nodeModulesPath = path.resolve(__dirname, './node_modules');
 
-//// Ïàïêà äëÿ õðàíåíèÿ ñåðòèôèêàòîâ
+//// ÐŸÐ°Ð¿ÐºÐ° Ð´Ð»Ñ Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ñ ÑÐµÑ€Ñ‚Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ð²
 //const baseFolder =
 //  env.APPDATA !== undefined && env.APPDATA !== ''
 //    ? `${env.APPDATA}/ASP.NET/https`
@@ -40,7 +40,7 @@ const nodeModulesPath = path.resolve(__dirname, './node_modules');
 //  }
 //}
 
-// Îïðåäåëÿåì öåëåâóþ URL
+// ÐžÐ¿Ñ€ÐµÐ´ÐµÐ»ÑÐµÐ¼ Ñ†ÐµÐ»ÐµÐ²ÑƒÑŽ URL
 const target = env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:8000';
 
 export default defineConfig({
@@ -54,8 +54,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': srcPath, // Ïñåâäîíèì @ óêàçûâàåò íà ïàïêó src
-      '~': nodeModulesPath // Ïñåâäîíèì ~ óêàçûâàåò íà ïàïêó node_modules
+      '@': srcPath, // ÐŸÑÐµÐ²Ð´Ð¾Ð½Ð¸Ð¼ @ ÑƒÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚ Ð½Ð° Ð¿Ð°Ð¿ÐºÑƒ src
+      '~': nodeModulesPath // ÐŸÑÐµÐ²Ð´Ð¾Ð½Ð¸Ð¼ ~ ÑƒÐºÐ°Ð·Ñ‹Ð²Ð°ÐµÑ‚ Ð½Ð° Ð¿Ð°Ð¿ÐºÑƒ node_modules
     }
   },
   server: {
@@ -64,20 +64,20 @@ export default defineConfig({
       '^/api': { target, secure: false },
       '^/public': { target, secure: false },
       '^/static_files': { target, secure: false },
-      // Ïðîêñèðîâàíèå äëÿ WebSocket
+      // ÐŸÑ€Ð¾ÐºÑÐ¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð´Ð»Ñ WebSocket
       '^/state': {
         target,
-        // Îáðàáîòêà îøèáîê, ÷òîáû middleware íå êðàøèëñÿ, êîãäà ñåðâåð ASP.NET Core íåäîñòóïåí
+        // ÐžÐ±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ° Ð¾ÑˆÐ¸Ð±Ð¾Ðº, Ñ‡Ñ‚Ð¾Ð±Ñ‹ middleware Ð½Ðµ ÐºÑ€Ð°ÑˆÐ¸Ð»ÑÑ, ÐºÐ¾Ð³Ð´Ð° ÑÐµÑ€Ð²ÐµÑ€ ASP.NET Core Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½
         onError: (err, req, res) => {
           console.error(`${err.message}`, req.url);
           res.writeHead(500, {
             'Content-Type': 'text/plain'
           });
-          res.end('Proxy error');
+          res.end('Proxy error !!!');
         },
         secure: false,
         ws: true,
-        // Ïðîêñèðóåì âåá-ñîêåò-çàïðîñû áåç èçìåíåíèé
+        // ÐŸÑ€Ð¾ÐºÑÐ¸Ñ€ÑƒÐµÐ¼ Ð²ÐµÐ±-ÑÐ¾ÐºÐµÑ‚-Ð·Ð°Ð¿Ñ€Ð¾ÑÑ‹ Ð±ÐµÐ· Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ð¹
         onProxyReqWs: (proxyReq, req) => {
           proxyReq.setHeader('Host', req.headers.host);
         }
