@@ -23,13 +23,12 @@ namespace GrpcTracksClient
           
           newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
 
-          newEv.Meta = new EventMetaProto();
-          
+         
           newEv.EventPriority = rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
           newEv.EventName = 
             $"Camera #{i} sensor {j} event {((LogLevel)newEv.EventPriority).ToString()}";
 
-          newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
+          newEv.ExtraProps.Add(new ProtoObjExtraProperty()
           {
             PropName = $"p{0}",
             StrVal = $"{i}"
@@ -37,7 +36,7 @@ namespace GrpcTracksClient
 
           for (var k = 1; k < 3; k++)
           {
-            newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
+            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
               PropName = $"p{k}",
               StrVal = $"{DateTime.Now.Second}"
@@ -47,7 +46,7 @@ namespace GrpcTracksClient
 
           if (i <= 1)
           {
-            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
               PropName = "event_descr",
               StrVal = $"plate recognized"
@@ -56,7 +55,7 @@ namespace GrpcTracksClient
             var fileName = $"files/plate{i}.jpeg";
             byte[] imageArray = File.ReadAllBytes(fileName);
 
-            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
               PropName = "license_image",
               StrVal = Convert.ToBase64String(imageArray),
@@ -65,7 +64,7 @@ namespace GrpcTracksClient
           }
           else
           {
-            newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
               PropName = "event_descr",
               StrVal = $"you can't search me {i}"

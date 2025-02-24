@@ -22,6 +22,10 @@ namespace DbLayer
           new MongoClient(settings.ConnectionString) // Используем settings напрямую
       );
 
+      services.AddDbContext<PgDbContext>();
+
+      services.AddScoped<IEventsService, PgEventsService>();
+
       services.AddSingleton<IUtilService, UtilService>();
 
       services.AddSingleton<IMapService, MapService>();
@@ -38,7 +42,7 @@ namespace DbLayer
 
 
       services.AddSingleton<IRightService, RightService>();
-      services.AddSingleton<IEventsService, EventsService>();
+      //services.AddSingleton<IEventsService, EventsService>();
 
 
       services.AddSingleton<ValuesService>();

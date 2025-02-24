@@ -8,6 +8,8 @@ namespace Domain
     // For example MapDatabase__DatabaseName key to replace DatabaseName
     public string ConnectionString { get; set; } = null!;
     public string DatabaseName { get; set; } = null!;
+    public string PgHost { get; set; } = null!;    
+    public int PgPort { get; set; } = 5432;
 
 
     public string ObjectsCollectionName { get; set; } = "Objects";

@@ -81,20 +81,14 @@ message TrackPointsProto
 	repeated TrackPointProto tracks = 1;
 }
 
-message EventMetaProto
-{
-	repeated ProtoObjExtraProperty extra_props = 5;
-	repeated ProtoObjExtraProperty not_indexed_props = 6;
-}
-
 message EventProto
 {
-  EventMetaProto meta = 1;
   google.protobuf.Timestamp timestamp = 2;
 	string id = 3;
 	string object_id = 4;
   string event_name = 5;
 	int32 event_priority = 6;
+  repeated ProtoObjExtraProperty extra_props = 7;
 }
 
 message EventsProto

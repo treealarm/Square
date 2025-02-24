@@ -446,17 +446,13 @@ export enum LogLevel {
   Critical = 5,
   None = 6,
 }
-export interface IEventMetaDTO {
-  extra_props?: ObjExtraPropertyDTO[];
-  not_indexed_props?: ObjExtraPropertyDTO[];
-}
 export interface IEventDTO {
-  meta: IEventMetaDTO;
   timestamp: string;
   id: string;
   object_id: string;
   event_name: string;
   event_priority: number;
+  extra_props?: ObjExtraPropertyDTO[];
 }
 
 export interface ILevelDTO {

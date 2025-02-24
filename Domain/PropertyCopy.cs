@@ -156,8 +156,12 @@ namespace Domain
           if (!IsSimpleType(sourceProperty.PropertyType))
           {
             continue;
-          }  
-          targetProperty.SetValue(target, sourceProperty.GetValue(source, null), null);
+          }
+
+          if (sourceProperty.PropertyType == targetProperty.PropertyType)
+          {
+            targetProperty.SetValue(target, sourceProperty.GetValue(source, null), null);
+          }              
         }
       }
 

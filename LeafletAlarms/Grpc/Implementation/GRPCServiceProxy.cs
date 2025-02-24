@@ -325,40 +325,26 @@ namespace LeafletAlarms.Grpc.Implementation
           var pEvent = new EventDTO();
 
           pEvent.timestamp = ev.Timestamp.ToDateTime();
-          pEvent.meta = new EventMetaDTO();
 
           pEvent.id = ev.Id;
           pEvent.object_id = ev.ObjectId;
           pEvent.event_name = ev.EventName;
           pEvent.event_priority = ev.EventPriority;
-          pEvent.meta.extra_props = new List<ObjExtraPropertyDTO>();
+          pEvent.extra_props = new List<ObjExtraPropertyDTO>();
 
-          foreach (var e in ev.Meta.ExtraProps)
+          foreach (var e in ev.ExtraProps)
           {
             try
             {
               var new_e = await ProcessProperty(e);
-              pEvent.meta.extra_props.Add(new_e);
+              pEvent.extra_props.Add(new_e);
             }
             catch (Exception ex)
             {
               Console.Error.WriteLine(ex.ToString());
             }
           }
-          pEvent.meta.not_indexed_props = new List<ObjExtraPropertyDTO>();
 
-          foreach (var e in ev.Meta.NotIndexedProps)
-          {
-            try
-            {
-              var new_e = await ProcessProperty(e);
-              pEvent.meta.not_indexed_props.Add(new_e);
-            }
-            catch (Exception ex)
-            {
-              Console.Error.WriteLine(ex.ToString());
-            }
-          }
           list.Add(pEvent);
         }
         catch (Exception ex)

@@ -133,12 +133,11 @@ namespace AASubService
             var newEv = new EventProto();
             newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
 
-            newEv.Meta = new EventMetaProto();
 
             newEv.EventPriority = (int)LogLevel.Critical;
             newEv.EventName = "lukich";
 
-            newEv.Meta.ExtraProps.Add(new ProtoObjExtraProperty()
+            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
               PropName = "lukich1",
               StrVal = $"lukich2"
@@ -150,7 +149,7 @@ namespace AASubService
 
             if (ImageService.IsValidImage(imageBytes))
             {
-              newEv.Meta.NotIndexedProps.Add(new ProtoObjExtraProperty()
+              newEv.ExtraProps.Add(new ProtoObjExtraProperty()
               {
                 PropName = "license_image",
                 StrVal = base64Image,

@@ -131,8 +131,8 @@ namespace DbLayer.Services
 
       // Индекс для поля meta.extra_props.prop_name и meta.extra_props.str_val
 
-      var val1 = $"{nameof(DBEvent.meta)}.{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}";
-      var val2 = $"{nameof(DBEvent.meta)}.{nameof(DBEvent.meta.extra_props)}.{nameof(DBObjExtraProperty.str_val)}";
+      var val1 = $"{nameof(DBEvent.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}";
+      var val2 = $"{nameof(DBEvent.extra_props)}.{nameof(DBObjExtraProperty.str_val)}";
       var indexModel = new CreateIndexModel<DBEvent>(
         Builders<DBEvent>.IndexKeys.Combine(
             Builders<DBEvent>.IndexKeys.Ascending(val1),
@@ -161,8 +161,7 @@ namespace DbLayer.Services
         //timestamp = db_event.timestamp,
       };
       db_event.CopyAllTo(dto);
-      dto.meta.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.extra_props);
-      dto.meta.not_indexed_props = ModelGate.ConverDBExtraProp2DTO(db_event.meta.not_indexed_props);
+      dto.extra_props = ModelGate.ConverDBExtraProp2DTO(db_event.extra_props);
       return dto;
     }
     private List<EventDTO> DBListToDTO(List<DBEvent> dbTracks)
@@ -195,8 +194,7 @@ namespace DbLayer.Services
         };
 
         ev.CopyAllTo(dbTrack);
-        dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB(ev.meta.extra_props);
-        dbTrack.meta.not_indexed_props = ModelGate.ConvertExtraPropsToDB(ev.meta.not_indexed_props);
+        dbTrack.extra_props = ModelGate.ConvertExtraPropsToDB(ev.extra_props);
         list.Add(dbTrack);
       }
 
@@ -325,7 +323,7 @@ namespace DbLayer.Services
           }
 
           var f1 = Builders<DBEvent>.Filter.ElemMatch(
-              t => t.meta.extra_props,
+              t => t.extra_props,
               Builders<DBObjExtraProperty>.Filter.And(
                   Builders<DBObjExtraProperty>.Filter.Eq(e => e.prop_name, prop.prop_name),
                   Builders<DBObjExtraProperty>.Filter.Eq(e => e.str_val, prop.str_val)

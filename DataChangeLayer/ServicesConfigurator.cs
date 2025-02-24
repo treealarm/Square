@@ -11,7 +11,7 @@ namespace DataChangeLayer
       services.AddSingleton<IMapUpdateService, MapUpdateService>();
       services.AddSingleton<IDiagramUpdateService, DiagramUpdateService>();
       services.AddSingleton<IDiagramTypeUpdateService, DiagramTypeUpdateService>();
-      services.AddSingleton<IEventsUpdateService, EventsUpdateService>();
+      services.AddScoped<IEventsUpdateService, EventsUpdateService>();
       services.AddSingleton<IRightUpdateService, RightUpdateService>();
       services.AddSingleton<IStatesUpdateService, StatesUpdateService>();
       

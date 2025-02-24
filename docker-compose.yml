@@ -27,7 +27,6 @@ services:
       - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
       - ${HTTP_PORT}:${HTTP_PORT}
     env_file:
-      - global.env
       - .env
     networks:
       - my-dapr-network
@@ -58,7 +57,6 @@ services:
       context: .
       dockerfile: GrpcTracksClient/Dockerfile
     env_file:
-      - global.env
       - .env
     environment:
       - VALHALLA_PORT=${VALHALLA_PORT}
@@ -88,9 +86,7 @@ services:
       - grpctracksclient
     # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
     network_mode: "service:grpctracksclient"
-    env_file:
-      - global.env
-      - .env
+
 
   blinkservice:
     image: ${DOCKER_REGISTRY-}blinkservice
@@ -98,7 +94,6 @@ services:
       context: .
       dockerfile: BlinkService/Dockerfile
     env_file:
-      - global.env
       - .env
     depends_on:
       - redis
@@ -124,7 +119,6 @@ services:
     # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
     network_mode: "service:blinkservice"
     env_file:
-      - global.env
       - .env
   
   mongoservice:
@@ -146,14 +140,12 @@ services:
     restart: unless-stopped
     volumes:
       - ./leaflet_data/postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: password
     ports:
-      - 5432:5432
+      - "${MapDatabase__PgPort}:${MapDatabase__PgPort}"
     networks:
       - my-dapr-network
+    env_file:
+      - .env
 
   keycloakservice:
     image: quay.io/keycloak/keycloak:latest

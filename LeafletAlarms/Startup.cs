@@ -58,7 +58,7 @@ namespace LeafletAlarms
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>()); // Forward requests to Foo
       
 
-      services.AddSingleton<GRPCServiceProxy>();
+      services.AddScoped<GRPCServiceProxy>();
       services.AddSingleton<IDaprClientService, DaprClientService>();
       services.AddSingleton<FileSystemService>();
 
