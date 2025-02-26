@@ -14,10 +14,12 @@ namespace DbLayer.Services
   internal class PgEventsService: IEventsService
   {
     private readonly PgDbContext _dbContext;
+    private readonly IGroupsService _groupsService;
 
-    public PgEventsService(PgDbContext context)
+    public PgEventsService(PgDbContext context, IGroupsService groupsService)
     {
       _dbContext = context;
+      _groupsService = groupsService;
     }
 
     public static string GenerateObjectId()
@@ -25,14 +27,6 @@ namespace DbLayer.Services
       byte[] bytes = new byte[12];
       RandomNumberGenerator.Fill(bytes); // Заполняем случайными байтами
       return BitConverter.ToString(bytes).Replace("-", "").ToLower(); // Преобразуем в строку hex
-    }
-
-    public static string ConvertIntToObjectId(int id)
-    {
-      byte[] bytes = new byte[12];
-      BitConverter.GetBytes(id).CopyTo(bytes, 8); // Заполняем последние 4 байта
-      RandomNumberGenerator.Fill(bytes.AsSpan(0, 8)); // Заполняем остальные 8 байт случайными данными
-      return BitConverter.ToString(bytes).Replace("-", "").ToLower();
     }
 
     public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO(List<PgDBObjExtraProperty> props)
@@ -49,7 +43,8 @@ namespace DbLayer.Services
         ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
         {
           prop_name = prop.prop_name,
-          str_val = prop.str_val.ToString()
+          str_val = prop.str_val.ToString(),
+          visual_type = prop.visual_type
         };
         retVal.Add(newProp);
       }
@@ -68,6 +63,8 @@ namespace DbLayer.Services
         //timestamp = db_event.timestamp,
       };
       db_event.CopyAllTo(dto);
+      dto.id = ConvertGuidToObjectId(db_event.id);
+      dto.object_id = ConvertGuidToObjectId(db_event.object_id);
       dto.extra_props = ConverDBExtraProp2DTO(db_event.extra_props);
       return dto;
     }
@@ -190,6 +187,7 @@ namespace DbLayer.Services
 
         ev.CopyAllTo(dbTrack);
         dbTrack.id = ConvertObjectIdToGuid(ev.id);
+        dbTrack.object_id = ConvertObjectIdToGuid(ev.object_id);
         dbTrack.extra_props = ConvertExtraPropsToDB(ev.extra_props, dbTrack.id);
         list.Add(dbTrack);
       }
@@ -214,12 +212,73 @@ namespace DbLayer.Services
 
     public async Task<List<EventDTO>> GetEventsByFilter(SearchEventFilterDTO filter_in)
     {
-      var eventsWithProps = await _dbContext.Events
-        .Include(e => e.extra_props)  // Подключаем связанные данные
-        .Take(1000)
-        .ToListAsync();
-      return DBListToDTO(eventsWithProps);
+      var query = _dbContext.Events.AsQueryable();
+
+      if (filter_in.time_start != null)
+      {
+        query = query.Where(e => e.timestamp >= filter_in.time_start);
+      }
+
+      if (filter_in.time_end != null)
+      {
+        query = query.Where(e => e.timestamp <= filter_in.time_end);
+      }
+
+      if (filter_in.groups.Count > 0)
+      {
+        var objs = await _groupsService.GetListByNamesAsync(filter_in.groups);
+        var ids = objs.Values.Select(t => ConvertObjectIdToGuid(t.objid)).ToList();
+        query = query.Where(e => ids.Contains(e.object_id));
+      }
+
+      if (!string.IsNullOrEmpty(filter_in.start_id))
+      {
+        query = query.Where(e => e.event_name.Contains(filter_in.start_id));
+      }
+
+      if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
+      {
+        foreach (var prop in filter_in.property_filter.props)
+        {
+          if (!string.IsNullOrEmpty(prop.prop_name))
+          {
+            var strVal = prop.str_val ?? string.Empty;
+            query = query.Where(e => e.extra_props.Any(p => p.prop_name == prop.prop_name && p.str_val == strVal));
+          }
+        }
+      }
+
+      if (filter_in.sort != null && filter_in.sort.Count > 0)
+      {
+        IOrderedQueryable<PgDBEvent> orderedQuery = null;
+        foreach (var kvp in filter_in.sort)
+        {
+          if (orderedQuery == null)
+          {
+            orderedQuery = kvp.order == "asc"
+                ? query.OrderBy(e => EF.Property<object>(e, kvp.key))
+                : query.OrderByDescending(e => EF.Property<object>(e, kvp.key));
+          }
+          else
+          {
+            orderedQuery = kvp.order == "asc"
+                ? orderedQuery.ThenBy(e => EF.Property<object>(e, kvp.key))
+                : orderedQuery.ThenByDescending(e => EF.Property<object>(e, kvp.key));
+          }
+        }
+
+        if (orderedQuery != null)
+        {
+          query = orderedQuery;
+        }
+      }
+
+      int limit = filter_in.count > 0 ? filter_in.count : 10000;
+      query = query.Take(limit).Include(e => e.extra_props);
+
+      return DBListToDTO(await query.ToListAsync());
     }
+
 
     public async Task<long> ReserveCursor(string search_id)
     {

@@ -30,7 +30,7 @@ export function EventProperties() {
       setImg(temp);
     };
 
-    selected_event?.meta.not_indexed_props?.map((item) => {
+    selected_event?.extra_props?.map((item) => {
       if (item.visual_type == 'image_fs') {
         fetchImage(item.str_val)
       }
