@@ -32,6 +32,7 @@ import { INPUT_DATETIME_FORMAT } from "../store/constants";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PropertyFilterEditor } from "./PropertyFilterEditor";
 import { PropertyListEditor } from "./PropertyListEditor";
+import PaginationControl from "../components/PaginationControl";
 
 dayjs.extend(utc);
 
@@ -220,26 +221,8 @@ export function EventViewer() {
                 direction="row"                
                 divider={<Divider orientation="vertical" flexItem />}
                 spacing={1}
-              >
-                <ButtonGroup>
-                  <Tooltip title={"First events page " + (!autoUpdate ? "/ autoupdate on" : "/ autoupdate off")}>
-                    <ToggleButton
-                      sx={{ borderRadius: 1, border: 0 }}
-                      value="check"
-                      selected={autoUpdate}
-                      onClick={() => OnNavigate(0)}>
-                      <FirstPageIcon />
-                    </ToggleButton >
-                  </Tooltip>
-                  <Divider orientation="vertical" variant="middle" flexItem><br /></Divider>
-                  <Tooltip title={"Next events page"}>
-                    <IconButton
-                      sx={{ borderRadius: 1, border: 0 }}
-                      onClick={() => OnNavigate(1)}>
-                      <NavigateNextIcon />
-                    </IconButton>
-                  </Tooltip>
-                </ButtonGroup>
+            >
+              <PaginationControl key='pager' OnNavigate={OnNavigate} autoUpdate={autoUpdate} />
 
               <PropertyListEditor onChange={handleGroupsChange} btn_text={'Group filter'} />
               <PropertyFilterEditor onChange={handleFilterChange} btn_text={'Propery filter'} />
