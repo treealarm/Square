@@ -185,17 +185,19 @@ export default function EventTable(props: IEventTableProps) {
                       }
                       
                       if (column.id == 'timestamp') {
-                        var d = new Date(row.timestamp);
-                        value = d.toLocaleString([],
-                          {
-                            year: 'numeric',
-                            month: 'numeric',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                          }) + " [" + d.getMilliseconds() +"ms]";
+                        var utcDate = new Date(row.timestamp + 'Z');
+                        value = utcDate.toLocaleString(undefined, { // undefined = использовать локаль браузера
+                          year: 'numeric',
+                          month: 'numeric',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          timeZoneName: 'short' // Покажет название часового пояса
+                        }) + " [" + utcDate.getMilliseconds() + "ms]";
                       }
+
+
  
                       return (
                         <TableCell key={column.id} align={column.align}>

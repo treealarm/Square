@@ -63,8 +63,8 @@ namespace DbLayer.Services
         //timestamp = db_event.timestamp,
       };
       db_event.CopyAllTo(dto);
-      dto.id = ConvertGuidToObjectId(db_event.id);
-      dto.object_id = ConvertGuidToObjectId(db_event.object_id);
+      dto.id = Utils.ConvertGuidToObjectId(db_event.id);
+      dto.object_id = Utils.ConvertGuidToObjectId(db_event.object_id);
       dto.extra_props = ConverDBExtraProp2DTO(db_event.extra_props);
       return dto;
     }
@@ -108,9 +108,8 @@ namespace DbLayer.Services
           owner_id = owner_id,
         };
 
-        newProp.id = ConvertObjectIdToGuid(ObjectId.GenerateNewId().ToString());
+        newProp.id = Utils.ConvertObjectIdToGuid(ObjectId.GenerateNewId().ToString());
 
-        var s = BsonType.Double.ToString();
         if (prop.visual_type == BsonType.Double.ToString())
         {
           if (double.TryParse(
@@ -122,8 +121,7 @@ namespace DbLayer.Services
             newProp.str_val = result.ToString();
           }
         }
-        else
-        if (prop.visual_type == BsonType.DateTime.ToString())
+        else if (prop.visual_type == BsonType.DateTime.ToString())
         {
           newProp.str_val = DateTime
               .Parse(prop.str_val)
@@ -139,35 +137,8 @@ namespace DbLayer.Services
       return ep_db;
     }
 
-  public static Guid ConvertObjectIdToGuid(string objectIdString)
-  {
-    if (objectIdString.Length != 24)
-      throw new ArgumentException("Invalid ObjectId length", nameof(objectIdString));
 
-    // Преобразуем строку ObjectId в массив байтов (каждый символ - это 4 бита, 24 символа = 12 байт)
-    byte[] objectIdBytes = new byte[12];
-    for (int i = 0; i < 12; i++)
-    {
-      objectIdBytes[i] = Convert.ToByte(objectIdString.Substring(i * 2, 2), 16);
-    }
 
-    // Преобразуем первые 16 байт в UUID (если необходимо, добавьте дополнительные байты)
-    byte[] uuidBytes = new byte[16];
-    Array.Copy(objectIdBytes, uuidBytes, 12); // Копируем первые 12 байт
-
-    return new Guid(uuidBytes);
-  }
-
-  public static string ConvertGuidToObjectId(Guid guid)
-  {
-    byte[] guidBytes = guid.ToByteArray();
-    byte[] objectIdBytes = new byte[12];
-    Array.Copy(guidBytes, objectIdBytes, 12); // Копируем первые 12 байт
-
-    // Преобразуем байты обратно в строку
-    string objectIdString = BitConverter.ToString(objectIdBytes).Replace("-", "").ToLower();
-    return objectIdString;
-  }
 
   public async Task<long> InsertManyAsync(List<EventDTO> events)
     {
@@ -186,8 +157,8 @@ namespace DbLayer.Services
         var dbTrack = new PgDBEvent();
 
         ev.CopyAllTo(dbTrack);
-        dbTrack.id = ConvertObjectIdToGuid(ev.id);
-        dbTrack.object_id = ConvertObjectIdToGuid(ev.object_id);
+        dbTrack.id = Utils.ConvertObjectIdToGuid(ev.id);
+        dbTrack.object_id = Utils.ConvertObjectIdToGuid(ev.object_id);
         dbTrack.extra_props = ConvertExtraPropsToDB(ev.extra_props, dbTrack.id);
         list.Add(dbTrack);
       }
@@ -227,7 +198,7 @@ namespace DbLayer.Services
       if (filter_in.groups.Count > 0)
       {
         var objs = await _groupsService.GetListByNamesAsync(filter_in.groups);
-        var ids = objs.Values.Select(t => ConvertObjectIdToGuid(t.objid)).ToList();
+        var ids = objs.Values.Select(t => Utils.ConvertObjectIdToGuid(t.objid)).ToList();
         query = query.Where(e => ids.Contains(e.object_id));
       }
 

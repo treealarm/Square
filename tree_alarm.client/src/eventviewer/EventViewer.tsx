@@ -24,6 +24,8 @@ import EventTable from "./EventTable";
 import { DeepCopy, ObjPropsSearchDTO, SearchEventFilterDTO, uuidv4 } from "../store/Marker";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { INPUT_DATETIME_FORMAT } from "../store/constants";
@@ -31,11 +33,21 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PropertyFilterEditor } from "./PropertyFilterEditor";
 import { PropertyListEditor } from "./PropertyListEditor";
 
-const TimePicker = ({ label, value, onChange }: { label: string, value: string | null, onChange: (newValue: Dayjs | null) => void }) => (
+dayjs.extend(utc);
+
+const TimePicker = ({
+  label,
+  value,
+  onChange
+}: {
+  label: string,
+  value: string | null,
+  onChange: (newValue: Dayjs | null) => void
+}) => (
   <DateTimePicker
     label={label}
-    value={dayjs(value)}
-    onChange={onChange}
+    value={value ? dayjs.utc(value).local() : null} // Преобразуем UTC в локальное время для отображения
+    onChange={(newValue) => onChange(newValue ? newValue.utc() : null)} // Конвертируем обратно в UTC перед вызовом onChange
     format={INPUT_DATETIME_FORMAT}
     slotProps={{
       textField: { size: 'small' },
@@ -45,6 +57,7 @@ const TimePicker = ({ label, value, onChange }: { label: string, value: string |
     }}
   />
 );
+
 
 
 export function EventViewer() {
