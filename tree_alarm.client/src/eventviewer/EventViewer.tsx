@@ -4,7 +4,7 @@
 import { useSelector } from "react-redux";
 
 import {
-  Box, ToggleButton, ButtonGroup, Grid, IconButton, Toolbar, Tooltip
+  Box, ToggleButton, ButtonGroup, Grid, IconButton, Toolbar, Tooltip, Checkbox, FormControlLabel
 } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
@@ -21,7 +21,7 @@ import { ApplicationState } from "../store";
 import { useAppDispatch } from "../store/configureStore";
 import { EventProperties } from "./EventProperties";
 import EventTable from "./EventTable";
-import { DeepCopy, ObjPropsSearchDTO, SearchEventFilterDTO, uuidv4 } from "../store/Marker";
+import { DeepCopy, IEventDTO, ObjPropsSearchDTO, SearchEventFilterDTO, uuidv4 } from "../store/Marker";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -33,6 +33,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { PropertyFilterEditor } from "./PropertyFilterEditor";
 import { PropertyListEditor } from "./PropertyListEditor";
 import PaginationControl from "../components/PaginationControl";
+import { EventGallery } from "./EventGallery";
 
 dayjs.extend(utc);
 
@@ -67,8 +68,11 @@ export function EventViewer() {
   //const guid = useId();
   //console.log("guid=", guid);
   const [autoUpdate, setAutoUpdate] = useState(false);
+  const [useGalleryView, setUseGalleryView] = useState(false);
+
   const searchFilter: SearchEventFilterDTO |null = useSelector((state: ApplicationState) => state?.eventsStates?.filter)??null;
   const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching) ?? false;
+  const selected_event: IEventDTO = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event) ??null;
 
   const timeoutIdRef = useRef<any>(null);
 
@@ -129,6 +133,17 @@ export function EventViewer() {
       clearInterval(interval);
     };
   }, [appDispatch, searchFilter]);
+
+  const handleSelect = (row: IEventDTO
+  ) => {
+    if (selected_event?.id == row?.id) {
+      appDispatch(EventsStore.set_selected_event(null));
+    }
+    else {
+      appDispatch(EventsStore.set_selected_event(DeepCopy(row)));
+    }
+
+  };
 
   const handleChange1 = (newValue: Dayjs | null) => {
     try {
@@ -247,8 +262,18 @@ export function EventViewer() {
                 />
 
               
-              <TimePicker label="begin" value={searchFilter?.time_start} onChange={handleChange1} />
-              <TimePicker label="end" value={searchFilter?.time_end} onChange={handleChange2} />
+              <TimePicker label="begin" value={searchFilter?.time_start??null} onChange={handleChange1} />
+              <TimePicker label="end" value={searchFilter?.time_end??null} onChange={handleChange2} />
+
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={useGalleryView}
+                    onChange={(event) => setUseGalleryView(event.target.checked)}
+                  />
+                }
+                label="Gallery view"
+              />
 
               </Stack>
 
@@ -265,7 +290,10 @@ export function EventViewer() {
       }}>
 
         <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
-          <EventTable setLocalFilter={setLocalFilter} />
+          
+          {useGalleryView ?
+            <EventGallery onSelect={handleSelect} /> :
+            <EventTable setLocalFilter={setLocalFilter} onSelect={handleSelect} />}
         </Grid>
 
         <Grid item xs={3} sx={{ height: "100%", border: 1 }}>

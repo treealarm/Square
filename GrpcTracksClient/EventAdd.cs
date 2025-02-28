@@ -44,7 +44,7 @@ namespace GrpcTracksClient
           }          
           
 
-          if (i <= 1)
+          if (i == 1 || i == 2 || i == 3)
           {
             newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
@@ -67,7 +67,7 @@ namespace GrpcTracksClient
             newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
               PropName = "event_descr",
-              StrVal = $"you can't search me {i}"
+              StrVal = $"just description {i}"
             });
           }
 

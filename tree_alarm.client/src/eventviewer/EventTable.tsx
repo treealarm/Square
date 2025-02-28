@@ -56,6 +56,7 @@ const columns: readonly Column[] = [
 interface IEventTableProps {
   // eslint-disable-next-line no-unused-vars
   setLocalFilter: (newFilter: SearchEventFilterDTO) => any;
+  onSelect: (event?: IEventDTO | null) => void;
 }
 export default function EventTable(props: IEventTableProps) {
 
@@ -63,7 +64,7 @@ export default function EventTable(props: IEventTableProps) {
 
   const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events);
   const filter: SearchEventFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
-  const selected_event: IEventDTO = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event);
+  const selected_event: IEventDTO|null = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event) ?? null;
 
   var order = filter.sort;
 
@@ -92,16 +93,6 @@ export default function EventTable(props: IEventTableProps) {
     //appDispatch(EventsStore.fetchEventsByFilter(newFilter));
   };
 
-  const handleSelect = (row: IEventDTO
-  ) => {
-    if (selected_event?.id == row?.id) {
-      appDispatch(EventsStore.set_selected_event(null));
-    }
-    else {
-      appDispatch(EventsStore.set_selected_event(DeepCopy(row)));
-    }
-    
-  };
   const getOrderByKey = (id:string) => {
     return order?.find(el => el.key == id);
   };
@@ -166,7 +157,7 @@ export default function EventTable(props: IEventTableProps) {
                 return (
                   <TableRow
                     sx={{ backgroundColor: getColor(row.event_priority) }}
-                    onClick={() => handleSelect(row)}
+                    onClick={() => props.onSelect(row)}
                     selected={selected_event != null && selected_event?.id == row?.id }
                     hover role="checkbox" tabIndex={-1} key={row.id + ' ' + index}>
                     {columns.map((column) => {

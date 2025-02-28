@@ -35,7 +35,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="files\plate0.jpeg">
+    <None Update="files\plate2.jpeg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="files\plate1.jpeg">
