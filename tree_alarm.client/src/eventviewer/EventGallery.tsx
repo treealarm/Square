@@ -6,7 +6,7 @@ import { ApplicationState } from "../store";
 import { DeepCopy, IEventDTO } from "../store/Marker";
 import { DoFetch } from "../store/Fetcher";
 import { ApiFileSystemRootString } from "../store/constants";
-import { Box, Card, CardMedia, Grid } from "@mui/material";
+import { Box, Card, CardMedia, Grid, Typography } from "@mui/material";
 import { Tooltip } from "@mui/material";
 
 export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect?: (event?: IEventDTO|null) => void }) {
@@ -95,16 +95,31 @@ export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect?:
               onClick={() => item && onSelect?.(item.event)}
             >
               {item ? (
-                <CardMedia
-                  component="img"
-                  image={images[item.prop.str_val] || "svg/black_square.svg"}
-                  alt={item.prop.prop_name}
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                  }}
-                />
+                <Tooltip
+                  arrow
+                  title={
+                    <div>
+                      {item.event.extra_props
+                        ?.filter((prop) => prop !== item.prop) // Исключаем основное изображение
+                        .map((prop, index) => (
+                          <Typography key={index} variant="body2">
+                            {prop.prop_name}: {prop.str_val}
+                          </Typography>
+                        )) || <Typography variant="body2">Нет дополнительных данных</Typography>}
+                    </div>
+                  }
+                >
+                  <CardMedia
+                    component="img"
+                    image={images[item.prop.str_val] || "svg/black_square.svg"}
+                    alt={item.prop.prop_name}
+                    sx={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                    }}
+                  />
+                </Tooltip>
               ) : (
                 <Box sx={{ width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.05)" }} />
               )}
