@@ -227,11 +227,11 @@ export interface ISortPair {
   order: Order;
 }
 export interface SearchFilterDTO{
-  time_start?: string|null;
-  time_end?: string|null;
-  property_filter?: ObjPropsSearchDTO;
+  time_start: string|null;
+  time_end: string|null;
+  property_filter: ObjPropsSearchDTO|null;
   search_id: string|null;
-  start_id?: string|null;
+  start_id: string|null;
   forward: number;
   count: number;
   sort?: ISortPair[];
@@ -239,6 +239,7 @@ export interface SearchFilterDTO{
 export interface SearchEventFilterDTO extends SearchFilterDTO {
   groups?: string[];
   objects?: string[];
+  images_only: boolean;
 }
 
 export interface BoxTrackDTO extends BoundBox

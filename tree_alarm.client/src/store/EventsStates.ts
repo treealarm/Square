@@ -22,7 +22,8 @@ const unloadedState: EventStates = {
     time_end: null,
     forward: 0,
     count: ApiDefaultPagingNum,
-    sort: [{ key: 'timestamp', order: 'desc' }]
+    sort: [{ key: 'timestamp', order: 'desc' }],
+    images_only:false
   },
   selected_event: null,
   isFetching: false
@@ -44,22 +45,6 @@ export const fetchEventsByFilter = createAsyncThunk<IEventDTO[], SearchEventFilt
       });
 
     var json = await fetched.json() as Promise<IEventDTO[]>;
-
-    return json;
-  }
-)
-
-export const reserveCursor = createAsyncThunk<number, string>(
-  'events/ReserveCursor',
-  async (search_id: string, { getState }) => {
-    let body = JSON.stringify(search_id);
-
-    var fetched = await DoFetch(ApiEventsRootString + "/ReserveCursor?search_id=" + search_id,
-      {
-        method: "GET"
-      });
-
-    var json = await fetched.text() as unknown as Promise<number>;
 
     return json;
   }
@@ -90,13 +75,6 @@ const eventsSlice = createSlice({
         state.isFetching = false;
         const { requestId } = action.meta
         state.events = null;
-      })
-      //ReserveCursor
-      .addCase(reserveCursor.pending, (state, action) => {
-      })
-      .addCase(reserveCursor.fulfilled, (state, action) => {
-      })
-      .addCase(reserveCursor.rejected, (state, action) => {
       })
   },
 })

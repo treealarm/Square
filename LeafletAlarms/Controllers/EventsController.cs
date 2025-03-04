@@ -28,12 +28,6 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    [HttpGet]
-    [Route("ReserveCursor")]
-    public async Task<long> ReserveCursor(string search_id)
-    {
-      return await _eventsService.ReserveCursor(search_id);
-    }
 
     [HttpPost()]
     [Route("AddEvents")]

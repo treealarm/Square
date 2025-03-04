@@ -11,7 +11,7 @@ namespace DbLayer
   internal class PgDbContext : DbContext
   {
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
-    public DbSet<PgDBEvent> Events { get; set; }
+    public DbSet<DBEvent> Events { get; set; }
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings):base(options) 
@@ -24,7 +24,7 @@ namespace DbLayer
       base.OnModelCreating(modelBuilder);
 
       // Настройка таблицы DBEvent, связанной с таблицей events
-      modelBuilder.Entity<PgDBEvent>(entity =>
+      modelBuilder.Entity<DBEvent>(entity =>
       {
         entity.ToTable("events"); // Указываем имя таблицы для DBEvent
 

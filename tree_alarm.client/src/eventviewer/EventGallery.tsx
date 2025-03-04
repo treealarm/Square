@@ -9,7 +9,7 @@ import { ApiFileSystemRootString } from "../store/constants";
 import { Box, Card, CardMedia, Grid, Typography } from "@mui/material";
 import { Tooltip } from "@mui/material";
 
-export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect?: (event?: IEventDTO|null) => void }) {
+export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect: (event: IEventDTO|null) => void }) {
   const events: IEventDTO[] = useSelector(
     (state: ApplicationState) => state?.eventsStates?.events
   ) ?? [];
@@ -77,7 +77,7 @@ export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect?:
   imageItems = imageItems.slice(0, maxItems);
 
   return (
-    <Box ref={containerRef} sx={{ width: "100%", overflow: "auto", p: 2 }}>
+    <Box ref={containerRef} sx={{ width: "99%", overflow: "auto", p: 2 }}>
       <Grid container spacing={2} columns={cols}>
         {imageItems.map((item, index) => (
           <Grid item key={index} xs={1}>

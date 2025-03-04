@@ -56,14 +56,14 @@ const columns: readonly Column[] = [
 interface IEventTableProps {
   // eslint-disable-next-line no-unused-vars
   setLocalFilter: (newFilter: SearchEventFilterDTO) => any;
-  onSelect: (event?: IEventDTO | null) => void;
+  onSelect: (event: IEventDTO | null) => void;
 }
 export default function EventTable(props: IEventTableProps) {
 
   const appDispatch = useAppDispatch();
 
-  const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events);
-  const filter: SearchEventFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter);
+  const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events) ?? [];
+  const filter: SearchEventFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter) ?? null;
   const selected_event: IEventDTO|null = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event) ?? null;
 
   var order = filter.sort;

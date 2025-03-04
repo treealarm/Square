@@ -8,6 +8,5 @@ namespace Domain
   {
     Task<long> InsertManyAsync(List<EventDTO> newObjs);
     Task<List<EventDTO>> GetEventsByFilter(SearchEventFilterDTO filter_in);
-    Task<long> ReserveCursor(string search_id);
   }
 }

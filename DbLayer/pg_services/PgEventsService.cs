@@ -51,7 +51,7 @@ namespace DbLayer.Services
 
       return retVal;
     }
-    private EventDTO ConvertDB2DTO(PgDBEvent db_event)
+    private EventDTO ConvertDB2DTO(DBEvent db_event)
     {
       if (db_event == null)
       {
@@ -68,7 +68,7 @@ namespace DbLayer.Services
       dto.extra_props = ConverDBExtraProp2DTO(db_event.extra_props);
       return dto;
     }
-    private List<EventDTO> DBListToDTO(List<PgDBEvent> dbTracks)
+    private List<EventDTO> DBListToDTO(List<DBEvent> dbTracks)
     {
       List<EventDTO> list = new List<EventDTO>();
       foreach (var t in dbTracks)
@@ -142,7 +142,7 @@ namespace DbLayer.Services
 
   public async Task<long> InsertManyAsync(List<EventDTO> events)
     {
-      var list = new List<PgDBEvent>();
+      var list = new List<DBEvent>();
 
       foreach (var ev in events)
       {
@@ -154,7 +154,7 @@ namespace DbLayer.Services
         {
           ev.object_id = null;
         }
-        var dbTrack = new PgDBEvent();
+        var dbTrack = new DBEvent();
 
         ev.CopyAllTo(dbTrack);
         dbTrack.id = Utils.ConvertObjectIdToGuid(ev.id);
@@ -207,6 +207,11 @@ namespace DbLayer.Services
         query = query.Where(e => e.event_name.Contains(filter_in.start_id));
       }
 
+      if (filter_in.images_only)
+      {
+        query = query.Where(e => e.extra_props.Where(p=>p.visual_type == "image_fs").Any());
+      }
+
       if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
       {
         foreach (var prop in filter_in.property_filter.props)
@@ -221,7 +226,7 @@ namespace DbLayer.Services
 
       if (filter_in.sort != null && filter_in.sort.Count > 0)
       {
-        IOrderedQueryable<PgDBEvent> orderedQuery = null;
+        IOrderedQueryable<DBEvent> orderedQuery = null;
         foreach (var kvp in filter_in.sort)
         {
           if (orderedQuery == null)
@@ -248,13 +253,6 @@ namespace DbLayer.Services
       query = query.Take(limit).Include(e => e.extra_props);
 
       return DBListToDTO(await query.ToListAsync());
-    }
-
-
-    public async Task<long> ReserveCursor(string search_id)
-    {
-      //throw new NotImplementedException();
-      return 0;
     }
   }
 }

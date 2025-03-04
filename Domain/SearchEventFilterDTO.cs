@@ -7,5 +7,6 @@ namespace Domain
   {
     public List<string> groups {  get; set; } = new List<string>();
     public List<string> objects { get; set; } = new List<string>();
+    public bool images_only { get; set; } = false;
   }
 }

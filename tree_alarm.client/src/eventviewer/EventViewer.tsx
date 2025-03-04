@@ -68,13 +68,13 @@ export function EventViewer() {
   //const guid = useId();
   //console.log("guid=", guid);
   const [autoUpdate, setAutoUpdate] = useState(false);
-  const [useGalleryView, setUseGalleryView] = useState(false);
 
-  const searchFilter: SearchEventFilterDTO |null = useSelector((state: ApplicationState) => state?.eventsStates?.filter)??null;
+  const searchFilter: SearchEventFilterDTO |null = useSelector((state: ApplicationState) => state?.eventsStates?.filter) ?? null;
   const isFetching: boolean = useSelector((state: ApplicationState) => state?.eventsStates?.isFetching) ?? false;
-  const selected_event: IEventDTO = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event) ??null;
+  const selected_event: IEventDTO|null = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event) ?? null;
 
   const timeoutIdRef = useRef<any>(null);
+  const useGalleryView = searchFilter?.images_only;
 
   const setLocalFilter = useCallback((newFilter: SearchEventFilterDTO) => {
 
@@ -121,20 +121,7 @@ export function EventViewer() {
     };
   }, [searchFilter, autoUpdate, isFetching, appDispatch]);
 
-  useEffect(() => {
-    // Autoupdate
-    const interval = setInterval(() => {
-      if (searchFilter?.forward != 0) {
-        appDispatch(EventsStore.reserveCursor(searchFilter?.search_id??''));
-      }
-    }
-      , 30000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [appDispatch, searchFilter]);
-
-  const handleSelect = (row: IEventDTO
+  const handleSelect = (row: IEventDTO|null
   ) => {
     if (selected_event?.id == row?.id) {
       appDispatch(EventsStore.set_selected_event(null));
@@ -207,7 +194,7 @@ export function EventViewer() {
   const handleFilterChange = useCallback((updatedFilterData: ObjPropsSearchDTO) => {
     var newFilter = DeepCopy(searchFilter);
     if (newFilter) {
-      newFilter.forward = 0; // replace cursor
+      newFilter.forward = 0;
       newFilter.property_filter = updatedFilterData;
       setLocalFilter(newFilter);
     }
@@ -216,11 +203,20 @@ export function EventViewer() {
   const handleGroupsChange = useCallback((updatedFilterData: string[]) => {
     var newFilter = DeepCopy(searchFilter);
     if (newFilter) {
-      newFilter.forward = 0; // replace cursor
+      newFilter.forward = 0;
       newFilter.groups = updatedFilterData;
       setLocalFilter(newFilter);
     }
     
+  }, [searchFilter]);
+
+  const handleViewChange = useCallback((updatedFilterData: boolean) => {
+    var newFilter = DeepCopy(searchFilter);
+    if (newFilter) {
+      newFilter.images_only = updatedFilterData;
+      setLocalFilter(newFilter);
+    }
+
   }, [searchFilter]);
 
   return (
@@ -269,7 +265,7 @@ export function EventViewer() {
                 control={
                   <Checkbox
                     checked={useGalleryView}
-                    onChange={(event) => setUseGalleryView(event.target.checked)}
+                    onChange={(event) => handleViewChange(event.target.checked)}
                   />
                 }
                 label="Gallery view"
