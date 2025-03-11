@@ -10,11 +10,14 @@ namespace LeafletAlarms.Grpc.Implementation
   internal class IntegroGrpcImp : IntegroServiceBase
   {
     private readonly IIntegroUpdateService _integroUpdateService;
+    private readonly IIntegroService _integroService;
     public IntegroGrpcImp(
-      IIntegroUpdateService integroUpdateService
+      IIntegroUpdateService integroUpdateService,
+      IIntegroService integroService
     )
     {
       _integroUpdateService = integroUpdateService;
+      _integroService = integroService;
     }
 
     public override async Task<GenerateObjectIdResponse> GenerateObjectId(GenerateObjectIdRequest request, ServerCallContext context)
@@ -34,8 +37,7 @@ namespace LeafletAlarms.Grpc.Implementation
       return await Task.FromResult(response);
     }
 
-    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public override async Task<BoolValue> UpdateIntegro(UpdateIntegroRequest request, ServerCallContext context)
+    public override async Task<BoolValue> UpdateIntegro(IntegroListProto request, ServerCallContext context)
     {
       List<IntegroDTO> dto = new List<IntegroDTO>();
 
@@ -44,13 +46,33 @@ namespace LeafletAlarms.Grpc.Implementation
         dto.Add(new IntegroDTO()
         {
           id = i.ObjectId,
-          i_name = i.IName
+          i_name = i.IName,
+          i_type = i.IType
         });
       }
       var ret = new BoolValue();
       ret.Value = true;
       await _integroUpdateService.UpdateIntegros(dto);
       return ret;
+    }
+
+    public override async Task<IntegroListProto> GetListByType(GetListByTypeRequest request, ServerCallContext context)
+    {
+      var response = new IntegroListProto();
+
+      var objects = await _integroService.GetListByType(request.IName, request.IType);
+
+      foreach (var i in objects.Values)
+      {
+        var obj = new IntegroProto()
+        {
+          IName = i.i_name,
+          IType = i.i_type,
+          ObjectId = i.id
+        };
+        response.Objects.Add(obj);       
+      }
+      return response;
     }
   }
 }

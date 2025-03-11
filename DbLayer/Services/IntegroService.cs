@@ -65,6 +65,19 @@ namespace DbLayer.Services
 
         Coll?.Indexes.CreateOneAsync(indexModel);
       }
+      {
+        IndexKeysDefinition<DBIntegro> keys =
+                new IndexKeysDefinitionBuilder<DBIntegro>()
+                .Ascending(d => d.i_type)
+                ;
+
+        var indexModel = new CreateIndexModel<DBIntegro>(
+          keys, new CreateIndexOptions()
+          { Name = "i_type" }
+        );
+
+        Coll?.Indexes.CreateOneAsync(indexModel);
+      }
     }
 
     public async Task UpdateListAsync(List<IntegroDTO> obj2UpdateIn)
@@ -93,6 +106,11 @@ namespace DbLayer.Services
         ids, 
         PropertyCopy.ConvertListDB2DTO<DBIntegro, IntegroDTO>);
       return result;
+    }
+    public async Task<Dictionary<string, IntegroDTO>> GetListByType(string i_name, string i_type)
+    {
+      var dbObjs = await Coll.Find(i => i.i_name == i_name && i.i_type == i_type).ToListAsync(); ;
+      return PropertyCopy.ConvertListDB2DTO<DBIntegro, IntegroDTO>(dbObjs); 
     }
   }
 }

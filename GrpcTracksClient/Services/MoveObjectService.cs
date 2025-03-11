@@ -10,12 +10,81 @@ namespace GrpcTracksClient.Services
     private static ValhallaRouter _router = new ValhallaRouter();
 
     private Dictionary<string, MovingCar> _cars = new Dictionary<string, MovingCar>();
+    private ProtoObject _mainObject = null;
+    private bool _inited = false;
+    private const string _main_str = "main";
     public MoveObjectService()
     {
       
     }
+
+    public async Task Init(CancellationToken token)
+    {
+      IntegroProto mainIntegro = null;
+
+      while (!_inited && !token.IsCancellationRequested)
+      {
+        var client = Utils.Client;
+
+        var integroRequest = new GetListByTypeRequest();
+        integroRequest.IName = client.AppId;
+        integroRequest.IType = _main_str;
+
+        var response = await client.GetListByType(integroRequest);
+
+        if (response != null)
+        {
+          if (response.Objects.Count > 0)
+          {
+            mainIntegro = response.Objects.FirstOrDefault();
+
+            if (mainIntegro != null)
+            {
+              //Request real object or create if doesn't exist
+              var ids = new ProtoObjectIds();
+              ids.Ids.Add(mainIntegro.ObjectId);
+              var mainObjs = await client.RequestObjects(ids);
+
+              if (mainObjs.Objects.Count == 0)
+              {
+                var mainObject = new ProtoObject()
+                {
+                  Id = mainIntegro.ObjectId,
+                  Name = $"{client.AppId}_{_main_str}"
+                };
+                var list = new ProtoObjectList();
+                list.Objects.Add(mainObject);
+                mainObjs = await client.UpdateObjects(list);                
+              }
+
+              if (mainObjs.Objects.Count > 0)
+              {
+                _mainObject = mainObjs.Objects.FirstOrDefault();
+                _inited = true;
+              }
+            }            
+          }
+          else
+          {
+            var mainUid = await Utils.GenerateObjectId(_main_str, 0);
+
+            var integro = new IntegroListProto();
+            integro.Objects.Add(new IntegroProto()
+            {
+              IType = _main_str,
+              IName = client.AppId,
+              ObjectId = mainUid
+            });
+            await client.UpdateIntegro(integro);
+          }
+        }
+        break;
+      }
+    }
     public async Task MoveCars(CancellationToken token)
     {
+      await Init(token);
+
       while (_cars.Count == 0 && !token.IsCancellationRequested) 
       {
         for (long carId = 0; carId < IMoveObjectService.MaxCars; carId++)
@@ -88,13 +157,14 @@ namespace GrpcTracksClient.Services
           }
           if (!inited)
           {
-            var integroRequest = new UpdateIntegroRequest();
+            var integroRequest = new IntegroListProto();
             foreach (var fig in figs.Figs)
             {
               integroRequest.Objects.Add(new IntegroProto()
               {
                 IName = client.AppId,
-                ObjectId = fig.Id
+                ObjectId = fig.Id,
+                IType = "car"
               });
               Console.WriteLine($"Register integro:{client.AppId}:{fig.Id}");
             }
@@ -321,19 +391,17 @@ namespace GrpcTracksClient.Services
     }
 
     private static string CarParamsActionName = "SetCarParams";
-
-    public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
+    private static string CarCreateActionName = "CreateCar";
+    private void FillCarAction(ProtoGetAvailableActionsRequest request, ProtoGetAvailableActionsResponse response)
     {
-      await Task.Delay(0);
-      ProtoGetAvailableActionsResponse retVal = new ProtoGetAvailableActionsResponse();
       if (_cars.TryGetValue(request.ObjectId, out var car))
       {
         var action = new ProtoActionDescription
         {
-          Name = car.CarState.HasFlag(E_CarStates.Occupated) ? "Free" : "Occupate"          
+          Name = car.CarState.HasFlag(E_CarStates.Occupated) ? "Free" : "Occupate"
         };
-       
-        retVal.ActionsDescr.Add(action);
+
+        response.ActionsDescr.Add(action);
         /////Car params
         var action1 = new ProtoActionDescription
         {
@@ -369,7 +437,7 @@ namespace GrpcTracksClient.Services
         };
         coordParam.CurVal.Coordinates.Coord.Add(car.DestinationPos);
         action1.Parameters.Add(coordParam);
-        retVal.ActionsDescr.Add(action1);
+        response.ActionsDescr.Add(action1);
         ///End  car params
 
         var action2 = new ProtoActionDescription
@@ -384,9 +452,47 @@ namespace GrpcTracksClient.Services
             StringValue = car.StringParam
           }
         });
-        retVal.ActionsDescr.Add(action2);
+        response.ActionsDescr.Add(action2);
       }
-      return retVal;
+    }
+
+    private void FillCreateAction(ProtoGetAvailableActionsRequest request, ProtoGetAvailableActionsResponse response)
+    {
+      var action1 = new ProtoActionDescription
+      {
+        Name = CarCreateActionName
+      };
+
+      action1.Parameters.Add(new ProtoActionParameter()
+      {
+        Name = "Name",
+        CurVal = new ProtoActionValue()
+        {
+          StringValue = "New Car"
+        }
+      });
+
+      if (_cars.TryGetValue(request.ObjectId, out var car))
+      {
+        action1.Parameters.Add(new ProtoActionParameter()
+        {
+          Name = "ParentId",
+          CurVal = new ProtoActionValue()
+          {
+            StringValue = request.ObjectId
+          }
+        });
+      }
+      response.ActionsDescr.Add(action1);
+    }
+    public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
+    {
+      await Task.Delay(0);
+      ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
+
+      FillCarAction(request, response);
+      FillCreateAction(request, response);
+      return response;
     }
 
     public async Task<ProtoExecuteActionResponse> ExecuteActions(ProtoExecuteActionRequest request)

@@ -52,5 +52,14 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       return await _proxy.UploadFile(request);
     }
+
+    public override async Task<ProtoObjectList> UpdateObjects(ProtoObjectList request, ServerCallContext context)
+    {
+      return await _proxy.UpdateObjects(request);
+    }
+    public override async Task<ProtoObjectList> RequestObjects(ProtoObjectIds request, ServerCallContext context)
+    {
+      return await _proxy.RequestObjects(request);
+    }
   }
 }

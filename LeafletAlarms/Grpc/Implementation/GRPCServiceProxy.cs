@@ -4,6 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using LeafletAlarms.Services;
 using LeafletAlarmsGrpc;
 using Common;
+using Grpc.Core;
 
 namespace LeafletAlarms.Grpc.Implementation
 {
@@ -17,6 +18,7 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly IDiagramUpdateService _diagramUpdateService;
     private readonly IIntegroUpdateService _integroUpdateService;
     private readonly FileSystemService _fs;
+    private readonly IMapService _mapService;
     public GRPCServiceProxy(
       ITracksUpdateService trackUpdateService,
       IStatesUpdateService statesUpdateService,
@@ -25,7 +27,8 @@ namespace LeafletAlarms.Grpc.Implementation
       IDiagramTypeUpdateService diagramTypeUpdateService,
       IDiagramUpdateService diagramUpdateService,
       FileSystemService fs,
-      IIntegroUpdateService integroUpdateService
+      IIntegroUpdateService integroUpdateService,
+      IMapService mapService
     )
     {
       _trackUpdateService = trackUpdateService;
@@ -36,6 +39,7 @@ namespace LeafletAlarms.Grpc.Implementation
       _diagramUpdateService = diagramUpdateService;
       _integroUpdateService = integroUpdateService;
       _fs = fs;
+      _mapService = mapService;
     }
     public static GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
     {
@@ -557,6 +561,54 @@ namespace LeafletAlarms.Grpc.Implementation
       var response = new DiagramsProto();
       response.Diagrams.AddRange(updatedDiagrams.Select(dto => ConvertToDiagramProto(dto)));
 
+      return response;
+    }
+
+    public async Task<ProtoObjectList> UpdateObjects(ProtoObjectList request)
+    {
+      var objects = new List<BaseMarkerDTO>();
+      foreach (var obj in request.Objects) 
+      {
+        objects.Add(new BaseMarkerDTO()
+        {
+          id = obj.Id,
+          name = obj.Name,
+          owner_id = obj.OwnerId,
+          parent_id = obj.ParentId
+        });
+      }
+      await _mapService.UpdateHierarchyAsync(objects);
+
+      var response = new ProtoObjectList();
+      foreach (var obj in objects)
+      {
+        response.Objects.Add(new ProtoObject()
+        {
+          Id = obj.id,
+          Name = obj.name,
+          OwnerId = obj.owner_id,
+          ParentId = obj.parent_id
+        });
+      }
+      return response;
+    }
+
+    public async Task<ProtoObjectList> RequestObjects(ProtoObjectIds request)
+    {
+      var dic = await _mapService.GetAsync(request.Ids.ToList());
+
+      var response = new ProtoObjectList();
+
+      foreach (var obj in dic.Values)
+      {
+        response.Objects.Add(new ProtoObject()
+        {
+          Id = obj.id,
+          Name = obj.name,
+          OwnerId = obj.owner_id,
+          ParentId = obj.parent_id
+        });
+      }
       return response;
     }
   }

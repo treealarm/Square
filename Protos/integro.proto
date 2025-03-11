@@ -8,15 +8,17 @@ package integro;
 
 service IntegroService {
   rpc GenerateObjectId (GenerateObjectIdRequest) returns (GenerateObjectIdResponse);
-  rpc UpdateIntegro (UpdateIntegroRequest) returns (google.protobuf.BoolValue);  
+  rpc UpdateIntegro (IntegroListProto) returns (google.protobuf.BoolValue);
+  rpc GetListByType (GetListByTypeRequest) returns (IntegroListProto);   
 }
 
 message IntegroProto{
   string object_id = 1;
   string i_name = 2;
+  string i_type = 3;
 }
 
-message UpdateIntegroRequest{
+message IntegroListProto {
   repeated IntegroProto objects = 1;
 }
 
@@ -31,5 +33,11 @@ message GenerateObjectIdRequest {
 }
 
 message GenerateObjectIdResponse {
-  repeated GenerateObjectIdData output = 1;  // Возвращаемая строка (ObjectId)
+  repeated GenerateObjectIdData output = 1;
 }
+
+message GetListByTypeRequest {
+  string i_name = 1;
+  string i_type = 2;
+}
+

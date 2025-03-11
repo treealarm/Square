@@ -283,6 +283,11 @@ namespace DbLayer.Services
           dbObj.id = null;
         }
 
+        if (string.IsNullOrEmpty(dbObj.owner_id))
+        {
+          dbObj.owner_id = null;
+        }
+
         dbUpdated.Add(item, dbObj);
         
         var filter = Builders<DBMarker>.Filter.Eq(x => x.id, dbObj.id);

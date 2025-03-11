@@ -123,7 +123,22 @@ namespace GrpcDaprLib
       return result;
     }
 
-    public async Task<bool?> UpdateIntegro(UpdateIntegroRequest integro)
+    public async Task<ProtoObjectList?> RequestObjects(ProtoObjectIds ids)
+    {
+      if (_client == null) return null;
+
+      var result = await _client.RequestObjectsAsync(ids);
+      return result;
+    }
+
+    public async Task<ProtoObjectList?> UpdateObjects(ProtoObjectList objects)
+    {
+      if (_client == null) return null;
+
+      var result = await _client.UpdateObjectsAsync(objects);
+      return result;
+    }
+    public async Task<bool?> UpdateIntegro(IntegroListProto integro)
     {
       if (_integroClient == null) return null;
 
@@ -131,6 +146,13 @@ namespace GrpcDaprLib
       return result.Value;
     }
 
+    public async Task<IntegroListProto?> GetListByType(GetListByTypeRequest request)
+    {
+      if (_integroClient == null) return null;
+
+      var result = await _integroClient.GetListByTypeAsync(request);
+      return result;
+    }
     public async Task<string?> GenerateObjectId(string input)
     {
       if (_integroClient == null) return null;

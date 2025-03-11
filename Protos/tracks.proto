@@ -21,6 +21,9 @@ service TreeAlarmsGrpcService {
   rpc UpdateDiagrams(diagrams.DiagramsProto) returns (diagrams.DiagramsProto);
 
   rpc UploadFile(UploadFileProto) returns (google.protobuf.BoolValue);
+
+  rpc UpdateObjects (ProtoObjectList) returns (ProtoObjectList);
+  rpc RequestObjects (ProtoObjectIds) returns (ProtoObjectList);
 }
 
 
@@ -28,6 +31,21 @@ message ProtoObjExtraProperty {
   string str_val = 1;
 	string prop_name = 2;
 	string visual_type = 3;
+}
+
+message ProtoObject {
+	string id = 1;
+	optional string parent_id = 2;
+  optional string owner_id = 3;
+	string name = 4;
+}
+
+message ProtoObjectList {
+	repeated ProtoObject objects = 1;
+}
+
+message ProtoObjectIds {
+	repeated string ids = 1;
 }
 
 message ProtoFig {

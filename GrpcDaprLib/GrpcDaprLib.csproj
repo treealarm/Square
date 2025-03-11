@@ -30,8 +30,8 @@
     <Protobuf Include="..\Protos\diagrams.proto" GrpcServices="None">
       <Link>Proto\diagrams.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\Protos\integro.proto">
-      <Link>Proto\integro.proto</Link>
+    <Protobuf Include="D:\TESTS\Leaflet\Protos\integro.proto">
+      <Link>integro.proto</Link>
     </Protobuf>
     <Protobuf Include="..\Protos\tracks.proto">
       <Link>Proto\tracks.proto</Link>
