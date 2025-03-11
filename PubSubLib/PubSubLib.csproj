@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapr.Client" Version="1.14.0" />
-    <PackageReference Include="Dapr.Messaging" Version="1.15.0-rc03" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1" />
+    <PackageReference Include="Dapr.Client" Version="1.15.1" />
+    <PackageReference Include="Dapr.Messaging" Version="1.15.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.3" />
   </ItemGroup>
 
   <ItemGroup>
