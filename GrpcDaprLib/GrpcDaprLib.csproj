@@ -31,7 +31,7 @@
       <Link>Proto\diagrams.proto</Link>
     </Protobuf>
     <Protobuf Include="D:\TESTS\Leaflet\Protos\integro.proto">
-      <Link>integro.proto</Link>
+      <Link>Proto\integro.proto</Link>
     </Protobuf>
     <Protobuf Include="..\Protos\tracks.proto">
       <Link>Proto\tracks.proto</Link>
