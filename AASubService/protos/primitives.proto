@@ -2,7 +2,6 @@
 
 package analytics.api.primitives;
 
-import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 message TimeRange {

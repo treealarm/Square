@@ -45,7 +45,7 @@ using SixLabors.ImageSharp.Processing;
           var image = Image.Load(ms); 
         }
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         return false;
       }
