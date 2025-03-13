@@ -14,7 +14,7 @@ public class MovingCar
     };
   private readonly string _color;
   private readonly int _carIndex;
-  private readonly long _number;
+  private readonly string _name;
 
   private List<ProtoCoord> _route = new();
   private int _currentRouteIndex = 0;
@@ -27,10 +27,10 @@ public class MovingCar
   private double _speed_ms = 0;
   public string Id { get { return _id; } }
 
-  public MovingCar(ValhallaRouter router, long number, string id)
+  public MovingCar(ValhallaRouter router, string name, string id)
   {
     _router = router;
-    _number = number;
+    _name = name;
     _id = id;
     _color = GenerateRandomColor();
     _carIndex = _random.Next(0, _carImages.Length);
@@ -71,7 +71,7 @@ public class MovingCar
     var fig = new ProtoFig
     {
       Id = _id,
-      Name = "Car " + _number,
+      Name = _name,
       Geometry = new ProtoGeometry { Type = "Point" }
     };
     fig.Radius = 50;

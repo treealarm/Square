@@ -39,6 +39,10 @@ namespace DbLayer.Services
         where T_DB : BaseEntity
         where T_DTO : BaseObjectDTO
     {
+      if (obj2UpdateIn.Count == 0)
+      {
+        return;
+      }
       var dbUpdated = new Dictionary<T_DTO, T_DB>();
 
       var bulkWrites = new List<WriteModel<T_DB>>();

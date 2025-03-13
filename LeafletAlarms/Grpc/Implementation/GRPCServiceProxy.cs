@@ -601,13 +601,19 @@ namespace LeafletAlarms.Grpc.Implementation
 
       foreach (var obj in dic.Values)
       {
-        response.Objects.Add(new ProtoObject()
+        var protoObject = new ProtoObject
         {
           Id = obj.id,
-          Name = obj.name,
-          OwnerId = obj.owner_id,
-          ParentId = obj.parent_id
-        });
+          Name = obj.name
+        };
+
+        if (obj.owner_id != null)
+          protoObject.OwnerId = obj.owner_id;
+
+        if (obj.parent_id != null)
+          protoObject.ParentId = obj.parent_id;
+
+        response.Objects.Add(protoObject);
       }
       return response;
     }

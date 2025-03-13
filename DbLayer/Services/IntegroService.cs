@@ -81,7 +81,7 @@ namespace DbLayer.Services
     }
 
     public async Task UpdateListAsync(List<IntegroDTO> obj2UpdateIn)
-    {
+    {      
       if (obj2UpdateIn.Where(i => string.IsNullOrEmpty(i.i_name) ||
       string.IsNullOrEmpty(i.id)).Any())
       {
