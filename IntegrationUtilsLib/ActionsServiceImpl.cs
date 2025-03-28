@@ -3,7 +3,7 @@ using Grpc.Core;
 using ObjectActions;
 using static ObjectActions.ActionsService;
 
-namespace GrpcDaprLib
+namespace IntegrationUtilsLib
 {
     public class ActionsServiceImpl : ActionsServiceBase
     {

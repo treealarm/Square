@@ -1,4 +1,6 @@
-﻿namespace GrpcDaprLib
+﻿using GrpcDaprLib;
+
+namespace IntegrationUtilsLib
 {
   public class Utils
   {

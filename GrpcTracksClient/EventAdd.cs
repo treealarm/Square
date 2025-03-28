@@ -1,7 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using GrpcDaprLib;
+using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
-using Microsoft.Extensions.Logging;
 
 namespace GrpcTracksClient
 {

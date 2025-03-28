@@ -1,1 +1,0 @@
-dapr run --app-id client -- bin\Debug\net7.0\GrpcTracksClient.exe

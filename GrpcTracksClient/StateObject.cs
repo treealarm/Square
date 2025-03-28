@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using GrpcDaprLib;
+using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 
 namespace GrpcTracksClient

@@ -1,6 +1,6 @@
 ﻿using ObjectActions;
 
-namespace GrpcDaprLib
+namespace IntegrationUtilsLib
 {
   public interface IObjectActions
   {

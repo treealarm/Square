@@ -1,5 +1,5 @@
 ﻿using Common;
-using GrpcDaprLib;
+using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 using ObjectActions;
 using System.Collections.Concurrent;
@@ -13,140 +13,13 @@ namespace GrpcTracksClient.Services
 
     private ConcurrentDictionary<string, MovingCar> _cars = 
       new ConcurrentDictionary<string, MovingCar>();
-    private ProtoObject _mainObject = null;
-    private bool _inited = false;
+
     private const string _main_str = "main";
     private const string _car_str = "car";
+    private IntegrationSync _sync = new IntegrationSync();
     public MoveObjectService()
     {
       
-    }
-
-    public async Task<ProtoObject> GetBaseObject(string id_in)
-    {
-      var client = Utils.Client;
-
-      var ids = new ProtoObjectIds();
-      ids.Ids.Add(id_in);
-      var response = await client.RequestObjects(ids);
-
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.FirstOrDefault();
-    }
-    public async Task<List<ProtoObject>> GetBaseObjects(IEnumerable<string> ids_in)
-    {
-      var client = Utils.Client;
-
-      var ids = new ProtoObjectIds();
-      ids.Ids.AddRange(ids_in);
-      var response = await client.RequestObjects(ids);
-
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.ToList();
-    }
-
-    public async Task<List<IntegroProto>> GetIntegroObjects(string type)
-    {
-      var client = Utils.Client;
-
-      var integroRequest = new GetListByTypeRequest();
-      integroRequest.IName = client.AppId;
-      integroRequest.IType = type;
-
-      // Ищем уже созданный main объект по типу
-      var response = await client.GetListByType(integroRequest);
-
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.ToList();
-    }
-
-    public async Task<ProtoObject> UpdateBaseObject(string id, string name)
-    {
-      var client = Utils.Client;
-
-      var mainObject = new ProtoObject()
-      {
-        Id = id,
-        Name = name
-      };
-      var list = new ProtoObjectList();
-      list.Objects.Add(mainObject);
-      var response = await client.UpdateObjects(list);
-
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.FirstOrDefault();
-    }
-    public async Task InitMainObject(CancellationToken token)
-    {
-      IntegroProto mainIntegro = null;
-
-      while (!_inited && !token.IsCancellationRequested)
-      {
-        await Task.Delay(500);
-        var client = Utils.Client;
-
-        // Ищем уже созданный main объект по типу
-        var integroObjects = await GetIntegroObjects(_main_str);
-
-        if (integroObjects != null)
-        {
-          if (integroObjects.Count > 0)
-          {
-            //Если находим, то обращаемся к таблице Objects
-            // И получаем базовый объект с именем, айди, итд
-            mainIntegro = integroObjects.FirstOrDefault();
-
-            if (mainIntegro != null)
-            {
-              //Request real object or create if doesn't exist
-              var mainObj = await GetBaseObject(mainIntegro.ObjectId);
-
-              if (mainObj == null)
-              {
-                // Если не находим, то создаем с дефолтным именем
-                mainObj = await UpdateBaseObject(mainIntegro.ObjectId, $"{client.AppId}_{_main_str}");                
-              }
-
-              if (mainObj != null)
-              {
-                _mainObject = mainObj;
-                _inited = true;
-              }
-            }            
-          }
-          else
-          {
-            //Если не нашли объект в БД, то создадим новый.
-            var mainUid = await Utils.GenerateObjectId(_main_str, 0);
-
-            if (!string.IsNullOrEmpty(mainIntegro?.ObjectId))
-            {
-              mainUid = mainIntegro.ObjectId;
-            }
-
-            var integro = new IntegroListProto();
-            integro.Objects.Add(new IntegroProto()
-            {
-              IType = _main_str,
-              IName = client.AppId,
-              ObjectId = mainUid
-            });
-            await client.UpdateIntegro(integro);
-          }
-        }
-      }
     }
 
     public async Task InitCarObjects(CancellationToken token)
@@ -155,7 +28,7 @@ namespace GrpcTracksClient.Services
       {
         await Task.Delay(500);
         var client = Utils.Client;
-        var integroObjects = await GetIntegroObjects(_car_str);
+        var integroObjects = await _sync.GetIntegroObjects(_car_str);
 
         if (integroObjects == null)
         {
@@ -183,13 +56,13 @@ namespace GrpcTracksClient.Services
           });
         }
         await client.UpdateIntegro(integroRequest);
-        integroObjects = await GetIntegroObjects(_car_str);
+        integroObjects = await _sync.GetIntegroObjects(_car_str);
         if (integroObjects == null || integroObjects.Count < IMoveObjectService.MaxCars)
         {
           continue;
         }
 
-        var baseObjects = await GetBaseObjects(integroObjects.Select(o => o.ObjectId));
+        var baseObjects = await _sync.GetBaseObjects(integroObjects.Select(o => o.ObjectId));
         if (baseObjects == null)
         {
           continue;
@@ -226,7 +99,7 @@ namespace GrpcTracksClient.Services
 
     public async Task MoveCars(CancellationToken token)
     {
-      await InitMainObject(token);
+      await _sync.InitMainObject(token);
       await InitCarObjects(token);
 
       var client = Utils.Client;

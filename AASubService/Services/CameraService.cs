@@ -1,4 +1,4 @@
-﻿using GrpcDaprLib;
+﻿using IntegrationUtilsLib;
 using ObjectActions;
 
 namespace AASubService.Services

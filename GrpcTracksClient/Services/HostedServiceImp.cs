@@ -1,4 +1,4 @@
-﻿using GrpcDaprLib;
+﻿using IntegrationUtilsLib;
 
 namespace GrpcTracksClient.Services
 {
