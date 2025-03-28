@@ -2,6 +2,7 @@
 using GrpcTracksClient;
 using GrpcTracksClient.Services;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Net;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,11 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавляем gRPC в DI-контейнер
 builder.Services.AddGrpc();
 
-var port = GrpcUpdater.GetAppPort();
+var grpc_port = GrpcUpdater.GetAppPort();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-  options.ListenLocalhost(port, listenOptions =>
+  options.Listen(IPAddress.Any, grpc_port, listenOptions =>
   {
     listenOptions.Protocols = HttpProtocols.Http2;
   });

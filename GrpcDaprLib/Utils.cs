@@ -1,11 +1,9 @@
-﻿using GrpcDaprLib;
-
-namespace GrpcTracksClient
+﻿namespace GrpcDaprLib
 {
-  internal class Utils
+  public class Utils
   {
     // Статическое поле для хранения клиента
-    private static GrpcUpdater _client;
+    private static GrpcUpdater? _client;
     private static Dictionary<string,string> _idsCash = new Dictionary<string, string>();
     private static readonly object _lock = new object(); // Для синхронизации
 
@@ -29,7 +27,7 @@ namespace GrpcTracksClient
       }
     }
 
-    public static async Task<string> GenerateObjectId(string prefix, long number)
+    public static async Task<string?> GenerateObjectId(string prefix, long number)
     {
       //return "1111" + number.ToString("D20");
       var object_string = $"{prefix}_{number}";
@@ -40,10 +38,13 @@ namespace GrpcTracksClient
           return id;
         }
       }
-      var obj_id = await Client.GenerateObjectId(object_string);
+      var obj_id = await Client.GenerateObjectId(object_string)  ?? null;
       lock (_lock)
       {
-        _idsCash[object_string] = obj_id;        
+        if (!string.IsNullOrEmpty(obj_id))
+        {
+          _idsCash[object_string] = obj_id;
+        }             
       }
       return obj_id;
     }

@@ -10,13 +10,6 @@ namespace GrpcTracksClient
     Occupated = 1
   }
 
-  public interface IObjectActions
-  {
-    Task<ProtoGetAvailableActionsResponse>
-      GetAvailableActions(ProtoGetAvailableActionsRequest request);
-    Task<ProtoExecuteActionResponse>
-      ExecuteActions(ProtoExecuteActionRequest request);
-  }
   public interface IMoveObjectService
   {
     public static int MaxCars = 50;

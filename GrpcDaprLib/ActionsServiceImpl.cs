@@ -3,27 +3,27 @@ using Grpc.Core;
 using ObjectActions;
 using static ObjectActions.ActionsService;
 
-namespace GrpcTracksClient.Services
+namespace GrpcDaprLib
 {
-    internal class ActionsServiceImpl : ActionsServiceBase
+    public class ActionsServiceImpl : ActionsServiceBase
     {
-        private readonly IObjectActions _moveObjectService;
-        public ActionsServiceImpl(IObjectActions moveObjectService)
+        private readonly IObjectActions _actionServiceInternal;
+        public ActionsServiceImpl(IObjectActions actionService)
         {
-            _moveObjectService = moveObjectService;
+            _actionServiceInternal = actionService;
         }
 
         public override async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(
           ProtoGetAvailableActionsRequest request,
           ServerCallContext context)
         {
-            var retVal = await _moveObjectService.GetAvailableActions(request);
+            var retVal = await _actionServiceInternal.GetAvailableActions(request);
             return retVal;
         }
 
         public override async Task<ProtoExecuteActionResponse> ExecuteActions(ProtoExecuteActionRequest request, ServerCallContext context)
         {
-            return await _moveObjectService.ExecuteActions(request);
+            return await _actionServiceInternal.ExecuteActions(request);
         }
     }
 }

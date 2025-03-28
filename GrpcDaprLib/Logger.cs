@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
-namespace GrpcTracksClient
+namespace GrpcDaprLib
 {
-  internal class Logger
+  public class Logger
   {
     public static void LogException(Exception ex, string text = "", [CallerMemberName] string caller = "", [CallerFilePath] string file = "")
     {

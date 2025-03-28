@@ -1,4 +1,6 @@
-﻿namespace GrpcTracksClient.Services
+﻿using GrpcDaprLib;
+
+namespace GrpcTracksClient.Services
 {
   public class HostedServiceImp : IHostedService
   {

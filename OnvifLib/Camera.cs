@@ -8,7 +8,6 @@ using DeviceServiceReference;
 using MediaServiceReference;
 using OnvifLib;
 
-
 public class Camera
 {
   private readonly string _url;
@@ -17,8 +16,6 @@ public class Camera
   private readonly DeviceClient _deviceClient;
   private readonly CustomBinding _binding;
   private Media2Client _mediaClient;
-  public DeviceClient DeviceClient { get { return _deviceClient; } }
-
 
   //http://192.168.1.150:8899/onvif/device_service
   public Camera(string url, string username, string password)
@@ -86,13 +83,18 @@ public class Camera
         streamUriRequest.ProfileToken = profile.token;
         var streamResponse = await _mediaClient.GetStreamUriAsync(streamUriRequest);
         Console.WriteLine($"Profile: {profile.Name}, RTSP URL: {streamResponse.Uri}");
+
+        var snapShotUriReqiest = new GetSnapshotUriRequest();
+        snapShotUriReqiest.ProfileToken = profile.token;
+        var snapShotUriResponse = await _mediaClient.GetSnapshotUriAsync(snapShotUriReqiest);
       }
+     
     }
   }
   async public Task<Dictionary<string, string>> GetServices()
   {
     var res = new Dictionary<string, string>();
-    var result = await DeviceClient.GetServicesAsync(true);
+    var result = await _deviceClient.GetServicesAsync(true);
     foreach (var service in result.Service)
     {
       res[service.Namespace] = service.XAddr;
