@@ -36,18 +36,18 @@ var app = builder.Build();
 
 app.MapGrpcService<ActionsServiceImpl>();
 
-Camera cam = new Camera("http://192.168.1.150:8899/onvif/device_service", "danil", "$Power321");
-var servicesTask = cam.Init();
-servicesTask?.ContinueWith(task =>
-{
-  if (task.IsFaulted)
-  {
-    Console.WriteLine($"Ошибка: {task.Exception?.GetBaseException().Message}");
-    return;
-  }
+//Camera cam = new Camera("http://192.168.1.150:8899/onvif/device_service", "danil", "$Power321");
+//var servicesTask = cam.Init();
+//servicesTask?.ContinueWith(task =>
+//{
+//  if (task.IsFaulted)
+//  {
+//    Console.WriteLine($"Ошибка: {task.Exception?.GetBaseException().Message}");
+//    return;
+//  }
 
-  if (task.IsCompletedSuccessfully)
-  {
-  }
-});
+//  if (task.IsCompletedSuccessfully)
+//  {
+//  }
+//});
 app.Run();

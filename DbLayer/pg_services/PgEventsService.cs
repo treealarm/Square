@@ -22,13 +22,6 @@ namespace DbLayer.Services
       _groupsService = groupsService;
     }
 
-    public static string GenerateObjectId()
-    {
-      byte[] bytes = new byte[12];
-      RandomNumberGenerator.Fill(bytes); // Заполняем случайными байтами
-      return BitConverter.ToString(bytes).Replace("-", "").ToLower(); // Преобразуем в строку hex
-    }
-
     public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO(List<PgDBObjExtraProperty> props)
     {
       var retVal = new List<ObjExtraPropertyDTO>();

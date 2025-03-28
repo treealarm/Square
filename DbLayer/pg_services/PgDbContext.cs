@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using System;
-using System.Reflection.Metadata;
 
 namespace DbLayer
 {
@@ -12,6 +11,7 @@ namespace DbLayer
   {
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
     public DbSet<DBEvent> Events { get; set; }
+    public DbSet<DBIntegro> Integro { get; set; }
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings):base(options) 
@@ -22,6 +22,11 @@ namespace DbLayer
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
+
+      modelBuilder.Entity<DBIntegro>(entity =>
+      {
+        entity.ToTable("integro");
+      });
 
       // Настройка таблицы DBEvent, связанной с таблицей events
       modelBuilder.Entity<DBEvent>(entity =>

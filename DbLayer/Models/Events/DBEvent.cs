@@ -1,17 +1,11 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+
 
 namespace DbLayer.Models
 {
-  internal class DBEvent
+  internal record DBEvent: BasePgEntity
   {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public Guid id { get; set; } // unique event id
     public DateTime timestamp { get; set; }
     
     public Guid object_id { get; set; } // Object id

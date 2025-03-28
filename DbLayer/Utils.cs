@@ -4,16 +4,22 @@ using MongoDB.Driver;
 using System.Diagnostics;
 using System;
 using MongoDB.Bson;
+using System.Security.Cryptography;
 
 namespace DbLayer
 {
   public class Utils
   {
-    static public string GenerateBsonId()
+    static public string GenerateId24()
     {
       return MongoDB.Bson.ObjectId.GenerateNewId().ToString();
     }
-
+    //public static string GenerateObjectId()
+    //{
+    //  byte[] bytes = new byte[12];
+    //  RandomNumberGenerator.Fill(bytes); // Заполняем случайными байтами
+    //  return BitConverter.ToString(bytes).Replace("-", "").ToLower(); // Преобразуем в строку hex
+    //}
     public static Guid ConvertObjectIdToGuid(string objectIdString)
     {
       if (objectIdString.Length != 24)

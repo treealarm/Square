@@ -118,6 +118,30 @@ namespace Domain
       return dbo;
     }
 
+    public static List<T_DB> ConvertListDTO2DB<T_DB, T_DTO>(List<T_DTO> dtoObjs)
+     where T_DB : new()
+    {
+      if (dtoObjs == null)
+      {
+        return new List<T_DB>(); 
+      }
+
+      var result = new List<T_DB>();
+
+      foreach (var dtoItem in dtoObjs)
+      {
+        var dbItem = ConvertDTO2DB<T_DB, T_DTO>(dtoItem);
+        if (dbItem != null)
+        {
+          result.Add(dbItem);
+        }
+      }
+
+      return result;
+    }
+
+
+
     public static T? CloneObject<T>(T source) where T : new()
     {
       if (source == null)
