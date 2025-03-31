@@ -6,12 +6,22 @@ namespace Domain
 {
   public interface IIntegroService
   {
-    public Task<Dictionary<string, IntegroDTO>> GetListByIdsAsync(List<string> ids);
-    public Task<Dictionary<string, IntegroDTO>> GetListByType(string i_name, string i_type);
+    Task<Dictionary<string, IntegroDTO>> GetListByIdsAsync(List<string> ids);
+    Task<Dictionary<string, IntegroDTO>> GetListByType(string i_name, string i_type);
   }
   internal interface IIntegroServiceInternal
   {
-    public Task UpdateListAsync(List<IntegroDTO> obj2UpdateIn);
-    public Task RemoveAsync(List<string> ids);    
+    Task UpdateListAsync(List<IntegroDTO> obj2UpdateIn);
+    Task RemoveAsync(List<string> ids);    
+  }
+
+  public interface IIntegroTypesService
+  {
+    Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<string> types);
+  }
+  internal interface IIntegroTypesInternal
+  {
+    Task UpdateTypesAsync(List<IntegroTypeDTO> types);
+    Task RemoveTypesAsync(List<string> types);
   }
 }

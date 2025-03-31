@@ -24,7 +24,7 @@ namespace DbLayer
 
       services.AddDbContext<PgDbContext>();
 
-      services.AddScoped<IEventsService, PgEventsService>();
+      services.AddScoped<IEventsService, EventsService>();
 
       services.AddSingleton<IUtilService, UtilService>();
 
@@ -52,6 +52,9 @@ namespace DbLayer
       services.AddScoped<IntegroService>();
       services.AddScoped<IIntegroService>(provider => provider.GetRequiredService<IntegroService>());
       services.AddScoped<IIntegroServiceInternal>(provider => provider.GetRequiredService<IntegroService>());
+
+      services.AddScoped<IIntegroTypesService>(provider => provider.GetRequiredService<IntegroService>());
+      services.AddScoped<IIntegroTypesInternal>(provider => provider.GetRequiredService<IntegroService>());
 
       services.AddSingleton<GroupsService>();
       services.AddSingleton<IGroupsService>(provider => provider.GetRequiredService<GroupsService>());

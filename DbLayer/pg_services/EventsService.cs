@@ -6,17 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  internal class PgEventsService: IEventsService
+  internal class EventsService: IEventsService
   {
     private readonly PgDbContext _dbContext;
     private readonly IGroupsService _groupsService;
 
-    public PgEventsService(PgDbContext context, IGroupsService groupsService)
+    public EventsService(PgDbContext context, IGroupsService groupsService)
     {
       _dbContext = context;
       _groupsService = groupsService;

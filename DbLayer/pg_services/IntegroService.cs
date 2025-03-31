@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
-  internal class IntegroService : IIntegroService, IIntegroServiceInternal
+  internal class IntegroService : IIntegroService, IIntegroServiceInternal,
+    IIntegroTypesService, IIntegroTypesInternal
   {
     private readonly PgDbContext _dbContext;
 
@@ -129,6 +130,94 @@ namespace DbLayer.Services
     {
       var dbObjs = await _dbContext.Integro.Where(i => i.i_name == i_name && i.i_type == i_type).ToListAsync();
       return PropertyCopy.ConvertListDB2DTO<DBIntegro, IntegroDTO>(dbObjs); 
+    }
+
+    public async Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<string> types)
+    {
+      var dbObjs = await _dbContext.IntegroTypes
+        .Where(t => types.Contains(t.i_type))
+        .Include(t => t.children)
+        .ToListAsync();
+
+      var result = new Dictionary<string, IntegroTypeDTO>();
+
+      foreach (var dbItem in dbObjs)
+      {
+        var dto = new IntegroTypeDTO()
+        {
+          i_type = dbItem.i_type
+        };
+
+        foreach (var i in dbItem.children)
+        {
+          dto.children.Add(new IntegroTypeChildDTO()
+          {
+            child_i_type = i.child_i_type,
+            i_type = i.i_type
+          });
+        }
+        result.Add(dbItem.i_type, dto);
+      }
+
+      return result;
+    }
+
+    async Task IIntegroTypesInternal.UpdateTypesAsync(List<IntegroTypeDTO> types)
+    {
+      var typeList = types.Select(t => t.i_type).ToList();
+
+      var dbObjs = await _dbContext.IntegroTypes
+        .Where(t => typeList.Contains(t.i_type))
+        .Include(t => t.children)
+        .ToListAsync();
+      var existingEntities = dbObjs.ToDictionary(e => e.i_type);
+
+      var toUpdate = new List<DBIntegroType>();
+      var toAdd = new List<DBIntegroType>();
+
+      foreach (var Item in types)
+      {
+        List<DBIntegroTypeChild> children = new List<DBIntegroTypeChild> ();
+        foreach (var child in Item.children)
+        {
+          // Добавляем новые дочерние элементы
+          children.Add(new DBIntegroTypeChild
+          {
+            child_i_type = child.child_i_type,
+            i_type = child.i_type
+          });
+        }
+
+        if (existingEntities.TryGetValue(Item.i_type, out var existing))
+        {
+          existing.children.Clear(); // Очистить старые дочерние элементы
+
+          existing.children.AddRange(children);
+
+          toUpdate.Add(existing); // Добавляем в список для обновления
+        }
+        else
+        {
+          var dbo = new DBIntegroType()
+          {
+            i_type = Item.i_type
+          };
+
+          dbo.children.AddRange(children);
+          toAdd.Add(dbo);
+        }
+      }
+
+      _dbContext.IntegroTypes.UpdateRange(toUpdate);
+      await _dbContext.IntegroTypes.AddRangeAsync(toAdd);
+      await _dbContext.SaveChangesAsync();
+    }
+
+    async Task IIntegroTypesInternal.RemoveTypesAsync(List<string> types)
+    {
+      await _dbContext.IntegroTypes
+          .Where(i => types.Contains(i.i_type))
+          .ExecuteDeleteAsync();
     }
   }
 }

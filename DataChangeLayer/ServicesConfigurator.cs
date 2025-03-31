@@ -16,8 +16,11 @@ namespace DataChangeLayer
       services.AddSingleton<IStatesUpdateService, StatesUpdateService>();
       
       services.AddSingleton<IValuesUpdateService, ValuesUpdateService>();
-      services.AddScoped<IIntegroUpdateService, IntegroUpdateService>();
       services.AddSingleton<IGroupUpdateService, GroupUpdateService>();
+
+      services.AddScoped<IntegroUpdateService>();
+      services.AddScoped<IIntegroUpdateService>(provider => provider.GetRequiredService<IntegroUpdateService>());
+      services.AddScoped<IIntegroTypeUpdateService>(provider => provider.GetRequiredService<IntegroUpdateService>());
     }
    }
 }

@@ -9,4 +9,10 @@ namespace Domain
     public Task UpdateIntegros(List<IntegroDTO> obj2UpdateIn);
     public Task RemoveIntegros(List<string> ids);
   }
+  public interface IIntegroTypeUpdateService
+  {
+    Task UpdateTypesAsync(List<IntegroTypeDTO> types);
+    Task RemoveTypesAsync(List<string> types);
+  }
+
 }

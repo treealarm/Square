@@ -12,6 +12,8 @@ namespace DbLayer
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
     public DbSet<DBEvent> Events { get; set; }
     public DbSet<DBIntegro> Integro { get; set; }
+    public DbSet<DBIntegroType> IntegroTypes { get; set; }
+    
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings):base(options) 
@@ -23,6 +25,25 @@ namespace DbLayer
     {
       base.OnModelCreating(modelBuilder);
 
+      //////////////////////integro_types start////////////
+      modelBuilder.Entity<DBIntegroType>(entity =>
+      {
+        entity.HasKey(e => e.i_type);
+        entity.ToTable("integro_types");
+
+        // Настройка связи один ко многим
+        entity.HasMany(e => e.children)             // Указываем, что таблица имеет много элементов в дочерней таблице
+              .WithOne()                            // будет одна ссылка на родителя
+              .HasForeignKey(ep => ep.i_type)       // Указываем внешний ключ
+              .OnDelete(DeleteBehavior.Cascade);    // При удалении события, его свойства также будут удалены
+      });
+
+      modelBuilder.Entity<DBIntegroTypeChild>(entity =>
+      {
+        entity.HasKey(e => new { e.i_type, e.child_i_type });
+        entity.ToTable("integro_type_children");
+      });
+      //////////////////////integro_types end////////////
       modelBuilder.Entity<DBIntegro>(entity =>
       {
         entity.ToTable("integro");

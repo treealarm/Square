@@ -2,17 +2,20 @@
 
 namespace DataChangeLayer
 {
-  internal class IntegroUpdateService: IIntegroUpdateService
+  internal class IntegroUpdateService: IIntegroUpdateService, IIntegroTypeUpdateService
   {
     private readonly IIntegroServiceInternal _integroService;
+    private readonly IIntegroTypesInternal _integroTypesService;
 
     private IPubService _pub;
     public IntegroUpdateService(
      IIntegroServiceInternal integroService,
+     IIntegroTypesInternal integroTypeService,
      IPubService pub
     )
     {
       _integroService = integroService;
+      _integroTypesService = integroTypeService;
       _pub = pub;
     }
 
@@ -24,6 +27,16 @@ namespace DataChangeLayer
     public async Task UpdateIntegros(List<IntegroDTO> obj2UpdateIn)
     {
       await _integroService.UpdateListAsync(obj2UpdateIn);
+    }
+
+    public async Task UpdateTypesAsync(List<IntegroTypeDTO> types)
+    {
+      await _integroTypesService.UpdateTypesAsync(types);
+    }
+
+    public async Task RemoveTypesAsync(List<string> types)
+    {
+      await _integroTypesService.RemoveTypesAsync(types);
     }
   }
 }

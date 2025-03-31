@@ -10,17 +10,25 @@ namespace LeafletAlarms.Controllers
   [ApiController]
   public class IntegroController : ControllerBase
   {
-    private readonly IIntegroUpdateService _integroUpdateService;
+    private readonly IIntegroUpdateService _integroUpdateService;    
     private readonly IIntegroService _integroService;
+    
+    private readonly IIntegroTypeUpdateService _integroTypeUpdateService;
+    private readonly IIntegroTypesService _integroTypesService;
+
     private readonly IDaprClientService _daprClientService;
     public IntegroController(
       IIntegroUpdateService integroUpdateService,
       IIntegroService integroService,
+      IIntegroTypeUpdateService integroTypeUpdateService,
+      IIntegroTypesService integroTypesService,
       IDaprClientService daprClientService
     )
     {
       _integroUpdateService = integroUpdateService;
+      _integroTypeUpdateService = integroTypeUpdateService;
       _integroService = integroService;
+      _integroTypesService = integroTypesService;
       _daprClientService = daprClientService;
     }
 
@@ -170,6 +178,27 @@ namespace LeafletAlarms.Controllers
     public async Task DeleteValues(List<string> ids)
     {
       await _integroUpdateService.RemoveIntegros(ids);
+    }
+    [HttpPost]
+    [Route("UpdateIntegroTypes")]
+    public async Task UpdateIntegroTypes(List<IntegroTypeDTO> types)
+    {
+      await _integroTypeUpdateService.UpdateTypesAsync(types);
+    }
+
+    [HttpDelete()]
+    [Route("DeleteIntegroTypes")]
+    public async Task DeleteIntegroTypes(List<string> types)
+    {
+      await _integroTypeUpdateService.RemoveTypesAsync(types);
+    }
+
+    [HttpPost()]
+    [Route("GetIntegroTypes")]
+    public async Task<List<IntegroTypeDTO>> GetIntegroTypes(List<string> types)
+    {
+      var dic = await _integroTypesService.GetTypesAsync(types);
+      return dic.Values.ToList();
     }
   }
 }
