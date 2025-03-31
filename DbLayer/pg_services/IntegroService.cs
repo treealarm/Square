@@ -215,9 +215,14 @@ namespace DbLayer.Services
 
     async Task IIntegroTypesInternal.RemoveTypesAsync(List<string> types)
     {
-      await _dbContext.IntegroTypes
-          .Where(i => types.Contains(i.i_type))
-          .ExecuteDeleteAsync();
+      var entitiesToDelete = await _dbContext.IntegroTypes
+        .Where(i => types.Contains(i.i_type))
+        .Include(i => i.children) // Важно загружать дочерние элементы!
+        .ToListAsync();
+
+      _dbContext.IntegroTypes.RemoveRange(entitiesToDelete);
+      await _dbContext.SaveChangesAsync();
+
     }
   }
 }
