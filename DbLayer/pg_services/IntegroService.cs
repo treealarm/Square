@@ -89,6 +89,30 @@ namespace DbLayer.Services
       };
       return dbo;
     }
+    private IntegroDTO ConverDB2DTO(DBIntegro o_in)
+    {
+      var o_out = new IntegroDTO()
+      {
+        id = Utils.ConvertGuidToObjectId(o_in.id),
+        i_name = o_in.i_name,
+        i_type = o_in.i_type
+      };
+      return o_out;
+    }
+
+    public Dictionary<string, IntegroDTO> ConvertListDB2DTO(List<DBIntegro> dbObjs)
+    {
+      var result = new Dictionary<string, IntegroDTO>();
+
+      foreach (var dbItem in dbObjs)
+      {
+        var dto = ConverDB2DTO(dbItem);
+        result.Add(dto.id, dto);
+      }
+
+      return result;
+    }
+
     public async Task UpdateListAsync(List<IntegroDTO> obj2UpdateIn)
     {      
       if (obj2UpdateIn.Where(i => string.IsNullOrEmpty(i.i_name) ||
@@ -123,13 +147,13 @@ namespace DbLayer.Services
       var guids = ids.Select(id => Utils.ConvertObjectIdToGuid(id)).ToList();
 
       var dbObjs = await _dbContext.Integro.Where(i => guids.Contains(i.id)).ToListAsync();
-      var result = PropertyCopy.ConvertListDB2DTO<DBIntegro, IntegroDTO>(dbObjs);
+      var result = ConvertListDB2DTO(dbObjs);
       return result;
     }
     public async Task<Dictionary<string, IntegroDTO>> GetListByType(string i_name, string i_type)
     {
       var dbObjs = await _dbContext.Integro.Where(i => i.i_name == i_name && i.i_type == i_type).ToListAsync();
-      return PropertyCopy.ConvertListDB2DTO<DBIntegro, IntegroDTO>(dbObjs); 
+      return ConvertListDB2DTO(dbObjs); 
     }
 
     public async Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<string> types)
