@@ -56,6 +56,10 @@ namespace LeafletAlarms.Controllers
 
       var marker = await _mapService.GetAsync(diagram_id);
       
+      if (marker == null)
+      {
+        return null;
+      }
       var listOfIds = new List<string>() { diagram_id };
 
       if (!string.IsNullOrEmpty(marker.parent_id))
