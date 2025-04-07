@@ -1,4 +1,6 @@
 ﻿
+using IntegrationUtilsLib;
+
 namespace AASubService
 {
   internal class CamerasHostedService : IHostedService, IDisposable
@@ -6,6 +8,7 @@ namespace AASubService
 
     private Task? _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
+    private IntegrationSync _sync = new IntegrationSync();
     public CamerasHostedService(
     )
     {
@@ -38,6 +41,7 @@ namespace AASubService
       while (!_cancellationToken.IsCancellationRequested)
       {
         await Task.Delay(1000);
+        await _sync.InitMainObject(_cancellationToken.Token);
       }
     }
 

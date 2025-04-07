@@ -11,13 +11,16 @@ namespace LeafletAlarms.Grpc.Implementation
   {
     private readonly IIntegroUpdateService _integroUpdateService;
     private readonly IIntegroService _integroService;
+    private readonly IIntegroTypeUpdateService _integroTypeUpdateService;
     public IntegroGrpcImp(
       IIntegroUpdateService integroUpdateService,
-      IIntegroService integroService
+      IIntegroService integroService,
+      IIntegroTypeUpdateService integroTypeUpdateService
     )
     {
       _integroUpdateService = integroUpdateService;
       _integroService = integroService;
+      _integroTypeUpdateService = integroTypeUpdateService;
     }
 
     public override async Task<GenerateObjectIdResponse> GenerateObjectId(GenerateObjectIdRequest request, ServerCallContext context)
@@ -73,6 +76,30 @@ namespace LeafletAlarms.Grpc.Implementation
         response.Objects.Add(obj);       
       }
       return response;
+    }
+
+    public override async Task<BoolValue> UpdateIntegroTypes(IntegroTypesProto request, ServerCallContext context)
+    {
+      var ret = new BoolValue();
+      ret.Value = true;
+
+      var types_dto = new List<IntegroTypeDTO>();
+      foreach(var type in request.Types_)
+      {
+        var children = new List<IntegroTypeChildDTO>();
+        foreach (var c in type.Children)
+        {
+          children.Add(new IntegroTypeChildDTO()
+          { child_i_type = c.ChildIType });
+        }
+        types_dto.Add(new IntegroTypeDTO()
+        {
+          i_type = type.IType,
+          children = children
+        });
+      }
+      await _integroTypeUpdateService.UpdateTypesAsync(types_dto);
+      return ret;
     }
   }
 }

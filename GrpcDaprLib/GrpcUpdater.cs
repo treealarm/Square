@@ -1,25 +1,21 @@
 ﻿using Dapr.Client;
 using Grpc.Core;
-using Grpc.Net.Client;
 using LeafletAlarmsGrpc;
-using static LeafletAlarmsGrpc.IntegroService;
 using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace GrpcDaprLib
 {
-  public class GrpcUpdater : IDisposable
+  public class GrpcUpdater
   {    
     public string AppId { get; set; } = string.Empty;
-    private GrpcChannel? _channel = null;
     private TreeAlarmsGrpcServiceClient? _client = null;
-    private IntegroServiceClient? _integroClient = null;
 
     private CallInvoker? _daprClient = null;
     public bool IsDead
     {
       get
       {
-        return _integroClient == null || _client == null;
+        return _client == null;
       } 
     }
 
@@ -39,17 +35,9 @@ namespace GrpcDaprLib
     {
       _daprClient = DaprClient.CreateInvocationInvoker(appId: "leafletalarms");
       _client = new TreeAlarmsGrpcServiceClient(_daprClient);
-      _integroClient = new IntegroServiceClient (_daprClient);
 
       AppId = Environment.GetEnvironmentVariable("APP_ID") ?? string.Empty;
       Console.WriteLine($"APP_ID:{AppId}");    
-    }
-
-    public void Dispose()
-    {
-      _channel?.Dispose();
-      _channel = null;
-      _client = null;
     }
 
     public async Task<ProtoFigures?> Move(ProtoFigures figs, Metadata? meta = null)
@@ -137,30 +125,6 @@ namespace GrpcDaprLib
 
       var result = await _client.UpdateObjectsAsync(objects);
       return result;
-    }
-    public async Task<bool?> UpdateIntegro(IntegroListProto integro)
-    {
-      if (_integroClient == null) return null;
-
-      var result = await _integroClient.UpdateIntegroAsync(integro);
-      return result.Value;
-    }
-
-    public async Task<IntegroListProto?> GetListByType(GetListByTypeRequest request)
-    {
-      if (_integroClient == null) return null;
-
-      var result = await _integroClient.GetListByTypeAsync(request);
-      return result;
-    }
-    public async Task<string?> GenerateObjectId(string input)
-    {
-      if (_integroClient == null) return null;
-
-      GenerateObjectIdRequest generateObjectIdRequest = new GenerateObjectIdRequest();
-      generateObjectIdRequest.Input.Add(new GenerateObjectIdData() { Input = input , Version = "1.0"});
-      var result = await _integroClient.GenerateObjectIdAsync(generateObjectIdRequest);
-      return result.Output.FirstOrDefault()?.ObjectId;
     }
   }
 }

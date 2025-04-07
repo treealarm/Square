@@ -37,14 +37,14 @@ namespace IntegrationUtilsLib
 
     public async Task<List<IntegroProto>?> GetIntegroObjects(string type)
     {
-      var client = Utils.Client;
+      var client = Utils.ClientIntegro;
 
       var integroRequest = new GetListByTypeRequest();
       integroRequest.IName = client.AppId;
       integroRequest.IType = type;
 
       // Ищем уже созданный main объект по типу
-      var response = await client.GetListByType(integroRequest);
+      var response = await client!.Client!.GetListByTypeAsync(integroRequest);
 
       if (response == null)
       {
@@ -72,6 +72,11 @@ namespace IntegrationUtilsLib
       }
       return response.Objects.FirstOrDefault();
     }
+    public async Task InitTypes(IntegroTypesProto types, CancellationToken token)
+    {
+      var client = Utils.Client;
+      //await client.SendStates
+    }
     public async Task InitMainObject(CancellationToken token)
     {
       IntegroProto? mainIntegro = null;
@@ -79,7 +84,7 @@ namespace IntegrationUtilsLib
       while (_mainObject == null && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
-        var client = Utils.Client;
+        var client = Utils.ClientIntegro;
 
         // Ищем уже созданный main объект по типу
         var integroObjects = await GetIntegroObjects(_main_str);
@@ -126,7 +131,7 @@ namespace IntegrationUtilsLib
               IName = client.AppId,
               ObjectId = mainUid
             });
-            await client.UpdateIntegro(integro);
+            await client!.Client!.UpdateIntegroAsync(integro);
           }
         }
       }

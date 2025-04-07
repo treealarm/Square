@@ -1,4 +1,6 @@
 ﻿using GrpcDaprLib;
+using LeafletAlarmsGrpc;
+using static LeafletAlarmsGrpc.IntegroService;
 
 namespace IntegrationUtilsLib
 {
@@ -6,6 +8,7 @@ namespace IntegrationUtilsLib
   {
     // Статическое поле для хранения клиента
     private static GrpcUpdater? _client;
+    private static GrpcUpdaterClient<IntegroServiceClient>? _clientIntegro;
     private static Dictionary<string,string> _idsCash = new Dictionary<string, string>();
     private static readonly object _lock = new object(); // Для синхронизации
 
@@ -29,6 +32,25 @@ namespace IntegrationUtilsLib
       }
     }
 
+    public static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro
+    {
+      get
+      {
+        // Проверяем, если клиент не существует или мертв, создаем новый
+        if (_clientIntegro == null || _clientIntegro.IsDead)
+        {
+          lock (_lock)
+          {
+            if (_client == null || _client.IsDead)
+            {
+              _clientIntegro = new GrpcUpdaterClient<IntegroServiceClient>();  // Инициализация нового клиента
+            }
+          }
+        }
+        return _clientIntegro!;
+      }
+    }
+
     public static async Task<string?> GenerateObjectId(string prefix, long number)
     {
       //return "1111" + number.ToString("D20");
@@ -40,7 +62,11 @@ namespace IntegrationUtilsLib
           return id;
         }
       }
-      var obj_id = await Client.GenerateObjectId(object_string)  ?? null;
+      GenerateObjectIdRequest generateObjectIdRequest = new GenerateObjectIdRequest();
+      generateObjectIdRequest.Input.Add(new GenerateObjectIdData() { Input = object_string, Version = "1.0" });
+
+      var result = await ClientIntegro!.Client!.GenerateObjectIdAsync(generateObjectIdRequest)  ?? null;
+      var obj_id = result?.Output.FirstOrDefault()?.ObjectId;
       lock (_lock)
       {
         if (!string.IsNullOrEmpty(obj_id))

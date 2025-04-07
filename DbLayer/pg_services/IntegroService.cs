@@ -176,8 +176,7 @@ namespace DbLayer.Services
         {
           dto.children.Add(new IntegroTypeChildDTO()
           {
-            child_i_type = i.child_i_type,
-            i_type = i.i_type
+            child_i_type = i.child_i_type
           });
         }
         result.Add(dbItem.i_type, dto);
@@ -208,7 +207,7 @@ namespace DbLayer.Services
           children.Add(new DBIntegroTypeChild
           {
             child_i_type = child.child_i_type,
-            i_type = child.i_type
+            i_type = Item.i_type
           });
         }
 

@@ -9,7 +9,8 @@ package integro;
 service IntegroService {
   rpc GenerateObjectId (GenerateObjectIdRequest) returns (GenerateObjectIdResponse);
   rpc UpdateIntegro (IntegroListProto) returns (google.protobuf.BoolValue);
-  rpc GetListByType (GetListByTypeRequest) returns (IntegroListProto);   
+  rpc GetListByType (GetListByTypeRequest) returns (IntegroListProto);
+  rpc UpdateIntegroTypes(IntegroTypesProto) returns (google.protobuf.BoolValue);
 }
 
 message IntegroProto{
@@ -41,3 +42,15 @@ message GetListByTypeRequest {
   string i_type = 2;
 }
 
+message IntegroTypeChildProto {
+  string child_i_type = 2;
+}
+
+message IntegroTypeProto {
+  string i_type = 1;
+  repeated IntegroTypeChildProto children = 2;
+}
+
+message IntegroTypesProto {
+  repeated IntegroTypeProto types = 2;
+}

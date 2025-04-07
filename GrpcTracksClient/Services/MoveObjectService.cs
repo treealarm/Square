@@ -27,7 +27,7 @@ namespace GrpcTracksClient.Services
       while (true && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
-        var client = Utils.Client;
+        var client = Utils.ClientIntegro;
         var integroObjects = await _sync.GetIntegroObjects(_car_str);
 
         if (integroObjects == null)
@@ -55,7 +55,7 @@ namespace GrpcTracksClient.Services
             IType = _car_str
           });
         }
-        await client.UpdateIntegro(integroRequest);
+        await client.Client.UpdateIntegroAsync(integroRequest);
         integroObjects = await _sync.GetIntegroObjects(_car_str);
         if (integroObjects == null || integroObjects.Count < IMoveObjectService.MaxCars)
         {
@@ -103,6 +103,7 @@ namespace GrpcTracksClient.Services
       await InitCarObjects(token);
 
       var client = Utils.Client;
+      var clientIntegro = Utils.ClientIntegro;
       bool inited = false;
       while (!token.IsCancellationRequested)
       {
@@ -165,7 +166,7 @@ namespace GrpcTracksClient.Services
               });
               Console.WriteLine($"Register integro:{client.AppId}:{fig.Id}");
             }
-            await client.UpdateIntegro(integroRequest);
+            await clientIntegro.Client.UpdateIntegroAsync(integroRequest);
             inited = true;
           }
         }
