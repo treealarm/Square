@@ -36,18 +36,18 @@ namespace IntegrationUtilsLib
     {
       get
       {
+        var client = _clientIntegro;
         // Проверяем, если клиент не существует или мертв, создаем новый
-        if (_clientIntegro == null || _clientIntegro.IsDead)
+        if (client != null && !client.IsDead)
         {
-          lock (_lock)
-          {
-            if (_client == null || _client.IsDead)
-            {
-              _clientIntegro = new GrpcUpdaterClient<IntegroServiceClient>();  // Инициализация нового клиента
-            }
-          }
+          return client;
         }
-        return _clientIntegro!;
+
+        lock (_lock)
+        {
+          _clientIntegro = new GrpcUpdaterClient<IntegroServiceClient>();  // Инициализация нового клиента
+          return _clientIntegro!;
+        }        
       }
     }
 

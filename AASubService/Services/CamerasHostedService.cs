@@ -1,5 +1,6 @@
 ﻿
 using IntegrationUtilsLib;
+using LeafletAlarmsGrpc;
 
 namespace AASubService
 {
@@ -38,10 +39,22 @@ namespace AASubService
 
     private async void DoWork()
     {
+      await _sync.InitMainObject(_cancellationToken.Token);
+      var types = new IntegroTypesProto();
+
+      var type = new IntegroTypeProto()
+      {
+        IType = IntegrationSync.MainStr
+      };
+      type.Children.Add(new IntegroTypeChildProto()
+      { ChildIType = "cam" });
+      types.Types_.Add(type);
+      await _sync.InitTypes(types, _cancellationToken.Token);
+
       while (!_cancellationToken.IsCancellationRequested)
       {
         await Task.Delay(1000);
-        await _sync.InitMainObject(_cancellationToken.Token);
+        
       }
     }
 

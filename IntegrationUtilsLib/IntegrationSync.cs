@@ -5,7 +5,7 @@ namespace IntegrationUtilsLib
   public class IntegrationSync
   {
     private ProtoObject? _mainObject = null;
-    private const string _main_str = "main";
+    public const string MainStr = "main";
     public async Task<ProtoObject?> GetBaseObject(string id_in)
     {
       var client = Utils.Client;
@@ -72,10 +72,11 @@ namespace IntegrationUtilsLib
       }
       return response.Objects.FirstOrDefault();
     }
-    public async Task InitTypes(IntegroTypesProto types, CancellationToken token)
+    public async Task<bool> InitTypes(IntegroTypesProto types, CancellationToken token)
     {
-      var client = Utils.Client;
-      //await client.SendStates
+      var client = Utils.ClientIntegro;
+      var retVal = await client!.Client!.UpdateIntegroTypesAsync(types);
+      return retVal.Value;
     }
     public async Task InitMainObject(CancellationToken token)
     {
@@ -87,7 +88,7 @@ namespace IntegrationUtilsLib
         var client = Utils.ClientIntegro;
 
         // Ищем уже созданный main объект по типу
-        var integroObjects = await GetIntegroObjects(_main_str);
+        var integroObjects = await GetIntegroObjects(MainStr);
 
         if (integroObjects != null)
         {
@@ -105,7 +106,7 @@ namespace IntegrationUtilsLib
               if (mainObj == null)
               {
                 // Если не находим, то создаем с дефолтным именем
-                mainObj = await UpdateBaseObject(mainIntegro.ObjectId, $"{client.AppId}_{_main_str}");
+                mainObj = await UpdateBaseObject(mainIntegro.ObjectId, $"{client.AppId}_{MainStr}");
               }
 
               if (mainObj != null)
@@ -117,7 +118,7 @@ namespace IntegrationUtilsLib
           else
           {
             //Если не нашли объект в БД, то создадим новый.
-            var mainUid = await Utils.GenerateObjectId(_main_str, 0);
+            var mainUid = await Utils.GenerateObjectId(MainStr, 0);
 
             if (!string.IsNullOrEmpty(mainIntegro?.ObjectId))
             {
@@ -127,7 +128,7 @@ namespace IntegrationUtilsLib
             var integro = new IntegroListProto();
             integro.Objects.Add(new IntegroProto()
             {
-              IType = _main_str,
+              IType = MainStr,
               IName = client.AppId,
               ObjectId = mainUid
             });

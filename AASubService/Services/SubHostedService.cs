@@ -86,6 +86,7 @@ namespace AASubService
     public async Task OnAAMessage(string channel, byte[] message)
     {
       await Task.Delay(0);
+      return;
       // Преобразуем строку в StreamMessage
       StreamMessage streamMessage;
       try

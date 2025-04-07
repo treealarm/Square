@@ -30,7 +30,7 @@ builder.Services.AddHostedService<TestPubHostedService>();
 
 builder.Services.AddSingleton<CameraService>();
 builder.Services.AddSingleton<IObjectActions>(provider => provider.GetRequiredService<CameraService>());
-
+builder.Services.AddHostedService<CamerasHostedService>();
 
 var app = builder.Build();
 
