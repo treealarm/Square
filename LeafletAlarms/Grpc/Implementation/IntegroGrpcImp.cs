@@ -95,6 +95,7 @@ namespace LeafletAlarms.Grpc.Implementation
         types_dto.Add(new IntegroTypeDTO()
         {
           i_type = type.IType,
+          i_name = type.IName,
           children = children
         });
       }

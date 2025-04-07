@@ -12,7 +12,7 @@ namespace Domain
   public interface IIntegroTypeUpdateService
   {
     Task UpdateTypesAsync(List<IntegroTypeDTO> types);
-    Task RemoveTypesAsync(List<string> types);
+    Task RemoveTypesAsync(List<IntegroTypeKeyDTO> types);
   }
 
 }

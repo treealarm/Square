@@ -34,7 +34,7 @@ namespace DataChangeLayer
       await _integroTypesService.UpdateTypesAsync(types);
     }
 
-    public async Task RemoveTypesAsync(List<string> types)
+    public async Task RemoveTypesAsync(List<IntegroTypeKeyDTO> types)
     {
       await _integroTypesService.RemoveTypesAsync(types);
     }

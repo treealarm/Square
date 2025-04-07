@@ -75,6 +75,10 @@ namespace IntegrationUtilsLib
     public async Task<bool> InitTypes(IntegroTypesProto types, CancellationToken token)
     {
       var client = Utils.ClientIntegro;
+      foreach (var type in types.Types_)
+      {
+        type.IName = client.AppId;// Setup my app_id as i-name
+      }
       var retVal = await client!.Client!.UpdateIntegroTypesAsync(types);
       return retVal.Value;
     }

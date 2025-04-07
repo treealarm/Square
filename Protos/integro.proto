@@ -48,7 +48,8 @@ message IntegroTypeChildProto {
 
 message IntegroTypeProto {
   string i_type = 1;
-  repeated IntegroTypeChildProto children = 2;
+  string i_name = 2;
+  repeated IntegroTypeChildProto children = 3;
 }
 
 message IntegroTypesProto {

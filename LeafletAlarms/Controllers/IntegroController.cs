@@ -188,14 +188,14 @@ namespace LeafletAlarms.Controllers
 
     [HttpDelete()]
     [Route("DeleteIntegroTypes")]
-    public async Task DeleteIntegroTypes(List<string> types)
+    public async Task DeleteIntegroTypes(List<IntegroTypeKeyDTO> types)
     {
       await _integroTypeUpdateService.RemoveTypesAsync(types);
     }
 
     [HttpPost()]
     [Route("GetIntegroTypes")]
-    public async Task<List<IntegroTypeDTO>> GetIntegroTypes(List<string> types)
+    public async Task<List<IntegroTypeDTO>> GetIntegroTypes(List<IntegroTypeKeyDTO> types)
     {
       var dic = await _integroTypesService.GetTypesAsync(types);
       return dic.Values.ToList();

@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
@@ -21,6 +22,23 @@ namespace DbLayer.Services
       _dbContext = context;
     }
 
+    internal static Expression<Func<DBIntegroType, bool>> BuildFilter(IEnumerable<IntegroTypeKeyDTO> types)
+    {
+      var predicate = PredicateBuilder.False<DBIntegroType>();
+
+      foreach (var t in types)
+      {
+        if (t.i_type == null || t.i_name == null)
+          continue;
+
+        Expression<Func<DBIntegroType, bool>> singleMatch =
+            x => x.i_type == t.i_type && x.i_name == t.i_name;
+
+        predicate = predicate.Or(singleMatch);
+      }
+
+      return predicate;
+    }
     internal static async Task UpdateListAsync<T_DB, T_DTO>(
         DbSet<T_DB> dbSet,
         List<T_DTO> obj2UpdateIn,
@@ -156,10 +174,12 @@ namespace DbLayer.Services
       return ConvertListDB2DTO(dbObjs); 
     }
 
-    public async Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<string> types)
+    public async Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<IntegroTypeKeyDTO> types)
     {
+      var filter = BuildFilter(types);
+
       var dbObjs = await _dbContext.IntegroTypes
-        .Where(t => types.Contains(t.i_type))
+        .Where(filter)
         .Include(t => t.children)
         .ToListAsync();
 
@@ -169,7 +189,8 @@ namespace DbLayer.Services
       {
         var dto = new IntegroTypeDTO()
         {
-          i_type = dbItem.i_type
+          i_type = dbItem.i_type,
+          i_name = dbItem.i_name,
         };
 
         foreach (var i in dbItem.children)
@@ -187,12 +208,16 @@ namespace DbLayer.Services
 
     async Task IIntegroTypesInternal.UpdateTypesAsync(List<IntegroTypeDTO> types)
     {
-      var typeList = types.Select(t => t.i_type).ToList();
+      IEnumerable<IntegroTypeKeyDTO> keyList = types;
+
+      var filter = BuildFilter(keyList);
 
       var dbObjs = await _dbContext.IntegroTypes
-        .Where(t => typeList.Contains(t.i_type))
+        .Where(filter)
         .Include(t => t.children)
         .ToListAsync();
+
+
       var existingEntities = dbObjs.ToDictionary(e => e.i_type);
 
       var toUpdate = new List<DBIntegroType>();
@@ -207,7 +232,8 @@ namespace DbLayer.Services
           children.Add(new DBIntegroTypeChild
           {
             child_i_type = child.child_i_type,
-            i_type = Item.i_type
+            i_type = Item.i_type,
+            i_name = Item.i_name
           });
         }
 
@@ -223,7 +249,8 @@ namespace DbLayer.Services
         {
           var dbo = new DBIntegroType()
           {
-            i_type = Item.i_type
+            i_type = Item.i_type,
+            i_name = Item.i_name,
           };
 
           dbo.children.AddRange(children);
@@ -236,14 +263,16 @@ namespace DbLayer.Services
       await _dbContext.SaveChangesAsync();
     }
 
-    async Task IIntegroTypesInternal.RemoveTypesAsync(List<string> types)
+    async Task IIntegroTypesInternal.RemoveTypesAsync(List<IntegroTypeKeyDTO> types)
     {
-      var entitiesToDelete = await _dbContext.IntegroTypes
-        .Where(i => types.Contains(i.i_type))
-        .Include(i => i.children) // Важно загружать дочерние элементы!
+      var filter = BuildFilter(types);
+
+      var dbObjs = await _dbContext.IntegroTypes
+        .Where(filter)
+        .Include(t => t.children)
         .ToListAsync();
 
-      _dbContext.IntegroTypes.RemoveRange(entitiesToDelete);
+      _dbContext.IntegroTypes.RemoveRange(dbObjs);
       await _dbContext.SaveChangesAsync();
 
     }

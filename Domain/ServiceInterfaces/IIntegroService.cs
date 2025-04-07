@@ -17,11 +17,11 @@ namespace Domain
 
   public interface IIntegroTypesService
   {
-    Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<string> types);
+    Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<IntegroTypeKeyDTO> types);
   }
   internal interface IIntegroTypesInternal
   {
     Task UpdateTypesAsync(List<IntegroTypeDTO> types);
-    Task RemoveTypesAsync(List<string> types);
+    Task RemoveTypesAsync(List<IntegroTypeKeyDTO> types);
   }
 }
