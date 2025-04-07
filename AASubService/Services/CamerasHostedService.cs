@@ -42,13 +42,24 @@ namespace AASubService
       await _sync.InitMainObject(_cancellationToken.Token);
       var types = new IntegroTypesProto();
 
-      var type = new IntegroTypeProto()
+      const string CamStr = "cam";
+
+      var typeMain = new IntegroTypeProto()
       {
         IType = IntegrationSync.MainStr
       };
-      type.Children.Add(new IntegroTypeChildProto()
-      { ChildIType = "cam" });
-      types.Types_.Add(type);
+      typeMain.Children.Add(new IntegroTypeChildProto()
+      { 
+        ChildIType = "cam" 
+      });
+
+      var typeCam = new IntegroTypeProto()
+      {
+        IType = CamStr
+      };
+      types.Types_.Add(typeMain);
+      types.Types_.Add(typeCam);
+
       await _sync.InitTypes(types, _cancellationToken.Token);
 
       while (!_cancellationToken.IsCancellationRequested)

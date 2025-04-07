@@ -28,17 +28,30 @@ namespace DbLayer.Services
 
       foreach (var t in types)
       {
-        if (t.i_type == null || t.i_name == null)
+        // Пропускаем полностью пустые ключи
+        if (string.IsNullOrEmpty(t.i_type) && string.IsNullOrEmpty(t.i_name))
           continue;
 
-        Expression<Func<DBIntegroType, bool>> singleMatch =
-            x => x.i_type == t.i_type && x.i_name == t.i_name;
+        Expression<Func<DBIntegroType, bool>> condition = x => true;
 
-        predicate = predicate.Or(singleMatch);
+        if (!string.IsNullOrEmpty(t.i_type))
+        {
+          Expression<Func<DBIntegroType, bool>> typeMatch = x => x.i_type == t.i_type;
+          condition = condition.And(typeMatch);
+        }
+
+        if (!string.IsNullOrEmpty(t.i_name))
+        {
+          Expression<Func<DBIntegroType, bool>> nameMatch = x => x.i_name == t.i_name;
+          condition = condition.And(nameMatch);
+        }
+
+        predicate = predicate.Or(condition);
       }
 
       return predicate;
     }
+
     internal static async Task UpdateListAsync<T_DB, T_DTO>(
         DbSet<T_DB> dbSet,
         List<T_DTO> obj2UpdateIn,
