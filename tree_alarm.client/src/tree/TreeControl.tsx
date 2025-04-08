@@ -1,8 +1,9 @@
-﻿/* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useCallback } from 'react';
+﻿/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { IObjProps, TreeMarker } from '../store/Marker';
+import { IIntegroTypeDTO, IObjProps, TreeMarker } from '../store/Marker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -11,13 +12,15 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Toolbar, Tooltip } from '@mui/material';
+import { Box, Menu, MenuItem, Toolbar, Tooltip } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import TabControl from './TabControl';
 import * as TreeStore from '../store/TreeStates';
 import * as GuiStore from '../store/GUIStates';
+import * as IntegroStore from '../store/IntegroStates';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { useAppDispatch } from "../store/configureStore";
 import { RequestedState } from '../store/TreeStates';
@@ -34,7 +37,13 @@ export function TreeControl() {
   const reduxSelectedId = useSelector((state: ApplicationState) => state.guiStates?.selected_id);
   const requestTreeUpdate = useSelector((state: ApplicationState) => state.guiStates?.requestedTreeUpdate);
 
+  const objectIntegroType = useSelector((state: ApplicationState) => state?.integroStates?.integroType ?? null);
+
+  const childTypes = objectIntegroType?.children ?? [];
+
   const startEndBounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const getTreeItemsByParent = useCallback((requestedState: RequestedState | null) => {
     appDispatch(TreeStore.setParentIdLocally(requestedState));
@@ -50,7 +59,9 @@ export function TreeControl() {
   }, [user, getTreeItemsByParent]);
 
   useEffect(() => {
-    appDispatch(TreeStore.fetchByParent());
+    appDispatch(
+      TreeStore.fetchByParent(
+        requestedState));
   }, [requestTreeUpdate, requestedState]);
 
   const [checked, setChecked] = React.useState<Set<string>>(new Set());
@@ -70,6 +81,23 @@ export function TreeControl() {
   const selectItem = (selectedMarker: TreeMarker | null) => {
     const selectedId = selectedMarker?.id === reduxSelectedId ? null : selectedMarker?.id ?? null;
     appDispatch(GuiStore.selectTreeItem(selectedId));
+
+    if (selectedId) {
+      appDispatch(IntegroStore.fetchObjectIntegroType(selectedId));
+    } else {
+      // Очищаем типы, если ничего не выбрано
+      appDispatch(IntegroStore.set_objectIntegroType(null));
+    }
+  };
+
+  
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
   };
 
   const handleSelect = (selected: TreeMarker) => () => selectItem(selected);
@@ -93,7 +121,7 @@ export function TreeControl() {
     });
   };
 
-  const addChildItem = () => {
+  const addChildItem = (type?: string|null) => {
 
     let copy: IObjProps = {
       id: null,
@@ -109,6 +137,10 @@ export function TreeControl() {
       start_id: my_bounds?.start_id ?? null,
       end_id: null
     });
+    if (type) {
+      console.log('Создание потомка типа:', type);
+      // вызови нужный thunk или логики для создания
+    }
   };
 
   return (
@@ -124,7 +156,7 @@ export function TreeControl() {
           <Box sx={{ flexGrow: 1 }} />
           {reduxSelectedId == null ? (
             <Tooltip title="Add new object">
-              <IconButton onClick={addChildItem}>
+              <IconButton onClick={()=>addChildItem(null)}>
                 <AddIcon />
               </IconButton>
             </Tooltip>
@@ -146,13 +178,51 @@ export function TreeControl() {
                     <ChevronRightIcon />
                   </IconButton>
                 )}
+
                 {reduxSelectedId === marker.id && (
-                  <Tooltip title="Add new child">
-                    <IconButton size="small" edge="end" aria-label="add_child" onClick={addChildItem}>
-                      <AddIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <>
+                    <Tooltip title="Add new child">
+                      <IconButton size="small" edge="end" aria-label="add_child" onClick={() => addChildItem(null)}>
+                        <AddIcon />
+                      </IconButton>
+                    </Tooltip>
+
+                    {/* Кнопка для открытия меню */}
+                    {childTypes.length > 0 && (
+                      <>
+                        <IconButton
+                          size="small"
+                          edge="end"
+                          aria-label="add_typed_child"
+                          onClick={(e) => setAnchorEl(e.currentTarget)}
+                        >
+                          <MenuOpenIcon />
+                        </IconButton>
+
+                        <Menu
+                          anchorEl={anchorEl}
+                          open={Boolean(anchorEl)}
+                          onClose={() => setAnchorEl(null)}
+                        >
+                          {childTypes.map((type) => (
+                            <MenuItem
+                              key={type.child_i_type}
+                              onClick={() => {
+                                addChildItem(type.child_i_type);
+                                setAnchorEl(null); // Закрыть меню после клика
+                              }}
+                            >
+                              Add {type.child_i_type}
+                            </MenuItem>
+                          ))}
+                        </Menu>
+                      </>
+                    )}
+                  </>
                 )}
+
+
+
               </>
             }>
               <ListItemButton selected={reduxSelectedId === marker.id} onClick={handleSelect(marker)}>

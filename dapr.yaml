@@ -19,6 +19,7 @@ apps:
     command: ["dotnet", "run"]
   - appID: aasubservice
     appProtocol: grpc
+    appPort: 20008
     appDirPath: ./aasubservice/
     command: ["dotnet", "run"]
 

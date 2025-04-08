@@ -122,7 +122,7 @@ namespace IntegrationUtilsLib
           else
           {
             //Если не нашли объект в БД, то создадим новый.
-            var mainUid = await Utils.GenerateObjectId(MainStr, 0);
+            var mainUid = await Utils.GenerateObjectId($"{MainStr}_{client}", 0);
 
             if (!string.IsNullOrEmpty(mainIntegro?.ObjectId))
             {

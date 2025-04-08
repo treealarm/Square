@@ -14,7 +14,7 @@ import * as DiagramTypeStates from './DiagramTypeStates';
 import * as EventsStates from './EventsStates';
 import * as ZoomLevelsStates from './ZoomLevelsStates';
 import * as ValuesStates from './ValuesStates';
-import * as ActionsStates from './ActionsStates';
+import * as IntegroStates from './IntegroStates';
 import * as GroupsStates from './GroupsStates';
 
 // The top-level state object
@@ -34,7 +34,7 @@ export interface ApplicationState {
   eventsStates: EventsStates.EventStates | undefined;
   zoomLevelsStates: ZoomLevelsStates.ZoomLevelsState | undefined;
   valuesStates: ValuesStates.ValuesState | undefined;
-  actionsStates: ActionsStates.ActionsState | undefined;
+  integroStates: IntegroStates.IntegroState | undefined;
   groupssStates: GroupsStates.GroupState | undefined;
 }
 
@@ -57,7 +57,7 @@ export const reducers = {
   eventsStates: EventsStates.reducer,
   zoomLevelsStates: ZoomLevelsStates.reducer,
   valuesStates: ValuesStates.reducer,
-  actionsStates: ActionsStates.reducer,
+  integroStates: IntegroStates.reducer,
   groupsStates: GroupsStates.reducer
 };
 

@@ -55,38 +55,42 @@ namespace LeafletAlarms.Controllers
       {
         return retActions;
       }
-      var app_ids = await GetAppIdByObjectId(new List<string> { id });
-      var key = app_ids.Values.Select(i => i.i_name).FirstOrDefault();
-
-      var daprClient = _daprClientService.GetDaprClient(key);
-
-      if (daprClient == null)
+      try
       {
-        throw new Exception($"daprClient:{key} not found");
-      }
+        var app_ids = await GetAppIdByObjectId(new List<string> { id });
+        var key = app_ids.Values.Select(i => i.i_name).FirstOrDefault();
 
-      ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
-      var request = new ProtoGetAvailableActionsRequest();
-      request.ObjectId = id;
-      var response = await _client.GetAvailableActionsAsync(request);
+        var daprClient = _daprClientService.GetDaprClient(key);
 
-
-      
-
-      foreach (var action in response.ActionsDescr)
-      {
-        var actionDescr = new ActionDescrDTO()
+        if (daprClient == null)
         {
-          name = action.Name,
-        };
-
-        foreach (var param in action.Parameters)
-        {
-          var dto = ProtoToDTOConverter.ConvertToActionParameterDTO(param);
-
-          actionDescr.parameters.Add(dto);
+          throw new Exception($"daprClient:{key} not found");
         }
-        retActions.Add(actionDescr);
+
+        ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
+        var request = new ProtoGetAvailableActionsRequest();
+        request.ObjectId = id;
+        var response = await _client.GetAvailableActionsAsync(request);
+
+        foreach (var action in response.ActionsDescr)
+        {
+          var actionDescr = new ActionDescrDTO()
+          {
+            name = action.Name,
+          };
+
+          foreach (var param in action.Parameters)
+          {
+            var dto = ProtoToDTOConverter.ConvertToActionParameterDTO(param);
+
+            actionDescr.parameters.Add(dto);
+          }
+          retActions.Add(actionDescr);
+        }
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
       }
       return retActions;
     }
@@ -199,6 +203,28 @@ namespace LeafletAlarms.Controllers
     {
       var dic = await _integroTypesService.GetTypesAsync(types);
       return dic.Values.ToList();
+    }
+
+    [HttpGet()]
+    [Route("GetObjectIntegroType")]
+    public async Task<IntegroTypeDTO> GetObjectIntegroType(string id)
+    {
+      var types = await GetByIds(new List<string> { id });
+      var type = types.FirstOrDefault();
+      if (type == null)
+      {
+        return null;
+      }
+
+      var dic = await _integroTypesService.GetTypesAsync(new List<IntegroTypeKeyDTO>()
+      {
+        new IntegroTypeKeyDTO()
+        {
+          i_name = type.i_name,
+          i_type = type.i_type,
+        }
+      });
+      return dic.Values.ToList().FirstOrDefault();
     }
   }
 }

@@ -15,14 +15,14 @@ import { IActionDescrDTO, IActionParameterDTO, IActionExeDTO, PointType, IPointC
 import { useAppDispatch } from '../store/configureStore';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import * as ActionsStore from '../store/ActionsStates';
+import * as IntegroStore from '../store/IntegroStates';
 import CoordInput from '../prop_controls/CoordInput';
 
 export function ActionsControl() {
   const appDispatch = useAppDispatch();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
-  const actions = useSelector((state: ApplicationState) => state?.actionsStates?.actions);
+  const actions = useSelector((state: ApplicationState) => state?.integroStates?.actions);
 
   const [expandedAction, setExpandedAction] = useState<string | null>(null);
   const [actionParameters, setActionParameters] = useState<Record<string, IActionParameterDTO[]>>({});
@@ -30,7 +30,7 @@ export function ActionsControl() {
 
   useEffect(() => {
     if (selected_id) {
-      appDispatch(ActionsStore.fetchAvailableActions(selected_id));
+      appDispatch(IntegroStore.fetchAvailableActions(selected_id));
     }
   }, [selected_id, numAction]);
 
@@ -75,7 +75,7 @@ export function ActionsControl() {
     };
 
     // Выполняем действие с подготовленной полезной нагрузкой
-    await appDispatch(ActionsStore.executeAction(payload));
+    await appDispatch(IntegroStore.executeAction(payload));
 
     // Перезапрашиваем действия после выполнения
     setNumAction(numAction + 1);

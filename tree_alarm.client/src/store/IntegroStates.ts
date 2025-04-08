@@ -1,17 +1,19 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { DoFetch } from './Fetcher';
-import { IActionDescrDTO, IActionExeDTO, IValueDTO } from './Marker';
+import { IActionDescrDTO, IActionExeDTO, IIntegroTypeDTO } from './Marker';
 import { ApplicationState } from '.';
 import { ApiIntegroRootString } from './constants';
 
-export interface ActionsState {
+export interface IntegroState {
   actions: IActionDescrDTO[];
+  integroType: IIntegroTypeDTO|null;
   loading: boolean;
   error: string | null;
 }
 
-const initialState: ActionsState = {
+const initialState: IntegroState = {
   actions: [],
+  integroType: null,
   loading: false,
   error: null,
 };
@@ -27,6 +29,19 @@ export const fetchAvailableActions = createAsyncThunk<IActionDescrDTO[], string>
     return json;
   }
 );
+
+export const fetchObjectIntegroType = createAsyncThunk<IIntegroTypeDTO, string>(
+  'actions/fetchObjectIntegroType',
+  async (id: string) => {
+    const fetched = await DoFetch(ApiIntegroRootString + '/GetObjectIntegroType?id=' + id, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const json = (await fetched.json()) as Promise<IIntegroTypeDTO>;
+    return json;
+  }
+);
+
 
 export const executeAction = createAsyncThunk<boolean, IActionExeDTO>(
   'actions/executeAction',
@@ -47,8 +62,11 @@ const valuesSlice = createSlice({
   name: 'values',
   initialState,
   reducers: {
-    set_actions(state: ActionsState, action: PayloadAction<IActionDescrDTO[]>) {
+    set_actions(state: IntegroState, action: PayloadAction<IActionDescrDTO[]>) {
       state.actions = action.payload;
+    },
+    set_objectIntegroType(state: IntegroState, action: PayloadAction<IIntegroTypeDTO|null>) {
+      state.integroType = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -75,6 +93,19 @@ const valuesSlice = createSlice({
       .addCase(executeAction.rejected, (state, action) => {
         state.error = action.error.message || 'Error executing action';
       })
+      // childtypes
+      .addCase(fetchObjectIntegroType.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchObjectIntegroType.fulfilled, (state, action) => {
+        state.loading = false;
+        state.integroType = action.payload;
+      })
+      .addCase(fetchObjectIntegroType.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Error fetching child types';
+      })
+
     ;
   },
 });
@@ -84,6 +115,7 @@ export const selectActionsMapForOwner = (ownerId: string) => (state: Application
 
 export const {
   set_actions,
+  set_objectIntegroType
 } = valuesSlice.actions;
 
 export const reducer = valuesSlice.reducer;

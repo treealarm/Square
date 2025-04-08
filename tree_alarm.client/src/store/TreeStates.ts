@@ -74,17 +74,21 @@ export async function getById(id: string | null): Promise <Marker>
 
 
 // Async thunk for fetching data
-export const fetchByParent = createAsyncThunk<GetByParentDTO, void, { state: ApplicationState }>(
+export const fetchByParent = createAsyncThunk<
+  GetByParentDTO,
+  RequestedState|null // <- тип requestedState
+>(
   'tree/fetchByParent',
-  async (_,{ getState }) => {
-    const state: ApplicationState = getState() as ApplicationState;
-    const treeStates = state.treeStates as TreeState;
+  async (requestedState) => {
     return getByParent(
-      treeStates.requestedState?.parent_id ?? null,
-      treeStates.requestedState?.start_id ?? null,
-      treeStates.requestedState?.end_id ?? null);
+      requestedState?.parent_id ?? null,
+      requestedState?.start_id ?? null,
+      requestedState?.end_id ?? null
+    );
   }
 );
+
+
 
 export const fetchById = createAsyncThunk < Marker, string | null>(
   'tree/fetchById',

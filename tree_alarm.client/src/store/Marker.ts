@@ -490,3 +490,12 @@ export interface IGroupDTO extends IBaseObject {
   name: string;
   objid: string;
 }
+
+export interface IIntegroTypeChildDTO {
+  child_i_type: string;
+}
+export interface IIntegroTypeDTO {
+  i_name: string;
+  i_type: string;
+  children: IIntegroTypeChildDTO[];
+}

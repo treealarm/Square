@@ -39,6 +39,7 @@ namespace AASubService
 
     private async void DoWork()
     {
+      await Task.Delay(10000);
       await _sync.InitMainObject(_cancellationToken.Token);
       var types = new IntegroTypesProto();
 
