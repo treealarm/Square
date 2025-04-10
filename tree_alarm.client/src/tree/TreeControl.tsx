@@ -44,6 +44,7 @@ export function TreeControl() {
   const startEndBounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [debounceTimeout, setDebounceTimeout] = useState<any | null>(null);
 
   const getTreeItemsByParent = useCallback((requestedState: RequestedState | null) => {
     appDispatch(TreeStore.setParentIdLocally(requestedState));
@@ -59,10 +60,24 @@ export function TreeControl() {
   }, [user, getTreeItemsByParent]);
 
   useEffect(() => {
-    appDispatch(
-      TreeStore.fetchByParent(
-        requestedState));
-  }, [requestTreeUpdate, requestedState]);
+    // Если есть предыдущий таймер, его нужно очистить
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    // Создаём новый таймер
+    const timeout = setTimeout(() => {
+      appDispatch(TreeStore.fetchByParent(requestedState));
+    }, 3000); // задержка 1 секунда TODO сделать компонент, аккумулирующий изменения конфигуры
+
+    // Сохраняем текущий таймер, чтобы его можно было очистить на следующем рендере
+    setDebounceTimeout(timeout);
+
+    // Очистка таймера при размонтировании компонента
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [requestedState, requestTreeUpdate]);
 
   const [checked, setChecked] = React.useState<Set<string>>(new Set());
 

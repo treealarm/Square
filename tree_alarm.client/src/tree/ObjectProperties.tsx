@@ -173,6 +173,7 @@ export function ObjectProperties() {
       appDispatch(MarkersStore.deleteMarkers(idsToDelete));
       appDispatch(GuiStore.selectTreeItem(null));
       appDispatch(DiagramsStore.remove_ids_locally(idsToDelete));
+      appDispatch(GuiStore.requestTreeUpdate());
     }, [appDispatch])
 
 
