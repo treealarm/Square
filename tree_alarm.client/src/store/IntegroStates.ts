@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { DoFetch } from './Fetcher';
-import { IActionDescrDTO, IActionExeDTO, IIntegroTypeDTO } from './Marker';
+import { IActionDescrDTO, IActionExeDTO, IIntegroTypeDTO, Marker, IUpdateIntegroObjectDTO } from './Marker';
 import { ApplicationState } from '.';
 import { ApiIntegroRootString } from './constants';
 
@@ -30,17 +30,28 @@ export const fetchAvailableActions = createAsyncThunk<IActionDescrDTO[], string>
   }
 );
 
-export const fetchObjectIntegroType = createAsyncThunk<IIntegroTypeDTO, string>(
+export const fetchObjectIntegroType = createAsyncThunk<IIntegroTypeDTO | null, string>(
   'actions/fetchObjectIntegroType',
-  async (id: string) => {
-    const fetched = await DoFetch(ApiIntegroRootString + '/GetObjectIntegroType?id=' + id, {
+  async (id: string, { rejectWithValue }) => {
+    const response = await DoFetch(ApiIntegroRootString + '/GetObjectIntegroType?id=' + id, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     });
-    const json = (await fetched.json()) as Promise<IIntegroTypeDTO>;
+
+    if (response.status === 404) {
+      return null; // норм, ничего не найдено
+    }
+
+    if (!response.ok) {
+      return rejectWithValue(`Ошибка ${response.status}`);
+    }
+
+    const json = (await response.json()) as IIntegroTypeDTO;
     return json;
   }
 );
+
+
 
 
 export const executeAction = createAsyncThunk<boolean, IActionExeDTO>(
@@ -54,6 +65,29 @@ export const executeAction = createAsyncThunk<boolean, IActionExeDTO>(
     });
     const json = (await fetched.json()) as Promise<boolean>;
     return json;
+  }
+);
+
+export const updateIntegroObject = createAsyncThunk<Marker, IUpdateIntegroObjectDTO>(
+  'actions/updateIntegroObject',
+  async (dto: IUpdateIntegroObjectDTO, { rejectWithValue }) => {
+    try {
+      const response = await DoFetch(ApiIntegroRootString + '/UpdateIntegroObject', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dto),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return rejectWithValue(errorText);
+      }
+
+      const json = (await response.json()) as Marker;
+      return json;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
@@ -103,9 +137,18 @@ const valuesSlice = createSlice({
       })
       .addCase(fetchObjectIntegroType.rejected, (state, action) => {
         state.loading = false;
+        state.integroType = null;
         state.error = action.error.message || 'Error fetching child types';
       })
-
+      ////Create total integro with object
+      .addCase(updateIntegroObject.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(updateIntegroObject.fulfilled, (state, action) => {
+      })
+      .addCase(updateIntegroObject.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
     ;
   },
 });

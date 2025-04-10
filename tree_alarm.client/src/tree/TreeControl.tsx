@@ -3,7 +3,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { IIntegroTypeDTO, IObjProps, TreeMarker } from '../store/Marker';
+import { IIntegroTypeDTO, IObjProps, IUpdateIntegroObjectDTO, TreeMarker } from '../store/Marker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -91,15 +91,6 @@ export function TreeControl() {
   };
 
   
-
-  const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
   const handleSelect = (selected: TreeMarker) => () => selectItem(selected);
 
   const drillDown = (selectedMarker: TreeMarker | null) => () => {
@@ -127,20 +118,29 @@ export function TreeControl() {
       id: null,
       name: 'new object',
       parent_id: reduxSelectedId
+    }   
+
+    if (type && objectIntegroType) {
+      copy.name = 'new ' + type;
+      let new_obj: IUpdateIntegroObjectDTO = {
+        obj: copy,
+        integro: {
+          i_name: objectIntegroType.i_name,
+          i_type: objectIntegroType.i_type
+        }
+      }
+
+      appDispatch(IntegroStore.updateIntegroObject(new_obj));
     }
-    appDispatch(ObjPropsStore.updateObjProps(copy));
-
+    else {
+      appDispatch(ObjPropsStore.updateObjProps(copy));
+    }
     const my_bounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
-
     getTreeItemsByParent({
       parent_id: parentMarkerId ?? null,
       start_id: my_bounds?.start_id ?? null,
       end_id: null
     });
-    if (type) {
-      console.log('Создание потомка типа:', type);
-      // вызови нужный thunk или логики для создания
-    }
   };
 
   return (

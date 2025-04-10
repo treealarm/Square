@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Domain.Integro;
 using LeafletAlarms.Grpc;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,7 @@ namespace LeafletAlarms.Controllers
     
     private readonly IIntegroTypeUpdateService _integroTypeUpdateService;
     private readonly IIntegroTypesService _integroTypesService;
+    private readonly IMapUpdateService _mapUpdateService;
 
     private readonly IDaprClientService _daprClientService;
     public IntegroController(
@@ -22,6 +24,7 @@ namespace LeafletAlarms.Controllers
       IIntegroService integroService,
       IIntegroTypeUpdateService integroTypeUpdateService,
       IIntegroTypesService integroTypesService,
+      IMapUpdateService mapUpdateService,
       IDaprClientService daprClientService
     )
     {
@@ -29,6 +32,7 @@ namespace LeafletAlarms.Controllers
       _integroTypeUpdateService = integroTypeUpdateService;
       _integroService = integroService;
       _integroTypesService = integroTypesService;
+      _mapUpdateService = mapUpdateService;
       _daprClientService = daprClientService;
     }
 
@@ -177,6 +181,19 @@ namespace LeafletAlarms.Controllers
       return integros;
     }
 
+    [HttpPost]
+    [Route("UpdateIntegroObject")]
+    public async Task<BaseMarkerDTO> UpdateIntegroObject(UpdateIntegroObjectDTO new_obj)
+    {
+      var props = await _mapUpdateService.UpdateProperties(new_obj.obj);
+
+      new_obj.integro.id = props.id;
+
+      await _integroUpdateService.UpdateIntegros(new List<IntegroDTO>() { new_obj.integro });
+      return props;
+    }
+    
+
     [HttpDelete()]
     [Route("DeleteIntegros")]
     public async Task DeleteValues(List<string> ids)
@@ -207,24 +224,29 @@ namespace LeafletAlarms.Controllers
 
     [HttpGet()]
     [Route("GetObjectIntegroType")]
-    public async Task<IntegroTypeDTO> GetObjectIntegroType(string id)
+    public async Task<ActionResult<IntegroTypeDTO>> GetObjectIntegroType(string id)
     {
       var types = await GetByIds(new List<string> { id });
       var type = types.FirstOrDefault();
+
       if (type == null)
-      {
-        return null;
-      }
+        return NotFound(); // отдаёт 404
 
       var dic = await _integroTypesService.GetTypesAsync(new List<IntegroTypeKeyDTO>()
-      {
+    {
         new IntegroTypeKeyDTO()
         {
-          i_name = type.i_name,
-          i_type = type.i_type,
+            i_name = type.i_name,
+            i_type = type.i_type,
         }
-      });
-      return dic.Values.ToList().FirstOrDefault();
+    });
+
+      var result = dic.Values.ToList().FirstOrDefault();
+      if (result == null)
+        return NotFound(); // тоже 404, если не нашли
+
+      return Ok(result); // 200 с JSON
     }
+
   }
 }

@@ -15,7 +15,7 @@ export function uuidv4() {
 export type LatLngPair = [number, number];
 
 export interface IBaseObject {
-  id: string | null;
+  id?: string | null;
 }
 
 export interface Marker {
@@ -498,4 +498,13 @@ export interface IIntegroTypeDTO {
   i_name: string;
   i_type: string;
   children: IIntegroTypeChildDTO[];
+}
+
+export interface IIntegroDTO extends IBaseObject {
+  i_name: string;
+  i_type: string;
+}
+export interface IUpdateIntegroObjectDTO {
+  obj: IObjProps;
+  integro: IIntegroDTO;
 }

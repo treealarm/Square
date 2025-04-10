@@ -2,7 +2,6 @@
 import { ApiRootString } from './constants';
 import { DoFetch } from './Fetcher';
 import { DeepCopy, GetByParentDTO, TreeMarker, Marker } from './Marker';
-import { ApplicationState } from '.';
 
 export interface RequestedState {
   parent_id: string | null;
