@@ -6,6 +6,7 @@ namespace IntegrationUtilsLib
   {
     private ProtoObject? _mainObject = null;
     public const string MainStr = "main";
+    public ProtoObject? MainObj { get { return _mainObject; } }
     public async Task<ProtoObject?> GetBaseObject(string id_in)
     {
       var client = Utils.Client;

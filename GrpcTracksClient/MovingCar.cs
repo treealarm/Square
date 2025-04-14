@@ -24,14 +24,17 @@ public class MovingCar
   private double _azimuth;
   private ProtoFig _figure;
   private readonly string _id;
+  private readonly string _parent_id;
   private double _speed_ms = 0;
   public string Id { get { return _id; } }
+  public string ParentId { get { return _parent_id; } }
 
-  public MovingCar(ValhallaRouter router, string name, string id)
+  public MovingCar(ValhallaRouter router, string name, string id, string parent_id)
   {
     _router = router;
     _name = name;
     _id = id;
+    _parent_id = parent_id;
     _color = GenerateRandomColor();
     _carIndex = _random.Next(0, _carImages.Length);
     _currentPosition = GenerateRandomStartPosition();
@@ -72,7 +75,8 @@ public class MovingCar
     {
       Id = _id,
       Name = _name,
-      Geometry = new ProtoGeometry { Type = "Point" }
+      Geometry = new ProtoGeometry { Type = "Point" },
+      ParentId = ParentId
     };
     fig.Radius = 50;
 

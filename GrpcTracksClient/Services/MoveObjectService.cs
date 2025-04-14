@@ -14,7 +14,6 @@ namespace GrpcTracksClient.Services
     private ConcurrentDictionary<string, MovingCar> _cars = 
       new ConcurrentDictionary<string, MovingCar>();
 
-    private const string _main_str = "main";
     private const string _car_str = "car";
     private IntegrationSync _sync = new IntegrationSync();
     public MoveObjectService()
@@ -27,7 +26,8 @@ namespace GrpcTracksClient.Services
       while (true && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
-        var client = Utils.ClientIntegro;
+        var client = Utils.Client;
+        var clientIntegro = Utils.ClientIntegro;
         var integroObjects = await _sync.GetIntegroObjects(_car_str);
 
         if (integroObjects == null)
@@ -50,12 +50,12 @@ namespace GrpcTracksClient.Services
 
           integroRequest.Objects.Add(new IntegroProto()
           {
-            IName = client.AppId,
+            IName = clientIntegro.AppId,
             ObjectId = carUid,
             IType = _car_str
           });
         }
-        await client.Client.UpdateIntegroAsync(integroRequest);
+        await clientIntegro.Client.UpdateIntegroAsync(integroRequest);
         integroObjects = await _sync.GetIntegroObjects(_car_str);
         if (integroObjects == null || integroObjects.Count < IMoveObjectService.MaxCars)
         {
@@ -70,7 +70,7 @@ namespace GrpcTracksClient.Services
 
         foreach (var baseObj in baseObjects)
         {
-          var movingCar = new MovingCar(_router, baseObj.Name, baseObj.Id);
+          var movingCar = new MovingCar(_router, baseObj.Name, baseObj.Id, baseObj.ParentId);
           _cars.TryAdd(movingCar.Id, movingCar);
         }
 
@@ -81,7 +81,8 @@ namespace GrpcTracksClient.Services
           {
             var carNum = carId + 1;
             var carUid = await Utils.GenerateObjectId(_car_str, carNum);
-            var movingCar = new MovingCar(_router, $"Car {carNum}", carUid);
+            // set parent_id as main_obj id 
+            var movingCar = new MovingCar(_router, $"Car {carNum}", carUid, _sync.MainObj.Id);
             _cars.TryAdd(movingCar.Id, movingCar);
           }
           catch (Exception ex)

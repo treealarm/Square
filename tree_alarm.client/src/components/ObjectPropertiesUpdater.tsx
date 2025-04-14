@@ -44,7 +44,7 @@ export function ObjectPropertiesUpdater(): React.ReactElement|null {
       appDispatch(DiagramsStore.update_single_diagram_locally(null));
    
     }
-  }, [selected_id, markers?.figs, diagrams_updated]);
+  }, [selected_id, diagrams_updated]);
 
   
   return (null);
