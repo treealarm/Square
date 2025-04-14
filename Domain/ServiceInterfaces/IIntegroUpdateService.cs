@@ -8,6 +8,7 @@ namespace Domain
   {
     public Task UpdateIntegros(List<IntegroDTO> obj2UpdateIn);
     public Task RemoveIntegros(List<string> ids);
+    public Task OnUpdatedNormalObjects(List<string> ids);
   }
   public interface IIntegroTypeUpdateService
   {

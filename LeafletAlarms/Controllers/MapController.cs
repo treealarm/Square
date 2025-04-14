@@ -21,6 +21,7 @@ namespace LeafletAlarms.Controllers
     private readonly RightsCheckerService _rightChecker;
     private readonly IOptions<RoutingSettings> _routingSettings;
     private readonly IMapUpdateService _mapUpdateService;
+    private readonly IIntegroUpdateService _integroUpdateService;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
@@ -28,7 +29,8 @@ namespace LeafletAlarms.Controllers
       ILevelService levelService,
       RightsCheckerService rightChecker,
       IOptions<RoutingSettings> routingSettings,
-      IMapUpdateService mapUpdateService
+      IMapUpdateService mapUpdateService,
+      IIntegroUpdateService integroUpdateService
     )
     {
       _mapService = mapsService;
@@ -38,6 +40,7 @@ namespace LeafletAlarms.Controllers
       _rightChecker = rightChecker;
       _routingSettings = routingSettings;
       _mapUpdateService = mapUpdateService;
+      _integroUpdateService = integroUpdateService;
     }        
 
     [HttpGet()]
@@ -494,6 +497,7 @@ namespace LeafletAlarms.Controllers
     public async Task<ActionResult<ObjPropsDTO>> UpdateProperties(ObjPropsDTO updatedMarker)
     {
       await _mapUpdateService.UpdateProperties(updatedMarker);
+      await _integroUpdateService.OnUpdatedNormalObjects(new List<string>() { updatedMarker.id });
 
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }

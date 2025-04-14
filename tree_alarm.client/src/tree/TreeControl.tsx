@@ -100,13 +100,6 @@ export function TreeControl() {
   const selectItem = (selectedMarker: TreeMarker | null) => {
     const selectedId = selectedMarker?.id === reduxSelectedId ? null : selectedMarker?.id ?? null;
     appDispatch(GuiStore.selectTreeItem(selectedId));
-
-    if (selectedId) {
-      appDispatch(IntegroStore.fetchObjectIntegroType(selectedId));
-    } else {
-      // Очищаем типы, если ничего не выбрано
-      appDispatch(IntegroStore.set_objectIntegroType(null));
-    }
   };
 
   

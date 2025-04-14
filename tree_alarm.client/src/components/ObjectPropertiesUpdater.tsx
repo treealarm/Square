@@ -9,6 +9,7 @@ import { ApplicationState } from '../store';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import * as EditStore from '../store/EditStates';
 import * as DiagramsStore from '../store/DiagramsStates';
+import * as IntegroStore from '../store/IntegroStates';
 
 import { useAppDispatch } from '../store/configureStore';
 
@@ -39,10 +40,11 @@ export function ObjectPropertiesUpdater(): React.ReactElement|null {
     if (selected_id) {
       appDispatch(ObjPropsStore.fetchObjProps(selected_id));
       appDispatch(DiagramsStore.fetchSingleDiagram(selected_id));
+      appDispatch(IntegroStore.fetchObjectIntegroType(selected_id));
     }
     else {
       appDispatch(DiagramsStore.update_single_diagram_locally(null));
-   
+      appDispatch(IntegroStore.set_objectIntegroType(null));
     }
   }, [selected_id, diagrams_updated]);
 

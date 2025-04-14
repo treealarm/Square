@@ -9,5 +9,6 @@
     public static string OnBlinkStateChanged = "OnBlinkStateChanged";
     public static string CheckStatesByIds = "CheckStatesByIds";
     public static string OnValuesChanged = "OnValuesChanged";
+    public static string OnUpdateIntegros = "OnUpdateIntegros";
   }
 }

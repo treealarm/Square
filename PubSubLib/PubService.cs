@@ -41,8 +41,7 @@ namespace PubSubLib
       return 0;
     }
     public async Task<long> Publish<T>(string channel, T message) where T : class
-    {
-      
+    {      
       return await Publish(_pubsub_name, channel, message);
     }
   }

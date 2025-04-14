@@ -175,7 +175,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("UpdateIntegros")]
-    public async Task<List<IntegroDTO>> UpdateValues([FromBody] List<IntegroDTO> integros)
+    public async Task<List<IntegroDTO>> UpdateIntegros([FromBody] List<IntegroDTO> integros)
     {
       await _integroUpdateService.UpdateIntegros(integros);
       return integros;

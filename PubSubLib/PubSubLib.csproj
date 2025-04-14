@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\leaflet_dock\treealarm_pubsub.yaml" Link="treealarm_pubsub.yaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Dapr.Client" Version="1.15.2" />
     <PackageReference Include="Dapr.Messaging" Version="1.15.2" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.3" />

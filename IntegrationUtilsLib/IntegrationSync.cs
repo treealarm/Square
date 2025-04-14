@@ -5,8 +5,10 @@ namespace IntegrationUtilsLib
   public class IntegrationSync
   {
     private ProtoObject? _mainObject = null;
+    private IntegroProto? _mainIntegro = null;
     public const string MainStr = "main";
     public ProtoObject? MainObj { get { return _mainObject; } }
+    public IntegroProto? MainIntegroObj { get { return _mainIntegro; } }
     public async Task<ProtoObject?> GetBaseObject(string id_in)
     {
       var client = Utils.Client;
@@ -85,8 +87,6 @@ namespace IntegrationUtilsLib
     }
     public async Task InitMainObject(CancellationToken token)
     {
-      IntegroProto? mainIntegro = null;
-
       while (_mainObject == null && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
@@ -101,17 +101,17 @@ namespace IntegrationUtilsLib
           {
             //Если находим, то обращаемся к таблице Objects
             // И получаем базовый объект с именем, айди, итд
-            mainIntegro = integroObjects.FirstOrDefault();
+            _mainIntegro = integroObjects.FirstOrDefault();
 
-            if (mainIntegro != null)
+            if (_mainIntegro != null)
             {
               //Request real object or create if doesn't exist
-              var mainObj = await GetBaseObject(mainIntegro.ObjectId);
+              var mainObj = await GetBaseObject(_mainIntegro.ObjectId);
 
               if (mainObj == null)
               {
                 // Если не находим, то создаем с дефолтным именем
-                mainObj = await UpdateBaseObject(mainIntegro.ObjectId, $"{client.AppId}_{MainStr}");
+                mainObj = await UpdateBaseObject(_mainIntegro.ObjectId, $"{client.AppId}_{MainStr}");
               }
 
               if (mainObj != null)
@@ -125,9 +125,9 @@ namespace IntegrationUtilsLib
             //Если не нашли объект в БД, то создадим новый.
             var mainUid = await Utils.GenerateObjectId($"{MainStr}_{client}", 0);
 
-            if (!string.IsNullOrEmpty(mainIntegro?.ObjectId))
+            if (!string.IsNullOrEmpty(_mainIntegro?.ObjectId))
             {
-              mainUid = mainIntegro.ObjectId;
+              mainUid = _mainIntegro.ObjectId;
             }
 
             var integro = new IntegroListProto();
