@@ -3,7 +3,7 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { IIntegroTypeDTO, IObjProps, IUpdateIntegroObjectDTO, TreeMarker } from '../store/Marker';
+import { DeepCopy, IIntegroTypeDTO, IObjProps, IUpdateIntegroObjectDTO, TreeMarker } from '../store/Marker';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -24,6 +24,7 @@ import * as IntegroStore from '../store/IntegroStates';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { useAppDispatch } from "../store/configureStore";
 import { RequestedState } from '../store/TreeStates';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 export function TreeControl() {
   const appDispatch = useAppDispatch();
@@ -47,6 +48,9 @@ export function TreeControl() {
   const [debounceTimeout, setDebounceTimeout] = useState<any | null>(null);
 
   const getTreeItemsByParent = useCallback((requestedState: RequestedState | null) => {
+    if (requestedState) {
+      requestedState = DeepCopy(requestedState);
+    }
     appDispatch(TreeStore.setParentIdLocally(requestedState));
   }, [appDispatch]);
  
@@ -68,7 +72,7 @@ export function TreeControl() {
     // Создаём новый таймер
     const timeout = setTimeout(() => {
       appDispatch(TreeStore.fetchByParent(requestedState));
-    }, 3000); // задержка 1 секунда TODO сделать компонент, аккумулирующий изменения конфигуры
+    }, 1000); // задержка 1 секунда TODO сделать компонент, аккумулирующий изменения конфигуры
 
     // Сохраняем текущий таймер, чтобы его можно было очистить на следующем рендере
     setDebounceTimeout(timeout);
@@ -127,6 +131,16 @@ export function TreeControl() {
     });
   };
 
+  const refreshTree = () => {
+    const my_bounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
+    getTreeItemsByParent({
+      parent_id: parentMarkerId ?? null,
+      start_id: my_bounds?.start_id ?? null,
+      end_id: null
+    });
+  };
+
+
   const addChildItem = (type?: string|null) => {
 
     let copy: IObjProps = {
@@ -163,6 +177,7 @@ export function TreeControl() {
       <TabControl />
       <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
         <Toolbar variant="dense">
+
           <Tooltip title="Go to previous page">
             <IconButton onClick={() => onNavigate(false)}>
               <ArrowBackIcon />
@@ -176,6 +191,11 @@ export function TreeControl() {
               </IconButton>
             </Tooltip>
           ) : null}
+          <Tooltip title="Refresh tree">
+            <IconButton onClick={refreshTree}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Go to next page">
             <IconButton onClick={() => onNavigate(true)}>
               <ArrowForwardIcon />
