@@ -4,7 +4,5 @@
 -- \i 'main.sql'
 
 \connect "MapStore"
-\i 'sql_scripts/events.sql'
-\i 'sql_scripts/integro.sql'
-
-
+\i 'events.sql'
+\i 'integro.sql'
