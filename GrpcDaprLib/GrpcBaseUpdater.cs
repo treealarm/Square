@@ -1,6 +1,7 @@
 ﻿using Dapr.Client;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Logging;
 
 namespace GrpcDaprLib
 {
@@ -10,11 +11,19 @@ namespace GrpcDaprLib
     protected CallInvoker? _daprClient;
     public string AppId { get; private set; } = string.Empty;
 
-    public GrpcBaseUpdater(string appId = "leafletalarms")
+    public GrpcBaseUpdater()
     {
-      _daprClient = DaprClient.CreateInvocationInvoker(appId);
       AppId = Environment.GetEnvironmentVariable("APP_ID") ?? string.Empty;
+
+      if (string.IsNullOrEmpty(AppId))
+      {
+        Console.Error.WriteLine("AppId is empty dapr will not work");
+      }
       Console.WriteLine($"APP_ID: {AppId}");
+
+      var LEAFLETALARM_APP_ID = Environment.GetEnvironmentVariable("LEAFLETALARM_APP_ID") ?? "leafletalarms";
+      _daprClient = DaprClient.CreateInvocationInvoker(LEAFLETALARM_APP_ID);
+      Console.WriteLine($"LEAFLETALARM_APP_ID: {LEAFLETALARM_APP_ID}");
     }
 
     public static int GetAppPort(string env_name = "APP_PORT", int def_val = 5001)

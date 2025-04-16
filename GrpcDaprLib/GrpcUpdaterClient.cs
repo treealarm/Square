@@ -4,7 +4,7 @@
   {
     public TClient? Client { get; protected set; }
 
-    public GrpcUpdaterClient(string daprAppId = "leafletalarms") : base(daprAppId)
+    public GrpcUpdaterClient() : base()
     {
       // Универсальный способ создания клиента через рефлексию
       Client = Activator.CreateInstance(typeof(TClient), _daprClient) as TClient;

@@ -87,8 +87,8 @@ namespace IntegrationUtilsLib
         }
         catch (Exception ex)
         {
-          Logger.LogException(ex);
-          await Task.Delay(1000, token); // Задержка перед повторной попыткой
+          Logger.LogException(ex, $"taskName={taskName}");
+          await Task.Delay(5000, token);
         }
       }
     }

@@ -91,6 +91,7 @@ namespace IntegrationUtilsLib
       {
         await Task.Delay(500);
         var client = Utils.ClientIntegro;
+        Console.Error.WriteLine($"creating _mainObject {client.AppId}");        
 
         // Ищем уже созданный main объект по типу
         var integroObjects = await GetIntegroObjects(MainStr);
@@ -139,6 +140,10 @@ namespace IntegrationUtilsLib
             });
             await client!.Client!.UpdateIntegroAsync(integro);
           }
+        }
+        else
+        {
+          Console.Error.WriteLine("integroObjects is null");
         }
       }
     }

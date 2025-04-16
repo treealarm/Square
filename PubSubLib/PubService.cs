@@ -36,7 +36,7 @@ namespace PubSubLib
       }
       catch (Exception ex)
       {
-        Console.WriteLine(ex.ToString());
+        Console.WriteLine($"pubsub_name={pubsub_name},channel={channel} -> {ex.ToString()}");
       }
       return 0;
     }
