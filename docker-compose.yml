@@ -140,6 +140,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./leaflet_data/postgres_data:/var/lib/postgresql/data
+      - ./leaflet_data/initdb:/docker-entrypoint-initdb.d
     ports:
       - "${MapDatabase__PgPort}:${MapDatabase__PgPort}"
     networks:
