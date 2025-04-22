@@ -7,32 +7,11 @@ namespace IntegrationUtilsLib
 {
   public class Utils
   {
-    // Статическое поле для хранения клиента
-    private static GrpcUpdater? _client;
     private static GrpcUpdaterClient<IntegroServiceClient>? _clientIntegro;
     private static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>? _clientBase;
     private static Dictionary<string,string> _idsCash = new Dictionary<string, string>();
-    private static readonly object _lock = new object(); // Для синхронизации
+    private static readonly object _lock = new object(); 
 
-    // Метод для доступа к клиенту
-    public static GrpcUpdater Client
-    {
-      get
-      {
-        // Проверяем, если клиент не существует или мертв, создаем новый
-        if (_client == null || _client.IsDead)
-        {
-          lock (_lock)
-          {
-            if (_client == null || _client.IsDead)
-            {
-              _client = new GrpcUpdater();  // Инициализация нового клиента
-            }
-          }
-        }
-        return _client;
-      }
-    }
 
     public static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro
     {

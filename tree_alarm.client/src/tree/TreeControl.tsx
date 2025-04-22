@@ -148,7 +148,7 @@ export function TreeControl() {
         obj: copy,
         integro: {
           i_name: objectIntegroType.i_name,
-          i_type: objectIntegroType.i_type
+          i_type: type
         }
       }
 
@@ -237,10 +237,10 @@ export function TreeControl() {
                               key={type.child_i_type}
                               onClick={() => {
                                 addChildItem(type.child_i_type);
-                                setAnchorEl(null); // Закрыть меню после клика
+                                setAnchorEl(null);
                               }}
                             >
-                              Add {type.child_i_type}
+                              Add integration child [{type.child_i_type}]
                             </MenuItem>
                           ))}
                         </Menu>

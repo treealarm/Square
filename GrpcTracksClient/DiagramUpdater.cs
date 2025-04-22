@@ -30,10 +30,10 @@ static public class DiagramUpdater
         File.ReadAllBytes($"files/{protoUploadFile.FileName}"));
 
       // Создаем клиента gRPC и подключаемся
-      var client = Utils.Client;
+      var client = Utils.ClientBase.Client;
 
       // Загружаем файл
-      await client.UploadFile(protoUploadFile);
+      await client.UploadFileAsync(protoUploadFile);
       
       Console.WriteLine("File uploaded.");
       var d_types = new DiagramTypesProto();
@@ -82,7 +82,7 @@ static public class DiagramUpdater
         d_type
       );
 
-      await client.UpdateDiagramTypes(d_types);
+      await client.UpdateDiagramTypesAsync(d_types);
 
       var diag = new DiagramsProto();
 
@@ -101,7 +101,7 @@ static public class DiagramUpdater
           }
         });
       }
-      await client.UpdateDiagrams(diag);
+      await client.UpdateDiagramsAsync(diag);
 
     }
     catch (Exception ex)

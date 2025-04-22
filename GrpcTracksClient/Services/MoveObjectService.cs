@@ -26,7 +26,7 @@ namespace GrpcTracksClient.Services
       while (true && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
-        var client = Utils.Client;
+        var client = Utils.ClientBase.Client;
         var clientIntegro = Utils.ClientIntegro;
         var integroObjects = await _sync.GetIntegroObjectsByType(_car_str);
 
@@ -103,7 +103,7 @@ namespace GrpcTracksClient.Services
       await _sync.InitMainObject(token);
       await InitCarObjects(token);
 
-      var client = Utils.Client;
+      var client = Utils.ClientBase;
       var clientIntegro = Utils.ClientIntegro;
       bool inited = false;
       while (!token.IsCancellationRequested)
@@ -148,11 +148,11 @@ namespace GrpcTracksClient.Services
         {
           if (figs.Figs.Any())
           {
-            var newFigs = await client.Move(figs);
+            var newFigs = await client.Client.UpdateFiguresAsync(figs);
           }
           if (valuesToSend.Values.Any())
           {
-            var vals = await client.UpdateValues(valuesToSend);
+            var vals = await client.Client.UpdateValuesAsync(valuesToSend);
           }
           if (!inited)
           {
@@ -265,7 +265,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.618727730916895
       });
 
-      var client = Utils.Client;
+      var client = Utils.ClientBase;
 
       double step = 0.001;
 
@@ -285,7 +285,7 @@ namespace GrpcTracksClient.Services
           try
           {
             var reply =
-            await client.Move(figs);
+            await client.Client.UpdateFiguresAsync(figs);
             //Console.WriteLine("Fig DAPR: " + reply?.ToString());
           }
           catch (Exception ex)
@@ -338,7 +338,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.621130
       };
 
-      var client = Utils.Client;
+      var client = Utils.ClientBase;
       var step = 0.0001;
 
       for (int i = 0; i < 1000000; i++)
@@ -376,7 +376,7 @@ namespace GrpcTracksClient.Services
           });
         }
 
-        var newFigs = await client.Move(figs);
+        var newFigs = await client.Client.UpdateFiguresAsync(figs);
         //Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }

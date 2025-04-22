@@ -10,13 +10,16 @@ namespace DataChangeLayer
     private readonly ILevelService _levelService;
     private readonly IDiagramUpdateService _diagramUpdateService;
     private readonly ITracksUpdateService _trackUpdateService;
+    private readonly IIntegroUpdateService _integroUpdateService;
     public MapUpdateService(
       IMapService mapService, 
       IGeoService geoService,
       ITrackService tracksService,
       ILevelService levelService,
       IDiagramUpdateService diagramUpdateService,
-      ITracksUpdateService trackUpdateService)
+      ITracksUpdateService trackUpdateService,
+      IIntegroUpdateService integroUpdateService
+    )
     {
       _mapService = mapService;
       _geoService = geoService;
@@ -24,6 +27,7 @@ namespace DataChangeLayer
       _levelService = levelService;
       _diagramUpdateService = diagramUpdateService;
       _trackUpdateService = trackUpdateService;
+      _integroUpdateService = integroUpdateService;
     }
 
     public async Task<FiguresDTO?> UpdateFigures(FiguresDTO statMarkers)
@@ -74,6 +78,7 @@ namespace DataChangeLayer
       await _geoService.RemoveAsync(listToDelete);
       await _mapService.RemoveAsync(listToDelete);
       await _diagramUpdateService.DeleteDiagrams(listToDelete);
+      await _integroUpdateService.RemoveIntegros(listToDelete);
       return idsToDelete;
     }
   }

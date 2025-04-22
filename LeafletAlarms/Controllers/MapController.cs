@@ -445,7 +445,9 @@ namespace LeafletAlarms.Controllers
     public async Task<ActionResult<ObjPropsDTO>> UpdateProperties(ObjPropsDTO updatedMarker)
     {
       await _mapUpdateService.UpdateProperties(updatedMarker);
-      await _integroUpdateService.OnUpdatedNormalObjects(new List<string>() { updatedMarker.id });
+      await _integroUpdateService.OnUpdatedNormalObjects(
+        new List<string>() { updatedMarker.id }, 
+        Topics.OnUpdateIntegros);
 
       return CreatedAtAction(nameof(UpdateProperties), updatedMarker);
     }

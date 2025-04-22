@@ -4,35 +4,16 @@ using Analytics.Api.Stream;
 using Google.Protobuf.WellKnownTypes;
 using GrpcDaprLib;
 using ImageLib;
+using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 
 namespace AASubService
 {
   internal class SubHostedService : IHostedService, IDisposable
   {
-    private static GrpcUpdater? _client;
     private static Dictionary<string, string> _idsCash = new Dictionary<string, string>();
     private static readonly object _lock = new object(); // Для синхронизации
 
-    // Метод для доступа к клиенту
-    public static GrpcUpdater Client
-    {
-      get
-      {
-        // Проверяем, если клиент не существует или мертв, создаем новый
-        if (_client == null || _client.IsDead)
-        {
-          lock (_lock)
-          {
-            if (_client == null || _client.IsDead)
-            {
-              _client = new GrpcUpdater();  // Инициализация нового клиента
-            }
-          }
-        }
-        return _client;
-      }
-    }
 
     private Task? _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
@@ -128,7 +109,7 @@ namespace AASubService
         // Предполагаем, что контент — это JPEG-изображение
         try
         {
-          var client = Client;
+          var client = Utils.ClientBase;
           if (client != null) 
           {
             var newEv = new EventProto();
@@ -163,7 +144,7 @@ namespace AASubService
 
             var events = new EventsProto();
             events.Events.Add(newEv);
-            var result = await client.AddEvents(events);
+            var result = await client.Client.UpdateEventsAsync(events);
           }
         }
         catch (Exception ex)

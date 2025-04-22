@@ -11,8 +11,8 @@ startup.ConfigureServices(builder.Services);
 
 builder.Services.AddGrpc();
 
-var grpc_port = GrpcUpdater.GetAppPort("APP_PORT", 5000);
-var http_port = GrpcUpdater.GetAppPort("HTTP_PORT", 8000);
+var grpc_port = GrpcBaseUpdater.GetAppPort("APP_PORT", 5000);
+var http_port = GrpcBaseUpdater.GetAppPort("HTTP_PORT", 8000);
 
 builder.WebHost.ConfigureKestrel(options =>
 {

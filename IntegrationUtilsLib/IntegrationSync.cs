@@ -12,11 +12,11 @@ namespace IntegrationUtilsLib
     public IntegroProto? MainIntegroObj { get { return _mainIntegro; } }
     public async Task<ProtoObject?> GetBaseObject(string id_in)
     {
-      var client = Utils.Client;
+      var client = Utils.ClientBase.Client;
 
       var ids = new ProtoObjectIds();
       ids.Ids.Add(id_in);
-      var response = await client.RequestObjects(ids);
+      var response = await client!.RequestObjectsAsync(ids);
 
       if (response == null)
       {
@@ -26,11 +26,11 @@ namespace IntegrationUtilsLib
     }
     public async Task<List<ProtoObject>?> GetBaseObjects(IEnumerable<string> ids_in)
     {
-      var client = Utils.Client;
+      var client = Utils.ClientBase.Client;
 
       var ids = new ProtoObjectIds();
       ids.Ids.AddRange(ids_in);
-      var response = await client.RequestObjects(ids);
+      var response = await client!.RequestObjectsAsync(ids);
 
       if (response == null)
       {
@@ -89,7 +89,7 @@ namespace IntegrationUtilsLib
 
     public async Task<ProtoObject?> UpdateBaseObject(string id, string name)
     {
-      var client = Utils.Client;
+      var client = Utils.ClientBase.Client;
 
       var mainObject = new ProtoObject()
       {
@@ -98,7 +98,7 @@ namespace IntegrationUtilsLib
       };
       var list = new ProtoObjectList();
       list.Objects.Add(mainObject);
-      var response = await client.UpdateObjects(list);
+      var response = await client!.UpdateObjectsAsync(list);
 
       if (response == null)
       {
@@ -155,7 +155,7 @@ namespace IntegrationUtilsLib
           else
           {
             //Если не нашли объект в БД, то создадим новый.
-            var mainUid = await Utils.GenerateObjectId($"{MainStr}_{client}", 0);
+            var mainUid = await Utils.GenerateObjectId($"{MainStr}_{client.AppId}", 0);
 
             if (!string.IsNullOrEmpty(_mainIntegro?.ObjectId))
             {

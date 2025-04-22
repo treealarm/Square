@@ -8,8 +8,7 @@ using System.Text.Json;
 namespace GrpcTracksClient
 {
   internal class UpdateSADTracks
-  {
-    static GrpcUpdater _client = Utils.Client;
+  {    
     public static async Task Move()
     {
       var figs = new TrackPointsProto();
@@ -54,6 +53,8 @@ namespace GrpcTracksClient
 
     public static async Task MoveGrpc(TrackPointsProto figs, ProtoGeoObject fig)
     {
+      var client = Utils.ClientBase;
+
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);
 
@@ -65,7 +66,7 @@ namespace GrpcTracksClient
           f.Lat = c.Lat;
           f.Lon = c.Lon;
         }
-        var newFigs = await _client.UpdateTracks(figs);
+        var newFigs = await client.Client.UpdateTracksAsync(figs);
         //Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }

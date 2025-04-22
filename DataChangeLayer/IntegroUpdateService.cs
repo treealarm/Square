@@ -24,10 +24,11 @@ namespace DataChangeLayer
 
     public async Task RemoveIntegros(List<string> ids)
     {
+      await OnUpdatedNormalObjects(ids, Topics.OnDeleteIntegros);
       await _integroServiceInternal.RemoveAsync(ids);
     }
 
-    private async Task OnUpdateIntegros(List<IntegroDTO> obj2UpdateIn)
+    private async Task OnUpdateIntegros(List<IntegroDTO> obj2UpdateIn, string topic)
     {
       var i_names = obj2UpdateIn.Select(o => o.i_name).Distinct().ToList();
 
@@ -37,14 +38,13 @@ namespace DataChangeLayer
           .Where(o => o.i_name == i)
           .Select(o => o.id)
           .ToList();
-        await _pub.Publish($"{Topics.OnUpdateIntegros}_{i}", objects);
+        await _pub.Publish($"{topic}_{i}", objects);
       }
     }
-
     public async Task UpdateIntegros(List<IntegroDTO> obj2UpdateIn)
     {      
       await _integroServiceInternal.UpdateListAsync(obj2UpdateIn);
-      await OnUpdateIntegros(obj2UpdateIn);
+      await OnUpdateIntegros(obj2UpdateIn, Topics.OnUpdateIntegros);
     }
 
     public async Task UpdateTypesAsync(List<IntegroTypeDTO> types)
@@ -53,15 +53,15 @@ namespace DataChangeLayer
     }
 
     public async Task RemoveTypesAsync(List<IntegroTypeKeyDTO> types)
-    {
+    {      
       await _integroTypesService.RemoveTypesAsync(types);
     }
 
-    public async Task OnUpdatedNormalObjects(List<string> ids)
+    public async Task OnUpdatedNormalObjects(List<string> ids, string topic)
     {
       var dic = await _integroService.GetListByIdsAsync(ids);
       var obj2UpdateIn = dic.Values.ToList();
-      await OnUpdateIntegros(obj2UpdateIn);
+      await OnUpdateIntegros(obj2UpdateIn, topic);
     }
   }
 }
