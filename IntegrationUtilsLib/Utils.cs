@@ -1,6 +1,7 @@
 ﻿using GrpcDaprLib;
 using LeafletAlarmsGrpc;
 using static LeafletAlarmsGrpc.IntegroService;
+using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
 namespace IntegrationUtilsLib
 {
@@ -9,6 +10,7 @@ namespace IntegrationUtilsLib
     // Статическое поле для хранения клиента
     private static GrpcUpdater? _client;
     private static GrpcUpdaterClient<IntegroServiceClient>? _clientIntegro;
+    private static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>? _clientBase;
     private static Dictionary<string,string> _idsCash = new Dictionary<string, string>();
     private static readonly object _lock = new object(); // Для синхронизации
 
@@ -45,9 +47,27 @@ namespace IntegrationUtilsLib
 
         lock (_lock)
         {
-          _clientIntegro = new GrpcUpdaterClient<IntegroServiceClient>();  // Инициализация нового клиента
+          _clientIntegro = new GrpcUpdaterClient<IntegroServiceClient>();
           return _clientIntegro!;
         }        
+      }
+    }
+    public static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase
+    {
+      get
+      {
+        var client = _clientBase;
+        // Проверяем, если клиент не существует или мертв, создаем новый
+        if (client != null && !client.IsDead)
+        {
+          return client;
+        }
+
+        lock (_lock)
+        {
+          _clientBase = new GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>();
+          return _clientBase!;
+        }
       }
     }
 

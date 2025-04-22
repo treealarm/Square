@@ -297,64 +297,12 @@ namespace LeafletAlarms.Controllers
       return retVal;
     }
 
-    private async Task<FiguresDTO> GetFigures(Dictionary<string, GeoObjectDTO> geo)
-    {
-      var result = new FiguresDTO();
-
-      if (geo == null)
-      {
-        return result;
-      }
-
-      var ids = geo.Keys.ToList();
-
-      var tree = await _mapService.GetAsync(ids);
-
-      var props = await _mapService.GetPropsAsync(ids);
-
-      foreach (var item in tree.Values)
-      {
-        if (geo.TryGetValue(item.id, out var geoPart))
-        {
-          FigureZoomedDTO retItem = null;
-
-          var figure = new FigureGeoDTO();
-          figure.radius = geoPart.radius;
-          figure.geometry = geoPart.location;
-          result.figs.Add(figure);
-          retItem = figure;
-
-          if (retItem != null)
-          {
-            retItem.id = item.id;
-            retItem.name = item.name;
-            retItem.parent_id = item.parent_id;            
-            retItem.zoom_level = geoPart.zoom_level?.ToString();         
-            
-            if (props.TryGetValue(retItem.id, out var objProp))
-            {
-              if (retItem.extra_props != null)
-              {
-                retItem.extra_props.AddRange(objProp.extra_props);
-              }
-              else
-              {
-                retItem.extra_props = objProp.extra_props;
-              }              
-            }
-          }
-
-        }
-      }
-      return result;
-    }
-
     [HttpPost]
     [Route("GetByIds")]
     public async Task<ActionResult<FiguresDTO>> GetByIds(List<string> ids)
     {
       var geo = await _geoService.GetGeoObjectsAsync(ids.Where(e=> !string.IsNullOrEmpty(e)).ToList());
-      var figures = await GetFigures(geo);
+      var figures = await _mapService.GetFigures(geo);
 
       return CreatedAtAction(nameof(GetByIds), figures);
     }
@@ -378,7 +326,7 @@ namespace LeafletAlarms.Controllers
         propFilter.count
       );
       var geo = await _geoService.GetGeoObjectsAsync(props.Select(i => i.id).ToList());
-      var figures = await GetFigures(geo);
+      var figures = await _mapService.GetFigures(geo);
 
       return CreatedAtAction(nameof(GetByParams), figures);
     }
@@ -429,7 +377,7 @@ namespace LeafletAlarms.Controllers
           .ToDictionary(ent => ent.Key, ent => ent.Value);
       }            
 
-      var figures =  await GetFigures(geo);
+      var figures =  await _mapService.GetFigures(geo);
 
       if (figures.figs.Count < 1000)
       {

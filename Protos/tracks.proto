@@ -11,6 +11,8 @@ package tracks;
 
 service TreeAlarmsGrpcService {
 	rpc UpdateFigures (ProtoFigures) returns (ProtoFigures);
+  rpc RequestProperties (common.ProtoObjectIds) returns (ProtoObjPropsList);
+
 	rpc UpdateStates (ProtoObjectStates) returns (google.protobuf.BoolValue);
 	rpc UpdateTracks (TrackPointsProto) returns (google.protobuf.BoolValue);	
 	rpc UpdateEvents (EventsProto) returns (google.protobuf.BoolValue);
@@ -23,7 +25,7 @@ service TreeAlarmsGrpcService {
   rpc UploadFile(UploadFileProto) returns (google.protobuf.BoolValue);
 
   rpc UpdateObjects (ProtoObjectList) returns (ProtoObjectList);
-  rpc RequestObjects (ProtoObjectIds) returns (ProtoObjectList);
+  rpc RequestObjects (common.ProtoObjectIds) returns (ProtoObjectList);
 }
 
 
@@ -44,8 +46,13 @@ message ProtoObjectList {
 	repeated ProtoObject objects = 1;
 }
 
-message ProtoObjectIds {
-	repeated string ids = 1;
+message ProtoObjProps {
+  ProtoObject obj = 1;
+  repeated ProtoObjExtraProperty properties = 2;
+}
+
+message ProtoObjPropsList {
+	repeated ProtoObjProps objects = 1;
 }
 
 message ProtoFig {

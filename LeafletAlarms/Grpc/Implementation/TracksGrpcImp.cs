@@ -1,4 +1,5 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using Common;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using LeafletAlarmsGrpc;
 using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
@@ -20,6 +21,10 @@ namespace LeafletAlarms.Grpc.Implementation
       return await _proxy.UpdateFigures(request);
     }
 
+    public override async Task<ProtoObjPropsList> RequestProperties(ProtoObjectIds request, ServerCallContext context)
+    {
+      return await _proxy.RequestProperties(request);
+    }
     public override async Task<BoolValue> UpdateStates(ProtoObjectStates request, ServerCallContext context)
     {
       return await _proxy.UpdateStates(request);

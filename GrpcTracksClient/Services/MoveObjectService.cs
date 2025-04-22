@@ -28,7 +28,7 @@ namespace GrpcTracksClient.Services
         await Task.Delay(500);
         var client = Utils.Client;
         var clientIntegro = Utils.ClientIntegro;
-        var integroObjects = await _sync.GetIntegroObjects(_car_str);
+        var integroObjects = await _sync.GetIntegroObjectsByType(_car_str);
 
         if (integroObjects == null)
         {
@@ -56,7 +56,7 @@ namespace GrpcTracksClient.Services
           });
         }
         await clientIntegro.Client.UpdateIntegroAsync(integroRequest);
-        integroObjects = await _sync.GetIntegroObjects(_car_str);
+        integroObjects = await _sync.GetIntegroObjectsByType(_car_str);
         if (integroObjects == null || integroObjects.Count < IMoveObjectService.MaxCars)
         {
           continue;

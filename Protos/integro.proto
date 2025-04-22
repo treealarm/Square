@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
-
+import "common.proto";
 option csharp_namespace = "LeafletAlarmsGrpc";
 
 package integro;
@@ -10,6 +10,7 @@ service IntegroService {
   rpc GenerateObjectId (GenerateObjectIdRequest) returns (GenerateObjectIdResponse);
   rpc UpdateIntegro (IntegroListProto) returns (google.protobuf.BoolValue);
   rpc GetListByType (GetListByTypeRequest) returns (IntegroListProto);
+  rpc GetListByIds (common.ProtoObjectIds) returns (IntegroListProto);
   rpc UpdateIntegroTypes(IntegroTypesProto) returns (google.protobuf.BoolValue);
 }
 

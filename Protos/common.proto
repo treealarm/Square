@@ -11,3 +11,7 @@ message ProtoGeometry {
 	repeated ProtoCoord coord = 1;
 	string type = 2;
 }
+
+message ProtoObjectIds {
+	repeated string ids = 1;
+}

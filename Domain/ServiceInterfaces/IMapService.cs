@@ -39,5 +39,6 @@ namespace Domain
       int count
     );
     Task UpdatePropNotDeleteAsync(IEnumerable<BaseMarkerDTO> updatedObj);
+    Task<FiguresDTO> GetFigures(Dictionary<string, GeoObjectDTO> geo);
   }
 }

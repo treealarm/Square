@@ -209,6 +209,37 @@ namespace LeafletAlarms.Grpc.Implementation
       return response;
     }
 
+    public async Task<ProtoObjPropsList> RequestProperties(ProtoObjectIds request)
+    {
+      var response = new ProtoObjPropsList();
+      var objProps = await _mapService.GetPropsAsync(request.Ids.ToList());
+
+      foreach (var objProp in objProps)
+      {
+        var protoProp = new ProtoObjProps()
+        {
+          Obj = new ProtoObject()
+          {
+            Id = objProp.Value.id,
+            Name = objProp.Value.name,
+            OwnerId = objProp.Value.owner_id,
+            ParentId = objProp.Value.parent_id
+          }
+        };
+
+        foreach(var prop in objProp.Value.extra_props)
+        {
+          protoProp.Properties.Add(new ProtoObjExtraProperty()
+          {
+            PropName = prop.prop_name,
+            StrVal = prop.str_val,
+            VisualType = prop.visual_type
+          });
+        }
+        response.Objects.Add(protoProp);
+      }
+      return response;
+    }
     public async Task<BoolValue> UpdateStates(ProtoObjectStates request)
     {
       var objStates = new List<ObjectStateDTO>();

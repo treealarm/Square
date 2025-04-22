@@ -1,4 +1,5 @@
-﻿using LeafletAlarmsGrpc;
+﻿using Common;
+using LeafletAlarmsGrpc;
 
 namespace IntegrationUtilsLib
 {
@@ -37,8 +38,21 @@ namespace IntegrationUtilsLib
       }
       return response.Objects.ToList();
     }
+    public async Task<List<ProtoObjProps>?> GetPropObjects(IEnumerable<string> ids_in)
+    {
+      var client = Utils.ClientBase;
 
-    public async Task<List<IntegroProto>?> GetIntegroObjects(string type)
+      var ids = new ProtoObjectIds();
+      ids.Ids.AddRange(ids_in);
+      var response = await client!.Client!.RequestPropertiesAsync(ids);
+
+      if (response == null)
+      {
+        return null;
+      }
+      return response.Objects.ToList();
+    }
+    public async Task<List<IntegroProto>?> GetIntegroObjectsByType(string type)
     {
       var client = Utils.ClientIntegro;
 
@@ -48,6 +62,23 @@ namespace IntegrationUtilsLib
 
       // Ищем уже созданный main объект по типу
       var response = await client!.Client!.GetListByTypeAsync(integroRequest);
+
+      if (response == null)
+      {
+        return null;
+      }
+      return response.Objects.ToList();
+    }
+
+    public async Task<List<IntegroProto>?> GetIntegroObjectsByIds(List<string> ids)
+    {
+      var client = Utils.ClientIntegro;
+
+      var integroRequest = new ProtoObjectIds();
+      integroRequest.Ids.AddRange(ids);
+
+      // Ищем уже созданный main объект по типу
+      var response = await client!.Client!.GetListByIdsAsync(integroRequest);
 
       if (response == null)
       {
@@ -94,7 +125,7 @@ namespace IntegrationUtilsLib
         Console.Error.WriteLine($"creating _mainObject {client.AppId}");        
 
         // Ищем уже созданный main объект по типу
-        var integroObjects = await GetIntegroObjects(MainStr);
+        var integroObjects = await GetIntegroObjectsByType(MainStr);
 
         if (integroObjects != null)
         {

@@ -1,4 +1,5 @@
 ﻿
+using Common;
 using Domain;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -59,12 +60,9 @@ namespace LeafletAlarms.Grpc.Implementation
       return ret;
     }
 
-    public override async Task<IntegroListProto> GetListByType(GetListByTypeRequest request, ServerCallContext context)
+    private IntegroListProto ConvertDTO2Proto(Dictionary<string, IntegroDTO> objects)
     {
       var response = new IntegroListProto();
-
-      var objects = await _integroService.GetListByType(request.IName, request.IType);
-
       foreach (var i in objects.Values)
       {
         var obj = new IntegroProto()
@@ -73,9 +71,14 @@ namespace LeafletAlarms.Grpc.Implementation
           IType = i.i_type,
           ObjectId = i.id
         };
-        response.Objects.Add(obj);       
+        response.Objects.Add(obj);
       }
       return response;
+    }
+    public override async Task<IntegroListProto> GetListByType(GetListByTypeRequest request, ServerCallContext context)
+    {
+      var objects = await _integroService.GetListByType(request.IName, request.IType);
+      return ConvertDTO2Proto(objects);
     }
 
     public override async Task<BoolValue> UpdateIntegroTypes(IntegroTypesProto request, ServerCallContext context)
@@ -101,6 +104,11 @@ namespace LeafletAlarms.Grpc.Implementation
       }
       await _integroTypeUpdateService.UpdateTypesAsync(types_dto);
       return ret;
+    }
+    public override async Task<IntegroListProto> GetListByIds(ProtoObjectIds request, ServerCallContext context)
+    {
+      var objects =  await _integroService.GetListByIdsAsync(request.Ids.ToList());
+      return ConvertDTO2Proto(objects);
     }
   }
 }

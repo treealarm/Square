@@ -602,5 +602,56 @@ namespace DbLayer.Services
       return ConvertMarkerListDB2DTO(allObjects);
     }
 
+    public async Task<FiguresDTO> GetFigures(Dictionary<string, GeoObjectDTO> geo)
+    {
+      var result = new FiguresDTO();
+
+      if (geo == null)
+      {
+        return result;
+      }
+
+      var ids = geo.Keys.ToList();
+
+      var tree = await GetAsync(ids);
+
+      var props = await GetPropsAsync(ids);
+
+      foreach (var item in tree.Values)
+      {
+        if (geo.TryGetValue(item.id, out var geoPart))
+        {
+          FigureZoomedDTO retItem = null;
+
+          var figure = new FigureGeoDTO();
+          figure.radius = geoPart.radius;
+          figure.geometry = geoPart.location;
+          result.figs.Add(figure);
+          retItem = figure;
+
+          if (retItem != null)
+          {
+            retItem.id = item.id;
+            retItem.name = item.name;
+            retItem.parent_id = item.parent_id;
+            retItem.zoom_level = geoPart.zoom_level?.ToString();
+
+            if (props.TryGetValue(retItem.id, out var objProp))
+            {
+              if (retItem.extra_props != null)
+              {
+                retItem.extra_props.AddRange(objProp.extra_props);
+              }
+              else
+              {
+                retItem.extra_props = objProp.extra_props;
+              }
+            }
+          }
+
+        }
+      }
+      return result;
+    }
   }
 }

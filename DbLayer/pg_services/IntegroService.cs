@@ -183,8 +183,18 @@ namespace DbLayer.Services
     }
     public async Task<Dictionary<string, IntegroDTO>> GetListByType(string i_name, string i_type)
     {
-      var dbObjs = await _dbContext.Integro.Where(i => i.i_name == i_name && i.i_type == i_type).ToListAsync();
-      return ConvertListDB2DTO(dbObjs); 
+      var query = _dbContext.Integro.AsQueryable();
+
+      query = query.Where(i => i.i_name == i_name);
+
+      if (!string.IsNullOrEmpty(i_type))
+      {
+        query = query.Where(i => i.i_type == i_type);
+      }
+
+      var dbObjs = await query.ToListAsync();
+
+      return ConvertListDB2DTO(dbObjs);
     }
 
     public async Task<Dictionary<string, IntegroTypeDTO>> GetTypesAsync(List<IntegroTypeKeyDTO> types)
