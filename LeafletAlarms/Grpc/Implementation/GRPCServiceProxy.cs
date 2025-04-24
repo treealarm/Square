@@ -218,13 +218,7 @@ namespace LeafletAlarms.Grpc.Implementation
       {
         var protoProp = new ProtoObjProps()
         {
-          Obj = new ProtoObject()
-          {
-            Id = objProp.Value.id,
-            Name = objProp.Value.name,
-            OwnerId = objProp.Value.owner_id,
-            ParentId = objProp.Value.parent_id
-          }
+          Id = objProp.Value.id
         };
 
         foreach(var prop in objProp.Value.extra_props)
@@ -239,6 +233,34 @@ namespace LeafletAlarms.Grpc.Implementation
         response.Objects.Add(protoProp);
       }
       return response;
+    }
+    public async Task<BoolValue> UpdateProperties(ProtoObjPropsList request)
+    {
+      var ret = new BoolValue();
+
+      
+      foreach (var objProp in request.Objects)
+      {
+        var objProps = new ObjPropsDTO()
+        {
+          id = objProp.Id,
+          extra_props = new List<ObjExtraPropertyDTO>()
+        };
+
+        foreach (var p in objProp.Properties) 
+        {
+          objProps.extra_props.Add(new ObjExtraPropertyDTO()
+          {
+            prop_name = p.PropName,
+            str_val = p.StrVal,
+            visual_type = p.VisualType
+          });
+        }
+        await _mapService.UpdatePropAsync(objProps);
+      }
+
+      ret.Value = true;
+      return ret;
     }
     public async Task<BoolValue> UpdateStates(ProtoObjectStates request)
     {

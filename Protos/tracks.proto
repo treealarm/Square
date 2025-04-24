@@ -12,6 +12,7 @@ package tracks;
 service TreeAlarmsGrpcService {
 	rpc UpdateFigures (ProtoFigures) returns (ProtoFigures);
   rpc RequestProperties (common.ProtoObjectIds) returns (ProtoObjPropsList);
+  rpc UpdateProperties (ProtoObjPropsList) returns (google.protobuf.BoolValue);
 
 	rpc UpdateStates (ProtoObjectStates) returns (google.protobuf.BoolValue);
 	rpc UpdateTracks (TrackPointsProto) returns (google.protobuf.BoolValue);	
@@ -47,7 +48,7 @@ message ProtoObjectList {
 }
 
 message ProtoObjProps {
-  ProtoObject obj = 1;
+  string id = 1;
   repeated ProtoObjExtraProperty properties = 2;
 }
 

@@ -25,6 +25,10 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       return await _proxy.RequestProperties(request);
     }
+    public override async Task<BoolValue> UpdateProperties(ProtoObjPropsList request, ServerCallContext context)
+    {
+      return await _proxy.UpdateProperties(request);
+    }
     public override async Task<BoolValue> UpdateStates(ProtoObjectStates request, ServerCallContext context)
     {
       return await _proxy.UpdateStates(request);

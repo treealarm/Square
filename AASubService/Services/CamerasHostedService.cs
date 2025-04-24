@@ -8,21 +8,35 @@ using System.Text.Json;
 
 namespace AASubService
 {
-  internal class CamerasHostedService : IHostedService, IDisposable
+  internal class CamerasHostedService : IHostedService, IAsyncDisposable
   {
 
     private Task? _timer;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-    private IntegrationSync _sync = new IntegrationSync();
-    private readonly ISubService _sub;
-    private string? _topic_name = null;
-    private ConcurrentDictionary<string, IntegroProto> _cams = 
-      new ConcurrentDictionary<string, IntegroProto>();
+    private IntegrationSyncFull _sync;
     private const string CamStr = "cam";
-    public CamerasHostedService(ISubService sub
-    )
+
+    public CamerasHostedService(ISubService sub)
     {
-      _sub = sub;      
+      var type_to_props = new Dictionary<string, List<ProtoObjExtraProperty>?>();
+      type_to_props.Add(IntegrationSync.MainStr, null);
+
+      type_to_props.Add(CamStr, new List<ProtoObjExtraProperty>());
+
+      type_to_props[CamStr]!.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "ip",
+        StrVal = "127.0.0.1",
+        VisualType = ""
+      });
+      type_to_props[CamStr]!.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "port",
+        StrVal = "80",
+        VisualType = ""
+      });
+
+      _sync =  new IntegrationSyncFull(sub, type_to_props, _cancellationToken.Token);  
     }
 
     async Task IHostedService.StartAsync(CancellationToken cancellationToken)
@@ -35,90 +49,37 @@ namespace AASubService
 
     async Task IHostedService.StopAsync(CancellationToken cancellationToken)
     {
-      if (!string.IsNullOrEmpty(_topic_name))
-      {
-        await _sub.Unsubscribe(_topic_name, OnUpdateIntegros);
-      }
-      
       _cancellationToken.Cancel();
       _timer?.Wait();
 
       await Task.Delay(1);
     }
 
-    void IDisposable.Dispose()
+    public async ValueTask DisposeAsync()
     {
       _timer?.Dispose();
+      await _sync.DisposeAsync();
     }
 
 
     private async void DoWork()
     {
       await Task.Delay(10000);
-      await _sync.InitMainObject(_cancellationToken.Token);
-      var types = new IntegroTypesProto();
+      await _sync.InitAll();
 
-
-      var typeMain = new IntegroTypeProto()
+      var hierarchy = new Dictionary<string, IEnumerable<string>>
       {
-        IType = IntegrationSync.MainStr
+        [IntegrationSync.MainStr] = new[] { CamStr },
+        //["cam"] = new[] { "lens" },
+        //["sensor"] = Array.Empty<string>(),
+        //["lens"] = Array.Empty<string>()
       };
-      typeMain.Children.Add(new IntegroTypeChildProto()
-      { 
-        ChildIType = CamStr
-      });
 
-      var typeCam = new IntegroTypeProto()
-      {
-        IType = CamStr
-      };
-      types.Types_.Add(typeMain);
-      types.Types_.Add(typeCam);
-
-      await _sync.InitTypes(types, _cancellationToken.Token);
-
-      List<IntegroProto>? listIntegros = await _sync.GetIntegroObjectsByType(CamStr);
-
-      while (listIntegros == null)
-      {
-        listIntegros = await _sync.GetIntegroObjectsByType(CamStr);
-        if (!_cancellationToken.IsCancellationRequested)
-        {
-          return;
-        }
-      }
-
-      _cams = new ConcurrentDictionary<string, IntegroProto>(
-           listIntegros.ToDictionary(proto => proto.ObjectId)
-        );
-
-      _topic_name = $"{Topics.OnUpdateIntegros}_{_sync.MainIntegroObj!.IName}";
-      await _sub.Subscribe(_topic_name, OnUpdateIntegros);
+      await _sync.InitChildrenTypes(hierarchy);
 
       while (!_cancellationToken.IsCancellationRequested)
       {
         await Task.Delay(5000);        
-      }
-    }
-
-    public async Task OnUpdateIntegros(string channel, byte[] message)
-    {
-      var ids = JsonSerializer.Deserialize<List<string>>(message);
-
-      if (ids == null || ids.Count == 0)
-      {
-        return;
-      }
-      var updatedIntegros = await _sync.GetIntegroObjectsByIds(ids);
-
-      if (updatedIntegros == null || updatedIntegros.Count == 0)
-      {
-        return;
-      }
-
-      foreach(var obj in updatedIntegros)
-      {
-        _cams[obj.ObjectId] = obj;
       }
     }
   }
