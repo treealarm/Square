@@ -2,7 +2,7 @@
 
 namespace Domain
 {
-    public interface IObjectProps
+    public interface IObjectProps: IIdentifiable
     {
         public List<ObjExtraPropertyDTO>? extra_props { get; set; }
     }

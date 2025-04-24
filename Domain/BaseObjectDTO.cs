@@ -1,7 +1,11 @@
 ﻿
 namespace Domain
 {
-  public abstract record BaseObjectDTO
+  public interface IIdentifiable
+  {
+    string? id { get; set; }
+  }
+  public abstract record BaseObjectDTO : IIdentifiable
   {    public string? id { get; set; }
   }
 }

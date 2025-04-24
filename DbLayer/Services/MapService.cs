@@ -342,7 +342,7 @@ namespace DbLayer.Services
       return result.DeletedCount;
     }
 
-    private static DBMarkerProperties ConvertDTO2Property(BaseMarkerDTO propsIn)
+    private static DBMarkerProperties ConvertDTO2Property(IObjectProps propsIn)
     {
       var props = propsIn as IObjectProps;
 
@@ -371,7 +371,7 @@ namespace DbLayer.Services
       await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
     }
 
-    public async Task UpdatePropNotDeleteAsync(IEnumerable<BaseMarkerDTO> listUpdate)
+    public async Task UpdatePropNotDeleteAsync(IEnumerable<IObjectProps> listUpdate)
     {
       if (!listUpdate.Any())
       {
