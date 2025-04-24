@@ -238,7 +238,8 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       var ret = new BoolValue();
 
-      
+      var prop_list = new List<ObjPropsDTO>();
+
       foreach (var objProp in request.Objects)
       {
         var objProps = new ObjPropsDTO()
@@ -256,9 +257,9 @@ namespace LeafletAlarms.Grpc.Implementation
             visual_type = p.VisualType
           });
         }
-        await _mapService.UpdatePropAsync(objProps);
+        prop_list.Add(objProps);
       }
-
+      await _mapService.UpdatePropNotDeleteAsync(prop_list);
       ret.Value = true;
       return ret;
     }

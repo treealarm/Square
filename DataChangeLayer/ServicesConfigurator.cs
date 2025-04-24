@@ -8,7 +8,7 @@ namespace DataChangeLayer
     public static void ConfigureServices(IServiceCollection services)
     {
       services.AddSingleton<ITracksUpdateService, TracksUpdateService>();      
-      services.AddSingleton<IMapUpdateService, MapUpdateService>();
+      services.AddScoped<IMapUpdateService, MapUpdateService>();
       services.AddSingleton<IDiagramUpdateService, DiagramUpdateService>();
       services.AddSingleton<IDiagramTypeUpdateService, DiagramTypeUpdateService>();
       services.AddScoped<IEventsUpdateService, EventsUpdateService>();

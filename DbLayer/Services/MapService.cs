@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -380,47 +381,42 @@ namespace DbLayer.Services
 
       var bulkWrites = new List<WriteModel<DBMarkerProperties>>();
 
-      foreach (var updatedObj in listUpdate)
+      // Метод для добавления запроса Pull и Push
+      void AddUpdateRequests(DBMarkerProperties propToUpdate, IEnumerable<string> propNames, string id)
       {
-        var props = updatedObj as IObjectProps;
+        var filter = Builders<DBMarkerProperties>.Filter.Where(x => x.id == id);
 
-        if (props?.extra_props == null || props.extra_props.Count == 0)
+        var updatePull = Builders<DBMarkerProperties>.Update.PullFilter(u => u.extra_props, c => propNames.Contains(c.prop_name));
+        var updatePush = Builders<DBMarkerProperties>.Update.PushEach(u => u.extra_props, propToUpdate.extra_props);
+
+        bulkWrites.Add(new UpdateOneModel<DBMarkerProperties>(filter, updatePull) { IsUpsert = true });
+        bulkWrites.Add(new UpdateOneModel<DBMarkerProperties>(filter, updatePush) { IsUpsert = true });
+      }
+
+      foreach (var props in listUpdate)
+      {
+        // Проверка, что extra_props не пустой
+        if (props?.extra_props?.Any() != true)
         {
           continue;
-        }        
+        }
 
-        DBMarkerProperties propToUpdate = ConvertDTO2Property(updatedObj);
+        // Преобразование объекта
+        var propToUpdate = ConvertDTO2Property(props);
 
+        // Получение имен свойств
         var propNames = propToUpdate.extra_props.Select(p => p.prop_name).ToList();
 
-        var updatePull = Builders<DBMarkerProperties>.Update
-                .PullFilter(u => u.extra_props, c => propNames.Contains(c.prop_name));
-
-        var updatePush = Builders<DBMarkerProperties>.Update
-                .PushEach(u => u.extra_props, propToUpdate.extra_props);
-
-
-        var filter = Builders<DBMarkerProperties>.Filter
-          .Where(x => x.id == updatedObj.id);
-
-        var request = new UpdateOneModel<DBMarkerProperties>(filter, updatePull);
-        request.IsUpsert = true;
-        bulkWrites.Add(request);
-        request = new UpdateOneModel<DBMarkerProperties>(filter, updatePush);
-        request.IsUpsert = true;
-        bulkWrites.Add(request);
+        // Добавление запросов Pull и Push
+        AddUpdateRequests(propToUpdate, propNames, props.id);
       }
 
-      if (bulkWrites.Count == 0)
+      if (bulkWrites.Any())
       {
-        return;
+        await _propCollection.BulkWriteAsync(bulkWrites);
       }
-
-      var writeResult = await _propCollection.BulkWriteAsync(bulkWrites);
-
-      //await _propCollection.UpdateOneAsync(filter, updatePull);
-      //await _propCollection.UpdateOneAsync(filter, updatePush);
     }
+
 
     public async Task<ObjPropsDTO> GetPropAsync(string id)
     {

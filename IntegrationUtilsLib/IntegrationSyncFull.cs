@@ -69,6 +69,7 @@ namespace IntegrationUtilsLib
           )
       );
 
+      await SyncPropObjects();
 
       _topic_update_integros = $"{Topics.OnUpdateIntegros}_{MainIntegroObj!.IName}";
       await _sub.Subscribe(_topic_update_integros, OnUpdateIntegros);
@@ -120,12 +121,7 @@ namespace IntegrationUtilsLib
         if (_type_to_props.TryGetValue(integro.IType, out var common_props) && common_props != null)
         {
             protoProp.Properties.Add(common_props);
-          var newProps = new ProtoObjProps() 
-          { 
-            Id = integro.ObjectId
-          };
-          newProps.Properties.Add(common_props);
-          _obj_props[integro.ObjectId] = newProps;
+            _obj_props[integro.ObjectId] = protoProp;
         }
         else
         {
