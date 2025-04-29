@@ -35,7 +35,18 @@ namespace AASubService
         StrVal = "80",
         VisualType = ""
       });
-
+      type_to_props[CamStr]!.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "user",
+        StrVal = "root",
+        VisualType = ""
+      });
+      type_to_props[CamStr]!.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "password",
+        StrVal = "root",
+        VisualType = "__pass"
+      });
       _sync =  new IntegrationSyncFull(sub, type_to_props, _cancellationToken.Token);  
     }
 

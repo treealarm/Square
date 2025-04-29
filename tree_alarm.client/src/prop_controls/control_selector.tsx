@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { TextField } from '@mui/material';
 import { MuiColorInput } from 'mui-color-input'
-import { IControlSelector } from 'control_selector_common'
-
+import { IControlSelector } from './control_selector_common'
+import { renderPasswordField } from './RenderPasswordField'
 
 const renderTextField = (props: IControlSelector) => (
   <TextField
@@ -46,6 +46,7 @@ const renderColorInput = (props: IControlSelector) => {
 const controlMap: { [key: string]: (props_in: IControlSelector) => React.ReactElement } = {
   __txt: (props_in) => renderTextField(props_in),
   __clr: (props_in) => renderColorInput(props_in),
+  __pass: (props_in) => renderPasswordField(props_in),
   // Add other control types here
 };
 

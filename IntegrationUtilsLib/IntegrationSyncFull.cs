@@ -3,7 +3,6 @@ using Domain;
 using LeafletAlarmsGrpc;
 using System.Collections.Concurrent;
 using System.Text.Json;
-using static Google.Rpc.Context.AttributeContext.Types;
 
 namespace IntegrationUtilsLib
 {
@@ -70,6 +69,8 @@ namespace IntegrationUtilsLib
       );
 
       await SyncPropObjects();
+
+      await UpdateMissingPropertiesFromTemplate();
 
       _topic_update_integros = $"{Topics.OnUpdateIntegros}_{MainIntegroObj!.IName}";
       await _sub.Subscribe(_topic_update_integros, OnUpdateIntegros);
@@ -202,5 +203,77 @@ namespace IntegrationUtilsLib
         await _sub.Unsubscribe(_topic_update_integros, OnUpdateIntegros);
       }
     }
+
+    public async Task UpdateMissingPropertiesFromTemplate()
+    {
+      var toUpdateList = new ProtoObjPropsList();
+
+      foreach (var kvp in _obj_props)
+      {
+        var objId = kvp.Key;
+        var currentProps = kvp.Value;
+
+        if (!_integros.TryGetValue(objId, out var integro))
+          continue;
+
+        if (!_type_to_props.TryGetValue(integro.IType, out var templateProps) || templateProps == null)
+          continue;
+
+        if (currentProps == null)
+        {
+          // Объект совсем без свойств — просто копируем шаблон целиком
+          var newProps = new ProtoObjProps
+          {
+            Id = objId,
+          };
+          newProps.Properties.Add(templateProps);
+          _obj_props[objId] = newProps;
+          toUpdateList.Objects.Add(newProps);
+          continue;
+        }
+
+        var existingProps = currentProps.Properties.ToDictionary(p => p.PropName);
+
+        bool changed = false;
+
+        foreach (var templateProp in templateProps)
+        {
+          if (existingProps.TryGetValue(templateProp.PropName, out var currentProp))
+          {
+            // Проперти есть, но VisualType может отличаться
+            if (currentProp.VisualType != templateProp.VisualType)
+            {
+              currentProp.VisualType = templateProp.VisualType;
+              changed = true;
+            }
+          }
+          else
+          {
+            // Нет такого свойства — добавим из шаблона
+            var newProp = new ProtoObjExtraProperty
+            {
+              PropName = templateProp.PropName,
+              StrVal = templateProp.StrVal,
+              VisualType = templateProp.VisualType
+            };
+            currentProps.Properties.Add(newProp);
+            changed = true;
+          }
+        }
+
+        if (changed)
+        {
+          toUpdateList.Objects.Add(currentProps);
+        }
+      }
+
+      if (toUpdateList.Objects.Count > 0)
+      {
+        var client = Utils.ClientBase;
+        await client!.Client!.UpdatePropertiesAsync(toUpdateList);
+      }
+    }
+
+
   }
 }
