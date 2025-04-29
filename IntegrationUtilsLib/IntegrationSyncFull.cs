@@ -121,8 +121,12 @@ namespace IntegrationUtilsLib
 
         if (_type_to_props.TryGetValue(integro.IType, out var common_props) && common_props != null)
         {
-            protoProp.Properties.Add(common_props);
-            _obj_props[integro.ObjectId] = protoProp;
+          var clonedProps = common_props
+              .Select(p => p.Clone())
+              .ToList();
+
+          protoProp.Properties.Add(clonedProps);
+          _obj_props[integro.ObjectId] = protoProp;
         }
         else
         {
@@ -250,12 +254,7 @@ namespace IntegrationUtilsLib
           else
           {
             // Нет такого свойства — добавим из шаблона
-            var newProp = new ProtoObjExtraProperty
-            {
-              PropName = templateProp.PropName,
-              StrVal = templateProp.StrVal,
-              VisualType = templateProp.VisualType
-            };
+            var newProp = templateProp.Clone();
             currentProps.Properties.Add(newProp);
             changed = true;
           }
