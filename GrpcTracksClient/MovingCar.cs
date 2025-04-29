@@ -1,4 +1,5 @@
 ﻿using Common;
+using Domain;
 using GrpcTracksClient;
 using LeafletAlarmsGrpc;
 using ValhallaLib;
@@ -81,7 +82,7 @@ public class MovingCar
     fig.Radius = 50;
 
     fig.ExtraProps.Add(new ProtoObjExtraProperty { PropName = "track_name", StrVal = "lisa_alert" });
-    fig.ExtraProps.Add(new ProtoObjExtraProperty { PropName = "__color", StrVal = _color, VisualType = "__clr" });
+    fig.ExtraProps.Add(new ProtoObjExtraProperty { PropName = "__color", StrVal = _color, VisualType = VisualTypes.Color });
     fig.ExtraProps.Add(new ProtoObjExtraProperty { PropName = "__image", StrVal = _carImages[_carIndex] });
     fig.ExtraProps.Add(new ProtoObjExtraProperty { PropName = "__image_rotate", StrVal = ((int)_azimuth).ToString() });
     fig.Geometry.Coord.Add(new ProtoCoord { Lat = _currentPosition.Lat, Lon = _currentPosition.Lon });

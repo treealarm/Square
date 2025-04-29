@@ -14,10 +14,10 @@ namespace LeafletAlarms.Grpc
       // Используем один switch для определения и типа, и значения
       var (parameterType, convertedValue) = value.ValueCase switch
       {
-        ProtoActionValue.ValueOneofCase.DoubleValue => ("double", (object)value.DoubleValue),
-        ProtoActionValue.ValueOneofCase.IntValue => ("int", (object)value.IntValue),
-        ProtoActionValue.ValueOneofCase.StringValue => ("string", (object)value.StringValue),
-        ProtoActionValue.ValueOneofCase.Coordinates => ("coordinates", GRPCServiceProxy.CoordsFromProto2DTO(value.Coordinates)),
+        ProtoActionValue.ValueOneofCase.DoubleValue => (VisualTypes.Double, (object)value.DoubleValue),
+        ProtoActionValue.ValueOneofCase.IntValue => (VisualTypes.Int, (object)value.IntValue),
+        ProtoActionValue.ValueOneofCase.StringValue => (VisualTypes.String, (object)value.StringValue),
+        ProtoActionValue.ValueOneofCase.Coordinates => (VisualTypes.Coordinates, GRPCServiceProxy.CoordsFromProto2DTO(value.Coordinates)),
         _ => ("unknown", null) // Если значение не задано
       };
 
@@ -69,19 +69,19 @@ namespace LeafletAlarms.Grpc
 
       protoActionParameter.CurVal = dto.type switch
       {
-        "double" when double.TryParse(cur_val?.ToString(), out var d) =>
+        VisualTypes.Double when double.TryParse(cur_val?.ToString(), out var d) =>
             new ProtoActionValue { DoubleValue = d },
 
-        "int" when int.TryParse(cur_val?.ToString(), out var i) =>
+        VisualTypes.Int when int.TryParse(cur_val?.ToString(), out var i) =>
             new ProtoActionValue { IntValue = i },
 
-        "string" =>
+        VisualTypes.String =>
             new ProtoActionValue { StringValue = cur_val?.ToString() },
 
-        "coordinates" when cur_val is JsonElement element && element.ValueKind == JsonValueKind.Object =>
+        VisualTypes.Coordinates when cur_val is JsonElement element && element.ValueKind == JsonValueKind.Object =>
             new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(element.Deserialize<GeometryDTO>()) },
 
-        "coordinates" when cur_val is GeometryDTO coords =>
+        VisualTypes.Coordinates when cur_val is GeometryDTO coords =>
             new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(coords) },
 
         _ => new ProtoActionValue() // Пустое значение для неизвестного типа

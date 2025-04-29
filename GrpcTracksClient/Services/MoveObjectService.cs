@@ -1,4 +1,5 @@
 ﻿using Common;
+using Domain;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 using ObjectActions;
@@ -351,7 +352,7 @@ namespace GrpcTracksClient.Services
           {
             PropName = "__color",
             StrVal = string.Empty,
-            VisualType = "__clr"
+            VisualType = VisualTypes.Color
           };
           fig.ExtraProps.Add(propColor);
         }
@@ -390,7 +391,7 @@ namespace GrpcTracksClient.Services
     }
 
     private static string CarParamsActionName = "SetCarParams";
-    private static string CarCreateActionName = "CreateCar";
+
     private void FillCarAction(ProtoGetAvailableActionsRequest request, ProtoGetAvailableActionsResponse response)
     {
       if (_cars.TryGetValue(request.ObjectId, out var car))
@@ -454,43 +455,12 @@ namespace GrpcTracksClient.Services
         response.ActionsDescr.Add(action2);
       }
     }
-
-    private void FillCreateAction(ProtoGetAvailableActionsRequest request, ProtoGetAvailableActionsResponse response)
-    {
-      var action1 = new ProtoActionDescription
-      {
-        Name = CarCreateActionName
-      };
-
-      action1.Parameters.Add(new ProtoActionParameter()
-      {
-        Name = "Name",
-        CurVal = new ProtoActionValue()
-        {
-          StringValue = "New Car"
-        }
-      });
-
-      if (_cars.TryGetValue(request.ObjectId, out var car))
-      {
-        action1.Parameters.Add(new ProtoActionParameter()
-        {
-          Name = "ParentId",
-          CurVal = new ProtoActionValue()
-          {
-            StringValue = request.ObjectId
-          }
-        });
-      }
-      response.ActionsDescr.Add(action1);
-    }
     public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
     {
       await Task.Delay(0);
       ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
 
       FillCarAction(request, response);
-      FillCreateAction(request, response);
       return response;
     }
 

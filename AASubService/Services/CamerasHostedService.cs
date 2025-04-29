@@ -45,7 +45,7 @@ namespace AASubService
       {
         PropName = "password",
         StrVal = "root",
-        VisualType = "__pass"
+        VisualType = VisualTypes.Password
       });
       _sync =  new IntegrationSyncFull(sub, type_to_props, _cancellationToken.Token);  
     }

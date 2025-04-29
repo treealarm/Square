@@ -3,6 +3,7 @@ import { TextField } from '@mui/material';
 import { MuiColorInput } from 'mui-color-input'
 import { IControlSelector } from './control_selector_common'
 import { renderPasswordField } from './RenderPasswordField'
+import { VisualTypes } from '../store/Marker';
 
 const renderTextField = (props: IControlSelector) => (
   <TextField
@@ -44,16 +45,17 @@ const renderColorInput = (props: IControlSelector) => {
 
 // eslint-disable-next-line no-unused-vars
 const controlMap: { [key: string]: (props_in: IControlSelector) => React.ReactElement } = {
-  __txt: (props_in) => renderTextField(props_in),
-  __clr: (props_in) => renderColorInput(props_in),
-  __pass: (props_in) => renderPasswordField(props_in),
-  // Add other control types here
+  [VisualTypes.Text]: (props_in) => renderTextField(props_in),
+  [VisualTypes.Color]: (props_in) => renderColorInput(props_in),
+  [VisualTypes.Password]: (props_in) => renderPasswordField(props_in),
+  // другие типы
 };
+
 
 export function ControlSelector(props: IControlSelector) {
 
   const { visual_type } = props;
-  const ControlComponent = controlMap[visual_type || '__txt'] || renderTextField;
+  const ControlComponent = controlMap[visual_type || VisualTypes.Text] || renderTextField;
 
   return (
     <> {ControlComponent(props)}</>

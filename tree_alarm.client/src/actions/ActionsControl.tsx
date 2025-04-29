@@ -11,7 +11,7 @@ import {
   Box,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { IActionDescrDTO, IActionParameterDTO, IActionExeDTO, PointType, IPointCoord } from '../store/Marker';
+import { IActionDescrDTO, IActionParameterDTO, IActionExeDTO, PointType, IPointCoord, VisualTypes } from '../store/Marker';
 import { useAppDispatch } from '../store/configureStore';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
@@ -61,7 +61,7 @@ export function ActionsControl() {
       name: action.name!,  // Название действия
       parameters: params.map((param) => {
         // Для каждого параметра проверяем его тип
-        if (param.type === 'coordinates' && Array.isArray(param.cur_val)) {
+        if (param.type === VisualTypes.Coordinates && Array.isArray(param.cur_val)) {
           // Если это координаты, преобразуем их в строку "lat,lon"
           const [lat, lon] = param.cur_val;
           return {
@@ -141,7 +141,7 @@ export function ActionsControl() {
               </AccordionSummary>
               <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {actionParameters[action.name]?.map((param, paramIndex) => {
-                  if (param.type === 'coordinates') {
+                  if (param.type === VisualTypes.Coordinates) {
                     const [lat, lon] = param.cur_val.coord; // Извлекаем lat и lon из массива LatLngPair
 
                     return (
@@ -160,7 +160,7 @@ export function ActionsControl() {
                     <TextField
                       key={param.name}
                       label={param.name}
-                      type={param.type === 'int' || param.type === 'double' ? 'number' : 'text'}
+                      type={param.type === VisualTypes.Int || param.type === VisualTypes.Double ? 'number' : 'text'}
                       value={param.cur_val ?? ''}
                       onChange={(e) =>
                         handleParameterChange(action.name, paramIndex, e.target.value)

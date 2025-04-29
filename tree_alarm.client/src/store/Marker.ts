@@ -508,3 +508,14 @@ export interface IUpdateIntegroObjectDTO {
   obj: IObjProps;
   integro: IIntegroDTO;
 }
+
+export const VisualTypes = {
+  Text: "__txt",
+  Color: "__clr",
+  Password: "__pass",
+  DateTime: "__datetime",
+  Double: "__double",
+  Int: "__int",
+  String: "__string",
+  Coordinates: "__coordinates"
+} as const;

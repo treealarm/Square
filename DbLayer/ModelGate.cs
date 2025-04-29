@@ -182,8 +182,8 @@ namespace DbLayer
           prop_name = prop.prop_name,
           visual_type = prop.visual_type
         };
-        var s = BsonType.Double.ToString();
-        if (prop.visual_type == BsonType.Double.ToString())
+
+        if (prop.visual_type == VisualTypes.Double)
         {
           if(double.TryParse(
             prop.str_val,
@@ -195,7 +195,7 @@ namespace DbLayer
           }
          }
         else
-        if (prop.visual_type == BsonType.DateTime.ToString())
+        if (prop.visual_type == VisualTypes.DateTime)
         {
           newProp.str_val = DateTime
               .Parse(prop.str_val)
@@ -220,7 +220,7 @@ namespace DbLayer
 
       if (prop.prop_name == "__color")
       {
-        return "__clr";
+        return VisualTypes.Color;
       }
       return prop.visual_type;
     }
