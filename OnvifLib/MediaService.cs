@@ -1,80 +1,74 @@
-﻿using MediaServiceReference;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.ServiceModel.Channels;
-using System.ServiceModel;
-using System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text;
 
 namespace OnvifLib
 {
   public class MediaService
   {
-    private Media2Client? _mediaClient;
-    private readonly string _url;
-    private readonly string _username;
-    private readonly string _password;
-    private readonly CustomBinding _binding;
-    private List<MediaProfile> _profiles = new();
+    public const string WSDL_V10 = "http://www.onvif.org/ver10/media/wsdl";
+    public const string WSDL_V20 = "http://www.onvif.org/ver20/media/wsdl";
 
-    private MediaService(string url, CustomBinding binding, string username, string password)
+    protected readonly string _url;
+    protected readonly string _username;
+    protected readonly string _password;
+    protected readonly string _profile;
+    protected readonly CustomBinding _binding;
+
+    protected MediaService(
+      string url, 
+      CustomBinding binding, 
+      string username, 
+      string password, 
+      string profile)
     {
       _url = url;
       _username = username;
       _password = password;
       _binding = binding;
+      _profile = profile;
     }
 
-    public static async Task<MediaService> CreateAsync(string url, CustomBinding binding, string username, string password)
+    public static async Task<MediaService> CreateAsync(
+      string url, 
+      CustomBinding binding, 
+      string username, 
+      string password,
+      string profile)
     {
-      var instance = new MediaService(url, binding, username, password);
+      if (profile == WSDL_V10)
+      {
+        var instance1 = new MediaService1(url, binding, username, password, profile);
+        await instance1.InitializeAsync();
+        return instance1;
+      }
+      
+      var instance = new MediaService2(url, binding, username, password, profile);
       await instance.InitializeAsync();
       return instance;
     }
 
-    private async Task InitializeAsync()
+    public static async Task<byte[]> DownloadImageAsync(string url, string username, string password)
     {
-      var endpoint = new EndpointAddress(_url);
-      _mediaClient = new Media2Client(_binding, endpoint);
-
-      _mediaClient.ClientCredentials.UserName.UserName = _username;
-      _mediaClient.ClientCredentials.UserName.Password = _password;
-      _mediaClient.ClientCredentials.HttpDigest.ClientCredential.UserName = _username;
-      _mediaClient.ClientCredentials.HttpDigest.ClientCredential.Password = _password;
-
-      var behavior = new MyClientBehavior();
-      _mediaClient.Endpoint.EndpointBehaviors.Add(behavior);
-
-      await _mediaClient.OpenAsync();
-      var request = new GetProfilesRequest { Type = ["All"] };
-      var profilesResponse = await _mediaClient.GetProfilesAsync(request);
-
-      _profiles = profilesResponse.Profiles.ToList();
-
-      foreach (var profile in _profiles)
+      var handler = new HttpClientHandler
       {
-        var streamUriRequest = new GetStreamUriRequest
-        {
-          Protocol = StreamType.RTPUnicast.ToString(),
-          ProfileToken = profile.token
-        };
-
-        var streamResponse = await _mediaClient.GetStreamUriAsync(streamUriRequest);
-        Console.WriteLine($"Profile: {profile.Name}, RTSP URL: {streamResponse.Uri}");
-      }
-    }
-
-    public async Task<string?> GetImage()
-    {
-      var profile = _profiles.FirstOrDefault();
-      if (profile == null || _mediaClient == null)
-        return null;
-
-      var snapShotUriRequest = new GetSnapshotUriRequest
-      {
-        ProfileToken = profile.token
+        PreAuthenticate = true,
+        Credentials = new NetworkCredential(username, password)
       };
 
-      var snapShotUriResponse = await _mediaClient.GetSnapshotUriAsync(snapShotUriRequest);
-      return snapShotUriResponse.Uri;
+      using var client = new HttpClient(handler);
+
+      var response = await client.GetAsync(url);
+      response.EnsureSuccessStatusCode();
+
+      return await response.Content.ReadAsByteArrayAsync();
+    }
+    protected virtual async Task InitializeAsync() { await Task.CompletedTask; }
+    public virtual async Task<byte[]?> GetImage()
+    {
+      await Task.CompletedTask;
+      return null;
     }
   }
 }

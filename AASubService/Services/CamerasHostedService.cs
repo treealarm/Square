@@ -139,7 +139,12 @@ namespace AASubService
           {
             continue;
           }
-          var path = await media.GetImage();
+          var data = await media.GetImage();
+          if (data != null)
+          {
+            var filePath = "M:\\snapshot.jpg";
+            await File.WriteAllBytesAsync(filePath, data);
+          }
         }
         await Task.Delay(5000);        
       }

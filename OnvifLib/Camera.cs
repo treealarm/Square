@@ -81,20 +81,28 @@ public class Camera
 
     if (services != null)
     {
-      string? url;
-      if (services.TryGetValue("http://www.onvif.org/ver20/media/wsdl", out url))
-      {
-        var mediaService = await MediaService.CreateAsync(url, _binding, _username, _password);
+      var mediaWsdls = new[] {
+          MediaService1.WSDL_V20,
+          MediaService1.WSDL_V10
+      };
 
-        if (mediaService != null)
+      foreach (var wsdlKey in mediaWsdls)
+      {
+        if (services.TryGetValue(wsdlKey, out var url))
         {
-          return mediaService;
+          var mediaService = await MediaService1.CreateAsync(
+            url, 
+            _binding, 
+            _username, 
+            _password, 
+            wsdlKey);
+          if (mediaService != null)
+          {
+            return mediaService;
+          }
         }
       }
-      else if (services.TryGetValue("http://www.onvif.org/ver10/media/wsdl", out url))
-      {
 
-      }
     }
 
     return null;
