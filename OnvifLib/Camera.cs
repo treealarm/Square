@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Net;
+﻿using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
 using DeviceServiceReference;
-using MediaServiceReference;
 using OnvifLib;
 
 public class Camera
@@ -15,10 +12,19 @@ public class Camera
   private readonly string _password;
   private readonly DeviceClient _deviceClient;
   private readonly CustomBinding _binding;
-  private Media2Client _mediaClient;
+  private Dictionary<string, string>? _services;
 
   //http://192.168.1.150:8899/onvif/device_service
-  public Camera(string url, string username, string password)
+  public static async Task<Camera> CreateAsync(string ip, int port, string username, string password)
+  {
+    var url = $"http://{ip}:{port}/onvif/device_service";
+
+    var camera = new Camera(url, username, password);
+    await camera.Init();  // здесь ты можешь внутри запрашивать и кэшировать сервисы
+
+    return camera;
+  }
+  private Camera(string url, string username, string password)
   {
     _url = url;
     _username = username;
@@ -56,50 +62,60 @@ public class Camera
     //Service: http://www.onvif.org/ver20/imaging/wsdl -> http://192.168.1.150:8899/onvif/image_service
     //Service: http://www.onvif.org/ver20/analytics/wsdl -> http://192.168.1.150:8899/onvif/analytics_service
     //Service: http://www.onvif.org/ver10/deviceIO/wsdl -> http://192.168.1.150:8899/onvif/deviceIO_service
-    var services = await GetServices();
-
-    if (services.TryGetValue("http://www.onvif.org/ver20/media/wsdl", out var url))
-    {
-      var endpoint = new EndpointAddress(url);
-      _mediaClient = new Media2Client(_binding, endpoint);
-
-      _mediaClient.ClientCredentials.UserName.UserName = _username;
-      _mediaClient.ClientCredentials.UserName.Password = _password;
-      _mediaClient.ClientCredentials.HttpDigest.ClientCredential.UserName = _username;
-      _mediaClient.ClientCredentials.HttpDigest.ClientCredential.Password = _password;
-
-      var behavior = new MyClientBehavior();
-      _mediaClient.Endpoint.EndpointBehaviors.Add(behavior);
-
-      await _mediaClient.OpenAsync();
-      GetProfilesRequest request = new GetProfilesRequest();
-      request.Type = ["All"];
-
-      var profilesResponse = await _mediaClient.GetProfilesAsync(request);
-      foreach (var profile in profilesResponse.Profiles)
-      {
-        GetStreamUriRequest streamUriRequest = new GetStreamUriRequest();
-        streamUriRequest.Protocol = StreamType.RTPUnicast.ToString();
-        streamUriRequest.ProfileToken = profile.token;
-        var streamResponse = await _mediaClient.GetStreamUriAsync(streamUriRequest);
-        Console.WriteLine($"Profile: {profile.Name}, RTSP URL: {streamResponse.Uri}");
-
-        var snapShotUriReqiest = new GetSnapshotUriRequest();
-        snapShotUriReqiest.ProfileToken = profile.token;
-        var snapShotUriResponse = await _mediaClient.GetSnapshotUriAsync(snapShotUriReqiest);
-      }
-     
-    }
+    _services = await GetServices();
   }
-  async public Task<Dictionary<string, string>> GetServices()
+
+  public async Task<Dictionary<string, string>?> GetServicesAsync()
   {
-    var res = new Dictionary<string, string>();
-    var result = await _deviceClient.GetServicesAsync(true);
-    foreach (var service in result.Service)
+    if (_services == null || _services.Count == 0)
     {
-      res[service.Namespace] = service.XAddr;
+      _services = await GetServices();
     }
-    return res;
+
+    return _services;
+  }
+
+  async public Task<MediaService?> GetMediaService()
+  {
+    var services = await GetServicesAsync();
+
+    if (services != null)
+    {
+      string? url;
+      if (services.TryGetValue("http://www.onvif.org/ver20/media/wsdl", out url))
+      {
+        var mediaService = await MediaService.CreateAsync(url, _binding, _username, _password);
+
+        if (mediaService != null)
+        {
+          return mediaService;
+        }
+      }
+      else if (services.TryGetValue("http://www.onvif.org/ver10/media/wsdl", out url))
+      {
+
+      }
+    }
+
+    return null;
+  }
+  async public Task<Dictionary<string, string>?> GetServices()
+  {
+    try
+    {
+      var res = new Dictionary<string, string>();
+      var result = await _deviceClient.GetServicesAsync(true);
+      foreach (var service in result.Service)
+      {
+        res[service.Namespace] = service.XAddr;
+      }
+      return res;
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine(ex);
+    }
+    return null;
   }
 
   /// <summary>

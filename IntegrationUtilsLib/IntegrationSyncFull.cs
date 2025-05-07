@@ -17,8 +17,10 @@ namespace IntegrationUtilsLib
 
     private ConcurrentDictionary<string, ProtoObjProps?> _obj_props =
       new ConcurrentDictionary<string, ProtoObjProps?>();
+    public IReadOnlyDictionary<string, ProtoObjProps?> ObjProps => _obj_props;
 
     private readonly Dictionary<string, List<ProtoObjExtraProperty>?> _type_to_props;
+    public Action? OnConfigurationChanged;
 
     public IntegrationSyncFull(
       ISubService sub,
@@ -167,6 +169,7 @@ namespace IntegrationUtilsLib
       }
 
       await SyncPropObjects();
+      OnConfigurationChanged?.Invoke();
     }
 
     public async Task OnUpdateIntegros(string channel, byte[] message)
@@ -198,6 +201,8 @@ namespace IntegrationUtilsLib
       }     
 
       await SyncPropObjects();
+
+      OnConfigurationChanged?.Invoke();
     }
 
     public async ValueTask DisposeAsync()
@@ -205,6 +210,10 @@ namespace IntegrationUtilsLib
       if (!string.IsNullOrEmpty(_topic_update_integros))
       {
         await _sub.Unsubscribe(_topic_update_integros, OnUpdateIntegros);
+      }
+      if (!string.IsNullOrEmpty(_topic_delete_integros))
+      {
+        await _sub.Unsubscribe(_topic_delete_integros, OnDeleteIntegros);
       }
     }
 
@@ -272,7 +281,5 @@ namespace IntegrationUtilsLib
         await client!.Client!.UpdatePropertiesAsync(toUpdateList);
       }
     }
-
-
   }
 }
