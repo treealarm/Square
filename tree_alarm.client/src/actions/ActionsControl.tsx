@@ -7,16 +7,23 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  TextField,
   Box,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { IActionDescrDTO, IActionParameterDTO, IActionExeDTO, PointType, IPointCoord, VisualTypes, IIpRangeDTO, ICredentialListDTO } from '../store/Marker';
+import {
+  IActionDescrDTO, IActionParameterDTO, IActionExeDTO,
+  PointType, IPointCoord, VisualTypes,
+  IIpRangeDTO, ICredentialListDTO
+} from '../store/Marker';
 import { useAppDispatch } from '../store/configureStore';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
 import * as IntegroStore from '../store/IntegroStates';
-import CoordInput from '../prop_controls/CoordInput';
+
+import { CoordinatesInput } from './CoordinatesInput';
+import { CredentialListInput } from './CredentialListInput';
+import { GenericInput } from './GenericInput';
+import { IpRangeInput } from './IpRangeInput';
 
 export function ActionsControl() {
   const appDispatch = useAppDispatch();
@@ -139,115 +146,55 @@ export function ActionsControl() {
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 {action.name}
               </AccordionSummary>
-              <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', gap: 2}}>
                 {actionParameters[action.name]?.map((param, paramIndex) => {
-                  if (param.type === VisualTypes.CredentialList) {
-                    const credentialList = (param.cur_val as ICredentialListDTO)?.credentials ?? [];
+                  const handleChange = (val: any) => handleParameterChange(action.name, paramIndex, val);
 
-                    return (
-                      <Box key={param.name} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        {credentialList.map((cred, credIndex) => (
-                          <Box key={credIndex} sx={{ display: 'flex', gap: 1 }}>
-                            <TextField
-                              label={`Username ${credIndex + 1}`}
-                              value={cred.username}
-                              onChange={(e) =>
-                                handleParameterChange(action.name, paramIndex, {
-                                  credentials: credentialList.map((c, i) =>
-                                    i === credIndex ? { ...c, username: e.target.value } : c
-                                  )
-                                })
-                              }
-                              fullWidth
-                            />
-                            <TextField
-                              label={`Password ${credIndex + 1}`}
-                              value={cred.password}
-                              onChange={(e) =>
-                                handleParameterChange(action.name, paramIndex, {
-                                  credentials: credentialList.map((c, i) =>
-                                    i === credIndex ? { ...c, password: e.target.value } : c
-                                  )
-                                })
-                              }
-                              fullWidth
-                            />
-                          </Box>
-                        ))}
-                        <Button
-                          variant="outlined"
-                          onClick={() =>
-                            handleParameterChange(action.name, paramIndex, {
-                              credentials: [...credentialList, { username: '', password: '' }]
-                            })
-                          }
-                        >
-                          + Add Credential
-                        </Button>
-                      </Box>
-                    );
-                  }
-
-                  if (param.type === VisualTypes.IpRange) {
-                    const ipRange = param.cur_val as IIpRangeDTO ?? { start_ip: '', end_ip: '' };
-
-                    return (
-                      <Box key={param.name} sx={{ display: 'flex', gap: 1 }}>
-                        <TextField
-                          label={`${param.name} - Start IP`}
-                          value={ipRange.start_ip}
-                          onChange={(e) =>
-                            handleParameterChange(action.name, paramIndex, {
-                              ...ipRange,
-                              start_ip: e.target.value
-                            })
-                          }
-                          fullWidth
+                  switch (param.type) {
+                    case VisualTypes.CredentialList:
+                      return (
+                        <CredentialListInput
+                          key={param.name}
+                          value={param.cur_val as ICredentialListDTO}
+                          onChange={handleChange}
                         />
-                        <TextField
-                          label="End IP"
-                          value={ipRange.end_ip}
-                          onChange={(e) =>
-                            handleParameterChange(action.name, paramIndex, {
-                              ...ipRange,
-                              end_ip: e.target.value
-                            })
-                          }
-                          fullWidth
+                      );
+
+                    case VisualTypes.IpRange:
+                      return (
+                        <IpRangeInput
+                          key={param.name}
+                          value={(param.cur_val as IIpRangeDTO) ?? { start_ip: '', end_ip: '' }}
+                          onChange={handleChange}
+                          label={param.name}
                         />
-                      </Box>
-                    );
-                  }
+                      );
 
-                  if (param.type === VisualTypes.Coordinates) {
-                    const [lat, lon] = param.cur_val.coord; // Извлекаем lat и lon из массива LatLngPair
+                    case VisualTypes.Coordinates: {
+                      const [lat, lon] = param.cur_val.coord ?? [0, 0];
+                      return (
+                        <CoordinatesInput
+                          key={param.name}
+                          lat={lat}
+                          lon={lon}
+                          onChange={(lat, lon) => handleChange({ lat, lon })}
+                        />
+                      );
+                    }
 
-                    return (
-                      <CoordInput
-                        key={param.name}
-                        index={0}
-                        lat={lat ?? 0} // Используем 0 как значение по умолчанию, если lat == null
-                        lng={lon ?? 0} // Используем 0 как значение по умолчанию, если lon == null
-                        onCoordChange={(index, lat, lng) =>
-                          handleParameterChange(action.name, paramIndex, { lat, lon: lng })
-                        }
-                      />
-                    );
+                    default:
+                      return (
+                        <GenericInput
+                          key={param.name}
+                          label={param.name}
+                          type={param.type === VisualTypes.Int || param.type === VisualTypes.Double ? 'number' : 'text'}
+                          value={param.cur_val}
+                          onChange={handleChange}
+                        />
+                      );
                   }
-                  return (
-                    <TextField
-                      key={param.name}
-                      label={param.name}
-                      type={param.type === VisualTypes.Int || param.type === VisualTypes.Double ? 'number' : 'text'}
-                      value={param.cur_val ?? ''}
-                      onChange={(e) =>
-                        handleParameterChange(action.name, paramIndex, e.target.value)
-                      }
-                      fullWidth
-                      margin="dense"
-                    />
-                  );
                 })}
+
                 <Button
                   onClick={() => executeAction(action)}
                   color="primary"
@@ -257,6 +204,7 @@ export function ActionsControl() {
                   Execute
                 </Button>
               </AccordionDetails>
+
             </Accordion>
           </ListItem>
         ))}
