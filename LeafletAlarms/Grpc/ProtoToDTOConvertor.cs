@@ -1,6 +1,7 @@
 ﻿using Domain;
 using LeafletAlarms.Grpc.Implementation;
 using ObjectActions;
+using System.Net;
 using System.Text.Json;
 
 namespace LeafletAlarms.Grpc
@@ -18,6 +19,21 @@ namespace LeafletAlarms.Grpc
         ProtoActionValue.ValueOneofCase.IntValue => (VisualTypes.Int, (object)value.IntValue),
         ProtoActionValue.ValueOneofCase.StringValue => (VisualTypes.String, (object)value.StringValue),
         ProtoActionValue.ValueOneofCase.Coordinates => (VisualTypes.Coordinates, GRPCServiceProxy.CoordsFromProto2DTO(value.Coordinates)),
+        ProtoActionValue.ValueOneofCase.IpRange => (VisualTypes.IpRange, new IpRangeDTO() 
+        { 
+          start_ip = value.IpRange.StartIp,
+          end_ip = value.IpRange.EndIp
+        }),
+        ProtoActionValue.ValueOneofCase.CredentialList => (VisualTypes.CredentialList, new CredentialListDTO()
+        {
+          credentials = value.CredentialList.Credentials
+            .Select(c => new CredentialDTO
+            {
+              username = c.Username,
+              password = c.Password
+            })
+            .ToList()
+        }),
         _ => ("unknown", null) // Если значение не задано
       };
 
@@ -33,14 +49,10 @@ namespace LeafletAlarms.Grpc
 
     public static ProtoActionParameter ConvertToProtoActionParameter(ActionParameterDTO dto)
     {
-      // Создание ProtoActionParameter
       var protoActionParameter = new ProtoActionParameter
       {
         Name = dto.name,
         CurVal = new ProtoActionValue()
-        {
-          
-        }
       };
 
       if (dto.cur_val == null)
@@ -52,14 +64,14 @@ namespace LeafletAlarms.Grpc
 
       if (dto.cur_val is JsonElement jsonElement)
       {
-        // Преобразуем JsonElement в строку для дальнейшей обработки
         cur_val = jsonElement.ValueKind switch
         {
           JsonValueKind.String => jsonElement.GetString(),
           JsonValueKind.Number when jsonElement.TryGetDouble(out var d) => d,
           JsonValueKind.Number when jsonElement.TryGetInt32(out var i) => i,
-          JsonValueKind.Object => jsonElement, // Оставляем для обработки как object
-          _ => jsonElement.ToString() // Если это что-то другое, конвертируем в строку
+          JsonValueKind.Object => jsonElement,
+          JsonValueKind.Array => jsonElement, // Вдруг список пар
+          _ => jsonElement.ToString()
         };
       }
       else
@@ -78,18 +90,73 @@ namespace LeafletAlarms.Grpc
         VisualTypes.String =>
             new ProtoActionValue { StringValue = cur_val?.ToString() },
 
-        VisualTypes.Coordinates when cur_val is JsonElement element && element.ValueKind == JsonValueKind.Object =>
-            new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(element.Deserialize<GeometryDTO>()) },
+        VisualTypes.Coordinates when cur_val is JsonElement elem && elem.ValueKind == JsonValueKind.Object =>
+            new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(elem.Deserialize<GeometryDTO>()) },
 
         VisualTypes.Coordinates when cur_val is GeometryDTO coords =>
             new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(coords) },
 
-        _ => new ProtoActionValue() // Пустое значение для неизвестного типа
-      };
+        VisualTypes.IpRange when cur_val is JsonElement elem && elem.ValueKind == JsonValueKind.Object =>
+            new ProtoActionValue
+            {
+              IpRange = JsonSerializer.Deserialize<IpRangeDTO>(elem.GetRawText()) is { } ipRangeDto
+                    ? new ProtoIpRange
+                    {
+                      StartIp = ipRangeDto.start_ip,
+                      EndIp = ipRangeDto.end_ip
+                    }
+                    : null
+            },
 
+        VisualTypes.IpRange when cur_val is IpRangeDTO ipRange =>
+            new ProtoActionValue
+            {
+              IpRange = new ProtoIpRange
+              {
+                StartIp = ipRange.start_ip,
+                EndIp = ipRange.end_ip
+              }
+            },
+
+        VisualTypes.CredentialList when cur_val is JsonElement elem && elem.ValueKind == JsonValueKind.Object =>
+            new ProtoActionValue
+            {
+              CredentialList = new ProtoCredentialList
+              {
+                Credentials = {
+                elem.TryGetProperty("credentials", out var credsElement) && credsElement.ValueKind == JsonValueKind.Array
+                    ? credsElement.Deserialize<List<CredentialDTO>>()?.Select(c => new ProtoCredential
+                    {
+                        Username = c.username,
+                        Password = c.password
+                    }) ?? Enumerable.Empty<ProtoCredential>()
+                    : Enumerable.Empty<ProtoCredential>()
+                    }
+              }
+            },
+
+
+        VisualTypes.CredentialList when cur_val is CredentialListDTO credList =>
+            new ProtoActionValue
+            {
+              CredentialList = new ProtoCredentialList
+              {
+                Credentials = {
+                        credList.credentials.Select(c => new ProtoCredential
+                        {
+                            Username = c.username,
+                            Password = c.password
+                        })
+                    }
+              }
+            },
+
+        _ => new ProtoActionValue()
+      };
 
       return protoActionParameter;
     }
+
 
   }
 

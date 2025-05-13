@@ -142,8 +142,8 @@ namespace AASubService
           var data = await media.GetImage();
           if (data != null)
           {
-            var filePath = "M:\\snapshot.jpg";
-            await File.WriteAllBytesAsync(filePath, data);
+            //var filePath = "M:\\snapshot.jpg";
+            //await File.WriteAllBytesAsync(filePath, data);
           }
         }
         await Task.Delay(5000);        

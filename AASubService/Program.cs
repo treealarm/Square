@@ -33,8 +33,8 @@ builder.Services.AddSingleton<IPubServiceLu, PubServiceLu>();
 builder.Services.AddHostedService<SubHostedService>();
 builder.Services.AddHostedService<TestPubHostedService>();
 
-builder.Services.AddSingleton<CameraService>();
-builder.Services.AddSingleton<IObjectActions>(provider => provider.GetRequiredService<CameraService>());
+builder.Services.AddSingleton<CameraActionService>();
+builder.Services.AddSingleton<IObjectActions>(provider => provider.GetRequiredService<CameraActionService>());
 builder.Services.AddHostedService<CamerasHostedService>();
 
 var app = builder.Build();

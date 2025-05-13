@@ -469,10 +469,33 @@ export interface IValueDTO {
   name: string;
   value: any;
 }
+
+export interface IIpRangeDTO {
+  start_ip: string;
+  end_ip: string;
+}
+
+export interface ICredentialDTO {
+  username: string;
+  password: string;
+}
+
+export interface ICredentialListDTO {
+  credentials: ICredentialDTO[];
+}
+
+export type ActionParameterValue =
+  | string
+  | number
+  | IPointCoord
+  | IIpRangeDTO
+  | ICredentialListDTO
+  | null;
+
 export interface IActionParameterDTO {
   name: string;
   type: string;
-  cur_val: string | number | IPointCoord |null;
+  cur_val: ActionParameterValue;
 }
 
 export interface IActionDescrDTO {
@@ -517,5 +540,7 @@ export const VisualTypes = {
   Double: "__double",
   Int: "__int",
   String: "__string",
-  Coordinates: "__coordinates"
+  Coordinates: "__coordinates",
+  IpRange: "__ip_range",
+  CredentialList: "__credential_list"
 } as const;

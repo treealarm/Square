@@ -20,7 +20,7 @@ public class Camera
     var url = $"http://{ip}:{port}/onvif/device_service";
 
     var camera = new Camera(url, username, password);
-    await camera.Init();  // здесь ты можешь внутри запрашивать и кэшировать сервисы
+    await camera.Init();
 
     return camera;
   }

@@ -2,6 +2,20 @@
 import "common.proto";
 package object_actions;
 
+message ProtoCredential {
+  string username = 1;
+  string password = 2;
+}
+
+
+message ProtoIpRange {
+  string start_ip = 1; // напр. "192.168.1.1"
+  string end_ip = 2;   // напр. "192.168.1.255"
+}
+
+message ProtoCredentialList {
+  repeated ProtoCredential credentials = 1;
+}
 
 // Тип значения параметра (oneof для поддержки различных типов значений)
 message ProtoActionValue {
@@ -10,6 +24,8 @@ message ProtoActionValue {
     int32 int_value = 2;
     string string_value = 3;
     common.ProtoGeometry coordinates = 4; // Список координат lat, lon
+    ProtoIpRange ip_range = 5;
+    ProtoCredentialList credential_list = 6;
   }
 }
 
