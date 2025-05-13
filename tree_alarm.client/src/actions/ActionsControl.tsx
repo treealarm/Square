@@ -66,6 +66,7 @@ export function ActionsControl() {
     const payload: IActionExeDTO = {
       object_id: selected_id,  // ID объекта для выполнения действия
       name: action.name!,  // Название действия
+      uid: selected_id,
       parameters: params.map((param) => {
         // Для каждого параметра проверяем его тип
         if (param.type === VisualTypes.Coordinates && Array.isArray(param.cur_val)) {

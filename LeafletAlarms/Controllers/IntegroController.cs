@@ -81,6 +81,7 @@ namespace LeafletAlarms.Controllers
           var actionDescr = new ActionDescrDTO()
           {
             name = action.Name,
+            is_long_action = action.IsLongAction,
           };
 
           foreach (var param in action.Parameters)
@@ -148,7 +149,8 @@ namespace LeafletAlarms.Controllers
           var act_exe = new ProtoActionExe()
           {
             Name = action.name,
-            ObjectId = action.object_id
+            ObjectId = action.object_id,
+            Uid = action.uid,
           };
 
           foreach (var p in action.parameters)

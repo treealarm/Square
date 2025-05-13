@@ -14,6 +14,7 @@ namespace Domain
   {
     public string? name { get; set; }
     public List<ActionParameterDTO> parameters { get; set; } = new List<ActionParameterDTO>();
+    public bool is_long_action { get; set; }  
   }
 
   public record ActionExeDTO
@@ -21,5 +22,6 @@ namespace Domain
     public string? object_id { get; set; } // id объекта
     public string? name { get; set; } // Имя Действия
     public List<ActionParameterDTO>? parameters { get; set; }
+    public string? uid { get; set; }
   }
 }

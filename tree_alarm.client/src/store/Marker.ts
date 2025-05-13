@@ -501,12 +501,14 @@ export interface IActionParameterDTO {
 export interface IActionDescrDTO {
   name: string;
   parameters: IActionParameterDTO[];
+  is_long_action: boolean;
 }
 
 export interface IActionExeDTO {
   object_id: string;
   name: string;
   parameters?: IActionParameterDTO[];
+  uid: string;
 }
 
 export interface IGroupDTO extends IBaseObject {

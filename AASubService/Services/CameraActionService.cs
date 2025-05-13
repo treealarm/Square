@@ -19,8 +19,10 @@ namespace AASubService.Services
       ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
       var action = new ProtoActionDescription
       {
-        Name = "Discover"
+        Name = "Discover",
+        IsLongAction = true
       };
+
       action.Parameters.Add(new ProtoActionParameter()
       {
         Name = nameof(IpRangeParam),
