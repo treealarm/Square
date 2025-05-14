@@ -59,6 +59,10 @@ namespace DbLayer
       services.AddSingleton<GroupsService>();
       services.AddSingleton<IGroupsService>(provider => provider.GetRequiredService<GroupsService>());
       services.AddSingleton<IIGroupsServiceInternal>(provider => provider.GetRequiredService<GroupsService>());
+
+      services.AddScoped<ActionsService>();
+      services.AddScoped<IActionsService>(provider => provider.GetRequiredService<ActionsService>());
+      services.AddScoped<IActionsServiceInternal>(provider => provider.GetRequiredService<ActionsService>());
     }
   }
 }

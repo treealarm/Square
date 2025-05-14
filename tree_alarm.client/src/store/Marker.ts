@@ -508,7 +508,7 @@ export interface IActionExeDTO {
   object_id: string;
   name: string;
   parameters?: IActionParameterDTO[];
-  uid: string;
+  uid: string|null;
 }
 
 export interface IGroupDTO extends IBaseObject {

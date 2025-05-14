@@ -17,6 +17,7 @@ namespace LeafletAlarms.Controllers
     private readonly IIntegroTypeUpdateService _integroTypeUpdateService;
     private readonly IIntegroTypesService _integroTypesService;
     private readonly IMapUpdateService _mapUpdateService;
+    private readonly IActionsUpdateService _actionsUpdateService;
 
     private readonly IDaprClientService _daprClientService;
     public IntegroController(
@@ -25,7 +26,8 @@ namespace LeafletAlarms.Controllers
       IIntegroTypeUpdateService integroTypeUpdateService,
       IIntegroTypesService integroTypesService,
       IMapUpdateService mapUpdateService,
-      IDaprClientService daprClientService
+      IDaprClientService daprClientService,
+      IActionsUpdateService actionsUpdateService
     )
     {
       _integroUpdateService = integroUpdateService;
@@ -33,6 +35,7 @@ namespace LeafletAlarms.Controllers
       _integroService = integroService;
       _integroTypesService = integroTypesService;
       _mapUpdateService = mapUpdateService;
+      _actionsUpdateService = actionsUpdateService;
       _daprClientService = daprClientService;
     }
 
@@ -127,8 +130,12 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost()]
     [Route("ExecuteActions")]
-    public async Task<bool> ExecuteActions(List<ActionExeDTO> actions)
+    public async Task<List<ActionExeResponseDTO>> ExecuteActions(List<ActionExeDTO> actions)
     {
+      var res = new List<ActionExeResponseDTO>();
+
+      await _actionsUpdateService.UpdateListAsync(actions);
+
       var id2integration = await GetAppIdByObjectId(actions.Select(i=> i.object_id).ToList());
       var groupedActions = GroupActionsByIntegration(actions, id2integration);
       bool succ = true;
@@ -153,6 +160,13 @@ namespace LeafletAlarms.Controllers
             Uid = action.uid,
           };
 
+          res.Add(new ActionExeResponseDTO()
+          {
+            name = action.name,
+            object_id = action.object_id,
+            uid = action.uid
+          });
+
           foreach (var p in action.parameters)
           {
             act_exe.Parameters.Add(ProtoToDTOConverter.ConvertToProtoActionParameter(p));
@@ -164,7 +178,7 @@ namespace LeafletAlarms.Controllers
         succ|= response.Success;
       }      
 
-      return succ;
+      return res;
     }
 
     [HttpPost()]

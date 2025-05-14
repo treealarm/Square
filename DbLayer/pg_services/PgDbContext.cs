@@ -1,4 +1,5 @@
 ﻿using DbLayer.Models;
+using DbLayer.Models.Actions;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,7 +14,9 @@ namespace DbLayer
     public DbSet<DBEvent> Events { get; set; }
     public DbSet<DBIntegro> Integro { get; set; }
     public DbSet<DBIntegroType> IntegroTypes { get; set; }
-    
+
+    public DbSet<DBActionExe> Actions { get; set; }
+
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings):base(options) 
@@ -65,6 +68,38 @@ namespace DbLayer
       modelBuilder.Entity<PgDBObjExtraProperty>(entity =>
       {
         entity.ToTable("event_props"); // Указываем имя таблицы для DBObjExtraProperty
+      });
+
+      ///Actions:
+      // Таблица action_executions
+      modelBuilder.Entity<DBActionExe>(entity =>
+      {
+        entity.ToTable("action_executions");
+        entity.HasKey(e => e.id);
+
+        entity.HasMany(e => e.parameters)
+              .WithOne()
+              .HasForeignKey(ep => ep.action_execution_id)
+              .OnDelete(DeleteBehavior.Cascade);
+
+        entity.HasOne<DBActionExeResult>()
+              .WithOne()
+              .HasForeignKey<DBActionExeResult>(r => r.action_execution_id)
+              .OnDelete(DeleteBehavior.Cascade);
+      });
+
+      // Таблица action_parameters
+      modelBuilder.Entity<DBActionParameter>(entity =>
+      {
+        entity.ToTable("action_parameters");
+        entity.HasKey(e => e.id);
+      });
+
+      // Таблица action_result
+      modelBuilder.Entity<DBActionExeResult>(entity =>
+      {
+        entity.ToTable("action_result");
+        entity.HasKey(e => e.id);
       });
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
