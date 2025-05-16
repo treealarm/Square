@@ -14,5 +14,10 @@ namespace DataChangeLayer
     {
       await _actionsService.UpdateListAsync(actions);
     }
+
+    async public Task UpdateResultsAsync(List<ActionExeResultDTO> results)
+    {
+      await _actionsService.UpdateResultsAsync(results);
+    }
   }
 }

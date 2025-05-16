@@ -22,7 +22,12 @@ namespace DbLayer
     //}
     public static Guid ConvertObjectIdToGuid(string objectIdString)
     {
-      if (objectIdString.Length != 24)
+      if (Guid.TryParse(objectIdString, out Guid id)) 
+      { 
+        return id; 
+      }
+
+      if (objectIdString?.Length != 24)
         throw new ArgumentException("Invalid ObjectId length", nameof(objectIdString));
 
       // Преобразуем строку ObjectId в массив байтов (каждый символ - это 4 бита, 24 символа = 12 байт)

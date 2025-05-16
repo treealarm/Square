@@ -16,6 +16,7 @@ namespace DbLayer
     public DbSet<DBIntegroType> IntegroTypes { get; set; }
 
     public DbSet<DBActionExe> Actions { get; set; }
+    public DbSet<DBActionExeResult> ActionResults { get; set; }
 
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
@@ -84,7 +85,7 @@ namespace DbLayer
 
         entity.HasOne<DBActionExeResult>()
               .WithOne()
-              .HasForeignKey<DBActionExeResult>(r => r.action_execution_id)
+              .HasForeignKey<DBActionExeResult>(r => r.id)
               .OnDelete(DeleteBehavior.Cascade);
       });
 

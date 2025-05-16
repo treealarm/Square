@@ -18,6 +18,7 @@ namespace LeafletAlarms.Controllers
     private readonly IIntegroTypesService _integroTypesService;
     private readonly IMapUpdateService _mapUpdateService;
     private readonly IActionsUpdateService _actionsUpdateService;
+    private readonly IActionsService _actionsService;
 
     private readonly IDaprClientService _daprClientService;
     public IntegroController(
@@ -27,7 +28,8 @@ namespace LeafletAlarms.Controllers
       IIntegroTypesService integroTypesService,
       IMapUpdateService mapUpdateService,
       IDaprClientService daprClientService,
-      IActionsUpdateService actionsUpdateService
+      IActionsUpdateService actionsUpdateService,
+      IActionsService actionsService
     )
     {
       _integroUpdateService = integroUpdateService;
@@ -36,6 +38,7 @@ namespace LeafletAlarms.Controllers
       _integroTypesService = integroTypesService;
       _mapUpdateService = mapUpdateService;
       _actionsUpdateService = actionsUpdateService;
+      _actionsService = actionsService;
       _daprClientService = daprClientService;
     }
 
@@ -130,9 +133,9 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost()]
     [Route("ExecuteActions")]
-    public async Task<List<ActionExeResponseDTO>> ExecuteActions(List<ActionExeDTO> actions)
+    public async Task<List<ActionExeInfoDTO>> ExecuteActions(List<ActionExeDTO> actions)
     {
-      var res = new List<ActionExeResponseDTO>();
+      var res = new List<ActionExeInfoDTO>();
 
       await _actionsUpdateService.UpdateListAsync(actions);
 
@@ -157,14 +160,13 @@ namespace LeafletAlarms.Controllers
           {
             Name = action.name,
             ObjectId = action.object_id,
-            Uid = action.uid,
+            Uid = action.action_execution_id,
           };
 
-          res.Add(new ActionExeResponseDTO()
+          res.Add(new ActionExeInfoDTO()
           {
             name = action.name,
-            object_id = action.object_id,
-            uid = action.uid
+            object_id = action.object_id
           });
 
           foreach (var p in action.parameters)
@@ -179,6 +181,22 @@ namespace LeafletAlarms.Controllers
       }      
 
       return res;
+    }
+
+    [HttpGet()]
+    [Route("GetActionsByObjectId")]
+    public async Task<List<ActionExeInfoDTO>> GetActionsByObjectId(string object_id)
+    {
+      var ret = await _actionsService.GetActionsByObjectId(object_id);
+     
+      return ret;
+    }
+    [HttpPost()]
+    [Route("UpdateResults")]
+    public async Task<List<ActionExeResultDTO>> UpdateResults(List<ActionExeResultDTO> results)
+    {
+      await _actionsUpdateService.UpdateResultsAsync(results);
+      return results;
     }
 
     [HttpPost()]

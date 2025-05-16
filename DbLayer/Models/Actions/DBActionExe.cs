@@ -22,7 +22,6 @@ namespace DbLayer.Models.Actions
 
   internal record DBActionExeResult : BasePgEntity
   {
-    public Guid action_execution_id { get; set; }
     public int progress { get; set; }
     public JsonElement result { get; set; }
   }

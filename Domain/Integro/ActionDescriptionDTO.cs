@@ -22,20 +22,20 @@ namespace Domain
     public string? object_id { get; set; } // id объекта
     public string? name { get; set; } // Имя Действия
     public List<ActionParameterDTO>? parameters { get; set; }
-    public string? uid { get; set; }
+    public string? action_execution_id { get; set; }
   }
 
   public record ActionExeResultDTO
   {
-    public string? uid { get; set; }
+    public string? action_execution_id { get; set; }
     public int? progress { get; set; }
     public object? result { get; set; }
   }
 
-  public record ActionExeResponseDTO
+  public record ActionExeInfoDTO
   {
-    public string? uid { get; set; }
     public string? object_id { get; set; } // id объекта
     public string? name { get; set; } // Имя Действия
+    public ActionExeResultDTO? result { get; set; }
   }
 }
