@@ -2,7 +2,7 @@
 using Domain;
 using PubSubLib;
 
-namespace AASubService.Services
+namespace AASubService
 {
   public interface ISubServiceLu : ISubService 
   {

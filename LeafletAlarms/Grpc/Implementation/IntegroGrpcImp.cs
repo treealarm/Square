@@ -13,15 +13,18 @@ namespace LeafletAlarms.Grpc.Implementation
     private readonly IIntegroUpdateService _integroUpdateService;
     private readonly IIntegroService _integroService;
     private readonly IIntegroTypeUpdateService _integroTypeUpdateService;
+    private readonly IActionsUpdateService _actionsUpdateService;
     public IntegroGrpcImp(
       IIntegroUpdateService integroUpdateService,
       IIntegroService integroService,
-      IIntegroTypeUpdateService integroTypeUpdateService
+      IIntegroTypeUpdateService integroTypeUpdateService,
+      IActionsUpdateService actionsUpdateService
     )
     {
       _integroUpdateService = integroUpdateService;
       _integroService = integroService;
       _integroTypeUpdateService = integroTypeUpdateService;
+      _actionsUpdateService = actionsUpdateService;
     }
 
     public override async Task<GenerateObjectIdResponse> GenerateObjectId(GenerateObjectIdRequest request, ServerCallContext context)
@@ -109,6 +112,26 @@ namespace LeafletAlarms.Grpc.Implementation
     {
       var objects =  await _integroService.GetListByIdsAsync(request.Ids.ToList());
       return ConvertDTO2Proto(objects);
+    }
+
+    public override async Task<BoolValue> UpdateActionResults(ProtoActionExeResultRequest request, ServerCallContext context)
+    {
+      var dtos = new List<ActionExeResultDTO>();
+
+      foreach (var proto in request.Results)
+      {
+        dtos.Add(new ActionExeResultDTO()
+        {
+          action_execution_id = proto.ActionExecutionId,
+          progress = proto.Progress,
+          result = proto.Result
+        });
+      }
+      await _actionsUpdateService.UpdateResultsAsync(dtos);
+
+      var ret = new BoolValue();
+      ret.Value = true;
+      return ret;
     }
   }
 }

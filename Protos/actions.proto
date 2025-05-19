@@ -39,7 +39,7 @@ message ProtoActionParameter {
 message ProtoActionDescription {
   string name = 1;                     // уникальное имя действия
   repeated ProtoActionParameter parameters = 2; // Список параметров для действия
-  bool isLongAction = 3;
+  bool is_long_action = 3;
 }
 
 message ProtoActionExe {

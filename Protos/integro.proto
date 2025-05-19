@@ -12,6 +12,17 @@ service IntegroService {
   rpc GetListByType (GetListByTypeRequest) returns (IntegroListProto);
   rpc GetListByIds (common.ProtoObjectIds) returns (IntegroListProto);
   rpc UpdateIntegroTypes(IntegroTypesProto) returns (google.protobuf.BoolValue);
+  rpc UpdateActionResults(ProtoActionExeResultRequest)returns(google.protobuf.BoolValue);
+}
+
+message ProtoActionExeResult{
+  string action_execution_id = 1;
+  int32 progress = 2;
+  string result = 3;
+}
+
+message ProtoActionExeResultRequest{
+  repeated ProtoActionExeResult results = 1;
 }
 
 message IntegroProto{

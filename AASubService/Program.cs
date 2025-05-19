@@ -1,6 +1,5 @@
 
 using AASubService;
-using AASubService.Services;
 using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
 using GrpcDaprLib;
@@ -33,6 +32,7 @@ builder.Services.AddSingleton<IPubServiceLu, PubServiceLu>();
 builder.Services.AddHostedService<SubHostedService>();
 builder.Services.AddHostedService<TestPubHostedService>();
 
+builder.Services.AddSingleton<ICameraManager, CameraManager>();
 builder.Services.AddSingleton<CameraActionService>();
 builder.Services.AddSingleton<IObjectActions>(provider => provider.GetRequiredService<CameraActionService>());
 builder.Services.AddHostedService<CamerasHostedService>();
