@@ -212,14 +212,14 @@ namespace AASubService
         await HandleActionDiscoveryAsync(action, token);
       }
     }
-    private async Task SendProgressAsync(ProtoActionExe action, CancellationToken token, int progress)
+    private async Task SendProgressAsync(ProtoActionExe action, CancellationToken token, int progress, string result)
     {
       ProtoActionExeResultRequest progressRequest = new ProtoActionExeResultRequest();
       progressRequest.Results.Add(new ProtoActionExeResult()
       {
         ActionExecutionId = action.Uid,
         Progress = progress,
-        Result = ""
+        Result = result
       });
       var clientIntegro = Utils.ClientIntegro;
       await clientIntegro!.Client!.UpdateActionResultsAsync(progressRequest);
@@ -254,7 +254,7 @@ namespace AASubService
         {
           int progress = (int)(step * 100.0 / total);
           step++;
-          await SendProgressAsync(action, token, progress);
+          await SendProgressAsync(action, token, progress, "in progress");
 
           var cam = await Camera.CreateAsync(
             ip.ToString(),
@@ -268,7 +268,7 @@ namespace AASubService
         }
       }
 
-      await SendProgressAsync(action, token, 100);
+      await SendProgressAsync(action, token, 100, "finished");
     }
   }
 }

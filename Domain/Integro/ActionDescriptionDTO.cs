@@ -38,4 +38,10 @@ namespace Domain
     public string? name { get; set; } // Имя Действия
     public ActionExeResultDTO? result { get; set; }
   }
+
+  public record ActionExeInfoRequestDTO
+  {
+    public string? object_id { get; set; } // id объекта
+    public int max_progress { get; set; } // Имя Действия
+  }
 }

@@ -104,10 +104,10 @@ namespace DbLayer.Services
       await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<List<ActionExeInfoDTO>> GetActionsByObjectId(string objectId)
+    public async Task<List<ActionExeInfoDTO>> GetActionsByObjectId(ActionExeInfoRequestDTO request)
     {
       var ret = new List<ActionExeInfoDTO>();
-      var objectGuid = Utils.ConvertObjectIdToGuid(objectId);
+      var objectGuid = Utils.ConvertObjectIdToGuid(request.object_id);
 
       var existing = await _dbContext.Actions
         .Where(a => a.object_id == objectGuid)
@@ -120,7 +120,7 @@ namespace DbLayer.Services
       var actionIds = existing.Select(a=>a.id).ToList();
 
       var results = await _dbContext.ActionResults
-        .Where(r => actionIds.Contains(r.id))
+        .Where(r => actionIds.Contains(r.id) && r.progress <= request.max_progress)
         .ToListAsync();
 
       foreach (var result in results)

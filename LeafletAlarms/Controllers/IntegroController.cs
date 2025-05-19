@@ -183,11 +183,11 @@ namespace LeafletAlarms.Controllers
       return res;
     }
 
-    [HttpGet()]
+    [HttpPost()]
     [Route("GetActionsByObjectId")]
-    public async Task<List<ActionExeInfoDTO>> GetActionsByObjectId(string object_id)
+    public async Task<List<ActionExeInfoDTO>> GetActionsByObjectId(ActionExeInfoRequestDTO request)
     {
-      var ret = await _actionsService.GetActionsByObjectId(object_id);
+      var ret = await _actionsService.GetActionsByObjectId(request);
      
       return ret;
     }

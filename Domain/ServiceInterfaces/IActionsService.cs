@@ -6,7 +6,7 @@ namespace Domain
 {
   public interface IActionsService
   {
-    Task<List<ActionExeInfoDTO>> GetActionsByObjectId(string objectId);
+    Task<List<ActionExeInfoDTO>> GetActionsByObjectId(ActionExeInfoRequestDTO request);
   }
   public interface IActionsUpdateService
   {
