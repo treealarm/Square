@@ -1,11 +1,12 @@
 ﻿using Domain;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
-using Microsoft.AspNetCore.SignalR;
+
 using ObjectActions;
+using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Net;
-using System.ServiceModel;
 
 namespace AASubService
 {
@@ -211,6 +212,18 @@ namespace AASubService
         await HandleActionDiscoveryAsync(action, token);
       }
     }
+    private async Task SendProgressAsync(ProtoActionExe action, CancellationToken token, int progress)
+    {
+      ProtoActionExeResultRequest progressRequest = new ProtoActionExeResultRequest();
+      progressRequest.Results.Add(new ProtoActionExeResult()
+      {
+        ActionExecutionId = action.Uid,
+        Progress = progress,
+        Result = ""
+      });
+      var clientIntegro = Utils.ClientIntegro;
+      await clientIntegro!.Client!.UpdateActionResultsAsync(progressRequest);
+    }
     private async Task HandleActionDiscoveryAsync(ProtoActionExe action, CancellationToken token)
     {
       var ipRange = action.Parameters.Where(p => p.Name == IpRangeParam).FirstOrDefault();
@@ -223,16 +236,26 @@ namespace AASubService
       var endIp = IPAddress.Parse(ipRange!.CurVal.IpRange.EndIp);
 
       var range = new IpRangeEnumerator(startIp, endIp);
-      var creds = action.Parameters.Where(p => p.Name == CredentialListParam).FirstOrDefault();
+      var creds = action.Parameters
+        .Where(p => p.Name == CredentialListParam)
+        .FirstOrDefault();
+
       if (creds == null) 
       { 
         return; 
-      }
+      }     
+
+      int total = range.Count() * creds.CurVal.CredentialList.Credentials.Count;
+      int step = 0;
 
       foreach (var ip in range)
       {
         foreach (var cred in creds.CurVal.CredentialList.Credentials)
         {
+          int progress = (int)(step * 100.0 / total);
+          step++;
+          await SendProgressAsync(action, token, progress);
+
           var cam = await Camera.CreateAsync(
             ip.ToString(),
             80,
@@ -243,7 +266,9 @@ namespace AASubService
           { continue; }
           //_cameras[action] = cam;
         }
-      }      
+      }
+
+      await SendProgressAsync(action, token, 100);
     }
   }
 }
