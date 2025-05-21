@@ -1,65 +1,60 @@
-﻿using System.Net;
-
+﻿using OnvifLib;
+using System.Collections.Concurrent;
+using System.Net;
 namespace OnvifLib
 {
   public static class CameraScanner
   {
-    public static async Task<List<Camera>> ScanAsync(
+    public static async Task<bool> ScanAsync(
         string ipStart,
         string ipEnd,
-        int port,
+        List<int> ports,
         List<(string username, string password)> credentials,
-        int timeoutMs = 3000)
+        Func<int, string, Task> onProgress,
+        Func<Camera, Task> onCameraDiscovered,
+        CancellationToken token,
+        List<Camera> existing)
     {
-      var cameras = new List<Camera>();
-      var start = IPAddress.Parse(ipStart).GetAddressBytes();
-      var end = IPAddress.Parse(ipEnd).GetAddressBytes();
+      var startIp = IPAddress.Parse(ipStart);
+      var endIp = IPAddress.Parse(ipEnd);
+      var range = new IpRangeEnumerator(startIp, endIp);
 
-      if (start.Length != 4 || end.Length != 4)
-        throw new ArgumentException("Only IPv4 is supported.");
+      int total = range.Count() * credentials.Count * ports.Count;
+      int step = 0;
 
-      uint ipStartInt = ToUInt32(start);
-      uint ipEndInt = ToUInt32(end);
-
-      var tasks = new List<Task>();
-
-      for (uint ip = ipStartInt; ip <= ipEndInt; ip++)
+      foreach (var port in ports)
       {
-        var ipStr = new IPAddress(BitConverter.GetBytes(ip)).ToString();
-        tasks.Add(Task.Run(async () =>
+        foreach (var ip in range)
         {
-          foreach (var (username, password) in credentials)
+          foreach (var cred in credentials)
           {
-            try
+            token.ThrowIfCancellationRequested();
+
+            int progress = (int)(step * 100.0 / total);
+            step++;
+
+            await onProgress(progress, "in progress");
+
+            string url = Camera.CreateUrl(ip.ToString(), port);
+
+            var existingCam = existing.FirstOrDefault(c => c.Url == url);
+            if (existingCam != null && await existingCam.IsAlive())
             {
-              using var cts = new CancellationTokenSource(timeoutMs);
-              var createTask = Camera.CreateAsync(ipStr, port, username, password);
-              var camera = await createTask.WaitAsync(cts.Token);
-              if (camera != null)
-              {
-                lock (cameras)
-                  cameras.Add(camera);
-                break;
-              }
+              continue;
             }
-            catch
+
+            var cam = await Camera.CreateAsync(ip.ToString(), port, cred.username, cred.password);
+            if (cam == null || !await cam.IsAlive())
             {
-              // Игнорируем ошибки — скорее всего, либо нет камеры, либо неверные креды
+              continue;
             }
+            await onCameraDiscovered(cam);
           }
-        }));
+        }
       }
 
-      await Task.WhenAll(tasks);
-      return cameras;
-    }
-
-    private static uint ToUInt32(byte[] bytes)
-    {
-      if (BitConverter.IsLittleEndian)
-        Array.Reverse(bytes);
-      return BitConverter.ToUInt32(bytes, 0);
+      await onProgress(100, "finished");
+      return true;
     }
   }
-
 }

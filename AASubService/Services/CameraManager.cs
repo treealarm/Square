@@ -3,9 +3,8 @@ using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 
 using ObjectActions;
-using System;
+using OnvifLib;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Net;
 
 namespace AASubService
@@ -56,7 +55,7 @@ namespace AASubService
         var passwordProp = prop.Value["password"];
 
         var cam = await Camera.CreateAsync(
-          ipProp.StrVal,
+         ipProp.StrVal,
           Int32.Parse(portProp.StrVal),
           userProp.StrVal,
           passwordProp.StrVal
@@ -244,49 +243,82 @@ namespace AASubService
     }
     private async Task HandleActionDiscoveryAsync(ProtoActionExe action, CancellationToken token)
     {
-      var ipRange = action.Parameters.Where(p => p.Name == IpRangeParam).FirstOrDefault();
-      if (ipRange == null) 
+      var ipRange = action.Parameters.FirstOrDefault(p => p.Name == IpRangeParam);
+      var creds = action.Parameters.FirstOrDefault(p => p.Name == CredentialListParam);
+      var portList = action.Parameters.FirstOrDefault(p => p.Name == PortListParam);
+
+      if (ipRange == null || creds == null || portList == null)
+        return;
+
+      var ipStart = ipRange.CurVal.IpRange.StartIp;
+      var ipEnd = ipRange.CurVal.IpRange.EndIp;
+      var ports = portList.CurVal.EnumList.Values.Select(int.Parse).ToList();
+      var credentials = creds.CurVal.CredentialList.Values
+          .Select(c => (c.Username, c.Password)).ToList();
+
+      await CameraScanner.ScanAsync(
+          ipStart,
+          ipEnd,
+          ports,
+          credentials,
+          onProgress: (progress, status) => SendProgressAsync(action, token, progress, status),
+          onCameraDiscovered: cam => CreateCameraIntegration(cam),
+          token: token,
+          _cameras.Values.ToList()
+          );
+    }
+
+
+    private async Task CreateCameraIntegration(Camera cam)
+    {
+      var existing = _cameras.Where(c => c.Value.Url == cam.Url).FirstOrDefault();
+
+      string? cam_id = string.Empty;
+
+      if (existing.Value != null)
+      {
+      }
+      else
+      {
+        cam_id = await Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
+      }
+      var clientBase = Utils.ClientBase.Client;
+      if (clientBase == null) 
       {
         return;
       }
+      var props = new ProtoObjPropsList();
 
-      var startIp = IPAddress.Parse(ipRange!.CurVal.IpRange.StartIp);
-      var endIp = IPAddress.Parse(ipRange!.CurVal.IpRange.EndIp);
-
-      var range = new IpRangeEnumerator(startIp, endIp);
-      var creds = action.Parameters
-        .Where(p => p.Name == CredentialListParam)
-        .FirstOrDefault();
-
-      if (creds == null) 
-      { 
-        return; 
-      }     
-
-      int total = range.Count() * creds.CurVal.CredentialList.Values.Count;
-      int step = 0;
-
-      foreach (var ip in range)
+      var ipProp = new ProtoObjProps()
       {
-        foreach (var cred in creds.CurVal.CredentialList.Values)
-        {
-          int progress = (int)(step * 100.0 / total);
-          step++;
-          await SendProgressAsync(action, token, progress, "in progress");
+        Id = existing.Key
+      };
+      props.Objects.Add(ipProp);
 
-          var cam = await Camera.CreateAsync(
-            ip.ToString(),
-            80,
-            cred.Username,
-            cred.Password
-            );
-          if (cam == null)
-          { continue; }
-          //_cameras[action] = cam;
-        }
-      }
+      ipProp.Properties.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "ip",
+        StrVal = cam.Ip
+      });
+      ipProp.Properties.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "port",
+        StrVal = cam.Port.ToString()
+      });
+      ipProp.Properties.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "user",
+        StrVal = cam.User
+      });
+      ipProp.Properties.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "password",
+        StrVal = cam.Password
+      });
 
-      await SendProgressAsync(action, token, 100, "finished");
+      await clientBase.UpdatePropertiesAsync(props);
+      
+      //_sync.InitMainObject
     }
   }
 }

@@ -30,7 +30,7 @@ namespace AASubService
           }
           catch (Exception ex)
           {
-            // Логгирование
+            Console.WriteLine(ex);
           }
           finally
           {
