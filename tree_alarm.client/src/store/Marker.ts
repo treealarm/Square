@@ -546,5 +546,5 @@ export const VisualTypes = {
   Coordinates: "__coordinates",
   IpRange: "__ip_range",
   CredentialList: "__credential_list",
-  EnumList: "enum_list"
+  EnumList: "__enum_list"
 } as const;

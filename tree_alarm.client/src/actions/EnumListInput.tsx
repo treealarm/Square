@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable react/jsx-key */
 import { Autocomplete, TextField, Chip } from '@mui/material';
 
 interface EnumListInputProps {
   label: string;
-  value: string[];
+  value: string[]; // массив строк
   onChange: (value: string[]) => void;
 }
 
@@ -13,14 +12,18 @@ export function EnumListInput({ label, value, onChange }: EnumListInputProps) {
     <Autocomplete
       multiple
       freeSolo
-      options={[]} // можно передать список подсказок, если хочешь
+      options={[]} // можно передать список подсказок
       value={value}
       onChange={(event, newValue) => {
-        onChange(newValue);
+        const cleaned = Array.from(
+          new Set(newValue.map((v) => v.trim()).filter((v) => v !== ''))
+        );
+        onChange(cleaned);
       }}
       renderTags={(tagValue, getTagProps) =>
         tagValue.map((option, index) => (
           <Chip
+            key={index}
             variant="outlined"
             label={option}
             {...getTagProps({ index })}
@@ -28,7 +31,12 @@ export function EnumListInput({ label, value, onChange }: EnumListInputProps) {
         ))
       }
       renderInput={(params) => (
-        <TextField {...params} variant="outlined" label={label} placeholder="Добавить..." />
+        <TextField
+          {...params}
+          variant="outlined"
+          label={label}
+          placeholder={value.length === 0 ? 'Add...' : ''}
+        />
       )}
     />
   );
