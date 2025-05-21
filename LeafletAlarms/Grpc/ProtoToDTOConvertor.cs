@@ -1,7 +1,6 @@
 ﻿using Domain;
 using LeafletAlarms.Grpc.Implementation;
 using ObjectActions;
-using System.Net;
 using System.Text.Json;
 
 namespace LeafletAlarms.Grpc
@@ -26,7 +25,7 @@ namespace LeafletAlarms.Grpc
         }),
         ProtoActionValue.ValueOneofCase.CredentialList => (VisualTypes.CredentialList, new CredentialListDTO()
         {
-          credentials = value.CredentialList.Credentials
+          values = value.CredentialList.Values
             .Select(c => new CredentialDTO
             {
               username = c.Username,
@@ -34,6 +33,7 @@ namespace LeafletAlarms.Grpc
             })
             .ToList()
         }),
+        ProtoActionValue.ValueOneofCase.EnumList => (VisualTypes.EnumList, value.EnumList.Values.ToList()),
         _ => ("unknown", null) // Если значение не задано
       };
 
@@ -123,8 +123,8 @@ namespace LeafletAlarms.Grpc
             {
               CredentialList = new ProtoCredentialList
               {
-                Credentials = {
-                elem.TryGetProperty("credentials", out var credsElement) && credsElement.ValueKind == JsonValueKind.Array
+                Values = {
+                elem.TryGetProperty("values", out var credsElement) && credsElement.ValueKind == JsonValueKind.Array
                     ? credsElement.Deserialize<List<CredentialDTO>>()?.Select(c => new ProtoCredential
                     {
                         Username = c.username,
@@ -141,13 +141,34 @@ namespace LeafletAlarms.Grpc
             {
               CredentialList = new ProtoCredentialList
               {
-                Credentials = {
-                        credList.credentials.Select(c => new ProtoCredential
-                        {
-                            Username = c.username,
-                            Password = c.password
-                        })
-                    }
+                Values = 
+                {
+                  credList.values.Select(c => new ProtoCredential
+                  {
+                      Username = c.username,
+                      Password = c.password
+                  })
+                }
+              }
+            },
+
+        VisualTypes.EnumList when cur_val is JsonElement elem && elem.ValueKind == JsonValueKind.Array =>
+        new ProtoActionValue
+        {
+          EnumList = new ProtoEnumList()
+          { 
+            Values = { elem.EnumerateArray()
+              .Select(e => e.GetString())
+              .Where(s => s != null).ToList() } 
+          }          
+        },
+
+        VisualTypes.EnumList when cur_val is IEnumerable<string> list =>
+            new ProtoActionValue
+            {
+              EnumList = new ProtoEnumList()
+              {
+                Values = { list }
               }
             },
 
@@ -156,8 +177,5 @@ namespace LeafletAlarms.Grpc
 
       return protoActionParameter;
     }
-
-
   }
-
 }

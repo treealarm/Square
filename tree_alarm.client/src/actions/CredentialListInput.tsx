@@ -9,13 +9,13 @@ interface Props {
 }
 
 export const CredentialListInput: React.FC<Props> = ({ value, onChange }) => {
-  const credentials = value?.credentials ?? [];
+  const credentials = value?.values ?? [];
 
   const updateCredential = (index: number, field: 'username' | 'password', newVal: string) => {
     const updated = credentials.map((cred, i) =>
       i === index ? { ...cred, [field]: newVal } : cred
     );
-    onChange({ credentials: updated });
+    onChange({ values: updated });
   };
 
   return (
@@ -40,7 +40,7 @@ export const CredentialListInput: React.FC<Props> = ({ value, onChange }) => {
       ))}
       <Button
         variant="outlined"
-        onClick={() => onChange({ credentials: [...credentials, { username: '', password: '' }] })}
+        onClick={() => onChange({ values: [...credentials, { username: '', password: '' }] })}
       >
         + Add Credential
       </Button>

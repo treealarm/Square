@@ -24,6 +24,7 @@ import { CoordinatesInput } from './CoordinatesInput';
 import { CredentialListInput } from './CredentialListInput';
 import { GenericInput } from './GenericInput';
 import { IpRangeInput } from './IpRangeInput';
+import { EnumListInput } from './EnumListInput';
 
 export function ActionsControl() {
   const appDispatch = useAppDispatch();
@@ -100,7 +101,7 @@ export function ActionsControl() {
   const handleParameterChange = (
     actionName: string,
     index: number,
-    value: string | number | { lat: number | null; lon: number | null }
+    value: string | number | { lat: number | null; lon: number | null }|any
   ) => {
     // Получаем старое состояние для actionName
     const previousActionParams = actionParameters[actionName];
@@ -152,6 +153,17 @@ export function ActionsControl() {
                   const handleChange = (val: any) => handleParameterChange(action.name, paramIndex, val);
 
                   switch (param.type) {
+                    case VisualTypes.EnumList:
+                      return (
+                        <EnumListInput
+                          key={param.name}
+                          label={param.name}
+                          value={Array.isArray(param.cur_val) ? param.cur_val : []}
+                          onChange={handleChange}
+                        />
+                      );
+
+
                     case VisualTypes.CredentialList:
                       return (
                         <CredentialListInput

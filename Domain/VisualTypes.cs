@@ -13,5 +13,6 @@ namespace Domain
     public const string Coordinates = "__coordinates";
     public const string IpRange = "__ip_range";
     public const string CredentialList = "__credential_list";
+    public const string EnumList = "__enum_list";
   }
 }

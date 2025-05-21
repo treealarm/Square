@@ -10,6 +10,6 @@ namespace Domain
   }
   public record CredentialListDTO
   {
-    public List<CredentialDTO>? credentials { get; set; }
+    public List<CredentialDTO>? values { get; set; }
   }
 }

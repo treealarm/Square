@@ -21,6 +21,7 @@ namespace AASubService
     const string IpRangeParam = "ip_range";
     const string Discover = "discover";
     const string CredentialListParam = "credential_list";
+    const string PortListParam = "port_list";
     public CameraManager(ISubService sub) 
     {
       _sub = sub;
@@ -148,7 +149,7 @@ namespace AASubService
       }
     }
 
-    public async  Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
+    public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
     {
       await Task.CompletedTask;
       ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
@@ -170,18 +171,35 @@ namespace AASubService
           }
         }
       });
-      var credParam = new ProtoActionParameter()
-      {
-        Name = CredentialListParam,
-        CurVal = new ProtoActionValue()
-      };
-      credParam.CurVal = new ProtoActionValue();
-      credParam.CurVal.CredentialList = new ProtoCredentialList();
-      credParam.CurVal.CredentialList.Credentials.Add(
-        new ProtoCredential()
-        { Username = "root", Password = "root" }
-      );
-      action.Parameters.Add(credParam);
+
+      { 
+        var credParam = new ProtoActionParameter()
+        {
+          Name = CredentialListParam,
+          CurVal = new ProtoActionValue()
+        };
+        credParam.CurVal = new ProtoActionValue();
+        credParam.CurVal.CredentialList = new ProtoCredentialList();
+        credParam.CurVal.CredentialList.Values.Add(
+          new ProtoCredential()
+          { Username = "root", Password = "root" }
+        );
+        action.Parameters.Add(credParam);
+      }
+
+      { 
+        var portsParam = new ProtoActionParameter()
+        {
+          Name = PortListParam,
+          CurVal = new ProtoActionValue()
+        };
+        portsParam.CurVal = new ProtoActionValue();
+        portsParam.CurVal.EnumList = new ProtoEnumList();
+        portsParam.CurVal.EnumList.Values.AddRange(
+          ["80", "8080"]
+        );
+        action.Parameters.Add(portsParam);
+      }
       response.ActionsDescr.Add(action);
       return response;
     }
@@ -245,12 +263,12 @@ namespace AASubService
         return; 
       }     
 
-      int total = range.Count() * creds.CurVal.CredentialList.Credentials.Count;
+      int total = range.Count() * creds.CurVal.CredentialList.Values.Count;
       int step = 0;
 
       foreach (var ip in range)
       {
-        foreach (var cred in creds.CurVal.CredentialList.Credentials)
+        foreach (var cred in creds.CurVal.CredentialList.Values)
         {
           int progress = (int)(step * 100.0 / total);
           step++;

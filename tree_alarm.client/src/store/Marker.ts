@@ -481,7 +481,7 @@ export interface ICredentialDTO {
 }
 
 export interface ICredentialListDTO {
-  credentials: ICredentialDTO[];
+  values: ICredentialDTO[];
 }
 
 export type ActionParameterValue =
@@ -490,6 +490,7 @@ export type ActionParameterValue =
   | IPointCoord
   | IIpRangeDTO
   | ICredentialListDTO
+  | string[]
   | null;
 
 export interface IActionParameterDTO {
@@ -544,5 +545,6 @@ export const VisualTypes = {
   String: "__string",
   Coordinates: "__coordinates",
   IpRange: "__ip_range",
-  CredentialList: "__credential_list"
+  CredentialList: "__credential_list",
+  EnumList: "enum_list"
 } as const;

@@ -14,9 +14,11 @@ message ProtoIpRange {
 }
 
 message ProtoCredentialList {
-  repeated ProtoCredential credentials = 1;
+  repeated ProtoCredential values = 1;
 }
-
+message ProtoEnumList {
+  repeated string values = 1;
+}
 // Тип значения параметра (oneof для поддержки различных типов значений)
 message ProtoActionValue {
   oneof value {
@@ -26,6 +28,7 @@ message ProtoActionValue {
     common.ProtoGeometry coordinates = 4; // Список координат lat, lon
     ProtoIpRange ip_range = 5;
     ProtoCredentialList credential_list = 6;
+    ProtoEnumList enum_list = 7;
   }
 }
 
