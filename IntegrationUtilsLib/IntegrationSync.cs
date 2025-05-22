@@ -87,14 +87,15 @@ namespace IntegrationUtilsLib
       return response.Objects.ToList();
     }
 
-    public async Task<ProtoObject?> UpdateBaseObject(string id, string name)
+    public async Task<ProtoObject?> UpdateBaseObject(string id, string name, string parent_id)
     {
       var client = Utils.ClientBase.Client;
 
       var mainObject = new ProtoObject()
       {
         Id = id,
-        Name = name
+        Name = name,
+        ParentId = parent_id
       };
       var list = new ProtoObjectList();
       list.Objects.Add(mainObject);
@@ -143,7 +144,7 @@ namespace IntegrationUtilsLib
               if (mainObj == null)
               {
                 // Если не находим, то создаем с дефолтным именем
-                mainObj = await UpdateBaseObject(_mainIntegro.ObjectId, $"{client.AppId}_{MainStr}");
+                mainObj = await UpdateBaseObject(_mainIntegro.ObjectId, $"{client.AppId}_{MainStr}", string.Empty);
               }
 
               if (mainObj != null)

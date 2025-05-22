@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using Common;
+using Domain;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 
@@ -271,28 +272,37 @@ namespace AASubService
 
     private async Task CreateCameraIntegration(Camera cam)
     {
-      var existing = _cameras.Where(c => c.Value.Url == cam.Url).FirstOrDefault();
-
-      string? cam_id = string.Empty;
-
-      if (existing.Value != null)
-      {
-      }
-      else
-      {
-        cam_id = await Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
-      }
       var clientBase = Utils.ClientBase.Client;
-      if (clientBase == null) 
+      if (clientBase == null)
       {
         return;
       }
+
+      var clientIntegro = Utils.ClientIntegro.Client;
+      if (clientIntegro == null)
+      {
+        return;
+      }
+      var existing = _cameras.Where(c => c.Value.Url == cam.Url).FirstOrDefault();
+
+      string? obj_id = string.Empty;      
+
+      if (existing.Value != null)
+      {
+        obj_id = existing.Key;        
+      }
+      else
+      {
+        obj_id = await Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
+      }
+      
       var props = new ProtoObjPropsList();
 
       var ipProp = new ProtoObjProps()
       {
-        Id = existing.Key
+        Id = obj_id
       };
+
       props.Objects.Add(ipProp);
 
       ipProp.Properties.Add(new ProtoObjExtraProperty()
@@ -316,9 +326,29 @@ namespace AASubService
         StrVal = cam.Password
       });
 
+      var baseObj = await _sync!.GetBaseObject(obj_id!);
+      if (baseObj == null)
+      {
+        var name = $"cam {cam.Ip}:{cam.Port}";
+        baseObj = await _sync!.UpdateBaseObject(obj_id!, name, _sync!.MainObj!.Id);
+      }
       await clientBase.UpdatePropertiesAsync(props);
-      
-      //_sync.InitMainObject
+
+      var requestIntergo = new ProtoObjectIds();
+      requestIntergo.Ids.Add(obj_id);
+      var integros = await clientIntegro.GetListByIdsAsync(requestIntergo);
+
+      if (integros == null || integros.Objects.Count == 0)
+      {
+        var integroList = new IntegroListProto();
+        integroList.Objects.Add(new IntegroProto()
+        {
+          IName = Utils.ClientIntegro.AppId,
+          ObjectId = obj_id,
+          IType = CamStr
+        });
+        await clientIntegro.UpdateIntegroAsync(integroList);
+      }
     }
   }
 }
