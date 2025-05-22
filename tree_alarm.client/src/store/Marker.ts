@@ -548,3 +548,20 @@ export const VisualTypes = {
   CredentialList: "__credential_list",
   EnumList: "__enum_list"
 } as const;
+
+export interface IActionExeInfoRequestDTO {
+  object_id?: string;
+  max_progress: number;
+}
+
+export interface IActionExeResultDTO {
+  action_execution_id?: string;
+  progress?: number;
+  result?: any;
+}
+
+export interface IActionExeInfoDTO {
+  object_id?: string;
+  name?: string;
+  result?: IActionExeResultDTO;
+}

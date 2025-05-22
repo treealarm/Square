@@ -79,6 +79,12 @@ public class Camera
       }
     );
 
+    var timeout = 3;
+    _binding.OpenTimeout = TimeSpan.FromSeconds(timeout);
+    _binding.CloseTimeout = TimeSpan.FromSeconds(timeout);
+    _binding.SendTimeout = TimeSpan.FromSeconds(timeout);
+    _binding.ReceiveTimeout = TimeSpan.FromSeconds(timeout);
+
     var endpoint = new EndpointAddress(_url);
 
     _deviceClient = new DeviceClient(_binding, endpoint);
@@ -127,16 +133,23 @@ public class Camera
       {
         if (services.TryGetValue(wsdlKey, out var url))
         {
-          var mediaService = await MediaService1.CreateAsync(
-            url, 
-            _binding, 
-            _username, 
-            _password, 
-            wsdlKey);
-          if (mediaService != null)
+          try
           {
-            return mediaService;
+            var mediaService = await MediaService1.CreateAsync(
+           url,
+           _binding,
+           _username,
+           _password,
+           wsdlKey);
+            if (mediaService != null)
+            {
+              return mediaService;
+            }
           }
+          catch (Exception ex)
+          {
+            Console.WriteLine(ex.ToString());
+          }         
         }
       }
 

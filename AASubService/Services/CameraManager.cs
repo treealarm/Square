@@ -5,6 +5,7 @@ using LeafletAlarmsGrpc;
 
 using ObjectActions;
 using OnvifLib;
+using System;
 using System.Collections.Concurrent;
 using System.Net;
 
@@ -264,7 +265,9 @@ namespace AASubService
       var credentials = creds.CurVal.CredentialList.Values
           .Select(c => (c.Username, c.Password)).ToList();
 
-      await CameraScanner.ScanAsync(
+      try
+      {
+        await CameraScanner.ScanAsync(
           ipStart,
           ipEnd,
           ports,
@@ -275,6 +278,11 @@ namespace AASubService
           _cameras.Values.ToList(),
           action
           );
+      }
+      catch (Exception ex)
+      {
+        await SendProgressAsync(action, token, 100, ex.ToString());
+      }
     }
 
 

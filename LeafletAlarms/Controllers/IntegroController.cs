@@ -54,6 +54,16 @@ namespace LeafletAlarms.Controllers
       return Utils.GenerateObjectId(input,version);
     }
 
+    [HttpPost()]
+    [Route("CancelAction")]
+    public async Task CancelAction(string uid)
+    {
+      var action = new ActionExeResultDTO();
+      action.action_execution_id = uid;
+      action.progress = 100;
+      action.result = "Cancelled";
+      await _actionsUpdateService.UpdateResultsAsync(new List<ActionExeResultDTO>() { action });
+    }
 
     [HttpGet()]
     [Route("GetAvailableActions")]

@@ -25,6 +25,7 @@ import { CredentialListInput } from './CredentialListInput';
 import { GenericInput } from './GenericInput';
 import { IpRangeInput } from './IpRangeInput';
 import { EnumListInput } from './EnumListInput';
+import ActionExecutionList from './ActionExecutionList';
 
 export function ActionsControl() {
   const appDispatch = useAppDispatch();
@@ -137,6 +138,7 @@ export function ActionsControl() {
 
   return (
     <Box sx={{ padding: 2 }}>
+      <ActionExecutionList objectId={selected_id} />
       <List dense>
         {actions.map((action) => (
           <ListItem key={action.name} sx={{ padding: 0 }}>

@@ -5,8 +5,15 @@ namespace AASubService
 {
   public class ActionExecutionManager
   {
-    private readonly ConcurrentDictionary<string, CancellationTokenSource> _runningTasks = new();
+    private readonly ConcurrentDictionary<string, (ProtoActionExe Action, CancellationTokenSource Cts)> _runningTasks = new();
+
     private readonly object _lock = new();
+
+    public bool IsActionWithNameRunning(string name)
+    {
+      return _runningTasks.Values.Any(v => v.Action.Name == name);
+    }
+
 
     public bool TryStartAction(ProtoActionExe action, Func<ProtoActionExe, CancellationToken, Task> actionHandler)
     {
@@ -16,7 +23,7 @@ namespace AASubService
           return false;
 
         var cts = new CancellationTokenSource();
-        _runningTasks[action.Uid] = cts;
+        _runningTasks[action.Uid] = (action, cts);
 
         _ = Task.Run(async () =>
         {
@@ -46,7 +53,7 @@ namespace AASubService
     {
       if (_runningTasks.TryRemove(uid, out var cts))
       {
-        cts.Cancel();
+        cts.Cts.Cancel();
         return true;
       }
 
@@ -57,7 +64,7 @@ namespace AASubService
     {
       foreach (var cts in _runningTasks.Values)
       {
-        cts.Cancel();
+        cts.Cts.Cancel();
       }
 
       _runningTasks.Clear();

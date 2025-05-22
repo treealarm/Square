@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { DoFetch } from './Fetcher';
-import { IActionDescrDTO, IActionExeDTO, IIntegroTypeDTO, Marker, IUpdateIntegroObjectDTO } from './Marker';
+import { IActionDescrDTO, IActionExeDTO, IIntegroTypeDTO, Marker, IUpdateIntegroObjectDTO, IActionExeInfoDTO, IActionExeInfoRequestDTO } from './Marker';
 import { ApplicationState } from '.';
 import { ApiIntegroRootString } from './constants';
 
@@ -9,6 +9,7 @@ export interface IntegroState {
   integroType: IIntegroTypeDTO|null;
   loading: boolean;
   error: string | null;
+  actionsByObject: IActionExeInfoDTO[];
 }
 
 const initialState: IntegroState = {
@@ -16,7 +17,52 @@ const initialState: IntegroState = {
   integroType: null,
   loading: false,
   error: null,
+  actionsByObject: [],
 };
+
+export const fetchActionsByObjectId = createAsyncThunk<IActionExeInfoDTO[], IActionExeInfoRequestDTO>(
+  'actions/fetchActionsByObjectId',
+  async (requestDto: IActionExeInfoRequestDTO, { rejectWithValue }) => {
+    try {
+      const response = await DoFetch(ApiIntegroRootString + '/GetActionsByObjectId', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestDto),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return rejectWithValue(errorText);
+      }
+
+      const json = (await response.json()) as IActionExeInfoDTO[];
+      return json;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const cancelAction = createAsyncThunk<boolean, string>(
+  'actions/cancelAction',
+  async (executionId: string, { rejectWithValue }) => {
+    try {
+      const response = await DoFetch(ApiIntegroRootString + '/CancelAction?uid=' + executionId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return rejectWithValue(errorText);
+      }
+
+      return true;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 export const fetchAvailableActions = createAsyncThunk<IActionDescrDTO[], string>(
   'actions/fetchAvailableActions',
@@ -149,6 +195,20 @@ const valuesSlice = createSlice({
       .addCase(updateIntegroObject.rejected, (state, action) => {
         state.error = action.payload as string;
       })
+      //fetchActionsByObjectId
+      .addCase(fetchActionsByObjectId.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchActionsByObjectId.fulfilled, (state, action) => {
+        state.loading = false;
+        state.actionsByObject = action.payload;
+      })
+      .addCase(fetchActionsByObjectId.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || 'Error fetching actions by object ID';
+      })
+
     ;
   },
 });

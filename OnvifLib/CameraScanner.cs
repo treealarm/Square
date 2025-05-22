@@ -22,6 +22,7 @@ namespace OnvifLib
 
       int total = range.Count() * credentials.Count * ports.Count;
       int step = 0;
+      int prev_progress = 0;
 
       foreach (var port in ports)
       {
@@ -34,7 +35,11 @@ namespace OnvifLib
             int progress = (int)(step * 100.0 / total);
             step++;
 
-            await onProgress(progress, "in progress");
+            if (prev_progress != progress)
+            {
+              await onProgress(progress, $"in progress {ip.ToString()}");
+              prev_progress = progress;
+            }            
 
             string url = Camera.CreateUrl(ip.ToString(), port);
 
