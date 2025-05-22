@@ -1,4 +1,5 @@
 ﻿
+using Common;
 using Domain;
 using LeafletAlarmsGrpc;
 using System.Collections.Concurrent;
@@ -281,5 +282,45 @@ namespace IntegrationUtilsLib
         await client!.Client!.UpdatePropertiesAsync(toUpdateList);
       }
     }
+
+    public async Task CreateFullObject(ProtoObjProps prop, string name, string i_type)
+    {
+      var clientBase = Utils.ClientBase.Client;
+      if (clientBase == null) return;
+
+      var clientIntegro = Utils.ClientIntegro.Client;
+      if (clientIntegro == null) return;
+
+      var objId = prop.Id;
+      
+      var props = new ProtoObjPropsList();
+      props.Objects.Add(prop);
+
+      var baseObj = await GetBaseObject(objId);
+      if (baseObj == null)
+      {
+        await UpdateBaseObject(objId, name, MainObj!.Id);
+      }
+
+      await clientBase.UpdatePropertiesAsync(props);
+
+      var requestIntegro = new ProtoObjectIds();
+      requestIntegro.Ids.Add(objId);
+
+      var integros = await clientIntegro.GetListByIdsAsync(requestIntegro);
+      if (integros == null || integros.Objects.Count == 0)
+      {
+        var integroList = new IntegroListProto();
+        integroList.Objects.Add(new IntegroProto
+        {
+          IName = Utils.ClientIntegro.AppId,
+          ObjectId = objId,
+          IType = i_type
+        });
+
+        await clientIntegro.UpdateIntegroAsync(integroList);
+      }
+    }
+
   }
 }

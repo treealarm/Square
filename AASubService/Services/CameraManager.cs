@@ -153,6 +153,12 @@ namespace AASubService
     {
       await Task.CompletedTask;
       ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
+
+      if (request.ObjectId != _sync!.MainObj!.Id)
+      {
+        return response;
+      }
+
       var action = new ProtoActionDescription
       {
         Name = Discover,
@@ -166,8 +172,8 @@ namespace AASubService
         {
           IpRange = new ProtoIpRange()
           {
-            StartIp = "127.0.0.1",
-            EndIp = "127.0.0.1"
+            StartIp = "172.16.254.136",
+            EndIp = "172.16.254.136"
           }
         }
       });
@@ -180,9 +186,10 @@ namespace AASubService
         };
         credParam.CurVal = new ProtoActionValue();
         credParam.CurVal.CredentialList = new ProtoCredentialList();
-        credParam.CurVal.CredentialList.Values.Add(
-          new ProtoCredential()
-          { Username = "root", Password = "root" }
+        credParam.CurVal.CredentialList.Values.AddRange(
+          [
+          new ProtoCredential() { Username = "orwell", Password = "elvees" }
+          ]
         );
         action.Parameters.Add(credParam);
       }
@@ -263,92 +270,39 @@ namespace AASubService
           ports,
           credentials,
           onProgress: (progress, status) => SendProgressAsync(action, token, progress, status),
-          onCameraDiscovered: cam => CreateCameraIntegration(cam),
+          onCameraDiscovered: (cam, action) => CreateCameraIntegration(cam, action),
           token: token,
-          _cameras.Values.ToList()
+          _cameras.Values.ToList(),
+          action
           );
     }
 
 
-    private async Task CreateCameraIntegration(Camera cam)
+    private async Task CreateCameraIntegration(Camera cam, object context)
     {
-      var clientBase = Utils.ClientBase.Client;
-      if (clientBase == null)
-      {
-        return;
-      }
+      var cam_prop = await BuildCameraPropsAsync(cam);
+      var name = $"cam {cam.Ip}:{cam.Port}";
+      await _sync!.CreateFullObject(cam_prop, name, CamStr);
+    }
+    private async Task<ProtoObjProps> BuildCameraPropsAsync(Camera cam)
+    {
+      var existing = _cameras.FirstOrDefault(c => c.Value.Url == cam.Url);
 
-      var clientIntegro = Utils.ClientIntegro.Client;
-      if (clientIntegro == null)
-      {
-        return;
-      }
-      var existing = _cameras.Where(c => c.Value.Url == cam.Url).FirstOrDefault();
+      string? objId = existing.Value != null
+          ? existing.Key
+          : await Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
 
-      string? obj_id = string.Empty;      
-
-      if (existing.Value != null)
+      var ipProp = new ProtoObjProps
       {
-        obj_id = existing.Key;        
-      }
-      else
-      {
-        obj_id = await Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
-      }
-      
-      var props = new ProtoObjPropsList();
-
-      var ipProp = new ProtoObjProps()
-      {
-        Id = obj_id
+        Id = objId
       };
 
-      props.Objects.Add(ipProp);
-
-      ipProp.Properties.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "ip",
-        StrVal = cam.Ip
-      });
-      ipProp.Properties.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "port",
-        StrVal = cam.Port.ToString()
-      });
-      ipProp.Properties.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "user",
-        StrVal = cam.User
-      });
-      ipProp.Properties.Add(new ProtoObjExtraProperty()
-      {
-        PropName = "password",
-        StrVal = cam.Password
-      });
-
-      var baseObj = await _sync!.GetBaseObject(obj_id!);
-      if (baseObj == null)
-      {
-        var name = $"cam {cam.Ip}:{cam.Port}";
-        baseObj = await _sync!.UpdateBaseObject(obj_id!, name, _sync!.MainObj!.Id);
-      }
-      await clientBase.UpdatePropertiesAsync(props);
-
-      var requestIntergo = new ProtoObjectIds();
-      requestIntergo.Ids.Add(obj_id);
-      var integros = await clientIntegro.GetListByIdsAsync(requestIntergo);
-
-      if (integros == null || integros.Objects.Count == 0)
-      {
-        var integroList = new IntegroListProto();
-        integroList.Objects.Add(new IntegroProto()
-        {
-          IName = Utils.ClientIntegro.AppId,
-          ObjectId = obj_id,
-          IType = CamStr
-        });
-        await clientIntegro.UpdateIntegroAsync(integroList);
-      }
+      ipProp.Properties.Add(new ProtoObjExtraProperty { PropName = "ip", StrVal = cam.Ip });
+      ipProp.Properties.Add(new ProtoObjExtraProperty { PropName = "port", StrVal = cam.Port.ToString() });
+      ipProp.Properties.Add(new ProtoObjExtraProperty { PropName = "user", StrVal = cam.User });
+      ipProp.Properties.Add(new ProtoObjExtraProperty { PropName = "password", StrVal = cam.Password });
+      return ipProp;
     }
+
   }
 }

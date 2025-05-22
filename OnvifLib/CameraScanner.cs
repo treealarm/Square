@@ -11,9 +11,10 @@ namespace OnvifLib
         List<int> ports,
         List<(string username, string password)> credentials,
         Func<int, string, Task> onProgress,
-        Func<Camera, Task> onCameraDiscovered,
+        Func<Camera, object, Task> onCameraDiscovered,
         CancellationToken token,
-        List<Camera> existing)
+        List<Camera> existing,
+        object context)
     {
       var startIp = IPAddress.Parse(ipStart);
       var endIp = IPAddress.Parse(ipEnd);
@@ -48,7 +49,7 @@ namespace OnvifLib
             {
               continue;
             }
-            await onCameraDiscovered(cam);
+            await onCameraDiscovered(cam, context);
           }
         }
       }
