@@ -49,22 +49,22 @@ namespace AASubService
       }
     }
 
-    public bool CancelAction(string uid)
+    public async Task<bool> CancelAction(string uid)
     {
       if (_runningTasks.TryRemove(uid, out var cts))
       {
-        cts.Cts.Cancel();
+        await cts.Cts.CancelAsync();
         return true;
       }
 
       return false;
     }
 
-    public void CancelAll()
+    public async Task CancelAll()
     {
       foreach (var cts in _runningTasks.Values)
       {
-        cts.Cts.Cancel();
+        await cts.Cts.CancelAsync();
       }
 
       _runningTasks.Clear();

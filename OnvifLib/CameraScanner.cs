@@ -30,7 +30,10 @@ namespace OnvifLib
         {
           foreach (var cred in credentials)
           {
-            token.ThrowIfCancellationRequested();
+            if (token.IsCancellationRequested)
+            {
+              token.ThrowIfCancellationRequested();
+            }            
 
             int progress = (int)(step * 100.0 / total);
             step++;

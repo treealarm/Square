@@ -1,5 +1,6 @@
 ﻿using Common;
 using Domain;
+using Google.Protobuf.WellKnownTypes;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 using ObjectActions;
@@ -514,6 +515,11 @@ namespace GrpcTracksClient.Services
       }
 
       return retVal;
+    }
+
+    public Task<BoolValue> CancelActions(ProtoEnumList request)
+    {
+      throw new NotImplementedException();
     }
   }
 }

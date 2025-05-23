@@ -58,6 +58,21 @@ namespace LeafletAlarms.Controllers
     [Route("CancelAction")]
     public async Task CancelAction(string uid)
     {
+      var actions = await _actionsService.GetActionsByActionIds(new List<string> { uid });
+      var app_ids = await GetAppIdByObjectId(actions.Select(a=>a.object_id).ToList());
+      var key = app_ids.Values.Select(i => i.i_name).FirstOrDefault();
+
+      var daprClient = _daprClientService.GetDaprClient(key);
+
+      if (daprClient == null)
+      {
+        throw new Exception($"daprClient:{key} not found");
+      }
+      ActionsService.ActionsServiceClient _client = new ActionsService.ActionsServiceClient(daprClient);
+      var ids_to_cancel = new ProtoEnumList();
+      ids_to_cancel.Values.Add(uid);
+      await _client.CancelActionsAsync(ids_to_cancel);
+
       var action = new ActionExeResultDTO();
       action.action_execution_id = uid;
       action.progress = 100;

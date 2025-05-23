@@ -1,4 +1,6 @@
 ﻿syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
 import "common.proto";
 package object_actions;
 
@@ -76,5 +78,6 @@ message ProtoGetAvailableActionsResponse {
 // Сервис для работы с действиями
 service ActionsService {
   rpc GetAvailableActions (ProtoGetAvailableActionsRequest) returns (ProtoGetAvailableActionsResponse);
-  rpc ExecuteActions (ProtoExecuteActionRequest) returns (ProtoExecuteActionResponse); // Новый метод для выполнения действий
+  rpc ExecuteActions (ProtoExecuteActionRequest) returns (ProtoExecuteActionResponse);
+  rpc CancelActions (ProtoEnumList) returns (google.protobuf.BoolValue);
 }

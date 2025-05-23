@@ -1,7 +1,6 @@
 ﻿using DbLayer.Models.Actions;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,7 +36,7 @@ namespace DbLayer.Services
       var ret = new DBActionExe
       {
         id = Guid.Parse(dto.action_execution_id),
-        object_id = Utils.ConvertObjectIdToGuid(dto.object_id!),
+        object_id = Utils.ConvertObjectIdToGuid(dto.object_id!) ?? Guid.Empty,
         name = dto.name,
         timestamp = DateTime.UtcNow
       };
@@ -61,6 +60,24 @@ namespace DbLayer.Services
       
       return ret;
     }
+    private ActionExeDTO ConvertDB2DTO(DBActionExe db)
+    {
+      var dto = new ActionExeDTO
+      {
+        action_execution_id = db.id.ToString(),
+        object_id = db.object_id != Guid.Empty ? db.object_id.ToString() : null,
+        name = db.name,
+        parameters = db.parameters?.Select(p => new ActionParameterDTO
+        {
+          name = p.name,
+          type = p.type,
+          cur_val = JsonSerializer.Deserialize<object>(p.cur_val.GetRawText())
+        }).ToList()
+      };
+
+      return dto;
+    }
+
 
     public async Task UpdateListAsync(List<ActionExeDTO> actions)
     {
@@ -125,7 +142,7 @@ namespace DbLayer.Services
 
       foreach (var result in results)
       {
-        var action  = existing.Where(a=>a.id ==  result.id).FirstOrDefault();
+        var action  = existing.Where(a=>a.id == result.id).FirstOrDefault();
         if (action == null)
         {
           continue;
@@ -186,6 +203,32 @@ namespace DbLayer.Services
       _dbContext.ActionResults.UpdateRange(toUpdate);
       await _dbContext.ActionResults.AddRangeAsync(toAdd);
       await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<ActionExeDTO>> GetActionsByActionIds(List<string> ids)
+    {
+      var ret = new List<ActionExeDTO>();
+      var list_guids = ids
+          .Select(Utils.ConvertObjectIdToGuid)
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
+
+      var existing = await _dbContext.Actions
+        .Where(a => list_guids.Contains(a.id))
+        .ToListAsync();
+
+      if (existing == null || existing.Count == 0)
+      {
+        return ret;
+      }
+
+      foreach(var action in existing)
+      {
+        var info = ConvertDB2DTO(action);
+        ret.Add(info);
+      }
+      return ret;
     }
   }
 }

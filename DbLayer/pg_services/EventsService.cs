@@ -100,7 +100,8 @@ namespace DbLayer.Services
           owner_id = owner_id,
         };
 
-        newProp.id = Utils.ConvertObjectIdToGuid(ObjectId.GenerateNewId().ToString());
+        newProp.id = Utils.ConvertObjectIdToGuid(ObjectId.GenerateNewId().ToString())
+          ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
 
         if (prop.visual_type == BsonType.Double.ToString())
         {
@@ -149,8 +150,8 @@ namespace DbLayer.Services
         var dbTrack = new DBEvent();
 
         ev.CopyAllTo(dbTrack);
-        dbTrack.id = Utils.ConvertObjectIdToGuid(ev.id);
-        dbTrack.object_id = Utils.ConvertObjectIdToGuid(ev.object_id);
+        dbTrack.id = Utils.ConvertObjectIdToGuid(ev.id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
+        dbTrack.object_id = Utils.ConvertObjectIdToGuid(ev.object_id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
         dbTrack.extra_props = ConvertExtraPropsToDB(ev.extra_props, dbTrack.id);
         list.Add(dbTrack);
       }

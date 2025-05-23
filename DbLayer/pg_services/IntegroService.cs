@@ -97,7 +97,7 @@ namespace DbLayer.Services
           if (updatedObj.id == Guid.Empty)
           {
             updatedObj.id = Utils.ConvertObjectIdToGuid(
-              Utils.GenerateId24().ToString());
+              Utils.GenerateId24().ToString()) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
           }
           toAdd.Add(updatedObj);
         }
@@ -114,7 +114,7 @@ namespace DbLayer.Services
     {
       DBIntegro dbo = new DBIntegro()
       {
-        id = Utils.ConvertObjectIdToGuid(dto.id),
+        id = Utils.ConvertObjectIdToGuid(dto.id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid"),
         i_name = dto.i_name,
         i_type = dto.i_type
       };

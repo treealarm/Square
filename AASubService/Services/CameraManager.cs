@@ -1,13 +1,12 @@
 ﻿using Common;
 using Domain;
+using Google.Protobuf.WellKnownTypes;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 
 using ObjectActions;
 using OnvifLib;
-using System;
 using System.Collections.Concurrent;
-using System.Net;
 
 namespace AASubService
 {
@@ -312,5 +311,17 @@ namespace AASubService
       return ipProp;
     }
 
+    public async Task<BoolValue> CancelActions(ProtoEnumList request)
+    {
+      var retVal = new BoolValue() { Value = true };
+      foreach (var action_id in request.Values)
+      {
+        if (!await _manager.CancelAction(action_id))
+        {
+          retVal.Value = false;
+        }
+      }
+      return retVal;
+    }
   }
 }

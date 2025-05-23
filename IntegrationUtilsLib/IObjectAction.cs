@@ -1,4 +1,5 @@
-﻿using ObjectActions;
+﻿using Google.Protobuf.WellKnownTypes;
+using ObjectActions;
 
 namespace IntegrationUtilsLib
 {
@@ -8,5 +9,7 @@ namespace IntegrationUtilsLib
       GetAvailableActions(ProtoGetAvailableActionsRequest request);
     Task<ProtoExecuteActionResponse>
       ExecuteActions(ProtoExecuteActionRequest request);
+    Task<BoolValue>
+      CancelActions(ProtoEnumList request);
   }
 }

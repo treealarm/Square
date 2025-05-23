@@ -20,7 +20,7 @@ namespace DbLayer
     //  RandomNumberGenerator.Fill(bytes); // Заполняем случайными байтами
     //  return BitConverter.ToString(bytes).Replace("-", "").ToLower(); // Преобразуем в строку hex
     //}
-    public static Guid ConvertObjectIdToGuid(string objectIdString)
+    public static Guid? ConvertObjectIdToGuid(string objectIdString)
     {
       if (Guid.TryParse(objectIdString, out Guid id)) 
       { 
@@ -28,7 +28,7 @@ namespace DbLayer
       }
 
       if (objectIdString?.Length != 24)
-        throw new ArgumentException("Invalid ObjectId length", nameof(objectIdString));
+        return null;
 
       // Преобразуем строку ObjectId в массив байтов (каждый символ - это 4 бита, 24 символа = 12 байт)
       byte[] objectIdBytes = new byte[12];
