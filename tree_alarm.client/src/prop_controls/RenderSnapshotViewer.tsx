@@ -1,67 +1,100 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable no-undef */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useRef } from "react";
-import { Button, Popover, Box } from "@mui/material";
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Box,
+  TextField,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material";
+import { Visibility } from "@mui/icons-material";
 import { IControlSelector } from "./control_selector_common";
 
 export function renderSnapshotViewer(props: IControlSelector) {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-
   const buildUrl = () => `${props.str_val}?t=${Date.now()}`;
-
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
 
   useEffect(() => {
     if (open) {
       const updateImage = () => setImageSrc(buildUrl());
       updateImage();
       intervalRef.current = setInterval(updateImage, 5000);
-      return () => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-      };
-    } else {
+    }
+    return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-    }
+    };
   }, [open]);
 
   return (
     <>
-      <Button variant="outlined" size="small" onClick={handleOpen}>
-        View
-      </Button>
-      <Popover
+      <TextField
+        fullWidth
+        size="small"
+        label={props.prop_name}
+        value={props.str_val}
+        InputProps={{
+          readOnly: true,
+          endAdornment: (
+            <IconButton onClick={() => setOpen(true)} edge="end">
+              <Visibility />
+            </IconButton>
+          ),
+        }}
+      />
+
+      <Dialog
         open={open}
-        anchorEl={anchorEl}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+        onClose={() => setOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{
+          sx: {
+            resize: "both",
+            overflow: "auto",
+            minWidth: 300,
+            minHeight: 200,
+          },
+        }}
       >
-        <Box p={1}>
-          <img
-            src={imageSrc}
-            alt="Snapshot"
-            style={{ maxWidth: 400, maxHeight: 300, borderRadius: 4 }}
-          />
-        </Box>
-      </Popover>
+        <DialogTitle>
+          Snapshot Viewer
+        </DialogTitle>
+        <DialogContent dividers>
+          {imageSrc ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              width="100%"
+              height="100%"
+            >
+              <img
+                src={imageSrc}
+                alt="Snapshot"
+                style={{ maxWidth: "100%", maxHeight: "60vh" }}
+              />
+            </Box>
+          ) : (
+            <Typography>No image available</Typography>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
