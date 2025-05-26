@@ -18,52 +18,56 @@ namespace OnvifLib
     {
       var startIp = IPAddress.Parse(ipStart);
       var endIp = IPAddress.Parse(ipEnd);
-      var range = new IpRangeEnumerator(startIp, endIp);
+      var ipRange = new IpRangeEnumerator(startIp, endIp).ToList();
 
-      int total = range.Count() * credentials.Count * ports.Count;
-      int step = 0;
-      int prev_progress = 0;
+      var allTasks = new ConcurrentBag<Task>();
+      var totalSteps = ipRange.Count * ports.Count * credentials.Count;
+      var completedSteps = 0;
+      var progressLock = new object();
+      var lastReportedProgress = 0;
 
-      foreach (var port in ports)
+      var existingUrls = existing.Select(c => c.Url).ToHashSet();
+
+
+      // Параллельная обработка всех комбинаций
+      await Parallel.ForEachAsync(ipRange, new ParallelOptions { MaxDegreeOfParallelism = 16, CancellationToken = token }, async (ip, ct) =>
       {
-        foreach (var ip in range)
+        foreach (var port in ports)
         {
           foreach (var cred in credentials)
           {
-            if (token.IsCancellationRequested)
+            ct.ThrowIfCancellationRequested();
+
+            var url = Camera.CreateUrl(ip.ToString(), port);
+            if (existingUrls.Contains(url))
             {
-              token.ThrowIfCancellationRequested();
-            }            
-
-            int progress = (int)(step * 100.0 / total);
-            step++;
-
-            if (prev_progress != progress)
-            {
-              await onProgress(progress, $"in progress {ip.ToString()}");
-              prev_progress = progress;
-            }            
-
-            string url = Camera.CreateUrl(ip.ToString(), port);
-
-            var existingCam = existing.FirstOrDefault(c => c.Url == url);
-            if (existingCam != null && await existingCam.IsAlive())
-            {
-              continue;
+              var existingCam = existing.FirstOrDefault(c => c.Url == url);
+              if (existingCam != null && await existingCam.IsAlive())
+                continue;
             }
 
             var cam = await Camera.CreateAsync(ip.ToString(), port, cred.username, cred.password);
             if (cam == null || !await cam.IsAlive())
-            {
               continue;
-            }
+
             await onCameraDiscovered(cam, context);
           }
+
+          lock (progressLock)
+          {
+            completedSteps += credentials.Count;
+            int progress = (int)(completedSteps * 100.0 / totalSteps);
+            if (progress != lastReportedProgress)
+            {
+              lastReportedProgress = progress;
+              _ = onProgress(progress, $"Scanning {ip}");
+            }
+          }
         }
-      }
+      });
 
       await onProgress(100, "finished");
       return true;
     }
   }
-}
+  }

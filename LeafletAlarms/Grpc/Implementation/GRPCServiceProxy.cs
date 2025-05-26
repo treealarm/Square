@@ -259,7 +259,14 @@ namespace LeafletAlarms.Grpc.Implementation
         }
         prop_list.Add(objProps);
       }
-      await _mapService.UpdatePropNotDeleteAsync(prop_list);
+      if (request.ReplaceProps)
+      {
+        await _mapService.UpdatePropAsync(prop_list);
+      }
+      else
+      {
+        await _mapService.UpdatePropNotDeleteAsync(prop_list);
+      }
       ret.Value = true;
       return ret;
     }

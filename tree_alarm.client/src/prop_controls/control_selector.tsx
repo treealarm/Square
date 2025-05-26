@@ -4,6 +4,7 @@ import { MuiColorInput } from 'mui-color-input'
 import { IControlSelector } from './control_selector_common'
 import { renderPasswordField } from './RenderPasswordField'
 import { VisualTypes } from '../store/Marker';
+import { renderSnapshotViewer } from './RenderSnapshotViewer';
 
 const renderTextField = (props: IControlSelector) => (
   <TextField
@@ -48,6 +49,8 @@ const controlMap: { [key: string]: (props_in: IControlSelector) => React.ReactEl
   [VisualTypes.Text]: (props_in) => renderTextField(props_in),
   [VisualTypes.Color]: (props_in) => renderColorInput(props_in),
   [VisualTypes.Password]: (props_in) => renderPasswordField(props_in),
+  [VisualTypes.SnapShot]: (props_in) => renderSnapshotViewer(props_in),
+
   // другие типы
 };
 

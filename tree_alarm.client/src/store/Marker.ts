@@ -546,7 +546,8 @@ export const VisualTypes = {
   Coordinates: "__coordinates",
   IpRange: "__ip_range",
   CredentialList: "__credential_list",
-  EnumList: "__enum_list"
+  EnumList: "__enum_list",
+  SnapShot: "__snapshot"
 } as const;
 
 export interface IActionExeInfoRequestDTO {

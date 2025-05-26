@@ -49,11 +49,12 @@ message ProtoObjectList {
 
 message ProtoObjProps {
   string id = 1;
-  repeated ProtoObjExtraProperty properties = 2;
+  repeated ProtoObjExtraProperty properties = 2;  
 }
 
 message ProtoObjPropsList {
 	repeated ProtoObjProps objects = 1;
+  bool replace_props = 2;
 }
 
 message ProtoFig {
@@ -148,5 +149,5 @@ message UploadFileProto {
   string main_folder = 1;   // Основная папка
   string path = 2;          // Путь внутри основной папки
   string file_name = 3;     // Имя файла
-  bytes file_data = 4;      // Данные файла в формате Base64 (байтовый массив)
+  bytes file_data = 4;      // Данные файла (байтовый массив)
 }

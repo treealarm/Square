@@ -57,7 +57,7 @@ namespace OnvifLib
 
     }
 
-    public override async Task<byte[]?> GetImage()
+    public override async Task<ImageResult?> GetImage()
     {
       var profile = _profiles.FirstOrDefault();
       if (profile == null || _mediaClient1 == null)
@@ -65,6 +65,7 @@ namespace OnvifLib
 
       var snapShotUriResponse = await _mediaClient1.GetSnapshotUriAsync(profile.token);
       var data = await DownloadImageAsync(snapShotUriResponse.Uri, _username, _password);
+       // e.g. "jpg", "png", etc.
       return data;
     }
   }

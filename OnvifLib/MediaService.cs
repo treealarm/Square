@@ -1,10 +1,14 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
+﻿using DeviceServiceReference;
+using System.Net;
 using System.ServiceModel.Channels;
-using System.Text;
 
 namespace OnvifLib
 {
+  public class ImageResult
+  {
+    public byte[] Data { get; set; } = [];
+    public string? Extension { get; set; } // или без точки: "jpeg"
+  }
   public class MediaService
   {
     public const string WSDL_V10 = "http://www.onvif.org/ver10/media/wsdl";
@@ -15,6 +19,18 @@ namespace OnvifLib
     protected readonly string _password;
     protected readonly string _profile;
     protected readonly CustomBinding _binding;
+
+    public static string? GetExtensionFromMime(string? mime)
+    {
+      if (string.IsNullOrWhiteSpace(mime))
+        return null;
+
+      var parts = mime.Split('/');
+      if (parts.Length != 2)
+        return null;
+
+      return "." + parts[1]; // например, "image/jpeg" → ".jpeg"
+    }
 
     protected MediaService(
       string url, 
@@ -49,7 +65,7 @@ namespace OnvifLib
       return instance;
     }
 
-    public static async Task<byte[]> DownloadImageAsync(string url, string username, string password)
+    public static async Task<ImageResult> DownloadImageAsync(string url, string username, string password)
     {
       var handler = new HttpClientHandler
       {
@@ -62,10 +78,14 @@ namespace OnvifLib
       var response = await client.GetAsync(url);
       response.EnsureSuccessStatusCode();
 
-      return await response.Content.ReadAsByteArrayAsync();
+      var mime = response.Content.Headers.ContentType?.MediaType;
+
+      var data = await response.Content.ReadAsByteArrayAsync();
+      return new ImageResult()
+      { Data = data, Extension = GetExtensionFromMime(mime)};
     }
     protected virtual async Task InitializeAsync() { await Task.CompletedTask; }
-    public virtual async Task<byte[]?> GetImage()
+    public virtual async Task<ImageResult?> GetImage()
     {
       await Task.CompletedTask;
       return null;

@@ -50,7 +50,7 @@ namespace DataChangeLayer
         return null;
       }
 
-      await _mapService.UpdatePropAsync(updatedMarker);
+      await _mapService.UpdatePropAsync([updatedMarker!]);
 
       return updatedMarker;
     }

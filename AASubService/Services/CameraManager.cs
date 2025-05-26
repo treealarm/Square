@@ -10,7 +10,7 @@ using System.Collections.Concurrent;
 
 namespace AASubService
 {
-  public class CameraManager: ICameraManager
+  public class CameraManager : ICameraManager
   {
     private IntegrationSyncFull? _sync;
     private const string CamStr = "cam";
@@ -22,7 +22,7 @@ namespace AASubService
     const string Discover = "discover";
     const string CredentialListParam = "credential_list";
     const string PortListParam = "port_list";
-    public CameraManager(ISubService sub) 
+    public CameraManager(ISubService sub)
     {
       _sub = sub;
     }
@@ -133,22 +133,69 @@ namespace AASubService
 
         foreach (var cam in _cameras)
         {
-          var media = await cam.Value.GetMediaService();
-          if (media == null)
+          try
           {
-            continue;
+            await UploadCamImage(cam);
           }
-          var data = await media.GetImage();
-          if (data != null)
+          catch (Exception ex)
           {
-            //var filePath = "M:\\snapshot.jpg";
-            //await File.WriteAllBytesAsync(filePath, data);
-          }
+            Console.WriteLine(ex.ToString());
+          }         
         }
         await Task.Delay(5000);
       }
     }
 
+    async private Task UploadCamImage(KeyValuePair<string, Camera> cam)
+    {
+      var media = await cam.Value.GetMediaService();
+      if (media == null)
+      {
+        return;
+      }
+      var data = await media.GetImage();
+      if (data != null)
+      {
+        //var filePath = "M:\\snapshot.jpg";
+        //await File.WriteAllBytesAsync(filePath, data);
+        var protoUploadFile = new UploadFileProto()
+        {
+          MainFolder = "static_files",
+          Path = "object_images",
+          FileName = $"{cam.Key}{data.Extension}",
+        };
+
+        protoUploadFile.FileData = Google.Protobuf.ByteString.CopyFrom(data.Data);
+
+        // Создаем клиента gRPC и подключаемся
+        var client = Utils.ClientBase.Client;
+
+        if (client == null)
+        {
+          await Task.Delay(1000);
+          return;
+        }
+        // Загружаем файл
+        await client.UploadFileAsync(protoUploadFile);
+
+        var toSend = new ProtoObjPropsList();
+
+
+        var protoProp = new ProtoObjProps()
+        {
+          Id = cam.Key
+        };
+        protoProp.Properties.Add(new ProtoObjExtraProperty()
+        {
+          PropName = "__snapshot",
+          StrVal = Path.Combine([protoUploadFile.MainFolder, protoUploadFile.Path, protoUploadFile.FileName]),
+          VisualType = VisualTypes.SnapShot
+        });
+        toSend.Objects.Add(protoProp);
+
+        await client!.UpdatePropertiesAsync(toSend);
+      }
+    }
     public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
     {
       await Task.CompletedTask;
@@ -178,7 +225,7 @@ namespace AASubService
         }
       });
 
-      { 
+      {
         var credParam = new ProtoActionParameter()
         {
           Name = CredentialListParam,
@@ -194,7 +241,7 @@ namespace AASubService
         action.Parameters.Add(credParam);
       }
 
-      { 
+      {
         var portsParam = new ProtoActionParameter()
         {
           Name = PortListParam,
@@ -203,7 +250,7 @@ namespace AASubService
         portsParam.CurVal = new ProtoActionValue();
         portsParam.CurVal.EnumList = new ProtoEnumList();
         portsParam.CurVal.EnumList.Values.AddRange(
-          ["80", "8080"]
+          ["80"]
         );
         action.Parameters.Add(portsParam);
       }

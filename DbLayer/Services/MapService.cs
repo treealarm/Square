@@ -363,13 +363,27 @@ namespace DbLayer.Services
       return mProps;
     }
 
-    public async Task UpdatePropAsync(ObjPropsDTO updatedObj)
+    public async Task UpdatePropAsync(IEnumerable<ObjPropsDTO> updatedObjs)
     {
-      var props = ConvertDTO2Property(updatedObj);
+      var models = new List<WriteModel<DBMarkerProperties>>();
 
-      ReplaceOptions opt = new ReplaceOptions();
-      opt.IsUpsert = true;
-      await _propCollection.ReplaceOneAsync(x => x.id == updatedObj.id, props, opt);
+      foreach (var dto in updatedObjs)
+      {
+        var props = ConvertDTO2Property(dto);
+
+        var filter = Builders<DBMarkerProperties>.Filter.Eq(x => x.id, dto.id);
+        var replace = new ReplaceOneModel<DBMarkerProperties>(filter, props)
+        {
+          IsUpsert = true
+        };
+
+        models.Add(replace);
+      }
+
+      if (models.Count > 0)
+      {
+        await _propCollection.BulkWriteAsync(models);
+      }
     }
 
     public async Task UpdatePropNotDeleteAsync(IEnumerable<IObjectProps> listUpdate)
@@ -649,5 +663,6 @@ namespace DbLayer.Services
       }
       return result;
     }
+
   }
 }

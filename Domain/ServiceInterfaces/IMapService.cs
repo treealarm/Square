@@ -29,7 +29,7 @@ namespace Domain
     Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id);
     Task<ObjPropsDTO> GetPropAsync(string id);
     Task<Dictionary<string, ObjPropsDTO>> GetPropsAsync(List<string> ids);
-    Task UpdatePropAsync(ObjPropsDTO? updatedObj);
+    Task UpdatePropAsync(IEnumerable<ObjPropsDTO> updatedObj);
     Task UpdateHierarchyAsync(IEnumerable<BaseMarkerDTO> updatedObj);
     Task<long> RemoveAsync(List<string> ids);
     Task<List<ObjPropsDTO>> GetPropByValuesAsync(

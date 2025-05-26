@@ -51,7 +51,7 @@ namespace OnvifLib
       }
     }
 
-    public override async Task<byte[]?> GetImage()
+    public override async Task<ImageResult?> GetImage()
     {
       var profile = _profiles.FirstOrDefault();
       if (profile == null || _mediaClient2 == null)

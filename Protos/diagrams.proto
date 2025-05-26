@@ -6,7 +6,7 @@ package diagrams;
 message DiagramTypeProto {
     string id = 1;
     string name = 2;
-    string src = 3;
+    string src = 3; //  image src
     repeated DiagramTypeRegionProto regions = 4;
 }
 

@@ -93,6 +93,11 @@ namespace LeafletAlarms.Controllers
       try
       {
         var app_ids = await GetAppIdByObjectId(new List<string> { id });
+
+        if (!app_ids.Any())
+        {
+          return retActions;
+        }
         var key = app_ids.Values.Select(i => i.i_name).FirstOrDefault();
 
         var daprClient = _daprClientService.GetDaprClient(key);
