@@ -17,8 +17,11 @@ import {
 } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 import { IControlSelector } from "./control_selector_common";
-import { IActionDescrDTO } from "../store/Marker";
+import { IActionDescrDTO, IActionExeDTO } from "../store/Marker";
 import { fetchAvailableActionsRaw } from "../store/IntegroStates";
+import { TelemetryControl } from "./TelemetryControl";
+import { useAppDispatch } from "../store/configureStore";
+import * as IntegroStore from '../store/IntegroStates';
 
 export function renderSnapshotViewer(props: IControlSelector) {
   const [open, setOpen] = useState(false);
@@ -27,6 +30,8 @@ export function renderSnapshotViewer(props: IControlSelector) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const buildUrl = () => `${props.str_val}?t=${Date.now()}`;
+
+  const appDispatch = useAppDispatch();
 
   useEffect(() => {
     if (open) {
@@ -53,13 +58,47 @@ export function renderSnapshotViewer(props: IControlSelector) {
     };
   }, [open]);
 
-  const handleTelemetryControl = (direction: string) => {
+  const handleTelemetryControl = (direction: string, object_id:string) => {
     const action = telemetryActions.find(a => a.name === "telemetry");
-    if (action) {
-      console.log(`Send telemetry command '${direction}' to action id: ${action.uid}`);
-      // Тут вызов функции выполнения действия, например: executeAction(action.uid, direction)
-    }
+    if (!action || !object_id) return;
+
+    // Формируем параметр с направлением движения
+    const telemetryParam = {
+      name: "move",
+      type: "__map", // либо нужный тип для мапы
+      cur_val: {
+        [direction]: "1"
+      }
+    };
+
+    // Создаем объект IActionExeDTO для вызова executeAction
+    const actionExePayload: IActionExeDTO = {
+      object_id: object_id,
+      name: action.name!,
+      uid: null,
+      parameters: [telemetryParam]
+    };
+
+    appDispatch(IntegroStore.executeAction(actionExePayload));
   };
+
+
+  const moveMap = (() => {
+    const telemetry = telemetryActions.find(a => a.name === "telemetry");
+    if (!telemetry) return undefined;
+
+    const moveParam = telemetry.parameters?.find(
+      (p: any) =>
+        p.name === "move" &&
+        p.type === "__map" &&
+        typeof p.cur_val === "object" &&
+        !Array.isArray(p.cur_val)
+    );
+
+    return moveParam?.cur_val as Record<string, string> | undefined;
+  })();
+
+
 
   return (
     <>
@@ -108,16 +147,11 @@ export function renderSnapshotViewer(props: IControlSelector) {
                 alt="Snapshot"
                 style={{ maxWidth: "100%", maxHeight: "60vh" }}
               />
-              {telemetryActions.length > 0 && (
-                <Stack spacing={1} mt={2} alignItems="center">
-                  <Button onClick={() => handleTelemetryControl("up")}>↑</Button>
-                  <Box display="flex" gap={1}>
-                    <Button onClick={() => handleTelemetryControl("left")}>←</Button>
-                    <Button onClick={() => handleTelemetryControl("right")}>→</Button>
-                  </Box>
-                  <Button onClick={() => handleTelemetryControl("down")}>↓</Button>
-                </Stack>
+              {moveMap && (
+                <TelemetryControl moveMap={moveMap} onControl={handleTelemetryControl} object_id={props.object_id} />
               )}
+
+
             </Box>
           ) : (
             <Typography>No image available</Typography>

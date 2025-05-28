@@ -185,21 +185,16 @@ namespace LeafletAlarms.Grpc
           },
 
         VisualTypes.Map when cur_val is JsonElement elem && elem.ValueKind == JsonValueKind.Object =>
-          new ProtoActionValue
-          {
-            Map = new ProtoMap
+            new ProtoActionValue
             {
-              Values =
-                  {
-                        elem.TryGetProperty("values", out var mapElement) && mapElement.ValueKind == JsonValueKind.Object
-                            ? mapElement.EnumerateObject()
-                                .ToDictionary(p => p.Name, p => p.Value.ToString())
-                            : new Dictionary<string, string>()
-                  }
-            }
-          },
-
-
+              Map = new ProtoMap
+              {
+                Values =
+                    {
+                elem.EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetString() ?? "")
+                    }
+              }
+            },
 
         _ => new ProtoActionValue()
       };
