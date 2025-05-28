@@ -491,6 +491,7 @@ export type ActionParameterValue =
   | IIpRangeDTO
   | ICredentialListDTO
   | string[]
+  | Record<string, string>
   | null;
 
 export interface IActionParameterDTO {
@@ -502,7 +503,6 @@ export interface IActionParameterDTO {
 export interface IActionDescrDTO {
   name: string;
   parameters: IActionParameterDTO[];
-  is_long_action: boolean;
 }
 
 export interface IActionExeDTO {
@@ -547,7 +547,8 @@ export const VisualTypes = {
   IpRange: "__ip_range",
   CredentialList: "__credential_list",
   EnumList: "__enum_list",
-  SnapShot: "__snapshot"
+  SnapShot: "__snapshot",
+  Map:"__map"
 } as const;
 
 export interface IActionExeInfoRequestDTO {

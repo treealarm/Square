@@ -15,5 +15,6 @@ namespace Domain
     public const string CredentialList = "__credential_list";
     public const string EnumList = "__enum_list";
     public const string SnapShot = "__snapshot";
+    public const string Map = "__map";
   }
 }

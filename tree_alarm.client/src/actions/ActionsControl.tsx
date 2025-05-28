@@ -26,6 +26,7 @@ import { GenericInput } from './GenericInput';
 import { IpRangeInput } from './IpRangeInput';
 import { EnumListInput } from './EnumListInput';
 import ActionExecutionList from './ActionExecutionList';
+import { DictionaryInput } from './DictionaryInput';
 
 export function ActionsControl() {
   const appDispatch = useAppDispatch();
@@ -155,6 +156,16 @@ export function ActionsControl() {
                   const handleChange = (val: any) => handleParameterChange(action.name, paramIndex, val);
 
                   switch (param.type) {
+                    case VisualTypes.Map:
+                      return (
+                        <DictionaryInput
+                          key={param.name}
+                          label={param.name}
+                          value={typeof param.cur_val === 'object' && param.cur_val !== null ? param.cur_val : {}}
+                          onChange={handleChange}
+                        />
+                      );
+
                     case VisualTypes.EnumList:
                       return (
                         <EnumListInput

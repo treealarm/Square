@@ -116,8 +116,7 @@ namespace LeafletAlarms.Controllers
         {
           var actionDescr = new ActionDescrDTO()
           {
-            name = action.Name,
-            is_long_action = action.IsLongAction,
+            name = action.Name
           };
 
           foreach (var param in action.Parameters)

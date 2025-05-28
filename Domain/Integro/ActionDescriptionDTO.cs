@@ -14,7 +14,6 @@ namespace Domain
   {
     public string? name { get; set; }
     public List<ActionParameterDTO> parameters { get; set; } = new List<ActionParameterDTO>();
-    public bool is_long_action { get; set; }  
   }
 
   public record ActionExeDTO

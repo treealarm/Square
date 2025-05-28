@@ -311,8 +311,9 @@ export function ObjectProperties() {
               <ControlSelector 
                 prop_name={item.prop_name}
                 str_val={item.str_val}
-                visual_type={item.visual_type}
-                handleChangeProp={handleChangeProp} />
+                visual_type={item.visual_type ?? null}
+                handleChangeProp={handleChangeProp}
+                object_id={selected_id ?? null} />
 
               <Tooltip title={"remove property"}>
                 <IconButton aria-label="delete" size="small" onClick={() => { handleRemoveProp(item.prop_name); }}>

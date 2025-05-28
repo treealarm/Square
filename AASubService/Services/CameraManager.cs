@@ -7,6 +7,7 @@ using LeafletAlarmsGrpc;
 using ObjectActions;
 using OnvifLib;
 using System.Collections.Concurrent;
+using static Google.Rpc.Context.AttributeContext.Types;
 
 namespace AASubService
 {
@@ -20,6 +21,7 @@ namespace AASubService
 
     const string IpRangeParam = "ip_range";
     const string Discover = "discover";
+    const string Telemetry = "telemetry";
     const string CredentialListParam = "credential_list";
     const string PortListParam = "port_list";
     public CameraManager(ISubService sub)
@@ -196,20 +198,15 @@ namespace AASubService
         await client!.UpdatePropertiesAsync(toSend);
       }
     }
-    public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
+
+    public async Task<ProtoGetAvailableActionsResponse> GetMainAvailableActions(ProtoGetAvailableActionsRequest request)
     {
       await Task.CompletedTask;
       ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
 
-      if (request.ObjectId != _sync!.MainObj!.Id)
-      {
-        return response;
-      }
-
       var action = new ProtoActionDescription
       {
-        Name = Discover,
-        IsLongAction = true
+        Name = Discover
       };
 
       action.Parameters.Add(new ProtoActionParameter()
@@ -256,6 +253,52 @@ namespace AASubService
       }
       response.ActionsDescr.Add(action);
       return response;
+    }
+
+    public async Task<ProtoGetAvailableActionsResponse> GetCamAvailableActions(ProtoGetAvailableActionsRequest request)
+    {
+      await Task.CompletedTask;
+      ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
+
+      var action = new ProtoActionDescription
+      {
+        Name = Telemetry
+      };
+
+      var param = new ProtoActionParameter()
+      {
+        Name = "move",
+        CurVal = new ProtoActionValue()
+        {
+          Map = new ProtoMap()
+          {
+          }
+        }
+      };
+      param.CurVal.Map.Values.Add(new Dictionary<string, string>()
+      {
+        { "up", "1" },
+        { "down", "1" },
+        { "left", "1" },
+        { "right", "1" }
+      });
+      action.Parameters.Add(param);
+      response.ActionsDescr.Add(action);
+      return response;
+    }
+    public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
+    {
+      if (request.ObjectId == _sync!.MainObj!.Id)
+      {
+        return await GetMainAvailableActions(request);
+      }
+
+      if (_cameras.TryGetValue(request.ObjectId, out var cameras))
+      {
+        return await GetCamAvailableActions(request);
+      }
+
+      return new ProtoGetAvailableActionsResponse();
     }
 
     public async Task<ProtoExecuteActionResponse> ExecuteActions(ProtoExecuteActionRequest request)

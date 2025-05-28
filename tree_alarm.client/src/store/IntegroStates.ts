@@ -20,28 +20,36 @@ const initialState: IntegroState = {
   actionsByObject: [],
 };
 
-export const fetchActionsByObjectId = createAsyncThunk<IActionExeInfoDTO[], IActionExeInfoRequestDTO>(
+export  async function fetchActionsByObjectIdRaw(requestDto: IActionExeInfoRequestDTO): Promise<IActionExeInfoDTO[]> {
+  const response = await DoFetch(ApiIntegroRootString + '/GetActionsByObjectId', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(requestDto),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
+
+  return await response.json() as IActionExeInfoDTO[];
+}
+
+
+export const fetchActionsByObjectId = createAsyncThunk<
+  IActionExeInfoDTO[],
+  IActionExeInfoRequestDTO>(
   'actions/fetchActionsByObjectId',
   async (requestDto: IActionExeInfoRequestDTO, { rejectWithValue }) => {
     try {
-      const response = await DoFetch(ApiIntegroRootString + '/GetActionsByObjectId', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestDto),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        return rejectWithValue(errorText);
-      }
-
-      const json = (await response.json()) as IActionExeInfoDTO[];
-      return json;
+      const result = await fetchActionsByObjectIdRaw(requestDto);
+      return result;
     } catch (error: any) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Unknown error');
     }
   }
 );
+
 
 export const cancelAction = createAsyncThunk<boolean, string>(
   'actions/cancelAction',
@@ -64,17 +72,35 @@ export const cancelAction = createAsyncThunk<boolean, string>(
   }
 );
 
-export const fetchAvailableActions = createAsyncThunk<IActionDescrDTO[], string>(
+export async function fetchAvailableActionsRaw(id: string): Promise<IActionDescrDTO[]> {
+  const response = await DoFetch(ApiIntegroRootString + '/GetAvailableActions?id=' + id, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
+
+  return await response.json() as IActionDescrDTO[];
+}
+
+export const fetchAvailableActions = createAsyncThunk<
+  IActionDescrDTO[],
+  string
+>(
   'actions/fetchAvailableActions',
-  async (id: string) => {
-    const fetched = await DoFetch(ApiIntegroRootString+'/GetAvailableActions?id='+id, {
-      method: 'GET',
-      headers: { 'Content-type': 'application/json' }
-    });
-    const json = (await fetched.json()) as Promise<IActionDescrDTO[]>;
-    return json;
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const result = await fetchAvailableActionsRaw(id);
+      return result;
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Error fetching available actions');
+    }
   }
 );
+
 
 export const fetchObjectIntegroType = createAsyncThunk<IIntegroTypeDTO | null, string>(
   'actions/fetchObjectIntegroType',

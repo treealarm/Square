@@ -21,6 +21,10 @@ message ProtoCredentialList {
 message ProtoEnumList {
   repeated string values = 1;
 }
+
+message ProtoMap {
+  map<string, string> values = 1;
+}
 // Тип значения параметра (oneof для поддержки различных типов значений)
 message ProtoActionValue {
   oneof value {
@@ -31,6 +35,7 @@ message ProtoActionValue {
     ProtoIpRange ip_range = 5;
     ProtoCredentialList credential_list = 6;
     ProtoEnumList enum_list = 7;
+    ProtoMap map = 8;
   }
 }
 
@@ -44,7 +49,6 @@ message ProtoActionParameter {
 message ProtoActionDescription {
   string name = 1;                     // уникальное имя действия
   repeated ProtoActionParameter parameters = 2; // Список параметров для действия
-  bool is_long_action = 3;
 }
 
 message ProtoActionExe {
