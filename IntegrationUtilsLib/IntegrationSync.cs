@@ -61,13 +61,22 @@ namespace IntegrationUtilsLib
       integroRequest.IType = type;
 
       // Ищем уже созданный main объект по типу
-      var response = await client!.Client!.GetListByTypeAsync(integroRequest);
 
-      if (response == null)
+      try
       {
-        return null;
+        var response = await client!.Client!.GetListByTypeAsync(integroRequest);
+
+        if (response == null)
+        {
+          return null;
+        }
+        return response.Objects.ToList();
       }
-      return response.Objects.ToList();
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+      }
+      return null;      
     }
 
     public async Task<List<IntegroProto>?> GetIntegroObjectsByIds(List<string> ids)

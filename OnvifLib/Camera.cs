@@ -2,7 +2,11 @@
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
 using DeviceServiceReference;
+using EventServiceReference1;
 using OnvifLib;
 
 public class Camera
@@ -72,14 +76,14 @@ public class Camera
     _port = port;
 
     _binding = new CustomBinding(
-      new TextMessageEncodingBindingElement(MessageVersion.Soap12, Encoding.UTF8), // SOAP 1.2
+      new TextMessageEncodingBindingElement(MessageVersion.Soap12WSAddressing10, Encoding.UTF8), // SOAP 1.2
       new HttpTransportBindingElement()
       {
         AuthenticationScheme = AuthenticationSchemes.Digest
       }
     );
 
-    var timeout = 3;
+    var timeout = 5;
     _binding.OpenTimeout = TimeSpan.FromSeconds(timeout);
     _binding.CloseTimeout = TimeSpan.FromSeconds(timeout);
     _binding.SendTimeout = TimeSpan.FromSeconds(timeout);
@@ -158,6 +162,38 @@ public class Camera
     return null;
   }
 
+  async public Task<EventService1?> GetEventService()
+  {
+    var services = await GetServicesAsync();
+
+    if (services != null)
+    {
+      var wsdlKey = EventService1.WSDL_V10;
+        if (services.TryGetValue(wsdlKey, out var url))
+        {
+          try
+          {
+            var s = await EventService1.CreateAsync(
+           url,
+           _binding,
+           _username,
+           _password,
+           wsdlKey);
+            if (s != null)
+            {
+              return s;
+            }
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine(ex.ToString());
+          }
+        }
+      }
+
+
+    return null;
+  }
   public async Task<bool> IsAlive()
   {
     var services = await GetServicesAsync();
@@ -195,5 +231,31 @@ public class Camera
     {
       _deviceClient.Abort();
     }
+  }
+
+  public static void ParseEvent(string soapXml)
+  {
+    var xmlDoc = new XmlDocument();
+    xmlDoc.LoadXml(soapXml);
+
+    var nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
+    nsmgr.AddNamespace("s", "http://www.w3.org/2003/05/soap-envelope");
+    nsmgr.AddNamespace("wsnt", "http://docs.oasis-open.org/wsn/b-2");
+
+    var notifyNode = xmlDoc.SelectSingleNode("//wsnt:Notify", nsmgr);
+    if (notifyNode is null)
+      throw new Exception("Notify element not found");
+
+    var serializer = new XmlSerializer(typeof(Notify), "http://docs.oasis-open.org/wsn/b-2");
+    using var reader = new XmlNodeReader(notifyNode);
+    var notify =  serializer.Deserialize(reader) as Notify;
+
+    if (notify != null && (notify).NotificationMessage != null)
+    {
+      var n = (notify).NotificationMessage.FirstOrDefault();
+
+      if (n != null)
+        Console.WriteLine("Topic: " + (n).Topic.Any);
+    }    
   }
 }

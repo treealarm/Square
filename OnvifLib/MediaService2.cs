@@ -23,7 +23,8 @@ namespace OnvifLib
     protected override async Task InitializeAsync()
     {
       var endpoint = new EndpointAddress(_url);
-      var behavior = new MyClientBehavior();
+      var clientInspector = new CustomMessageInspector();
+      var behavior = new CustomEndpointBehavior(clientInspector);
       _mediaClient2 = new Media2Client(_binding, endpoint);
 
       _mediaClient2.ClientCredentials.UserName.UserName = _username;
