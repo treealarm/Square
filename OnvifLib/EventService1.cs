@@ -20,7 +20,7 @@ public class EventService1
   private PullPointSubscriptionClient? _pullClient;
   private NotificationProducerClient? _notificationProducerClient1;
   private CancellationTokenSource? _cts;
-  private string _pullPointAddress;
+  private string? _pullPointAddress;
 
   public event Action<NotificationMessageHolderType>? OnEventReceived;
 

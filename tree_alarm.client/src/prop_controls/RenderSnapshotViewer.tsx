@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   TextField,
@@ -26,40 +26,56 @@ import * as IntegroStore from '../store/IntegroStates';
 export function renderSnapshotViewer(props: IControlSelector) {
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
-  const [telemetryActions, setTelemetryActions] = useState<IActionDescrDTO[]>([]);
+  const [objectActions, setObjectActions] = useState<IActionDescrDTO[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const buildUrl = () => `${props.str_val}?t=${Date.now()}`;
 
   const appDispatch = useAppDispatch();
 
+  const refreshSnapshot = useCallback((object_id: string) => {
+    const action = objectActions.find(a => a.name === "refresh");
+    if (!action || !object_id) return;
+
+    const actionExePayload: IActionExeDTO = {
+      object_id,
+      name: action.name!,
+      uid: null,
+      parameters: []
+    };
+
+    appDispatch(IntegroStore.executeAction(actionExePayload));
+  }, [objectActions]);
+
   useEffect(() => {
-    if (open) {
-      const updateImage = () => setImageSrc(buildUrl());
-      updateImage();
-      intervalRef.current = setInterval(updateImage, 5000);
+    if (!open || !props.object_id) return;
 
-      if (props.object_id == null) {
-        return;
-      }
-      // Загрузка телеметрии
-      fetchAvailableActionsRaw(
-        props.object_id
-      )
-        .then(setTelemetryActions)
-        .catch(() => setTelemetryActions([])); // Если ошибка — просто не показываем
+    // Загружаем действия — один раз
+    fetchAvailableActionsRaw(props.object_id)
+      .then(setObjectActions)
+      .catch(() => setObjectActions([]));
 
-    }
+    // Обновляем скриншот
+    const update = () => {
+      setImageSrc(buildUrl());            // обновим картинку
+    };
+
+    update(); // сразу
+    intervalRef.current = setInterval(update, 5000); // периодически
+
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
     };
-  }, [open]);
+  }, [open, props.object_id, refreshSnapshot]); // 👈 добавь object_id в зависимости!
+
+
+
 
   const handleTelemetryControl = (direction: string, object_id:string) => {
-    const action = telemetryActions.find(a => a.name === "telemetry");
+    const action = objectActions.find(a => a.name === "telemetry");
     if (!action || !object_id) return;
 
     // Формируем параметр с направлением движения
@@ -84,7 +100,7 @@ export function renderSnapshotViewer(props: IControlSelector) {
 
 
   const moveMap = (() => {
-    const telemetry = telemetryActions.find(a => a.name === "telemetry");
+    const telemetry = objectActions.find(a => a.name === "telemetry");
     if (!telemetry) return undefined;
 
     const moveParam = telemetry.parameters?.find(
@@ -158,8 +174,15 @@ export function renderSnapshotViewer(props: IControlSelector) {
           )}
         </DialogContent>
         <DialogActions>
+          <Button
+            onClick={() => props.object_id && refreshSnapshot(props.object_id)}
+            variant="outlined"
+          >
+            Обновить
+          </Button>
           <Button onClick={() => setOpen(false)}>Close</Button>
         </DialogActions>
+
       </Dialog>
     </>
   );

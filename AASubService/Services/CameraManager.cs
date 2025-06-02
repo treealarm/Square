@@ -22,6 +22,7 @@ namespace AASubService
     const string IpRangeParam = "ip_range";
     const string Discover = "discover";
     const string Telemetry = "telemetry";
+    const string Refresh = "refresh";
     const string CredentialListParam = "credential_list";
     const string PortListParam = "port_list";
     public CameraManager(ISubService sub)
@@ -260,34 +261,47 @@ namespace AASubService
       await Task.CompletedTask;
       ProtoGetAvailableActionsResponse response = new ProtoGetAvailableActionsResponse();
 
-      var action = new ProtoActionDescription
       {
-        Name = Telemetry
-      };
-
-      var param = new ProtoActionParameter()
-      {
-        Name = "move",
-        CurVal = new ProtoActionValue()
+        var action = new ProtoActionDescription
         {
-          Map = new ProtoMap()
+          Name = Telemetry
+        };
+
+        var param = new ProtoActionParameter()
+        {
+          Name = "move",
+          CurVal = new ProtoActionValue()
           {
+            Map = new ProtoMap()
+            {
+            }
           }
-        }
-      };
-      param.CurVal.Map.Values.Add(new Dictionary<string, string>()
+        };
+        param.CurVal.Map.Values.Add(new Dictionary<string, string>()
+        {
+          { "up", "1" },
+          { "down", "1" },
+          { "left", "1" },
+          { "right", "1" }
+        });
+        action.Parameters.Add(param);
+        response.ActionsDescr.Add(action);
+      }
       {
-        { "up", "1" },
-        { "down", "1" },
-        { "left", "1" },
-        { "right", "1" }
-      });
-      action.Parameters.Add(param);
-      response.ActionsDescr.Add(action);
+        var action = new ProtoActionDescription
+        {
+          Name = Refresh
+        };
+        response.ActionsDescr.Add(action);
+      }
       return response;
     }
     public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
     {
+      if (_sync == null || _sync.MainObj == null)
+      {
+        return new ProtoGetAvailableActionsResponse();
+      }
       if (request.ObjectId == _sync!.MainObj!.Id)
       {
         return await GetMainAvailableActions(request);
@@ -326,6 +340,10 @@ namespace AASubService
       {
         await HandleActionDiscoveryAsync(action, token);
       }
+      if (action.Name == Refresh)
+      {
+        await HandleActionRefreshAsync(action, token);
+      }
     }
     private async Task SendProgressAsync(ProtoActionExe action, CancellationToken token, int progress, string result)
     {
@@ -338,6 +356,21 @@ namespace AASubService
       });
       var clientIntegro = Utils.ClientIntegro;
       await clientIntegro!.Client!.UpdateActionResultsAsync(progressRequest);
+    }
+    private async Task HandleActionRefreshAsync(ProtoActionExe action, CancellationToken token)
+    {
+      if (_cameras.TryGetValue(action.ObjectId, out var camera))
+      {
+        var pair = new KeyValuePair<string, Camera>(action.ObjectId, camera);
+        try
+        {
+          await UploadCamImage(pair);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.ToString());
+        }
+      }
     }
     private async Task HandleActionDiscoveryAsync(ProtoActionExe action, CancellationToken token)
     {

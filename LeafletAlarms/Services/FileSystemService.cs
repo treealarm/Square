@@ -65,11 +65,16 @@ namespace LeafletAlarms.Services
 
         string filePath = Path.Combine(basePath, fileName);
 
+      try
+      {
         // Сохраняем файл на сервере
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
           await stream.WriteAsync(file);
         }
+      }
+      catch(Exception ex)
+      { Console.WriteLine(ex.ToString()); }        
 
         // Возвращаем успешный результат загрузки
         return filePath;
