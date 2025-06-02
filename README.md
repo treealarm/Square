@@ -17,6 +17,10 @@ A real-time object monitoring platform that visualizes moving and stationary ent
 - Map: Leaflet
 - Database: PostgreSQL / MongoDB
 - Other: WebSocket / REST API / Dapr
+- 
+## Contact
+
+**Danil Serov** – [serovdanil@gmail.com](mailto:serovdanil@gmail.com)
 
 ## Installation
 
@@ -24,3 +28,4 @@ A real-time object monitoring platform that visualizes moving and stationary ent
 git clone https://github.com/treealarm/Square.git
 cd Square
 # Follow setup instructions here (e.g. run frontend/backend, configure .env)
+
