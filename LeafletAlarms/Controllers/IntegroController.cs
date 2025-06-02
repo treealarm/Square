@@ -4,6 +4,7 @@ using LeafletAlarms.Grpc;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Mvc;
 using ObjectActions;
+using System;
 
 namespace LeafletAlarms.Controllers
 {
@@ -210,6 +211,45 @@ namespace LeafletAlarms.Controllers
       }      
 
       return res;
+    }
+
+    [HttpGet()]
+    [Route("GetSnapshot")]
+    public async Task<IActionResult> GetSnapshot(string object_id)
+    {
+      if (string.IsNullOrEmpty(object_id))
+        return BadRequest("Missing ID");
+
+      try
+      {
+        var app_ids = await GetAppIdByObjectId(new List<string> { object_id });
+
+        if (!app_ids.Any())
+          return NotFound();
+
+        var key = app_ids.Values.Select(i => i.i_name).FirstOrDefault();
+
+        var daprClient = _daprClientService.GetDaprClient(key);
+
+        if (daprClient == null)
+          throw new Exception($"daprClient:{key} not found");
+
+        var grpcClient = new ActionsService.ActionsServiceClient(daprClient);
+
+        var act_exe = new ProtoActionExe()
+        {
+          Name = "get_snapshot",
+          ObjectId = object_id
+        };
+        var response = await grpcClient.ExecuteActionGetResultAsync(act_exe);
+
+        return File(response.Data.ToByteArray(), response.MimeType);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.ToString());
+        return StatusCode(500, "Internal error");
+      }
     }
 
     [HttpPost()]

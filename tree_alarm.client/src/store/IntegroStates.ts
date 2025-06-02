@@ -10,6 +10,7 @@ export interface IntegroState {
   loading: boolean;
   error: string | null;
   actionsByObject: IActionExeInfoDTO[];
+  snapshots: Record<string, string>; // object_id -> base64 string
 }
 
 const initialState: IntegroState = {
@@ -18,7 +19,40 @@ const initialState: IntegroState = {
   loading: false,
   error: null,
   actionsByObject: [],
+  snapshots: {},
 };
+
+export const fetchSnapshot = createAsyncThunk<
+  { object_id: string; dataUrl: string },
+  string
+>(
+  'actions/fetchSnapshot',
+  async (object_id: string, { rejectWithValue }) => {
+    try {
+      const response = await DoFetch(ApiIntegroRootString + `/GetSnapshot?object_id=${object_id}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        return rejectWithValue(errorText);
+      }
+
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+
+      return { object_id, dataUrl };
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Error fetching snapshot');
+    }
+  }
+);
 
 export  async function fetchActionsByObjectIdRaw(requestDto: IActionExeInfoRequestDTO): Promise<IActionExeInfoDTO[]> {
   const response = await DoFetch(ApiIntegroRootString + '/GetActionsByObjectId', {
@@ -122,9 +156,6 @@ export const fetchObjectIntegroType = createAsyncThunk<IIntegroTypeDTO | null, s
     return json;
   }
 );
-
-
-
 
 export const executeAction = createAsyncThunk<boolean, IActionExeDTO>(
   'actions/executeAction',
@@ -233,6 +264,14 @@ const valuesSlice = createSlice({
       .addCase(fetchActionsByObjectId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || 'Error fetching actions by object ID';
+      })
+      //snapshots
+      .addCase(fetchSnapshot.fulfilled, (state, action) => {
+        const { object_id, dataUrl } = action.payload;
+        state.snapshots[object_id] = dataUrl;
+      })
+      .addCase(fetchSnapshot.rejected, (state, action) => {
+        state.error = action.payload as string || 'Error fetching snapshot';
       })
 
     ;

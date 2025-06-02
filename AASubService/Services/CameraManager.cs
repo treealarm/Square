@@ -1,5 +1,6 @@
 ﻿using Common;
 using Domain;
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
@@ -7,7 +8,6 @@ using LeafletAlarmsGrpc;
 using ObjectActions;
 using OnvifLib;
 using System.Collections.Concurrent;
-using static Google.Rpc.Context.AttributeContext.Types;
 
 namespace AASubService
 {
@@ -23,6 +23,7 @@ namespace AASubService
     const string Discover = "discover";
     const string Telemetry = "telemetry";
     const string Refresh = "refresh";
+    const string GetSnapshot = "get_snapshot";
     const string CredentialListParam = "credential_list";
     const string PortListParam = "port_list";
     public CameraManager(ISubService sub)
@@ -294,6 +295,14 @@ namespace AASubService
         };
         response.ActionsDescr.Add(action);
       }
+      {
+        var action = new ProtoActionDescription
+        {
+          Name = GetSnapshot
+        };
+        response.ActionsDescr.Add(action);
+      }
+      
       return response;
     }
     public async Task<ProtoGetAvailableActionsResponse> GetAvailableActions(ProtoGetAvailableActionsRequest request)
@@ -343,7 +352,7 @@ namespace AASubService
       if (action.Name == Refresh)
       {
         await HandleActionRefreshAsync(action, token);
-      }
+      }  
     }
     private async Task SendProgressAsync(ProtoActionExe action, CancellationToken token, int progress, string result)
     {
@@ -371,6 +380,34 @@ namespace AASubService
           Console.WriteLine(ex.ToString());
         }
       }
+    }
+    private async Task<ProtoExecuteActionResponse> HandleActionGetSnapshotAsync(ProtoActionExe action)
+    {
+      var ret = new ProtoExecuteActionResponse();
+      if (_cameras.TryGetValue(action.ObjectId, out var cam))
+      {
+        try
+        {
+          var media = await cam.GetMediaService();
+          if (media == null)
+          {
+            return ret;
+          }
+          var data = await media.GetImage();
+          if (data != null)
+          {
+            ret.Success = true;
+            ret.Message = "Ok";
+            ret.MimeType = data.MimeType;
+            ret.Data = ByteString.CopyFrom(data.Data);
+          }
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.ToString());
+        }        
+      }
+      return ret;
     }
     private async Task HandleActionDiscoveryAsync(ProtoActionExe action, CancellationToken token)
     {
@@ -445,6 +482,20 @@ namespace AASubService
         }
       }
       return retVal;
+    }
+
+    public async Task<ProtoExecuteActionResponse> ExecuteActionGetResult(ProtoActionExe action)
+    {
+      if (action.Name == GetSnapshot)
+      {
+        return await HandleActionGetSnapshotAsync(action);
+      }
+
+      return new ProtoExecuteActionResponse()
+      {
+        Success = false,
+        Message = "not implemented"
+      };
     }
   }
 }

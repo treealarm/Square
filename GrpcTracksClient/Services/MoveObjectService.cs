@@ -521,5 +521,10 @@ namespace GrpcTracksClient.Services
     {
       throw new NotImplementedException();
     }
+
+    public Task<ProtoExecuteActionResponse> ExecuteActionGetResult(ProtoActionExe action)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

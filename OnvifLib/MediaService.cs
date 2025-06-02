@@ -8,6 +8,7 @@ namespace OnvifLib
   {
     public byte[] Data { get; set; } = [];
     public string? Extension { get; set; } // или без точки: "jpeg"
+    public string? MimeType { get; set; }
   }
   public class MediaService
   {
@@ -82,7 +83,7 @@ namespace OnvifLib
 
       var data = await response.Content.ReadAsByteArrayAsync();
       return new ImageResult()
-      { Data = data, Extension = GetExtensionFromMime(mime)};
+      { Data = data, Extension = GetExtensionFromMime(mime), MimeType = mime};
     }
     protected virtual async Task InitializeAsync() { await Task.CompletedTask; }
     public virtual async Task<ImageResult?> GetImage()

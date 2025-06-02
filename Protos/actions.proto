@@ -67,6 +67,8 @@ message ProtoExecuteActionRequest {
 message ProtoExecuteActionResponse {
   bool success = 1;  // Успешность выполнения действия
   string message = 2; // Сообщение о результате выполнения
+  bytes data = 3;
+  string mime_type = 4;
 }
 
 // Запрос для получения доступных действий
@@ -84,4 +86,5 @@ service ActionsService {
   rpc GetAvailableActions (ProtoGetAvailableActionsRequest) returns (ProtoGetAvailableActionsResponse);
   rpc ExecuteActions (ProtoExecuteActionRequest) returns (ProtoExecuteActionResponse);
   rpc CancelActions (ProtoEnumList) returns (google.protobuf.BoolValue);
+  rpc ExecuteActionGetResult (ProtoActionExe) returns (ProtoExecuteActionResponse);
 }

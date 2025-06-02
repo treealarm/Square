@@ -22,6 +22,8 @@ import { fetchAvailableActionsRaw } from "../store/IntegroStates";
 import { TelemetryControl } from "./TelemetryControl";
 import { useAppDispatch } from "../store/configureStore";
 import * as IntegroStore from '../store/IntegroStates';
+import { ApplicationState } from "../store";
+import { useSelector } from "react-redux";
 
 export function renderSnapshotViewer(props: IControlSelector) {
   const [open, setOpen] = useState(false);
@@ -32,6 +34,11 @@ export function renderSnapshotViewer(props: IControlSelector) {
   const buildUrl = () => `${props.str_val}?t=${Date.now()}`;
 
   const appDispatch = useAppDispatch();
+
+  const snapshot: string | null = useSelector((state: ApplicationState) =>
+    props.object_id ? state?.integroStates?.snapshots?.[props.object_id] ?? null : null
+  );
+
 
   const refreshSnapshot = useCallback((object_id: string) => {
     const action = objectActions.find(a => a.name === "refresh");
@@ -47,21 +54,27 @@ export function renderSnapshotViewer(props: IControlSelector) {
     appDispatch(IntegroStore.executeAction(actionExePayload));
   }, [objectActions]);
 
+  // Загружаем действия один раз при открытии
   useEffect(() => {
     if (!open || !props.object_id) return;
 
-    // Загружаем действия — один раз
     fetchAvailableActionsRaw(props.object_id)
       .then(setObjectActions)
       .catch(() => setObjectActions([]));
+  }, [open, props.object_id]);
 
-    // Обновляем скриншот
+  // Обновляем картинку отдельно
+  useEffect(() => {
+    if (!open || !props.object_id) return;
+
     const update = () => {
-      setImageSrc(buildUrl());            // обновим картинку
+      console.log("getSnapshot");
+      appDispatch(IntegroStore.fetchSnapshot(props.object_id!));
+      setImageSrc(buildUrl());
     };
 
-    update(); // сразу
-    intervalRef.current = setInterval(update, 5000); // периодически
+    update();
+    intervalRef.current = setInterval(update, 1000);
 
     return () => {
       if (intervalRef.current) {
@@ -69,8 +82,7 @@ export function renderSnapshotViewer(props: IControlSelector) {
         intervalRef.current = null;
       }
     };
-  }, [open, props.object_id, refreshSnapshot]); // 👈 добавь object_id в зависимости!
-
+  }, [open, props.object_id]); // теперь нет objectActions и getSnapshot
 
 
 
@@ -159,7 +171,7 @@ export function renderSnapshotViewer(props: IControlSelector) {
               flexDirection="column"
             >
               <img
-                src={imageSrc}
+                src={snapshot ? snapshot: imageSrc}
                 alt="Snapshot"
                 style={{ maxWidth: "100%", maxHeight: "60vh" }}
               />
@@ -178,7 +190,7 @@ export function renderSnapshotViewer(props: IControlSelector) {
             onClick={() => props.object_id && refreshSnapshot(props.object_id)}
             variant="outlined"
           >
-            Обновить
+            Refresh
           </Button>
           <Button onClick={() => setOpen(false)}>Close</Button>
         </DialogActions>

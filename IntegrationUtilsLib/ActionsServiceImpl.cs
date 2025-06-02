@@ -26,9 +26,13 @@ namespace IntegrationUtilsLib
     {
       return await _actionServiceInternal.ExecuteActions(request);
     }
+    public override async Task<ProtoExecuteActionResponse> ExecuteActionGetResult(ProtoActionExe request, ServerCallContext context)
+    {
+      return await _actionServiceInternal.ExecuteActionGetResult(request);
+    }
     public override async Task<BoolValue> CancelActions(ProtoEnumList request, ServerCallContext context)
     {
       return await _actionServiceInternal.CancelActions(request);
-    }
+    }    
   }
 }
