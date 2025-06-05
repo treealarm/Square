@@ -4,7 +4,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel;
 namespace OnvifLib
 {
-  public class EventService1 : OnvifServiceBase
+  public class EventService1 : OnvifServiceBase, IOnvifServiceFactory<EventService1>
   {
     public static string WSDL_V10 = "http://www.onvif.org/ver10/media/wsdl";
 
@@ -19,7 +19,10 @@ namespace OnvifLib
       base(url, binding, username, password, profile)
     {
     }
-
+    public static string[] GetSupportedWsdls()
+    {
+      return new[] { WSDL_V10 };
+    }
     public static async Task<EventService1?> CreateAsync(string url, CustomBinding binding, string username, string password, string profile)
     {
       var instance1 = new EventService1(url, binding, username, password, profile);
@@ -48,6 +51,8 @@ namespace OnvifLib
 
     public async Task StartReceiving()
     {
+      await Task.Delay(0);
+
       if (_pullClient == null) 
         throw new InvalidOperationException("Pull client not initialized");
 

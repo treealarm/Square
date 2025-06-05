@@ -127,37 +127,8 @@ public class Camera
 
     if (services != null)
     {
-      var mediaWsdls = new[] {
-          MediaService1.WSDL_V20,
-          MediaService1.WSDL_V10
-      };
-
-      foreach (var wsdlKey in mediaWsdls)
-      {
-        if (services.TryGetValue(wsdlKey, out var url))
-        {
-          try
-          {
-            var mediaService = await MediaService1.CreateAsync(
-           url,
-           _binding,
-           _username,
-           _password,
-           wsdlKey);
-            if (mediaService != null)
-            {
-              return mediaService;
-            }
-          }
-          catch (Exception ex)
-          {
-            Console.WriteLine(ex.ToString());
-          }         
-        }
-      }
-
+      return await OnvifServiceSelector.TryCreateService<MediaService>(services, _binding, _username, _password);
     }
-
     return null;
   }
 
@@ -167,30 +138,8 @@ public class Camera
 
     if (services != null)
     {
-      var wsdlKey = EventService1.WSDL_V10;
-        if (services.TryGetValue(wsdlKey, out var url))
-        {
-          try
-          {
-            var s = await EventService1.CreateAsync(
-           url,
-           _binding,
-           _username,
-           _password,
-           wsdlKey);
-            if (s != null)
-            {
-              return s;
-            }
-          }
-          catch (Exception ex)
-          {
-            Console.WriteLine(ex.ToString());
-          }
-        }
-      }
-
-
+      return await OnvifServiceSelector.TryCreateService<EventService1>(services, _binding, _username, _password);
+    }
     return null;
   }
 
@@ -200,30 +149,8 @@ public class Camera
 
     if (services != null)
     {
-      var wsdlKey = PtzService2.WSDL_V20;
-      if (services.TryGetValue(wsdlKey, out var url))
-      {
-        try
-        {
-          var s = await PtzService2.CreateAsync(
-         url,
-         _binding,
-         _username,
-         _password,
-         wsdlKey);
-          if (s != null)
-          {
-            return s;
-          }
-        }
-        catch (Exception ex)
-        {
-          Console.WriteLine(ex.ToString());
-        }
-      }
+      return await OnvifServiceSelector.TryCreateService<PtzService2>(services, _binding, _username, _password);
     }
-
-
     return null;
   }
   public async Task<bool> IsAlive()

@@ -1,5 +1,4 @@
-﻿using DeviceServiceReference;
-using System.Net;
+﻿using System.Net;
 using System.ServiceModel.Channels;
 
 namespace OnvifLib
@@ -10,17 +9,10 @@ namespace OnvifLib
     public string? Extension { get; set; } // или без точки: "jpeg"
     public string? MimeType { get; set; }
   }
-  public class MediaService
+  public class MediaService : OnvifServiceBase, IOnvifServiceFactory<MediaService>
   {
     public const string WSDL_V10 = "http://www.onvif.org/ver10/media/wsdl";
     public const string WSDL_V20 = "http://www.onvif.org/ver20/media/wsdl";
-
-    protected readonly string _url;
-    protected readonly string _username;
-    protected readonly string _password;
-    protected readonly string _profile;
-    protected readonly CustomBinding _binding;
-
     public static string? GetExtensionFromMime(string? mime)
     {
       if (string.IsNullOrWhiteSpace(mime))
@@ -38,16 +30,18 @@ namespace OnvifLib
       CustomBinding binding, 
       string username, 
       string password, 
-      string profile)
+      string profile): base(url, binding, username, password, profile) 
     {
-      _url = url;
-      _username = username;
-      _password = password;
-      _binding = binding;
-      _profile = profile;
+
     }
 
-    public static async Task<MediaService> CreateAsync(
+
+    public static string[] GetSupportedWsdls()
+    {
+      return new[] { WSDL_V20, WSDL_V10 };
+    }
+
+    public static async Task<MediaService?> CreateAsync(
       string url, 
       CustomBinding binding, 
       string username, 

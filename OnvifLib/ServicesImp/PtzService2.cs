@@ -3,7 +3,7 @@ using System.ServiceModel.Channels;
 
 namespace OnvifLib
 {
-  public class PtzService2 : OnvifServiceBase
+  public class PtzService2 : OnvifServiceBase, IOnvifServiceFactory<PtzService2>
   {
     public const string WSDL_V20 = "http://www.onvif.org/ver20/ptz/wsdl";
     private PTZClient? _ptzClient;
@@ -13,6 +13,10 @@ namespace OnvifLib
     {
     }
 
+    public static string[] GetSupportedWsdls()
+    {
+      return new[] { WSDL_V20 };
+    }
     public static async Task<PtzService2?> CreateAsync(string url, CustomBinding binding, string username, string password, string profile)
     {
       var instance = new PtzService2(url, binding, username, password, profile);
