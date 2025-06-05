@@ -55,7 +55,12 @@ namespace OnvifLib
       await _ptzClient.AbsoluteMoveAsync(profileToken, position, speed);
     }
 
-    public async Task ContinuousMoveAsync(string profileToken, float panTiltX, float panTiltY, float zoom = 0f, string timeout = "PT0S")
+    public async Task ContinuousMoveAsync(
+      string profileToken, 
+      float panTiltX, 
+      float panTiltY, 
+      float zoom = 0f, 
+      string timeout = "PT1S")
     {
       if (_ptzClient == null)
         throw new InvalidOperationException("PTZ client not initialized");
@@ -68,7 +73,13 @@ namespace OnvifLib
 
       await _ptzClient.ContinuousMoveAsync(profileToken, velocity, timeout);
     }
-    public async Task RelativeMoveAsync(string profileToken, float panTiltX, float panTiltY, float zoom = 0f, float speedPanTilt = 0.5f, float speedZoom = 0.5f)
+    public async Task RelativeMoveAsync(
+      string profileToken, 
+      float panTiltX, 
+      float panTiltY, 
+      float zoom = 0f, 
+      float speedPanTilt = 0.5f, 
+      float speedZoom = 0.5f)
     {
       if (_ptzClient == null)
         throw new InvalidOperationException("PTZ client not initialized");

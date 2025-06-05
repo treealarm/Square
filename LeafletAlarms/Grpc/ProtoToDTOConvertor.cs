@@ -49,6 +49,19 @@ namespace LeafletAlarms.Grpc
       };
     }
 
+    private static string ConvertJsonElementToString(JsonElement element)
+    {
+      return element.ValueKind switch
+      {
+        JsonValueKind.String => element.GetString() ?? "",
+        JsonValueKind.Number => element.ToString(), // сохраняет число как есть
+        JsonValueKind.True => "true",
+        JsonValueKind.False => "false",
+        JsonValueKind.Null => "",
+        JsonValueKind.Undefined => "",
+        _ => element.GetRawText() // для объектов, массивов и прочего — как JSON-строка
+      };
+    }
 
     public static ProtoActionParameter ConvertToProtoActionParameter(ActionParameterDTO dto)
     {
@@ -191,10 +204,14 @@ namespace LeafletAlarms.Grpc
               {
                 Values =
                     {
-                elem.EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetString() ?? "")
+                elem.EnumerateObject().ToDictionary(
+                    p => p.Name,
+                    p => ConvertJsonElementToString(p.Value)
+                )
                     }
               }
             },
+
 
         _ => new ProtoActionValue()
       };

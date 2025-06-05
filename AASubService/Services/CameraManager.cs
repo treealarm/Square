@@ -466,26 +466,64 @@ namespace AASubService
       float panTiltX = 0f;
       float panTiltY = 0f;
       float zoom = 0f;
+      string move_type = "relative";
+
+      float ParseOrDefault(string s, float defaultValue = 0f)
+      {
+        return float.TryParse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var result)
+            ? result
+            : defaultValue;
+      }
 
       foreach (var dict in directions)
       {
-          switch (dict.Key.ToLowerInvariant())
-          {
-            case "up": panTiltY += 0.1f; break;
-            case "down": panTiltY -= 0.1f; break;
-            case "left": panTiltX -= 0.1f; break;
-            case "right": panTiltX += 0.1f; break;
-            case "zoom_in": zoom += 0.1f; break;
-            case "zoom_out": zoom -= 0.1f; break;
-          }
+        string key = dict.Key.ToLowerInvariant();
+        string value = dict.Value;
+
+        switch (key)
+        {
+          case "up":
+            panTiltY = ParseOrDefault(value);
+            break;
+          case "down":
+            panTiltY = -ParseOrDefault(value);
+            break;
+          case "left":
+            panTiltX = -ParseOrDefault(value);
+            break;
+          case "right":
+            panTiltX = ParseOrDefault(value);
+            break;
+          case "zoom_in":
+            zoom = ParseOrDefault(value);
+            break;
+          case "zoom_out":
+            zoom = -ParseOrDefault(value);
+            break;
+          case "move_type":
+            move_type = value;
+            break;
+        }
       }
+
 
       try
       {
         var profiles = await camera.GetProfiles();
-        await ptz.RelativeMoveAsync(profiles?.FirstOrDefault()??"", panTiltX, panTiltY, zoom);
-        await Task.Delay(100, token);
-        await ptz.StopAsync(profiles?.FirstOrDefault() ?? "", true, true);
+        if (move_type == "relative")
+        {
+          await ptz.RelativeMoveAsync(profiles?.FirstOrDefault() ?? "", panTiltX, panTiltY, zoom);
+        }          
+        else if(move_type == "absolute")
+        {
+          await ptz.AbsoluteMoveAsync(profiles?.FirstOrDefault() ?? "", panTiltX, panTiltY, zoom);
+        }
+        else
+        {
+          await ptz.ContinuousMoveAsync(profiles?.FirstOrDefault() ?? "", panTiltX, panTiltY, zoom);
+        }
+        //await Task.Delay(100, token);
+        //await ptz.StopAsync(profiles?.FirstOrDefault() ?? "", true, true);
       }
       catch (Exception ex)
       {

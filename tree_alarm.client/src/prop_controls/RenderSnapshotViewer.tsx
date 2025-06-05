@@ -86,22 +86,26 @@ export function renderSnapshotViewer(props: IControlSelector) {
 
 
 
-  const handleTelemetryControl = (direction: string, object_id:string) => {
+  const handleTelemetryControl = (
+    direction: string,
+    object_id: string,
+    step: number,
+    move_type: string
+  ) => {
     const action = objectActions.find(a => a.name === "telemetry");
     if (!action || !object_id) return;
 
-    // Формируем параметр с направлением движения
     const telemetryParam = {
       name: "move",
-      type: "__map", // либо нужный тип для мапы
+      type: "__map",
       cur_val: {
-        [direction]: "1"
+        [direction]: step.toString(),
+        move_type: move_type
       }
     };
 
-    // Создаем объект IActionExeDTO для вызова executeAction
     const actionExePayload: IActionExeDTO = {
-      object_id: object_id,
+      object_id,
       name: action.name!,
       uid: null,
       parameters: [telemetryParam]
@@ -109,7 +113,6 @@ export function renderSnapshotViewer(props: IControlSelector) {
 
     appDispatch(IntegroStore.executeAction(actionExePayload));
   };
-
 
   const moveMap = (() => {
     const telemetry = objectActions.find(a => a.name === "telemetry");
@@ -176,7 +179,7 @@ export function renderSnapshotViewer(props: IControlSelector) {
                 style={{ maxWidth: "100%", maxHeight: "60vh" }}
               />
               {moveMap && (
-                <TelemetryControl moveMap={moveMap} onControl={handleTelemetryControl} object_id={props.object_id} />
+                <TelemetryControl moveMap={moveMap} onControl={handleTelemetryControl} object_id={props.object_id??null} />
               )}
 
 
