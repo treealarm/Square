@@ -78,39 +78,8 @@ _ = Task.Run(async () =>
   }
   catch (Exception ex)
   {
-    Console.WriteLine($"Ошибка: {ex.Message}");
+    Console.WriteLine($"Error: {ex.Message}");
   }
-});
-
-app.MapPost("/onvif/events/", async (HttpRequest req) =>
-{
-  using var memoryStream = new MemoryStream();
-
-  try
-  {
-    req.EnableBuffering();
-
-    var buffer = new byte[1024]; 
-    
-    int bytesRead;
-
-    do
-    {
-      bytesRead = await req.Body.ReadAsync(buffer, 0, buffer.Length);
-      memoryStream.Write(buffer, 0, bytesRead);
-    } while (bytesRead > 0);
-
-    var body = Encoding.UTF8.GetString(memoryStream.ToArray());
-    if (!string.IsNullOrEmpty(body))
-      Camera.ParseEvent(body);
-  }
-  catch (Exception ex) 
-  {
-    Console.WriteLine(ex.ToString()); 
-  }
-  string body1 = Encoding.UTF8.GetString(memoryStream.ToArray());
-
-  return Results.Ok(); // Камера ждет HTTP 200
 });
 
 app.Run();
