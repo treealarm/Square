@@ -7,7 +7,7 @@ namespace OnvifLib
   {
     public const string WSDL_V20 = "http://www.onvif.org/ver20/ptz/wsdl";
     private PTZClient? _ptzClient;
-
+    private Capabilities? _caps;
     protected PtzService2(string url, CustomBinding binding, string username, string password, string profile) :
       base(url, binding, username, password, profile)
     {
@@ -28,6 +28,31 @@ namespace OnvifLib
     {
       _ptzClient = OnvifClientFactory.CreateClient<PTZClient, PTZ>(_url, _binding, _username, _password);
       await _ptzClient.OpenAsync();
+      _caps = await _ptzClient.GetServiceCapabilitiesAsync();
+    }
+
+    public bool SupportedCaps()
+    {
+      return true;
+    }
+    public async Task AbsoluteMoveAsync(string profileToken, float panTiltX, float panTiltY, float zoom = 0f, float speedPanTilt = 0.5f, float speedZoom = 0.5f)
+    {
+      if (_ptzClient == null)
+        throw new InvalidOperationException("PTZ client not initialized");
+
+      var position = new PTZVector
+      {
+        PanTilt = new Vector2D { x = panTiltX, y = panTiltY },
+        Zoom = new Vector1D { x = zoom }
+      };
+
+      var speed = new PTZSpeed
+      {
+        PanTilt = new Vector2D { x = speedPanTilt, y = speedPanTilt },
+        Zoom = new Vector1D { x = speedZoom }
+      };
+
+      await _ptzClient.AbsoluteMoveAsync(profileToken, position, speed);
     }
 
     public async Task ContinuousMoveAsync(string profileToken, float panTiltX, float panTiltY, float zoom = 0f, string timeout = "PT0S")
@@ -42,6 +67,25 @@ namespace OnvifLib
       };
 
       await _ptzClient.ContinuousMoveAsync(profileToken, velocity, timeout);
+    }
+    public async Task RelativeMoveAsync(string profileToken, float panTiltX, float panTiltY, float zoom = 0f, float speedPanTilt = 0.5f, float speedZoom = 0.5f)
+    {
+      if (_ptzClient == null)
+        throw new InvalidOperationException("PTZ client not initialized");
+
+      var translation = new PTZVector
+      {
+        PanTilt = new Vector2D { x = panTiltX, y = panTiltY },
+        Zoom = new Vector1D { x = zoom }
+      };
+
+      var speed = new PTZSpeed
+      {
+        PanTilt = new Vector2D { x = speedPanTilt, y = speedPanTilt },
+        Zoom = new Vector1D { x = speedZoom }
+      };
+
+      await _ptzClient.RelativeMoveAsync(profileToken, translation, speed);
     }
 
 

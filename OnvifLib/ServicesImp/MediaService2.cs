@@ -52,6 +52,10 @@ namespace OnvifLib
       }
     }
 
+    public override List<string> GetProfiles()
+    {
+      return _profiles.Select(p=>p.token).ToList();
+    }
     public override async Task<ImageResult?> GetImage()
     {
       var profile = _profiles.FirstOrDefault();

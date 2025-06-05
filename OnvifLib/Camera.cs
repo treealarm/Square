@@ -153,6 +153,16 @@ public class Camera
     }
     return null;
   }
+
+  async public Task<List<string>?> GetProfiles()
+  {
+    var service = await GetMediaService();
+    if (service == null)
+    {
+      return null;
+    }
+    return service.GetProfiles();
+  }
   public async Task<bool> IsAlive()
   {
     var services = await GetServicesAsync();

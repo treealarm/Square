@@ -13,6 +13,10 @@ namespace OnvifLib
   {
     public const string WSDL_V10 = "http://www.onvif.org/ver10/media/wsdl";
     public const string WSDL_V20 = "http://www.onvif.org/ver20/media/wsdl";
+    public virtual List<string> GetProfiles()
+    {
+      return new List<string>();
+    }
     public static string? GetExtensionFromMime(string? mime)
     {
       if (string.IsNullOrWhiteSpace(mime))

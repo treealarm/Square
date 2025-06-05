@@ -352,7 +352,11 @@ namespace AASubService
       if (action.Name == Refresh)
       {
         await HandleActionRefreshAsync(action, token);
-      }  
+      }
+      if (action.Name == Telemetry)
+      {
+        await HandleActionTelemetryAsync(action, token);
+      }
     }
     private async Task SendProgressAsync(ProtoActionExe action, CancellationToken token, int progress, string result)
     {
@@ -443,6 +447,52 @@ namespace AASubService
         await SendProgressAsync(action, token, 100, ex.ToString());
       }
     }
+    private async Task HandleActionTelemetryAsync(ProtoActionExe action, CancellationToken token)
+    {
+      if (!_cameras.TryGetValue(action.ObjectId, out var camera))
+        return;
+
+      var ptz = await camera.GetPtzService();
+      if (ptz == null)
+        return;
+
+      var directions = action.Parameters
+        .FirstOrDefault(p => p.Name == "move")?
+        .CurVal?.Map?.Values;
+
+      if (directions == null || directions.Count == 0)
+        return;
+
+      float panTiltX = 0f;
+      float panTiltY = 0f;
+      float zoom = 0f;
+
+      foreach (var dict in directions)
+      {
+          switch (dict.Key.ToLowerInvariant())
+          {
+            case "up": panTiltY += 0.1f; break;
+            case "down": panTiltY -= 0.1f; break;
+            case "left": panTiltX -= 0.1f; break;
+            case "right": panTiltX += 0.1f; break;
+            case "zoom_in": zoom += 0.1f; break;
+            case "zoom_out": zoom -= 0.1f; break;
+          }
+      }
+
+      try
+      {
+        var profiles = await camera.GetProfiles();
+        await ptz.RelativeMoveAsync(profiles?.FirstOrDefault()??"", panTiltX, panTiltY, zoom);
+        await Task.Delay(100, token);
+        await ptz.StopAsync(profiles?.FirstOrDefault() ?? "", true, true);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Telemetry move failed: {ex}");
+      }
+    }
+
 
 
     private async Task CreateCameraIntegration(Camera cam, object context)
