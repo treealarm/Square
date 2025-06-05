@@ -86,11 +86,13 @@ export function renderSnapshotViewer(props: IControlSelector) {
 
 
 
+  type TelemetryParams = {
+    [key: string]: string;
+  };
+
   const handleTelemetryControl = (
-    direction: string,
-    object_id: string,
-    step: number,
-    move_type: string
+    payload: TelemetryParams,
+    object_id: string
   ) => {
     const action = objectActions.find(a => a.name === "telemetry");
     if (!action || !object_id) return;
@@ -98,21 +100,19 @@ export function renderSnapshotViewer(props: IControlSelector) {
     const telemetryParam = {
       name: "move",
       type: "__map",
-      cur_val: {
-        [direction]: step.toString(),
-        move_type: move_type
-      }
+      cur_val: payload,
     };
 
     const actionExePayload: IActionExeDTO = {
       object_id,
       name: action.name!,
       uid: null,
-      parameters: [telemetryParam]
+      parameters: [telemetryParam],
     };
 
     appDispatch(IntegroStore.executeAction(actionExePayload));
   };
+
 
   const moveMap = (() => {
     const telemetry = objectActions.find(a => a.name === "telemetry");
@@ -167,27 +167,46 @@ export function renderSnapshotViewer(props: IControlSelector) {
           {imageSrc ? (
             <Box
               display="flex"
-              justifyContent="center"
-              alignItems="center"
+              flexDirection="row"
               width="100%"
               height="100%"
-              flexDirection="column"
             >
-              <img
-                src={snapshot ? snapshot: imageSrc}
-                alt="Snapshot"
-                style={{ maxWidth: "100%", maxHeight: "60vh" }}
-              />
+              {/* Левая колонка: картинка по центру */}
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                flex="1"
+              >
+                <img
+                  src={snapshot ? snapshot : imageSrc}
+                  alt="Snapshot"
+                  style={{ maxWidth: "100%", maxHeight: "60vh" }}
+                />
+              </Box>
+
+              {/* Правая колонка: TelemetryControl вверху справа */}
               {moveMap && (
-                <TelemetryControl moveMap={moveMap} onControl={handleTelemetryControl} object_id={props.object_id??null} />
+                <Box
+                  display="flex"
+                  justifyContent="flex-end"
+                  alignItems="flex-start"
+                  p={1}
+                  width="150px" 
+                >
+                  <TelemetryControl
+                    moveMap={moveMap}
+                    onControl={handleTelemetryControl}
+                    object_id={props.object_id ?? null}
+                  />
+                </Box>
               )}
-
-
             </Box>
           ) : (
             <Typography>No image available</Typography>
           )}
         </DialogContent>
+
         <DialogActions>
           <Button
             onClick={() => props.object_id && refreshSnapshot(props.object_id)}

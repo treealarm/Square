@@ -280,10 +280,11 @@ namespace AASubService
         };
         param.CurVal.Map.Values.Add(new Dictionary<string, string>()
         {
-          { "up", "1" },
-          { "down", "1" },
-          { "left", "1" },
-          { "right", "1" }
+          { "pan", "0" },
+          { "tilt", "0" },
+          { "speed", "1" },
+          { "zoom", "0" },
+          { "move_type", "relative" }
         });
         action.Parameters.Add(param);
         response.ActionsDescr.Add(action);
@@ -463,8 +464,8 @@ namespace AASubService
       if (directions == null || directions.Count == 0)
         return;
 
-      float panTiltX = 0f;
-      float panTiltY = 0f;
+      float pan = 0f;
+      float tilt = 0f;
       float zoom = 0f;
       string move_type = "relative";
 
@@ -482,23 +483,14 @@ namespace AASubService
 
         switch (key)
         {
-          case "up":
-            panTiltY = ParseOrDefault(value);
+          case "tilt":
+            tilt = ParseOrDefault(value);
             break;
-          case "down":
-            panTiltY = -ParseOrDefault(value);
+          case "pan":
+            pan = ParseOrDefault(value);
             break;
-          case "left":
-            panTiltX = -ParseOrDefault(value);
-            break;
-          case "right":
-            panTiltX = ParseOrDefault(value);
-            break;
-          case "zoom_in":
+          case "zoom":
             zoom = ParseOrDefault(value);
-            break;
-          case "zoom_out":
-            zoom = -ParseOrDefault(value);
             break;
           case "move_type":
             move_type = value;
@@ -512,15 +504,15 @@ namespace AASubService
         var profiles = await camera.GetProfiles();
         if (move_type == "relative")
         {
-          await ptz.RelativeMoveAsync(profiles?.FirstOrDefault() ?? "", panTiltX, panTiltY, zoom);
+          await ptz.RelativeMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
         }          
         else if(move_type == "absolute")
         {
-          await ptz.AbsoluteMoveAsync(profiles?.FirstOrDefault() ?? "", panTiltX, panTiltY, zoom);
+          await ptz.AbsoluteMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
         }
         else
         {
-          await ptz.ContinuousMoveAsync(profiles?.FirstOrDefault() ?? "", panTiltX, panTiltY, zoom);
+          await ptz.ContinuousMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
         }
         //await Task.Delay(100, token);
         //await ptz.StopAsync(profiles?.FirstOrDefault() ?? "", true, true);
