@@ -45,9 +45,9 @@ namespace DbLayer
       //services.AddSingleton<IEventsService, EventsService>();
 
 
-      services.AddSingleton<ValuesService>();
-      services.AddSingleton<IValuesService>(provider => provider.GetRequiredService<ValuesService>());
-      services.AddSingleton<IValuesServiceInternal>(provider => provider.GetRequiredService<ValuesService>());
+      services.AddScoped<ValuesService>();
+      services.AddScoped<IValuesService>(provider => provider.GetRequiredService<ValuesService>());
+      services.AddScoped<IValuesServiceInternal>(provider => provider.GetRequiredService<ValuesService>());
 
       services.AddScoped<IntegroService>();
       services.AddScoped<IIntegroService>(provider => provider.GetRequiredService<IntegroService>());

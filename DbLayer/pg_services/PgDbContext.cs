@@ -18,6 +18,8 @@ namespace DbLayer
     public DbSet<DBActionExe> Actions { get; set; }
     public DbSet<DBActionExeResult> ActionResults { get; set; }
 
+    public DbSet<DBValue> Values { get; set; }
+
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings):base(options) 
@@ -28,6 +30,18 @@ namespace DbLayer
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
+
+      //////////////////////db_values start////////////
+      modelBuilder.Entity<DBValue>(entity =>
+      {
+        entity.ToTable("db_values");
+
+        entity.HasKey(e => e.id); // ✅ правильный ключ — id (наследуется от BasePgEntity)
+
+        entity.Property(e => e.owner_id).IsRequired();
+        entity.Property(e => e.name).IsRequired();
+        entity.Property(e => e.value).HasColumnType("jsonb");
+      });
 
       //////////////////////integro_types start////////////
       modelBuilder.Entity<DBIntegroType>(entity =>

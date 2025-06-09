@@ -8,11 +8,11 @@ apps:
     appPort: 5000
     appDirPath: ./leafletalarms/
     command: ["dotnet", "run"]
-  # - appDirPath: ./grpctracksclient/
-  #   appID: grpctracksclient
-  #   appProtocol: grpc
-  #   appPort: 20007
-  #   command: ["dotnet", "run"]
+  - appDirPath: ./grpctracksclient/
+    appID: grpctracksclient
+    appProtocol: grpc
+    appPort: 20007
+    command: ["dotnet", "run"]
   - appID: blinkservice
     appProtocol: grpc
     appDirPath: ./blinkservice/

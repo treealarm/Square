@@ -1,15 +1,14 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
+﻿using System.Text.Json;
+using System;
 
 namespace DbLayer.Models
 {
-  internal record DBValue : BaseEntity
+  internal record DBValue : BasePgEntity
   {
+    public Guid owner_id { get; set; }
 
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string owner_id { get; set; }
     public string name { get; set; }
-    [BsonIgnoreIfNull]
-    public BsonValue value { get; set; }
+
+    public JsonDocument value { get; set; }
   }
 }

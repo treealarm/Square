@@ -7,3 +7,4 @@
 \i 'events.sql'
 \i 'integro.sql'
 \i 'actions.sql'
+\i 'db_values.sql'
