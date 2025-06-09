@@ -42,6 +42,21 @@ export const TelemetryControl: React.FC<TelemetryControlProps> = ({ moveMap, onC
     }, object_id);
   };
 
+  const handleStop = () => {
+    if (moveType === "continuous") {
+      onControl(
+        {
+          pan: "0",
+          tilt: "0",
+          zoom: "0",
+          move_type: "stop",
+          speed: "0",
+        },
+        object_id
+      );
+    }
+  };
+
   return (
     <Stack spacing={2} mt={1} width="100%">
         <Stack width="100%" spacing={2}>
@@ -74,26 +89,74 @@ export const TelemetryControl: React.FC<TelemetryControlProps> = ({ moveMap, onC
       </Stack>
 
       {moveType !== "absolute" && (
-        
-          <Stack width="100%" direction="row" spacing={2} justifyContent="center" alignItems="center">
-        {/* Пан/Тилт */}
+        <Stack width="100%" direction="row" spacing={2} justifyContent="center" alignItems="center">
+          {/* Пан/Тилт */}
           <Stack spacing={1} alignItems="center" width="100%">
-          <Button size="small" onClick={() => handleMove("tilt", step)}>↑</Button>
-          <Stack direction="row" spacing={1}>
-            <Button size="small" onClick={() => handleMove("pan", -step)}>←</Button>
-            <Button size="small" onClick={() => handleMove("pan", step)}>→</Button>
+            <Button
+              size="small"
+              onMouseDown={() => handleMove("tilt", step)}
+              onMouseUp={() => handleStop()}
+              onTouchStart={() => handleMove("tilt", step)}
+              onTouchEnd={() => handleStop()}
+            >
+              ↑
+            </Button>
+            <Stack direction="row" spacing={1}>
+              <Button
+                size="small"
+                onMouseDown={() => handleMove("pan", -step)}
+                onMouseUp={() => handleStop()}
+                onTouchStart={() => handleMove("pan", -step)}
+                onTouchEnd={() => handleStop()}
+              >
+                ←
+              </Button>
+              <Button
+                size="small"
+                onMouseDown={() => handleMove("pan", step)}
+                onMouseUp={() => handleStop()}
+                onTouchStart={() => handleMove("pan", step)}
+                onTouchEnd={() => handleStop()}
+              >
+                →
+              </Button>
+            </Stack>
+            <Button
+              size="small"
+              onMouseDown={() => handleMove("tilt", -step)}
+              onMouseUp={() => handleStop()}
+              onTouchStart={() => handleMove("tilt", -step)}
+              onTouchEnd={() => handleStop()}
+            >
+              ↓
+            </Button>
           </Stack>
-          <Button size="small" onClick={() => handleMove("tilt", -step)}>↓</Button>
-        </Stack>
 
-        {/* Зум вертикально */}
-        <Stack spacing={1}>
-          <Button size="small" onClick={() => handleMove("zoom", step)}>＋</Button>
-          <Button size="small" onClick={() => handleMove("zoom", -step)}>－</Button>
-        </Stack>
+          {/* Зум вертикально */}
+          <Stack spacing={1}>
+            <Button
+              size="small"
+              onMouseDown={() => handleMove("zoom", step)}
+              onMouseUp={() => handleStop()}
+              onTouchStart={() => handleMove("zoom", step)}
+              onTouchEnd={() => handleStop()}
+            >
+              ＋
+            </Button>
+            <Button
+              size="small"
+              onMouseDown={() => handleMove("zoom", -step)}
+              onMouseUp={() => handleStop()}
+              onTouchStart={() => handleMove("zoom", -step)}
+              onTouchEnd={() => handleStop()}
+            >
+              －
+            </Button>
           </Stack>
-      
-        )}
+        </Stack>
+      )}
+
+
       {/* Absolute inputs */}
       {moveType === "absolute" && (
         

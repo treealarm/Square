@@ -146,7 +146,7 @@ namespace AASubService
             Console.WriteLine(ex.ToString());
           }         
         }
-        await Task.Delay(5000);
+        await Task.Delay(30000, cancellationToken.Token);
       }
     }
 
@@ -510,9 +510,13 @@ namespace AASubService
         {
           await ptz.AbsoluteMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
         }
-        else
+        else if (move_type == "continuous")
         {
           await ptz.ContinuousMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
+        }
+        else
+        {
+          await ptz.StopAsync(profiles?.FirstOrDefault() ?? "");
         }
         //await Task.Delay(100, token);
         //await ptz.StopAsync(profiles?.FirstOrDefault() ?? "", true, true);
