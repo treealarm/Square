@@ -29,9 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AASubService", "AASubServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageLib", "ImageLib\ImageLib.csproj", "{BA6AE1EC-8933-41CD-AEC5-4F7227ED0910}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnvifLib", "OnvifLib\OnvifLib.csproj", "{11BD7722-2B65-41BD-9DC9-2988B4AEBE42}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationUtilsLib", "IntegrationUtilsLib\IntegrationUtilsLib.csproj", "{5BA40F83-215C-4A33-B16C-AB7A39633339}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationUtilsLib", "IntegrationUtilsLib\IntegrationUtilsLib.csproj", "{5BA40F83-215C-4A33-B16C-AB7A39633339}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,18 +91,14 @@ Global
 		{BA6AE1EC-8933-41CD-AEC5-4F7227ED0910}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA6AE1EC-8933-41CD-AEC5-4F7227ED0910}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA6AE1EC-8933-41CD-AEC5-4F7227ED0910}.Release|Any CPU.Build.0 = Release|Any CPU
-		{11BD7722-2B65-41BD-9DC9-2988B4AEBE42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11BD7722-2B65-41BD-9DC9-2988B4AEBE42}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11BD7722-2B65-41BD-9DC9-2988B4AEBE42}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11BD7722-2B65-41BD-9DC9-2988B4AEBE42}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Debug|Any CPU.ActiveCfg = Debug
-		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Debug|Any CPU.Build.0 = Debug
-		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.ActiveCfg = Release
-		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.Build.0 = Release
 		{5BA40F83-215C-4A33-B16C-AB7A39633339}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5BA40F83-215C-4A33-B16C-AB7A39633339}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BA40F83-215C-4A33-B16C-AB7A39633339}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BA40F83-215C-4A33-B16C-AB7A39633339}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Debug|Any CPU.ActiveCfg = Debug
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Debug|Any CPU.Build.0 = Debug
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.ActiveCfg = Release
+		{D1786E2B-CAA0-4B2D-A974-9845EB9E420F}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
