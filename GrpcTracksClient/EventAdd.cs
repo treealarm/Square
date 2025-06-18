@@ -72,11 +72,11 @@ namespace GrpcTracksClient
 
           if (i % 2 == 0)
           {
-            newEv.ObjectId = "64270c097a71c88757377dcf";
+            newEv.ObjectId = ObjectIds.ObjectId1;
           }
           else
           {
-            newEv.ObjectId = "64270c0c7a71c8875738aaa6";
+            newEv.ObjectId = ObjectIds.ObjectId2;
           }
           events.Events.Add(newEv);
         }

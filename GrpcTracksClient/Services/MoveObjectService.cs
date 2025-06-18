@@ -228,7 +228,7 @@ namespace GrpcTracksClient.Services
       var fig = new ProtoFig();
       figs.Figs.Add(fig);
 
-      fig.Id = "6423e54d513bfe83e9d59794";
+      fig.Id = ObjectIds.ObjectId2;
       fig.Name = "Triangle";
       fig.Geometry = new ProtoGeometry();
       fig.Geometry.Type = "Polygon";
@@ -312,7 +312,7 @@ namespace GrpcTracksClient.Services
       var fig = new ProtoFig();
       figs.Figs.Add(fig);
 
-      fig.Id = "6423e54d513bfe83e9d59793";
+      fig.Id = ObjectIds.ObjectId1;
       fig.Name = "Test";
       fig.Geometry = new ProtoGeometry();
       fig.Geometry.Type = "Polygon";

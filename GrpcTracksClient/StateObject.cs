@@ -20,11 +20,11 @@ namespace GrpcTracksClient
 
       for (int i = 0; i < 100; i++)
       {
-        state.Id = "64270c097a71c88757377dcf";
+        state.Id = ObjectIds.ObjectId1;
 
         if (DateTime.UtcNow.Microsecond % 2 == 0)
         {
-          state.Id = "64270c0c7a71c8875738aaa6";
+          state.Id = ObjectIds.ObjectId2;
         }
 
         state.States.Clear();

@@ -35,43 +35,62 @@ namespace DbLayer.Services
 
     public async Task<long> UpdateStatesAsync(List<ObjectStateDTO> newObjs)
     {
+      if (newObjs.Count == 0)
+        return 0;
+ 
+      var idsToUpdate = newObjs
+          .Select(x => Utils.ConvertObjectIdToGuid(x.id))
+          .ToList();
+
+      var existing = await _dbContext.ObjectStates
+          .Include(x => x.states)
+          .Where(x => idsToUpdate.Contains(x.id))
+          .ToListAsync();
+
+      var existingDict = existing.ToDictionary(x => x.id);
+
+      var toUpdate = new List<DBObjectState>();
+      var toAdd = new List<DBObjectState>();
+
       foreach (var dto in newObjs)
       {
         var objId = Utils.ConvertObjectIdToGuid(dto.id) ?? Guid.Empty;
 
-        var existing = await _dbContext.ObjectStates
-          .Include(x => x.states)
-          .FirstOrDefaultAsync(x => x.id == objId);
-
-        if (existing != null)
+        var states = dto.states.Select(s => new DBObjectStateValue
         {
-          existing.timestamp = DateTime.UtcNow;
-          existing.states.Clear();
-          existing.states.AddRange(dto.states.Select(s => new DBObjectStateValue
-          {
-            state = s,
-            object_id = objId
-          }));
+          state = s,
+          object_id = objId
+        }).ToList();
+
+        if (existingDict.TryGetValue(objId, out var existingEntity))
+        {
+          existingEntity.states.Clear();
+          existingEntity.timestamp = DateTime.UtcNow;
+
+          // Удаляем старые states, заменяем новыми
+          //_dbContext.ObjectStateValues.RemoveRange(existingEntity.states);
+          existingEntity.states.AddRange(states);
+
+          toUpdate.Add(existingEntity);
         }
         else
         {
-          var newState = new DBObjectState
+          var newEntity = new DBObjectState
           {
             id = objId,
             timestamp = DateTime.UtcNow,
-            states = dto.states.Select(s => new DBObjectStateValue
-            {
-              state = s,
-              object_id = objId
-            }).ToList()
+            states = states
           };
 
-          _dbContext.ObjectStates.Add(newState);
+          toAdd.Add(newEntity);
         }
       }
 
+      _dbContext.ObjectStates.UpdateRange(toUpdate);
+      await _dbContext.ObjectStates.AddRangeAsync(toAdd);
       return await _dbContext.SaveChangesAsync();
     }
+
 
     public async Task<long> UpdateStateDescrsAsync(List<ObjectStateDescriptionDTO> newObjs)
     {

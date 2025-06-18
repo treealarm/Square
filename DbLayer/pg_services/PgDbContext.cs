@@ -21,7 +21,6 @@ namespace DbLayer
     public DbSet<DBValue> Values { get; set; }
 
     public DbSet<DBObjectState> ObjectStates { get; set; }
-    public DbSet<DBObjectStateValue> ObjectStateValues { get; set; }
     public DbSet<DBObjectStateDescription> ObjectStateDescriptions { get; set; }
     public DbSet<DBAlarmState> AlarmStates { get; set; }
 
