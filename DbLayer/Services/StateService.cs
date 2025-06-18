@@ -348,10 +348,6 @@ namespace DbLayer.Services
       }      
     }
 
-    //Task<Dictionary<string, ObjectStateDescriptionDTO>> IStateService.GetAlarmStatesDescr(List<string> statesFilter)
-    //{
-    //  throw new NotImplementedException();
-    //}
     public async Task<Dictionary<string, ObjectStateDescriptionDTO>> GetAlarmStatesDescr(List<string> states)
     {
       // TODO make states unique.
