@@ -1,77 +1,76 @@
 ﻿using Domain;
 
-namespace LeafletAlarms.Services
+public class InitHostedService : IHostedService, IDisposable
 {
-  public class InitHostedService : IHostedService, IDisposable
+  private readonly ILogger<InitHostedService> _logger;
+  private readonly IServiceProvider _serviceProvider;
+  private Task _backgroundTask;
+  private CancellationTokenSource _cts;
+
+  public InitHostedService(
+    ILogger<InitHostedService> logger,
+    IServiceProvider serviceProvider)
   {
-    private readonly ILogger<InitHostedService> _logger;
-    private Task _timer;
-    private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
-    private ILevelService _levelService;
-    private IStateService _stateService;
-    public InitHostedService(
-      ILogger<InitHostedService> logger,
-      ILevelService lService,
-      IStateService sService
-     )
+    _logger = logger;
+    _serviceProvider = serviceProvider;
+  }
+
+  public async Task StartAsync(CancellationToken cancellationToken)
+  {
+    _logger.LogInformation("InitHostedService is starting...");
+
+    // Инициализация сервисов в скоупе
+    using (var scope = _serviceProvider.CreateScope())
     {
-      _stateService = sService;
-      _levelService = lService;
-      _logger = logger;
+      var levelService = scope.ServiceProvider.GetRequiredService<ILevelService>();
+      var stateService = scope.ServiceProvider.GetRequiredService<IStateService>();
+
+      await levelService.Init();
+      await stateService.Init();
     }
 
-    // 
-    public async Task StartAsync(CancellationToken stoppingToken)
-    {
-      _logger.LogInformation("Timed Hosted Service running.");
+    // Запускаем фоновую задачу
+    _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+    _backgroundTask = Task.Run(() => DoWorkAsync(_cts.Token), _cts.Token);
 
-      _timer = new Task(() => DoWork(), _cancellationToken.Token);
-      _timer.Start();
-      await Task.Delay(0);
-    }
+    _logger.LogInformation("InitHostedService started.");
+  }
 
-    private async void DoWork()
+  public Task StopAsync(CancellationToken cancellationToken)
+  {
+    _logger.LogInformation("InitHostedService is stopping...");
+
+    _cts?.Cancel();
+
+    return _backgroundTask ?? Task.CompletedTask;
+  }
+
+  private async Task DoWorkAsync(CancellationToken token)
+  {
+    var curDate = DateTime.UtcNow;
+
+    while (!token.IsCancellationRequested)
     {
-      _logger.LogInformation(
-              "Timed Hosted Service is working.");
-      try
+      await Task.Delay(1000, token);
+
+      if (DateTime.UtcNow - curDate > TimeSpan.FromMinutes(1))
       {
-        await _levelService.Init();
-        await _stateService.Init();
+        curDate = DateTime.UtcNow;
+        _logger.LogInformation("GC Collect");
+        GC.Collect();
       }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-      var curDate = DateTime.Now;
 
-      while (!_cancellationToken.IsCancellationRequested)
-      {
-        await Task.Delay(1000);
-
-        if (DateTime.Now - curDate > TimeSpan.FromMinutes(1))
-        {
-          curDate = DateTime.Now;
-          Console.WriteLine($"GC Collect");
-          GC.Collect();
-        }
-
-
-        continue;
-      }
+      // пример: можно вызвать сервисы снова, если потребуется
+      /*
+      using var scope = _serviceProvider.CreateScope();
+      var someScopedService = scope.ServiceProvider.GetRequiredService<ISomeScopedService>();
+      await someScopedService.DoPeriodicCheck();
+      */
     }
+  }
 
-    public async Task StopAsync(CancellationToken stoppingToken)
-    {
-      _cancellationToken.Cancel();
-      _logger.LogInformation("Timed Hosted Service is stopping.");
-      _timer?.Wait();
-      await Task.Delay(0);
-    }
-
-    public void Dispose()
-    {
-      _timer?.Dispose();
-    }
+  public void Dispose()
+  {
+    _cts?.Dispose();
   }
 }

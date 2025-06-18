@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS public.action_executions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   object_id UUID NOT NULL,
   name TEXT NOT NULL,
-  "timestamp" timestamp without time zone
+  "timestamp" timestamp with time zone
 );
 
 CREATE TABLE IF NOT EXISTS public.action_parameters (

@@ -54,8 +54,8 @@ namespace LeafletAlarms
 
       services.AddSingleton<RightsCheckerService>();
 
-      services.AddSingleton<WebSockListService>(); // We must explicitly register Foo
-      services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>()); // Forward requests to Foo
+      services.AddSingleton<WebSockListService>();
+      services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>());
       
 
       services.AddScoped<GRPCServiceProxy>();

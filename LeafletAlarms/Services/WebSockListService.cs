@@ -7,26 +7,17 @@ namespace LeafletAlarms.Services
 {
   public class WebSockListService : IWebSockList
   {
-    private IStateService _stateService;
-    private IGeoService _geoService;
-    private ILevelService _levelService;
-    private IMapService _mapService;
+    private IServiceProvider _serviceProvider;
     private ISubService _sub;
     private IPubService _pub;
 
     public WebSockListService(
-      IStateService stateService,
-      IGeoService geoService,
-      ILevelService levelService,
-      IMapService mapService,
+      IServiceProvider provider,
       ISubService sub,
       IPubService pub
     )
     {
-      _stateService = stateService;
-      _geoService = geoService;
-      _levelService = levelService;
-      _mapService = mapService;
+      _serviceProvider = provider;
       _sub = sub;
       _pub = pub;
 
@@ -49,15 +40,21 @@ namespace LeafletAlarms.Services
       new ConcurrentDictionary<string, StateWebSocket>();
     public async Task PushAsync(object context, WebSocket webSocket)
     {
+      using var scope = _serviceProvider.CreateScope();
+      var stateService = scope.ServiceProvider.GetRequiredService<IStateService>();
+      var geoService = scope.ServiceProvider.GetRequiredService<IGeoService>();
+      var levelService = scope.ServiceProvider.GetRequiredService<ILevelService>();
+      var mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
+
       var con = context as HttpContext;
 
       var stateWs = new StateWebSocket(
           con,
           webSocket,
-          _geoService,
-          _levelService,
-          _stateService,
-          _mapService,
+          geoService,
+          levelService,
+          stateService,
+          mapService,
           _pub
       );
 

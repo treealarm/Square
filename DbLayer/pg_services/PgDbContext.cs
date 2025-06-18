@@ -20,6 +20,12 @@ namespace DbLayer
 
     public DbSet<DBValue> Values { get; set; }
 
+    public DbSet<DBObjectState> ObjectStates { get; set; }
+    public DbSet<DBObjectStateValue> ObjectStateValues { get; set; }
+    public DbSet<DBObjectStateDescription> ObjectStateDescriptions { get; set; }
+    public DbSet<DBAlarmState> AlarmStates { get; set; }
+
+
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
       IOptions<MapDatabaseSettings> geoStoreDatabaseSettings):base(options) 
@@ -31,7 +37,14 @@ namespace DbLayer
     {
       base.OnModelCreating(modelBuilder);
 
-      //////////////////////db_values start////////////
+      ConfigureValues(modelBuilder);
+      ConfigureIntegro(modelBuilder);
+      ConfigureEvents(modelBuilder);
+      ConfigureActions(modelBuilder);
+      ConfigureStates(modelBuilder); // добавляем states
+    }
+    private void ConfigureValues(ModelBuilder modelBuilder) 
+    {
       modelBuilder.Entity<DBValue>(entity =>
       {
         entity.ToTable("db_values");
@@ -42,8 +55,11 @@ namespace DbLayer
         entity.Property(e => e.name).IsRequired();
         entity.Property(e => e.value).HasColumnType("jsonb");
       });
+    }
 
-      //////////////////////integro_types start////////////
+
+    private void ConfigureIntegro(ModelBuilder modelBuilder) 
+    {
       modelBuilder.Entity<DBIntegroType>(entity =>
       {
         entity.HasKey(e => e.i_type);
@@ -66,8 +82,10 @@ namespace DbLayer
       {
         entity.ToTable("integro");
       });
+    }
 
-      // Настройка таблицы DBEvent, связанной с таблицей events
+    private void ConfigureEvents(ModelBuilder modelBuilder) 
+    {
       modelBuilder.Entity<DBEvent>(entity =>
       {
         entity.ToTable("events"); // Указываем имя таблицы для DBEvent
@@ -84,9 +102,10 @@ namespace DbLayer
       {
         entity.ToTable("event_props"); // Указываем имя таблицы для DBObjExtraProperty
       });
+    }
 
-      ///Actions:
-      // Таблица action_executions
+    private void ConfigureActions(ModelBuilder modelBuilder) 
+    {
       modelBuilder.Entity<DBActionExe>(entity =>
       {
         entity.ToTable("action_executions");
@@ -117,6 +136,76 @@ namespace DbLayer
         entity.HasKey(e => e.id);
       });
     }
+
+    private void ConfigureStates(ModelBuilder modelBuilder)
+    {
+      // object_states
+      modelBuilder.Entity<DBObjectState>(entity =>
+      {
+        entity.ToTable("object_states");
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.timestamp)
+              .IsRequired()
+              .HasDefaultValueSql("now()");
+
+        entity.HasMany(e => e.states)
+              .WithOne()
+              .HasForeignKey(e => e.object_id)
+              .OnDelete(DeleteBehavior.Cascade);
+      });
+
+      // object_state_values
+      modelBuilder.Entity<DBObjectStateValue>(entity =>
+      {
+        entity.ToTable("object_state_values");
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.state)
+              .IsRequired();
+
+        entity.Property(e => e.object_id)
+              .IsRequired();
+
+        entity.HasIndex(e => e.object_id)
+              .HasDatabaseName("idx_object_state_values_object_id");
+      });
+
+      // object_state_descriptions
+      modelBuilder.Entity<DBObjectStateDescription>(entity =>
+      {
+        entity.ToTable("object_state_descriptions");
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.alarm)
+              .IsRequired()
+              .HasDefaultValue(false);
+
+        entity.Property(e => e.state)
+              .IsRequired();
+
+        entity.Property(e => e.state_descr);
+        entity.Property(e => e.state_color);
+
+        entity.HasIndex(e => new { e.state, e.alarm })
+              .HasDatabaseName("idx_state_descriptions_state_alarm");
+
+        entity.HasIndex(e => e.state)
+              .IsUnique(); // UNIQUE(state)
+      });
+
+      // alarm_states
+      modelBuilder.Entity<DBAlarmState>(entity =>
+      {
+        entity.ToTable("alarm_states");
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.alarm)
+              .IsRequired();
+      });
+    }
+
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       var your_username = Environment.GetEnvironmentVariable("POSTGRES_USER");

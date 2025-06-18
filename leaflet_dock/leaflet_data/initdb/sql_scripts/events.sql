@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.events (
     object_id uuid,
     event_name character varying,
     event_priority integer,
-    "timestamp" timestamp without time zone,
+    "timestamp" timestamp with time zone,
     id uuid DEFAULT gen_random_uuid()
 );
 

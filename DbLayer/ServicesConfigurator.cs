@@ -33,7 +33,7 @@ namespace DbLayer
       services.AddSingleton<ITrackService, TrackService>();
       services.AddSingleton<IRoutService, RoutService>();
       services.AddSingleton<ILevelService, LevelService>();
-      services.AddSingleton<IStateService, StateService>();
+      services.AddScoped<IStateService, StateService>();
 
       services.AddSingleton<IDiagramTypeService, DiagramTypeService>();
       services.AddSingleton<DiagramService>();
