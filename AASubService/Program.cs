@@ -66,17 +66,20 @@ _ = Task.Run(async () =>
       return;
     }
 
-    service.OnEventReceived += msg =>
+    service.OnEventReceived += msgs =>
     {
-      Console.WriteLine("=== Notification Received ===");
-      Console.WriteLine("Topic:");
-      foreach (var node in msg.Topic.Any)
+      foreach (var msg in msgs)
       {
-        Console.WriteLine(node.OuterXml);
-      }
-      Console.WriteLine("Message:");
-      Console.WriteLine(msg.Message.OuterXml);
-      Console.WriteLine("=============================");
+        Console.WriteLine("=== Notification Received ===");
+        Console.WriteLine("Topic:");
+        foreach (var node in msg.Topic.Any)
+        {
+          Console.WriteLine(node.OuterXml);
+        }
+        Console.WriteLine("Message:");
+        Console.WriteLine(msg.Message.OuterXml);
+        Console.WriteLine("=============================");
+      }      
     };
 
     await service.StartReceiving();

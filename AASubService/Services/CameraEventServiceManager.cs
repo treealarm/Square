@@ -1,4 +1,8 @@
-﻿using OnvifLib;
+﻿using AASubService.Events;
+using EventServiceReference1;
+using IntegrationUtilsLib;
+using LeafletAlarmsGrpc;
+using OnvifLib;
 using System.Collections.Concurrent;
 
 namespace AASubService.Services
@@ -21,11 +25,11 @@ namespace AASubService.Services
           return;
         }
 
-        service.OnEventReceived += msg =>
+        service.OnEventReceived += msgs =>
         {
-          Console.WriteLine($"[{cameraId}] Event received");
-          // логика обработки
+          _ = HandleEventAsync(msgs, camera, cameraId);
         };
+
 
         await service.StartReceiving();
 
@@ -61,6 +65,72 @@ namespace AASubService.Services
       }
 
       _activeServices.Clear();
+    }
+
+    async Task HandleEventAsync(NotificationMessageHolderType[] msgs, Camera camera, string cameraId)
+    {
+      try
+      {
+        var client = Utils.ClientBase.Client;
+
+        Console.WriteLine($"[{cameraId}] Event received");
+
+        if (client ==  null)
+        {
+          return;
+        }
+
+        // Получение изображения
+        var media = await camera.GetMediaService();
+        ImageResult? imageResult = null;
+
+        if (media != null)
+        {
+          imageResult = await media.GetImage(); // byte[]
+        }
+
+        UploadFileProto? protoUploadFile = null;
+
+        if (imageResult != null)
+        {
+          // Upload image only once for all events.
+          protoUploadFile = new UploadFileProto()
+          {
+            MainFolder = "events",
+            Path = DateTime.UtcNow.ToString("yyyyMMdd"),
+            FileName = Guid.NewGuid().ToString()
+          };
+
+          protoUploadFile.FileData = Google.Protobuf.ByteString.CopyFrom(imageResult.Data);
+          await client.UploadFileAsync(protoUploadFile);
+        }        
+
+        var events = new EventsProto();
+
+        foreach (var msg in msgs)
+        {
+          var eventProto = OnvifEventMapper.Map(msg, cameraId);
+
+          if (protoUploadFile != null && protoUploadFile.FileData?.Length > 0)
+          {
+            eventProto.ExtraProps.Add(new ProtoObjExtraProperty
+            {
+              PropName = "snapshot",
+              StrVal = Path.Combine(
+                protoUploadFile.MainFolder, 
+                protoUploadFile.Path, 
+                protoUploadFile.FileName),
+              VisualType = "image_fs"
+            });
+          }
+          events.Events.Add(eventProto);
+        }
+        await client!.UpdateEventsAsync(events);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"[{cameraId}] Error in event forwarding: {ex.Message}");
+      }
     }
   }
 
