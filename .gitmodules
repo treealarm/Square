@@ -1,0 +1,3 @@
+[submodule "OnvifLib"]
+	path = OnvifLib
+	url = git@github.com:treealarm/OnvifLib.git
