@@ -22,6 +22,12 @@ jobs:
         dotnet-version: 8.0.x
     - name: Init submodules
       run: git submodule update --init --recursive
+    - name: Checkout repo (с HTTPS подмодулями)
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Restore dependencies
       run: dotnet restore LeafletAlarms.sln
     - name: Build
