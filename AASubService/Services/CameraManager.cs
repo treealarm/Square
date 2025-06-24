@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using AASubService.Services;
+using Common;
 using Domain;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -18,6 +19,7 @@ namespace AASubService
     private ConcurrentDictionary<string, Camera> _cameras = new ConcurrentDictionary<string, Camera>();
     private readonly ISubService _sub;
     private readonly ActionExecutionManager _manager = new();
+    private readonly CameraEventServiceManager _cameraEventServiceManager;
 
     const string IpRangeParam = "ip_range";
     const string Discover = "discover";
@@ -26,9 +28,10 @@ namespace AASubService
     const string GetSnapshot = "get_snapshot";
     const string CredentialListParam = "credential_list";
     const string PortListParam = "port_list";
-    public CameraManager(ISubService sub)
+    public CameraManager(ISubService sub, CameraEventServiceManager cameraEventServiceManager)
     {
       _sub = sub;
+      _cameraEventServiceManager = cameraEventServiceManager;
     }
 
     public async ValueTask DisposeAsync()
@@ -41,6 +44,7 @@ namespace AASubService
     private async Task InitCameras()
     {
       _cameras.Clear();
+      _cameraEventServiceManager.StopAll();
 
       var propsById = _sync!.ObjProps.Values
         .Where(prop => prop != null)
@@ -68,6 +72,7 @@ namespace AASubService
         if (cam == null)
         { continue; }
         _cameras[prop.Key] = cam;
+        await _cameraEventServiceManager.AddCameraAsync(prop.Key, cam);
       }
     }
 

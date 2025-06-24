@@ -1,5 +1,6 @@
 ﻿
 using AASubService;
+using AASubService.Services;
 using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
 using GrpcDaprLib;
@@ -40,6 +41,7 @@ builder.Services.AddHostedService<SubHostedService>();
 builder.Services.AddHostedService<TestPubHostedService>();
 
 builder.Services.AddSingleton<CameraManager>();
+builder.Services.AddSingleton<CameraEventServiceManager>();
 builder.Services.AddSingleton<ICameraManager>(sp => sp.GetRequiredService<CameraManager>());
 builder.Services.AddSingleton<IObjectActions>(sp => sp.GetRequiredService<CameraManager>());
 
@@ -48,11 +50,14 @@ builder.Services.AddHostedService<CamerasHostedService>();
 var app = builder.Build();
 
 app.MapGrpcService<ActionsServiceImpl>();
+
 _ = Task.Run(async () =>
 {
   try
   {
-    var camera = await Camera.CreateAsync("172.16.254.103", 80, "admin", "en123456");
+    //http://172.16.254.136/onvif/services
+    //var camera = await Camera.CreateAsync("172.16.254.103", 80, "admin", "en123456");
+    var camera = await Camera.CreateAsync("172.16.254.136", 80, "root", "root");
     var service = await camera.GetEventService();
 
     if (service == null)
