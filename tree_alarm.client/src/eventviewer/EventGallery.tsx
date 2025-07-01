@@ -3,26 +3,27 @@
 import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
-import { DeepCopy, IEventDTO } from "../store/Marker";
+import { IEventDTO } from "../store/Marker";
 import { DoFetch } from "../store/Fetcher";
 import { ApiFileSystemRootString } from "../store/constants";
-import { Box, Card, CardMedia, Grid, Typography } from "@mui/material";
-import { Tooltip } from "@mui/material";
+import { Box, Card, CardMedia, Grid, Typography, Tooltip } from "@mui/material";
 
-export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect: (event: IEventDTO|null) => void }) {
+export function EventGallery({ onSelect }: { onSelect: (event: IEventDTO | null) => void }) {
   const events: IEventDTO[] = useSelector(
     (state: ApplicationState) => state?.eventsStates?.events
   ) ?? [];
 
   const [images, setImages] = useState<Record<string, string>>({});
-  const [cols, setCols] = useState(3);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Количество колонок задаём явно
+  const cols = 3;
+
   useEffect(() => {
-    const loadedImages = new Set(Object.keys(images)); // Используем Set для быстрого поиска уже загруженных картинок
+    const loadedImages = new Set(Object.keys(images));
 
     const fetchImage = async (path: string) => {
-      if (loadedImages.has(path)) return; // Пропускаем загрузку, если уже загружено
+      if (loadedImages.has(path)) return;
 
       try {
         const res = await DoFetch(ApiFileSystemRootString + "/GetFile/" + path);
@@ -42,26 +43,10 @@ export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect: 
         }
       });
     });
-  }, [events]); // Убрали images из зависимостей, чтобы избежать зацикливания
+  }, [events]);
 
-
-  useEffect(() => {
-    const updateCols = () => {
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const maxCardHeight = containerWidth / (16 / 9) / rows;
-        const estimatedCols = Math.floor(containerWidth / (maxCardHeight * (16 / 9)));
-
-        setCols(Math.max(estimatedCols, 1));
-      }
-    };
-
-    updateCols();
-    window.addEventListener("resize", updateCols);
-    return () => window.removeEventListener("resize", updateCols);
-  }, [rows]);
-
-  let imageItems = events.flatMap((event) =>
+  // Собираем список картинок
+  const imageItems = events.flatMap((event) =>
     event.extra_props
       ?.filter((item) => item.visual_type === "image_fs")
       .map((item) => ({
@@ -70,14 +55,8 @@ export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect: 
       })) || []
   );
 
-  const maxItems = rows * cols;
-  while (imageItems.length < maxItems) {
-    imageItems.push(null);
-  }
-  imageItems = imageItems.slice(0, maxItems);
-
   return (
-    <Box ref={containerRef} sx={{ width: "99%", overflow: "auto", p: 2 }}>
+    <Box ref={containerRef} sx={{ width: "99%", height: "80vh", overflowY: "auto", p: 2 }}>
       <Grid container spacing={2} columns={cols}>
         {imageItems.map((item, index) => (
           <Grid item key={index} xs={1}>
@@ -88,41 +67,37 @@ export function EventGallery({ rows = 3, onSelect }: { rows?: number; onSelect: 
                 alignItems: "center",
                 overflow: "hidden",
                 aspectRatio: "16/9",
-                cursor: item ? "pointer" : "default",
-                border: item ? "2px solid transparent" : "2px dashed rgba(0,0,0,0.2)",
-                "&:hover": item ? { border: "2px solid #1976d2" } : {},
+                cursor: "pointer",
+                border: "2px solid transparent",
+                "&:hover": { border: "2px solid #1976d2" },
               }}
               onClick={() => item && onSelect?.(item.event)}
             >
-              {item ? (
-                <Tooltip
-                  arrow
-                  title={
-                    <div>
-                      {item.event.extra_props
-                        ?.filter((prop) => prop !== item.prop) // Исключаем основное изображение
-                        .map((prop, index) => (
-                          <Typography key={index} variant="body2">
-                            {prop.prop_name}: {prop.str_val}
-                          </Typography>
-                        )) || <Typography variant="body2">Нет дополнительных данных</Typography>}
-                    </div>
-                  }
-                >
-                  <CardMedia
-                    component="img"
-                    image={images[item.prop.str_val] || "svg/black_square.svg"}
-                    alt={item.prop.prop_name}
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "contain",
-                    }}
-                  />
-                </Tooltip>
-              ) : (
-                <Box sx={{ width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.05)" }} />
-              )}
+              <Tooltip
+                arrow
+                title={
+                  <div>
+                    {item.event.extra_props
+                      ?.filter((prop) => prop !== item.prop)
+                      .map((prop, idx) => (
+                        <Typography key={idx} variant="body2">
+                          {prop.prop_name}: {prop.str_val}
+                        </Typography>
+                      )) || <Typography variant="body2">Нет доп. данных</Typography>}
+                  </div>
+                }
+              >
+                <CardMedia
+                  component="img"
+                  image={images[item.prop.str_val] || "svg/black_square.svg"}
+                  alt={item.prop.prop_name}
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+              </Tooltip>
             </Card>
           </Grid>
         ))}
