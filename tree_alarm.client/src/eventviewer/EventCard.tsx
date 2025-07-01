@@ -44,14 +44,14 @@ export function EventCard({
           setHasLoaded(true);
         }
       } catch (error) {
-        console.error("Ошибка загрузки:", error);
+        console.error("Load error:", error);
       }
     };
 
     if (cardRef.current) {
       observer = new IntersectionObserver(onIntersect, {
         root: null,
-        rootMargin: "100px", // можно подстраивать, чтоб загружать чуть заранее
+        rootMargin: "100px",
         threshold: 0.1,
       });
       observer.observe(cardRef.current);
@@ -110,7 +110,7 @@ export function EventCard({
                 <Typography key={index} variant="body2">
                   {prop.prop_name}: {prop.str_val}
                 </Typography>
-              )) || <Typography variant="body2">Нет дополнительных данных</Typography>}
+              )) || <Typography variant="body2">No data</Typography>}
           </div>
         }
       >
