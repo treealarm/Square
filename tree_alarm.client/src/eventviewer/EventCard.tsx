@@ -1,30 +1,57 @@
-import { useEffect, useRef, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+import { useEffect, useState } from "react";
 import { Card, CardMedia, Typography, Tooltip, Box } from "@mui/material";
-import { useIntersectionObserver } from "./useIntersectionObserver"; // путь к хуку
+import { IEventDTO } from "../store/Marker";
+import { DoFetch } from "../store/Fetcher";
+import { ApiFileSystemRootString } from "../store/constants";
 
-export function EventCard({ item, onSelect, images, setImages }: any) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isVisible = useIntersectionObserver(ref);
+export function EventCard({
+  item,
+  onSelect,
+}: {
+  item: any;
+  onSelect: (event: IEventDTO | null) => void;
+  }) {
+
+  const [imageSrc, setImageSrc] = useState<string>("svg/black_square.svg");
 
   useEffect(() => {
-    const loadImage = async () => {
-      if (!isVisible || images[item.prop.str_val]) return;
+    let isMounted = true;
 
+    const loadImage = async () => {
       try {
-        const res = await fetch("/api/FileSystem/GetFile/" + item.prop.str_val);
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        setImages((prev: any) => ({ ...prev, [item.prop.str_val]: url }));
+        console.log("loadImage", item.prop.str_val);
+        const res = await DoFetch(ApiFileSystemRootString + "/GetFile/" + item.prop.str_val);
+        const imageBlob = await res.blob();
+        const imageObjectURL = URL.createObjectURL(imageBlob);
+        if (isMounted)
+          setImageSrc(imageObjectURL);
       } catch (error) {
-        console.error("Ошибка загрузки:", error);
+        console.error("Load error:", error);
       }
     };
 
     loadImage();
-  }, [isVisible, item.prop.str_val, images, setImages]);
+
+    return () => {
+      isMounted = false;
+      // Можно добавить освобождение URL.createObjectURL
+      if (imageSrc.startsWith("blob:")) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [item?.prop?.str_val]);
+
+  useEffect(() => {
+    // This function will be called only once, after the component mounts
+    console.log('Component is now visible for the first time!');
+    // Perform any setup or data fetching here
+  }, []);
 
   return (
-    <Box ref={ref}>
+    <Box>
       <Card
         sx={{
           display: "flex",
@@ -36,7 +63,7 @@ export function EventCard({ item, onSelect, images, setImages }: any) {
           border: "2px solid transparent",
           "&:hover": { border: "2px solid #1976d2" },
         }}
-        onClick={() => item && onSelect?.(item.event)}
+        onClick={() => onSelect?.(item.event)}
       >
         <Tooltip
           arrow
@@ -54,7 +81,7 @@ export function EventCard({ item, onSelect, images, setImages }: any) {
         >
           <CardMedia
             component="img"
-            image={images[item.prop.str_val] || "svg/black_square.svg"}
+            image={imageSrc || "svg/black_square.svg"}
             alt={item.prop.prop_name}
             sx={{
               width: "100%",
