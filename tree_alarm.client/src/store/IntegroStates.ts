@@ -229,6 +229,7 @@ const valuesSlice = createSlice({
       })
       .addCase(executeAction.rejected, (state, action) => {
         state.error = action.error.message || 'Error executing action';
+        console.log(state.error);
       })
       // childtypes
       .addCase(fetchObjectIntegroType.pending, (state) => {

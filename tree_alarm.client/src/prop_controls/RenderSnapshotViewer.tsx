@@ -27,7 +27,7 @@ import { useSelector } from "react-redux";
 
 export function renderSnapshotViewer(props: IControlSelector) {
   const [open, setOpen] = useState(false);
-  const [imageSrc, setImageSrc] = useState("");
+  const [imageSrc, setImageSrc] = useState(props.str_val);
   const [objectActions, setObjectActions] = useState<IActionDescrDTO[]>([]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -63,26 +63,35 @@ export function renderSnapshotViewer(props: IControlSelector) {
       .catch(() => setObjectActions([]));
   }, [open, props.object_id]);
 
-  // Обновляем картинку отдельно
   useEffect(() => {
     if (!open || !props.object_id) return;
 
-    const update = () => {
+    let cancelled = false;
+    setImageSrc(buildUrl());
+    const update = async () => {
+      if (cancelled) return;
+
       console.log("getSnapshot");
-      appDispatch(IntegroStore.fetchSnapshot(props.object_id!));
-      setImageSrc(buildUrl());
+
+      try {
+        await appDispatch(IntegroStore.fetchSnapshot(props.object_id!));
+        setImageSrc(buildUrl());
+      } catch (e) {
+        console.error("Failed to fetch snapshot", e);
+      }
+
+      if (!cancelled) {
+        setTimeout(update, 1000);
+      }
     };
 
     update();
-    intervalRef.current = setInterval(update, 1000);
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+      cancelled = true;
     };
-  }, [open, props.object_id]); // теперь нет objectActions и getSnapshot
+  }, [open, props.object_id]);
+
 
 
 
