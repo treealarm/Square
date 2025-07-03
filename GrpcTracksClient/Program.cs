@@ -44,7 +44,7 @@ var tasks = new List<Task>
 {
     Utils.RunTaskWithRetry(() => UpdateSADTracks.Move(), "UpdateSADTracks.Move", cancellationToken),
     Utils.RunTaskWithRetry(() => StateObject.Change(), "StateObject.Change", cancellationToken),
-    Utils.RunTaskWithRetry(() => EventAdd.Add(), "EventAdd.Add", cancellationToken),
+    Utils.RunTaskWithRetry(() => EventAdd.Add(cancellationToken), "EventAdd.Add", cancellationToken),
     Utils.RunTaskWithRetry(() => DiagramUpdater.UploadDiagramsAsync(), "DiagramUpdater.UploadDiagramsAsync", cancellationToken)
 };
 

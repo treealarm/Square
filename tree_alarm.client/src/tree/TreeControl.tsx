@@ -25,6 +25,8 @@ import * as ObjPropsStore from '../store/ObjPropsStates';
 import { useAppDispatch } from "../store/configureStore";
 import { RequestedState } from '../store/TreeStates';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { createObjectsFromBrowserFile } from './createObjectsFromBrowserFile';
 
 export function TreeControl() {
   const appDispatch = useAppDispatch();
@@ -35,7 +37,7 @@ export function TreeControl() {
   const parentMarkerId = useSelector((state: ApplicationState) => state.treeStates?.requestedState?.parent_id);
   const requestedState: RequestedState|null = useSelector((state: ApplicationState) => state.treeStates?.requestedState ?? null);
   const user = useSelector((state: ApplicationState) => state.rightsStates?.user);
-  const reduxSelectedId = useSelector((state: ApplicationState) => state.guiStates?.selected_id);
+  const reduxSelectedId = useSelector((state: ApplicationState) => state.guiStates?.selected_id)?? null;
   const requestTreeUpdate = useSelector((state: ApplicationState) => state.guiStates?.requestedTreeUpdate);
 
   const objectIntegroType = useSelector((state: ApplicationState) => state?.integroStates?.integroType ?? null);
@@ -215,9 +217,10 @@ export function TreeControl() {
                       </IconButton>
                     </Tooltip>
 
-                    {/* Кнопка для открытия меню */}
+                    
                     {childTypes.length > 0 && (
                       <>
+                        <Tooltip title="Add new typed child">
                         <IconButton
                           size="small"
                           edge="end"
@@ -226,7 +229,7 @@ export function TreeControl() {
                         >
                           <MenuOpenIcon />
                         </IconButton>
-
+                        </Tooltip>
                         <Menu
                           anchorEl={anchorEl}
                           open={Boolean(anchorEl)}
@@ -243,14 +246,39 @@ export function TreeControl() {
                               Add integration child [{type.child_i_type}]
                             </MenuItem>
                           ))}
+
+                          <MenuItem>
+                            <label
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                                width: '100%',
+                                height: '100%'
+                              }}
+                            >
+                              <UploadFileIcon fontSize="small" style={{ marginRight: 8 }} />
+                              Import from file
+                              <input
+                                type="file"
+                                accept=".json"
+                                onChange={(e) => {
+                                  if (e.target.files?.[0]) {
+                                    createObjectsFromBrowserFile(e.target.files[0], reduxSelectedId, appDispatch, objectIntegroType?.i_name);
+                                    e.target.value = '';
+                                  }
+                                }}
+                                style={{ display: 'none' }}
+                              />
+                            </label>
+                          </MenuItem>
+
                         </Menu>
                       </>
-                    )}
-                  </>
+                      )}
+                    
+                    </>
                 )}
-
-
-
               </>
             }>
               <ListItemButton selected={reduxSelectedId === marker.id} onClick={handleSelect(marker)}>

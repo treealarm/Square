@@ -47,34 +47,43 @@ namespace AASubService
       _cameraEventServiceManager.StopAll();
 
       var propsById = _sync!.ObjProps.Values
-        .Where(prop => prop != null)
-        .ToDictionary(
-            prop => prop!.Id,
-            prop => prop?.Properties.ToDictionary(p => p.PropName, p => p)
-        );
+          .Where(prop => prop != null)
+          .ToDictionary(
+              prop => prop!.Id,
+              prop => prop?.Properties.ToDictionary(p => p.PropName, p => p)
+          );
 
       foreach (var prop in propsById)
       {
         if (prop.Value == null)
-        { continue; }
+          continue;
 
-        var ipProp = prop.Value["ip"];
-        var portProp = prop.Value["port"];
-        var userProp = prop.Value["user"];
-        var passwordProp = prop.Value["password"];
+        prop.Value.TryGetValue("ip", out var ipProp);
+        prop.Value.TryGetValue("port", out var portProp);
+        prop.Value.TryGetValue("user", out var userProp);
+        prop.Value.TryGetValue("password", out var passwordProp);
 
-        var cam = await Camera.CreateAsync(
-         ipProp.StrVal,
-          Int32.Parse(portProp.StrVal),
-          userProp.StrVal,
-          passwordProp.StrVal
-          );
+        // Подставляем пустую строку, если свойства нет
+        var ip = ipProp?.StrVal ?? "127.0.0.1";
+        var portStr = portProp?.StrVal ?? "80";
+        var user = userProp?.StrVal ?? "root";
+        var password = passwordProp?.StrVal ?? "root";
+
+        // Если порт пустой или не число, ставим 0
+        if (!Int32.TryParse(portStr, out var port))
+        {
+          port = 80;
+        }
+
+        var cam = await Camera.CreateAsync(ip, port, user, password);
         if (cam == null)
-        { continue; }
+          continue;
+
         _cameras[prop.Key] = cam;
         await _cameraEventServiceManager.AddCameraAsync(prop.Key, cam);
       }
     }
+
 
     private void ConstructSync(CancellationTokenSource cancellationToken)
     {

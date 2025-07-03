@@ -6,14 +6,19 @@ namespace GrpcTracksClient
 {
   internal class EventAdd
   {
-    public static async Task Add()
+    public static async Task Add(CancellationToken token)
     {
       var rnd = new Random();
       var client = Utils.ClientBase.Client;
       
       for (int j = 0; j < 100000; j++)
       {
-        await Task.Delay(1);
+        if (token.IsCancellationRequested)
+        {
+          return;
+        }
+        await Task.Delay(5000);
+
         var events = new EventsProto();       
 
         for (int i = 1; i < 99; i++)

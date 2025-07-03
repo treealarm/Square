@@ -227,7 +227,7 @@ namespace LeafletAlarms.Grpc.Implementation
           {
             PropName = prop.prop_name,
             StrVal = prop.str_val,
-            VisualType = prop.visual_type
+            VisualType = prop.visual_type ?? string.Empty
           });
         }
         response.Objects.Add(protoProp);
