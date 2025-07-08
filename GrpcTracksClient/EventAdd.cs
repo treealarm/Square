@@ -6,6 +6,35 @@ namespace GrpcTracksClient
 {
   internal class EventAdd
   {
+    public static EventProto CreateImageEvent(
+      LogLevel event_priority,
+      string event_name,
+      byte[] imageArray,
+      string obj_id
+      )
+    {
+      if (imageArray == null)
+      {
+        return null;
+      }
+      var newEv = new EventProto();
+      newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
+
+
+      newEv.EventPriority = (int)event_priority;
+      newEv.EventName = event_name;
+
+      newEv.ExtraProps.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "license_image",
+        StrVal = Convert.ToBase64String(imageArray),
+        VisualType = "base64image_fs"
+      });
+
+      newEv.ObjectId = obj_id;
+     
+      return newEv;
+    }
     public static async Task Add(CancellationToken token)
     {
       var rnd = new Random();
@@ -23,66 +52,29 @@ namespace GrpcTracksClient
 
         for (int i = 1; i < 99; i++)
         {
-          var newEv = new EventProto();
-          
-          newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
-
-         
-          newEv.EventPriority = rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
-          newEv.EventName = 
-            $"Camera #{i} sensor {j} event {((LogLevel)newEv.EventPriority).ToString()}";
-
-          newEv.ExtraProps.Add(new ProtoObjExtraProperty()
-          {
-            PropName = $"p{0}",
-            StrVal = $"{i}"
-          });
-
-          for (var k = 1; k < 3; k++)
-          {
-            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
-            {
-              PropName = $"p{k}",
-              StrVal = $"{DateTime.Now.Second}"
-            });
-          }          
-          
-
+          byte[] imageArray = null;
           if (i == 1 || i == 2 || i == 3)
           {
-            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
-            {
-              PropName = "event_descr",
-              StrVal = $"plate recognized"
-            });
-
             var fileName = $"files/plate{i}.jpeg";
-            byte[] imageArray = File.ReadAllBytes(fileName);
-
-            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
-            {
-              PropName = "license_image",
-              StrVal = Convert.ToBase64String(imageArray),
-              VisualType = "base64image_fs"
-            });
+            imageArray = File.ReadAllBytes(fileName);
           }
-          else
+            
+          var priority = (LogLevel)rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
+          var newEv = CreateImageEvent(
+            priority,
+            $"plate recognized #{i} sensor {j} event {priority}",
+            imageArray,
+            i % 2 == 0 ? ObjectIds.ObjectId1: ObjectIds.ObjectId2
+            );
+          if (newEv == null)
           {
-            newEv.ExtraProps.Add(new ProtoObjExtraProperty()
-            {
-              PropName = "event_descr",
-              StrVal = $"just description {i}"
-            });
+            continue;
           }
-
-          if (i % 2 == 0)
+          newEv.ExtraProps.Add(new ProtoObjExtraProperty()
           {
-            newEv.ObjectId = ObjectIds.ObjectId1;
-          }
-          else
-          {
-            newEv.ObjectId = ObjectIds.ObjectId2;
-          }
+            PropName = $"test",
+            StrVal = $"{i}"
+          });
           events.Events.Add(newEv);
         }
         try
@@ -94,8 +86,6 @@ namespace GrpcTracksClient
           Console.WriteLine(ex.ToString());
           await Task.Delay(5000);
         }
-
-        //await Task.Delay(100);
       }
 
     }

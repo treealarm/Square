@@ -205,18 +205,6 @@ namespace DbLayer.Services
         query = query.Where(e => e.extra_props.Where(p=>p.visual_type == "image_fs").Any());
       }
 
-      if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
-      {
-        foreach (var prop in filter_in.property_filter.props)
-        {
-          if (!string.IsNullOrEmpty(prop.prop_name))
-          {
-            var strVal = prop.str_val ?? string.Empty;
-            query = query.Where(e => e.extra_props.Any(p => p.prop_name == prop.prop_name && p.str_val == strVal));
-          }
-        }
-      }
-
       if (filter_in.sort != null && filter_in.sort.Count > 0)
       {
         IOrderedQueryable<DBEvent> orderedQuery = null;
@@ -239,6 +227,18 @@ namespace DbLayer.Services
         if (orderedQuery != null)
         {
           query = orderedQuery;
+        }
+      }
+
+      if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
+      {
+        foreach (var prop in filter_in.property_filter.props)
+        {
+          if (!string.IsNullOrEmpty(prop.prop_name))
+          {
+            var strVal = prop.str_val ?? string.Empty;
+            query = query.Where(e => e.extra_props.Any(p => p.prop_name == prop.prop_name && p.str_val == strVal));
+          }
         }
       }
 

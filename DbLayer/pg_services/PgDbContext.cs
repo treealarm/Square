@@ -12,6 +12,8 @@ namespace DbLayer
   {
     private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
     public DbSet<DBEvent> Events { get; set; }
+    public DbSet<PgDBObjExtraProperty> EventProps { get; set; }
+
     public DbSet<DBIntegro> Integro { get; set; }
     public DbSet<DBIntegroType> IntegroTypes { get; set; }
 

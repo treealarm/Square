@@ -149,27 +149,65 @@ namespace AASubService
           await InitCameras();
         }
 
+        var events = new EventsProto();
+
         foreach (var cam in _cameras)
         {
           try
           {
-            await UploadCamImage(cam);
+            var res = await UploadCamImage(cam);
+            if (!res)
+            {
+              events.Events.Add(await CreateNoImageEvent(cam));
+            }
           }
           catch (Exception ex)
           {
+            events.Events.Add(await CreateNoImageEvent(cam));
             Console.WriteLine(ex.ToString());
           }         
+        }
+        try
+        {
+          var client = Utils.ClientBase.Client;
+          if (client != null && events.Events.Any())
+          {
+            var result = await client.UpdateEventsAsync(events);
+          }          
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine(ex.ToString());
         }
         await Task.Delay(30000, cancellationToken.Token);
       }
     }
+    async private Task<EventProto> CreateNoImageEvent(KeyValuePair<string, Camera> cam)
+    {
+      var newEv = new EventProto();
+      newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
 
-    async private Task UploadCamImage(KeyValuePair<string, Camera> cam)
+
+      newEv.EventPriority = (int)LogLevel.Error;
+      newEv.EventName = "no image";
+
+      //newEv.ExtraProps.Add(new ProtoObjExtraProperty()
+      //{
+      //  PropName = "license_image",
+      //  StrVal = Convert.ToBase64String(imageArray),
+      //  VisualType = "base64image_fs"
+      //});
+
+      newEv.ObjectId = cam.Key;
+
+      return newEv;
+    }
+    async private Task<bool> UploadCamImage(KeyValuePair<string, Camera> cam)
     {
       var media = await cam.Value.GetMediaService();
       if (media == null)
       {
-        return;
+        return false;
       }
       var data = await media.GetImage();
       if (data != null)
@@ -191,7 +229,7 @@ namespace AASubService
         if (client == null)
         {
           await Task.Delay(1000);
-          return;
+          return false;
         }
         // Загружаем файл
         await client.UploadFileAsync(protoUploadFile);
@@ -212,7 +250,9 @@ namespace AASubService
         toSend.Objects.Add(protoProp);
 
         await client!.UpdatePropertiesAsync(toSend);
+        return true;
       }
+      return false;
     }
 
     public async Task<ProtoGetAvailableActionsResponse> GetMainAvailableActions(ProtoGetAvailableActionsRequest request)

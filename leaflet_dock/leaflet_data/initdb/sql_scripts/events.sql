@@ -43,5 +43,13 @@ CREATE INDEX IF NOT EXISTS idx_event_props_prop_name_val ON public.event_props (
 CREATE INDEX IF NOT EXISTS idx_events_priority ON public.events (event_priority);
 CREATE INDEX IF NOT EXISTS idx_events_timestamp_desc ON public.events ("timestamp" DESC);
 
+-- ¬ключаем расширение, если ещЄ не включено (нужно выполнить один раз в базе)
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- »ндекс по event_name дл€ быстрого поиска Contains/LIKE '%...%'
+CREATE INDEX IF NOT EXISTS idx_events_event_name_trgm
+  ON public.events
+  USING gin (event_name gin_trgm_ops);
+
 
 
