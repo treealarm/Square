@@ -1,18 +1,14 @@
 ﻿using DbLayer.Models;
 using DbLayer.Models.Actions;
-using Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Npgsql;
-using System;
 
 namespace DbLayer
 {
   internal class PgDbContext : DbContext
   {
-    private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
+    private readonly NpgsqlDataSource _source;
     public DbSet<DBEvent> Events { get; set; }
-    public DbSet<PgDBObjExtraProperty> EventProps { get; set; }
 
     public DbSet<DBIntegro> Integro { get; set; }
     public DbSet<DBIntegroType> IntegroTypes { get; set; }
@@ -29,11 +25,19 @@ namespace DbLayer
 
     public PgDbContext(
       DbContextOptions<PgDbContext> options,
-      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings):base(options) 
+      NpgsqlDataSource source) :base(options) 
     {
-      _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
+      _source = source;
     }
 
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+      optionsBuilder.UseNpgsql(
+        _source
+      //    @"Server=(localdb)\mssqllocaldb;Database=Test;ConnectRetryCount=0"
+      );
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
@@ -207,30 +211,5 @@ namespace DbLayer
     }
 
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-      var your_username = Environment.GetEnvironmentVariable("POSTGRES_USER");
-      var your_password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-       
-
-      var EventsCollectionName = _geoStoreDatabaseSettings.Value.EventsCollectionName;
-      var DbName = _geoStoreDatabaseSettings.Value.DatabaseName;
-
-      var builder = new NpgsqlConnectionStringBuilder
-      {
-        Host = _geoStoreDatabaseSettings.Value.PgHost,
-        Database = _geoStoreDatabaseSettings.Value.DatabaseName,
-        Username = your_username,
-        Password = your_password,
-        Port = _geoStoreDatabaseSettings.Value.PgPort
-      };
-
-      string connectionString = builder.ConnectionString;
-
-      optionsBuilder.UseNpgsql(
-        connectionString
-      //    @"Server=(localdb)\mssqllocaldb;Database=Test;ConnectRetryCount=0"
-      );
-    }
   }
 }

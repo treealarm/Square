@@ -2,7 +2,10 @@
 using Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Npgsql;
+using System;
 
 namespace DbLayer
 {
@@ -22,7 +25,28 @@ namespace DbLayer
           new MongoClient(settings.ConnectionString) // Используем settings напрямую
       );
 
-      services.AddDbContext<PgDbContext>();
+      {
+        var your_username = Environment.GetEnvironmentVariable("POSTGRES_USER");
+        var your_password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+        var DbName = settings.DatabaseName;
+
+        var builder = new NpgsqlConnectionStringBuilder
+        {
+          Host = settings.PgHost,
+          Database = settings.DatabaseName,
+          Username = your_username,
+          Password = your_password,
+          Port = settings.PgPort
+        };
+
+        string connectionString = builder.ConnectionString;
+
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.ConnectionString);
+        dataSourceBuilder.EnableDynamicJson();
+        var dataSource = dataSourceBuilder.Build();
+        services.AddSingleton(dataSource);
+        services.AddDbContext<PgDbContext>();
+      }      
 
       services.AddScoped<IEventsService, EventsService>();
 
