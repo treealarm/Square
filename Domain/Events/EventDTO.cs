@@ -10,6 +10,8 @@ namespace Domain
     public string? object_id { get; set; }// Object id
     public string? event_name { get; set; }
     public int event_priority { get; set; }
+    public string? param0 { get; set; }
+    public string? param1 { get; set; }
     public List<ObjExtraPropertyDTO>? extra_props { get; set; }
   }
 }

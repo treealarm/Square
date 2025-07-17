@@ -12,7 +12,9 @@ namespace AASubService.Events
       {
         Timestamp = Timestamp.FromDateTime(DateTime.UtcNow),
         EventName = msg.Topic?.Any?.FirstOrDefault()?.InnerText ?? "Unknown ONVIF Event",
-        EventPriority = (int)LogLevel.Information
+        EventPriority = (int)LogLevel.Information,
+        Param0 = "1",
+        Param1 = "2"
       };
 
       evt.ExtraProps.Add(new ProtoObjExtraProperty

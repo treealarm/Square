@@ -31,6 +31,8 @@ namespace GrpcTracksClient
         VisualType = "base64image_fs"
       });
 
+      newEv.Param0 = newEv.Timestamp.Seconds.ToString();
+      newEv.Param1 = (newEv.Timestamp.Seconds+1).ToString();
       newEv.ObjectId = obj_id;
      
       return newEv;

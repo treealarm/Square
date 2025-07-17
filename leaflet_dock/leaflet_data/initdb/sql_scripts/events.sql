@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS public.events (
     event_name character varying,
     event_priority integer,
     "timestamp" timestamp with time zone,
+    param0 character varying,
+    param1 character varying,
     id uuid DEFAULT gen_random_uuid()
 );
 
@@ -38,6 +40,8 @@ CREATE INDEX IF NOT EXISTS idx_events_object_id ON public.events (object_id);
 
 -- Индекс для extra_props -> поиск по prop_name и str_val
 CREATE INDEX IF NOT EXISTS idx_event_props_prop_name_val ON public.event_props (owner_id, prop_name, str_val);
+CREATE INDEX IF NOT EXISTS idx_event_props_owner_id ON public.event_props(owner_id);
+
 
 -- Индексы для сортировки (если сортировка идет по разным полям)
 CREATE INDEX IF NOT EXISTS idx_events_priority ON public.events (event_priority);
@@ -51,5 +55,19 @@ CREATE INDEX IF NOT EXISTS idx_events_event_name_trgm
   ON public.events
   USING gin (event_name gin_trgm_ops);
 
+-- Индексы для одиночных фильтров
+CREATE INDEX IF NOT EXISTS idx_events_param0 ON public.events (param0);
+CREATE INDEX IF NOT EXISTS idx_events_param1 ON public.events (param1);
+
+-- Индекс для пары param0 + param1
+CREATE INDEX IF NOT EXISTS idx_events_param0_param1 ON public.events (param0, param1);
+
+-- Индексы с сортировкой по timestamp DESC
+CREATE INDEX IF NOT EXISTS idx_events_param0_ts_desc ON public.events (param0, "timestamp" DESC);
+CREATE INDEX IF NOT EXISTS idx_events_param1_ts_desc ON public.events (param1, "timestamp" DESC);
+CREATE INDEX IF NOT EXISTS idx_events_param0_param1_ts_desc ON public.events (param0, param1, "timestamp" DESC);
+
+CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_events_all_sort
+  ON public.events (id, object_id, event_name, event_priority, timestamp);
 
 

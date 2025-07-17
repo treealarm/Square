@@ -191,14 +191,16 @@ export function EventViewer() {
     }
   }
 
-  const handleFilterChange = useCallback((updatedFilterData: ObjPropsSearchDTO) => {
-    var newFilter = DeepCopy(searchFilter);
+  const handleFilterChange = useCallback((updatedData: { param0: string | null; param1: string | null }) => {
+    const newFilter = DeepCopy(searchFilter);
     if (newFilter) {
       newFilter.forward = 0;
-      newFilter.property_filter = updatedFilterData;
+      newFilter.param0 = updatedData.param0;
+      newFilter.param1 = updatedData.param1;
       setLocalFilter(newFilter);
     }
   }, [searchFilter]);
+
 
   const handleGroupsChange = useCallback((updatedFilterData: string[]) => {
     var newFilter = DeepCopy(searchFilter);

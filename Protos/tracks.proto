@@ -115,7 +115,9 @@ message EventProto
 	string object_id = 4;
   string event_name = 5;
 	int32 event_priority = 6;
-  repeated ProtoObjExtraProperty extra_props = 7;
+  string param0 = 7;
+  string param1 = 8;
+  repeated ProtoObjExtraProperty extra_props = 9;
 }
 
 message EventsProto

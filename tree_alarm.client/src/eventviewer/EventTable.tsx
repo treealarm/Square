@@ -24,7 +24,8 @@ interface Column {
   id: string;
   label: string;
   minWidth?: number;
-  align?: 'right'|'left';
+  align?: 'right' | 'left';
+  sortable?: boolean;
   // eslint-disable-next-line no-unused-vars
   format?: (value: number) => string;
 }
@@ -50,6 +51,20 @@ const columns: readonly Column[] = [
     label: 'timestamp',
     minWidth: 170,
     align: 'left',
+  },
+  {
+    id: 'param0',
+    label: 'param0',
+    minWidth: 170,
+    align: 'left',
+    sortable: false
+  },
+  {
+    id: 'param1',
+    label: 'param1',
+    minWidth: 170,
+    align: 'left',
+    sortable: false
   },
 ];
 
@@ -137,16 +152,21 @@ export default function EventTable(props: IEventTableProps) {
                 >
                   
 
-                  <TableSortLabel
-                    active={getOrderByKey(column.id) != null}
-                    direction={getOrderByKey(column.id)?.order}
-                    onClick={() => handleRequestSort(column.id)}
-                  >
-                    {column.label}
-                    <Box component="span" sx={visuallyHidden}>
-                      {getOrderByKey(column.id)?.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {column.sortable !== false ? (
+                    <TableSortLabel
+                      active={getOrderByKey(column.id) != null}
+                      direction={getOrderByKey(column.id)?.order}
+                      onClick={() => handleRequestSort(column.id)}
+                    >
+                      {column.label}
+                      <Box component="span" sx={visuallyHidden}>
+                        {getOrderByKey(column.id)?.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                       </Box>
-                  </TableSortLabel>
+                    </TableSortLabel>
+                  ) : (
+                    column.label
+                  )}
+
 
                 </TableCell>
               ))}
@@ -188,6 +208,12 @@ export default function EventTable(props: IEventTableProps) {
                         }) + " [" + utcDate.getMilliseconds() + "ms]";
                       }
 
+                      if (column.id == 'param0') {
+                        value = row.param0;
+                      }
+                      if (column.id == 'param1') {
+                        value = row.param1;
+                      }
 
  
                       return (

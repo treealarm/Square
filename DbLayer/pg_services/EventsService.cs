@@ -5,6 +5,7 @@ using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -230,20 +231,20 @@ namespace DbLayer.Services
         }
       }
 
-      if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
+      if (filter_in.param0 != null)
       {
-        foreach (var prop in filter_in.property_filter.props)
-        {
-          if (!string.IsNullOrEmpty(prop.prop_name))
-          {
-            var strVal = prop.str_val ?? string.Empty;
-            query = query.Where(e => e.extra_props.Any(p => p.prop_name == prop.prop_name && p.str_val == strVal));
-          }
-        }
+        query = query.Where(e => e.param0 == filter_in.param0);
+      }
+      if (filter_in.param1 != null)
+      {
+        query = query.Where(e => e.param1 == filter_in.param1);
       }
 
       int limit = filter_in.count > 0 ? filter_in.count : 10000;
       query = query.Take(limit).Include(e => e.extra_props);
+
+      var sql = query.ToQueryString();
+      Console.WriteLine(sql);
 
       return DBListToDTO(await query.ToListAsync());
     }

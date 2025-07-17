@@ -240,6 +240,8 @@ export interface SearchEventFilterDTO extends SearchFilterDTO {
   groups?: string[];
   objects?: string[];
   images_only: boolean;
+  param0: string | null;
+  param1: string | null;
 }
 
 export interface BoxTrackDTO extends BoundBox
@@ -453,6 +455,8 @@ export interface IEventDTO {
   object_id: string;
   event_name: string;
   event_priority: number;
+  param0: string;
+  param1: string;
   extra_props?: ObjExtraPropertyDTO[];
 }
 

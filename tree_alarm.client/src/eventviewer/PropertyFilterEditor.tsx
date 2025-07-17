@@ -1,74 +1,42 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, IconButton, Tooltip, Popper, Paper } from '@mui/material';
-import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
-import { KeyValueDTO, ObjPropsSearchDTO } from '../store/Marker';
+import React, { useState } from 'react';
+import { Box, Button, TextField, Popper, Paper, Tooltip } from '@mui/material';
+
 
 interface PropertyFilterEditorProps {
-  onChange: (data: ObjPropsSearchDTO) => void;
+  onChange: (data: { param0: string | null; param1: string | null }) => void;
   btn_text: string;
 }
 
 export const PropertyFilterEditor = ({ onChange, btn_text }: PropertyFilterEditorProps) => {
-  const [keyValuePairs, setKeyValuePairs] = useState<KeyValueDTO[]>([{ str_val: '', prop_name: '' }]);
+  const [param0, setParam0] = useState<string>('');
+  const [param1, setParam1] = useState<string>('');
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleChange = (index: number, field: 'prop_name' | 'str_val', value: string) => {
-    let updatedPairs = [...keyValuePairs];
-    updatedPairs[index] = { ...updatedPairs[index], [field]: value };
-
-    // Если меняем `prop_name` и он становится пустым, удаляем строку (если она не последняя)
-    if (field === 'prop_name' && value.trim() === '') {
-      updatedPairs = updatedPairs.filter((_, i) => i !== index);
-    }
-
-    // Добавляем новую строку, если последняя заполнена
-    if (updatedPairs.length === 0 || updatedPairs[updatedPairs.length - 1].prop_name.trim() !== '') {
-      updatedPairs.push({ prop_name: '', str_val: '' });
-    }
-
-    setKeyValuePairs(updatedPairs);
-
-    // Передаем обновленные данные без пустых ключей
-    onChange({ props: updatedPairs.filter(pair => pair.prop_name.trim() !== '') });
-  };
-
-  const deleteKeyValuePair = (index: number) => {
-    let updatedPairs = keyValuePairs.filter((_, i) => i !== index);
-
-    // Если удалена последняя строка, добавляем новую пустую строку
-    if (updatedPairs.length === 0 || updatedPairs.some(pair => pair.prop_name.trim() !== '')) {
-      updatedPairs.push({ prop_name: '', str_val: '' });
-    }
-
-    setKeyValuePairs(updatedPairs);
-
-    // Передаем обновленные данные без пустых ключей
-    onChange({ props: updatedPairs.filter(pair => pair.prop_name.trim() !== '') });
-  };
-
-
-  // Открытие/закрытие всплывающего окна
   const togglePopper = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
-  useEffect(() => {
-    // Изначально передаем пустой объект, если в начале пустые строки
-    onChange({ props: keyValuePairs.filter(pair => pair.prop_name.trim() !== '') });
-  }, []); // Выполняется только один раз при монтировании компонента
+  const handleParam0Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setParam0(value);
+    onChange({ param0: value || null, param1: param1 || null });
+  };
+
+  const handleParam1Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setParam1(value);
+    onChange({ param0: param0 || null, param1: value || null });
+  };
 
   return (
     <Box>
-      {/* Кнопка для открытия всплывающего окна */}
-      <Tooltip title={keyValuePairs.map((pair) => `${pair.prop_name}: ${pair.str_val}`).join('\r\n')}>
+      <Tooltip title={`param0: ${param0 || '—'}\nparam1: ${param1 || '—'}`}>
         <Button onClick={togglePopper} variant="outlined">
           {btn_text}
         </Button>
       </Tooltip>
 
-      {/* Popper для выпадающего списка */}
       <Popper
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -76,34 +44,22 @@ export const PropertyFilterEditor = ({ onChange, btn_text }: PropertyFilterEdito
         style={{ zIndex: 1300 }}
       >
         <Paper sx={{ padding: 2, minWidth: 300 }}>
-          {/* Список ключей-значений */}
-          {keyValuePairs.length > 0 && (
-            <Box display="flex" flexDirection="column" gap={2}>
-              {keyValuePairs.map((pair, index) => (
-                <Box key={index} display="flex" alignItems="center" gap={2}>
-                  <TextField
-                    label="Property Name"
-                    value={pair.prop_name}
-                    onChange={(e) => handleChange(index, 'prop_name', e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
-                  <TextField
-                    label="Value"
-                    value={pair.str_val}
-                    onChange={(e) => handleChange(index, 'str_val', e.target.value)}
-                    size="small"
-                    fullWidth
-                  />
-                  <IconButton onClick={() => deleteKeyValuePair(index)}>
-                    <Tooltip title="Delete">
-                      <ClearOutlinedIcon />
-                    </Tooltip>
-                  </IconButton>
-                </Box>
-              ))}
-            </Box>
-          )}
+          <Box display="flex" flexDirection="column" gap={2}>
+            <TextField
+              label="Param 0"
+              value={param0}
+              onChange={handleParam0Change}
+              size="small"
+              fullWidth
+            />
+            <TextField
+              label="Param 1"
+              value={param1}
+              onChange={handleParam1Change}
+              size="small"
+              fullWidth
+            />
+          </Box>
         </Paper>
       </Popper>
     </Box>
