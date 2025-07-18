@@ -231,7 +231,10 @@ namespace DbLayer.Services
       }
 
       int limit = filter_in.count > 0 ? filter_in.count : 10000;
-      query = query.Take(limit).Include(e => e.extra_props);
+      query = query
+        .Skip(limit* filter_in.forward)
+        .Take(limit)
+        .Include(e => e.extra_props);
 
       var sql = query.ToQueryString();
       Console.WriteLine(sql);

@@ -61,7 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_events_param1 ON public.events (param1);
 -- Индекс для пары param0 + param1
 CREATE INDEX IF NOT EXISTS idx_events_param0_param1 ON public.events (param0, param1);
 
---CREATE INDEX IF NOT EXISTS idx_events_param0_ts_desc ON public.events (param0, "timestamp");
---CREATE INDEX IF NOT EXISTS idx_events_param1_ts_desc ON public.events (param1, "timestamp");
---CREATE INDEX IF NOT EXISTS idx_events_param0_param1_ts_desc ON public.events (param0, param1, "timestamp");
+CREATE INDEX IF NOT EXISTS idx_events_param0_ts_desc ON public.events (param0, "timestamp");
+CREATE INDEX IF NOT EXISTS idx_events_param1_ts_desc ON public.events (param1, "timestamp");
+CREATE INDEX IF NOT EXISTS idx_events_param0_param1_ts_desc ON public.events (param0, param1, "timestamp");
 
