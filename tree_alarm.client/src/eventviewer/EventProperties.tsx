@@ -16,7 +16,7 @@ export function EventProperties() {
   const selected_event: IEventDTO = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event);
 
   const [images, setImg] = useState<Record<string, string>>({});
-
+  const [eventSummary, setEventSummary] = useState<string>("");
 
 
   useEffect(() => {
@@ -30,11 +30,27 @@ export function EventProperties() {
       setImg(temp);
     };
 
-    selected_event?.extra_props?.map((item) => {
-      if (item.visual_type == 'image_fs') {
-        fetchImage(item.str_val)
-      }
-    });
+    if (selected_event) {
+      selected_event?.extra_props?.map((item) => {
+        if (item.visual_type == 'image_fs') {
+          fetchImage(item.str_val)
+        }
+      });
+
+      const summaryLines = [        
+        `${selected_event.id}`,
+        `${selected_event.object_id}`,
+        `${selected_event.event_name}`,
+        `event_priority=${selected_event.event_priority}`,
+        `${selected_event.timestamp}`,
+        `${selected_event.param0}`,
+        `${selected_event.param1}`
+      ];
+      setEventSummary(summaryLines.join('\n'));
+    }
+    else {
+      setEventSummary("");
+    }
   }, [images, selected_event]);
 
   return (
@@ -84,6 +100,22 @@ export function EventProperties() {
           )
         }
       </List>
+      {eventSummary && (
+        <>
+          <Divider />
+
+          <TextField
+            label="Main data"
+            multiline
+            minRows={3}
+            value={eventSummary}
+            inputProps={{ readOnly: true }}
+            fullWidth
+             sx={{ mt: 3 }}
+          />
+
+        </>
+      )}
     </Box>
   );
 }

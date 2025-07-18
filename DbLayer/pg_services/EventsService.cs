@@ -175,6 +175,10 @@ namespace DbLayer.Services
       return list.Count;
     }
 
+    private static object GetPropertyValue(object obj, string propertyName)
+    {
+      return obj.GetType().GetProperty(propertyName)?.GetValue(obj);
+    }
     public async Task<List<EventDTO>> GetEventsByFilter(SearchEventFilterDTO filter_in)
     {
       var query = _dbContext.Events.AsQueryable();
@@ -206,31 +210,6 @@ namespace DbLayer.Services
         query = query.Where(e => e.extra_props.Where(p=>p.visual_type == "image_fs").Any());
       }
 
-      if (filter_in.sort != null && filter_in.sort.Count > 0)
-      {
-        IOrderedQueryable<DBEvent> orderedQuery = null;
-        foreach (var kvp in filter_in.sort)
-        {
-          if (orderedQuery == null)
-          {
-            orderedQuery = kvp.order == "asc"
-                ? query.OrderBy(e => EF.Property<object>(e, kvp.key))
-                : query.OrderByDescending(e => EF.Property<object>(e, kvp.key));
-          }
-          else
-          {
-            orderedQuery = kvp.order == "asc"
-                ? orderedQuery.ThenBy(e => EF.Property<object>(e, kvp.key))
-                : orderedQuery.ThenByDescending(e => EF.Property<object>(e, kvp.key));
-          }
-        }
-
-        if (orderedQuery != null)
-        {
-          query = orderedQuery;
-        }
-      }
-
       if (filter_in.param0 != null)
       {
         query = query.Where(e => e.param0 == filter_in.param0);
@@ -240,13 +219,52 @@ namespace DbLayer.Services
         query = query.Where(e => e.param1 == filter_in.param1);
       }
 
+      if (filter_in.sort != null)
+      {
+        var timestampSort = filter_in.sort.FirstOrDefault(s => s.key == "timestamp");
+        if (timestampSort != null)
+        {
+          query = timestampSort.order == "asc"
+              ? query.OrderBy(e => e.timestamp)
+              : query.OrderByDescending(e => e.timestamp);
+        }
+      }
+
       int limit = filter_in.count > 0 ? filter_in.count : 10000;
       query = query.Take(limit).Include(e => e.extra_props);
 
       var sql = query.ToQueryString();
       Console.WriteLine(sql);
 
-      return DBListToDTO(await query.ToListAsync());
+      var result = DBListToDTO(await query.ToListAsync());
+
+      IOrderedEnumerable<EventDTO> ordered = null;
+
+      foreach (var sort in filter_in.sort)
+      {
+        Func<EventDTO, object> keySelector = x => GetPropertyValue(x, sort.key);
+
+        if (ordered == null)
+        {
+          ordered = sort.order == "asc"
+              ? result.OrderBy(keySelector)
+              : result.OrderByDescending(keySelector);
+        }
+        else
+        {
+          ordered = sort.order == "asc"
+              ? ordered.ThenBy(keySelector)
+              : ordered.ThenByDescending(keySelector);
+        }
+      }
+
+      if (ordered != null)
+      {
+        result = ordered.ToList();
+      }
+
+
+      return result;
     }
   }
 }

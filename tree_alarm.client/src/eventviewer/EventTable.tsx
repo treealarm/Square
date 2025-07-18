@@ -31,8 +31,18 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'id', label: 'id', minWidth: 170 },
-  { id: 'object_id', label: 'object_id', minWidth: 100 },
+  {
+    id: 'id',
+    label: 'id',
+    minWidth: 170,
+    align: 'left',
+    sortable: false
+  },
+  {
+    id: 'object_id',
+    label: 'object_id',
+    minWidth: 100
+  },
   {
     id: 'event_name',
     label: 'event_name',
@@ -70,7 +80,7 @@ const columns: readonly Column[] = [
 
 interface IEventTableProps {
   // eslint-disable-next-line no-unused-vars
-  setLocalFilter: (newFilter: SearchEventFilterDTO) => any;
+  setLocalFilter: (newFilter: SearchEventFilterDTO|null) => any;
   onSelect: (event: IEventDTO | null) => void;
 }
 export default function EventTable(props: IEventTableProps) {
@@ -78,35 +88,43 @@ export default function EventTable(props: IEventTableProps) {
   const appDispatch = useAppDispatch();
 
   const events: IEventDTO[] = useSelector((state: ApplicationState) => state?.eventsStates?.events) ?? [];
-  const filter: SearchEventFilterDTO = useSelector((state: ApplicationState) => state?.eventsStates?.filter) ?? null;
+  const filter: SearchEventFilterDTO|null = useSelector((state: ApplicationState) => state?.eventsStates?.filter) ?? null;
   const selected_event: IEventDTO|null = useSelector((state: ApplicationState) => state?.eventsStates?.selected_event) ?? null;
 
-  var order = filter.sort;
+  var order = filter?.sort??[];
 
 
-  const handleRequestSort = (id:string
-  ) => {
-    var newFilter = DeepCopy(filter);
-    var curOrder = newFilter?.sort.find(el => el.key == id);
+  const handleRequestSort = (id: string) => {
+    const newFilter = DeepCopy(filter) ?? { sort: [] };
+    const sortList = newFilter.sort ?? [];
 
-    if (curOrder == null) {
-      newFilter.sort.push(
-        {
-          key: id,
-          order: 'asc'
-        });
-    }
-    else if (curOrder.order == 'asc') {
-      curOrder.order = 'desc';
-    }
-    else if (curOrder.order == 'desc') {
-      newFilter.sort = newFilter?.sort.filter(el => el.key != id);
+    // Удаляем старую запись, если она уже есть
+    const index = sortList.findIndex(s => s.key === id);
+    if (index !== -1) {
+      const existing = sortList[index];
+      existing.order = existing.order === 'asc' ? 'desc' : 'asc';
+      sortList.splice(index, 1); // удаляем
+      sortList.push(existing);   // добавляем в конец (выше будет reverse)
+    } else {
+      sortList.push({ key: id, order: 'asc' });
     }
 
+    // Гарантируем, что timestamp всегда на первом месте
+    const timestampIndex = sortList.findIndex(s => s.key === 'timestamp');
+    if (timestampIndex !== -1) {
+      const ts = sortList.splice(timestampIndex, 1)[0];
+      sortList.unshift(ts);
+    } else {
+      // Если вдруг нет — добавим
+      sortList.unshift({ key: 'timestamp', order: 'desc' });
+    }
+
+    newFilter.sort = sortList;
     props.setLocalFilter(newFilter);
-    // fetch will be called from parent viewer in timeout
-    //appDispatch(EventsStore.fetchEventsByFilter(newFilter));
   };
+
+
+
 
   const getOrderByKey = (id:string) => {
     return order?.find(el => el.key == id);
@@ -159,10 +177,30 @@ export default function EventTable(props: IEventTableProps) {
                       onClick={() => handleRequestSort(column.id)}
                     >
                       {column.label}
+
+                      {/* Если колонка в сортировке, покажем её порядковый номер */}
+                      {getOrderByKey(column.id) && (
+                        <Box
+                          component="span"
+                          sx={{
+                            ml: 0.5,
+                            fontSize: '0.75rem',
+                            color: 'text.secondary',
+                            backgroundColor: '#e0e0e0',
+                            px: 0.5,
+                            borderRadius: 1,
+                            display: 'inline-block',
+                          }}
+                        >
+                          {order.findIndex((s) => s.key === column.id) + 1}
+                        </Box>
+                      )}
+
                       <Box component="span" sx={visuallyHidden}>
                         {getOrderByKey(column.id)?.order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                       </Box>
                     </TableSortLabel>
+
                   ) : (
                     column.label
                   )}
@@ -217,7 +255,16 @@ export default function EventTable(props: IEventTableProps) {
 
  
                       return (
-                        <TableCell key={column.id} align={column.align}>
+                        <TableCell
+                          key={column.id}
+                          align={column.align}
+                          sx={{
+                            maxWidth: 170,           // ограничивает ширину
+                            whiteSpace: 'nowrap',    // не переносить строки
+                            overflow: 'hidden',      // скрыть лишнее
+                            textOverflow: 'ellipsis' // троеточие
+                          }}
+                        >
                           {column.format && typeof value === 'number'
                             ? column.format(value)
                             : value}

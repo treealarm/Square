@@ -45,7 +45,6 @@ CREATE INDEX IF NOT EXISTS idx_event_props_owner_id ON public.event_props(owner_
 
 -- Индексы для сортировки (если сортировка идет по разным полям)
 CREATE INDEX IF NOT EXISTS idx_events_priority ON public.events (event_priority);
-CREATE INDEX IF NOT EXISTS idx_events_timestamp_desc ON public.events ("timestamp" DESC);
 
 -- Включаем расширение, если ещё не включено (нужно выполнить один раз в базе)
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
@@ -62,12 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_events_param1 ON public.events (param1);
 -- Индекс для пары param0 + param1
 CREATE INDEX IF NOT EXISTS idx_events_param0_param1 ON public.events (param0, param1);
 
--- Индексы с сортировкой по timestamp DESC
-CREATE INDEX IF NOT EXISTS idx_events_param0_ts_desc ON public.events (param0, "timestamp" DESC);
-CREATE INDEX IF NOT EXISTS idx_events_param1_ts_desc ON public.events (param1, "timestamp" DESC);
-CREATE INDEX IF NOT EXISTS idx_events_param0_param1_ts_desc ON public.events (param0, param1, "timestamp" DESC);
-
-CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_events_all_sort
-  ON public.events (id, object_id, event_name, event_priority, timestamp);
-
+--CREATE INDEX IF NOT EXISTS idx_events_param0_ts_desc ON public.events (param0, "timestamp");
+--CREATE INDEX IF NOT EXISTS idx_events_param1_ts_desc ON public.events (param1, "timestamp");
+--CREATE INDEX IF NOT EXISTS idx_events_param0_param1_ts_desc ON public.events (param0, param1, "timestamp");
 
