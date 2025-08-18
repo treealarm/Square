@@ -111,6 +111,15 @@ namespace LeafletAlarms.Controllers
 
     public async Task<ActionResult<MarkersVisualStatesDTO>> GetVisualStates(List<string> objIds)
     {
+      MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
+      vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
+
+      if (!objIds.Any())
+      {
+        vStateDTO.alarmed_objects = new List<AlarmState>();
+        vStateDTO.states = new List<ObjectStateDTO>();
+        return vStateDTO;
+      }
       var objsToUpdate = await _mapService.GetAsync(objIds);
       var objStates = await GetStates(objIds);
       var alarmStates = await GetAlarmedStates(objIds);
@@ -129,9 +138,7 @@ namespace LeafletAlarms.Controllers
 
         setStateDescriptions.UnionWith(objState.states);
       }
-
-      MarkersVisualStatesDTO vStateDTO = new MarkersVisualStatesDTO();
-      vStateDTO.states_descr = new List<ObjectStateDescriptionDTO>();
+      
       vStateDTO.alarmed_objects = alarmStates;
 
       vStateDTO.states_descr.AddRange(

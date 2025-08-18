@@ -87,7 +87,7 @@ export function LocationMarkers() {
       var objArray2: string[] = [];
       markers.figs?.forEach(arr => objArray2.push(arr.id));
       appDispatch<any>(MarkersVisualStore.requestMarkersVisualStates(objArray2));
-    }, [appDispatch, markers]);
+    }, [markers]);
 
    useMapEvents({
      preclick(e: LeafletMouseEvent) {
