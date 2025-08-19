@@ -9,6 +9,7 @@ using LeafletAlarmsGrpc;
 using ObjectActions;
 using OnvifLib;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace AASubService
 {
@@ -43,9 +44,6 @@ namespace AASubService
     }
     private async Task InitCameras()
     {
-      _cameras.Clear();
-      _cameraEventServiceManager.StopAll();
-
       var propsById = _sync!.ObjProps.Values
           .Where(prop => prop != null)
           .ToDictionary(
@@ -53,36 +51,61 @@ namespace AASubService
               prop => prop?.Properties.ToDictionary(p => p.PropName, p => p)
           );
 
-      foreach (var prop in propsById)
+      // Удаляем камеры, которых больше нет в props
+      var removedIds = _cameras.Keys.Except(propsById.Keys).ToList();
+      foreach (var id in removedIds)
       {
-        if (prop.Value == null)
-          continue;
+        if (_cameras.TryRemove(id, out var toRemove))
+        {
+          await _cameraEventServiceManager.RemoveCameraAsync(id);
+        }
+      }
 
-        prop.Value.TryGetValue("ip", out var ipProp);
-        prop.Value.TryGetValue("port", out var portProp);
-        prop.Value.TryGetValue("user", out var userProp);
-        prop.Value.TryGetValue("password", out var passwordProp);
+      // Обновляем или добавляем камеры
+      foreach (var kv in propsById)
+      {
+        var id = kv.Key;
+        var dict = kv.Value!;
 
-        // Подставляем пустую строку, если свойства нет
+        dict.TryGetValue("ip", out var ipProp);
+        dict.TryGetValue("port", out var portProp);
+        dict.TryGetValue("user", out var userProp);
+        dict.TryGetValue("password", out var passwordProp);
+
         var ip = ipProp?.StrVal ?? "127.0.0.1";
         var portStr = portProp?.StrVal ?? "80";
         var user = userProp?.StrVal ?? "root";
         var password = passwordProp?.StrVal ?? "root";
 
-        // Если порт пустой или не число, ставим 0
-        if (!Int32.TryParse(portStr, out var port))
-        {
+        if (!int.TryParse(portStr, out var port))
           port = 80;
+
+        // Проверяем, есть ли уже такая камера с теми же параметрами
+        if (_cameras.TryGetValue(id, out var existingCam))
+        {
+          if (existingCam.Ip == ip &&
+              existingCam.Port == port &&
+              existingCam.User == user &&
+              existingCam.Password == password)
+          {
+            // Ничего не изменилось → пропускаем
+            continue;
+          }
+
+          // Если что-то изменилось → удаляем старую
+          if (_cameras.TryRemove(id, out var toRemove))
+          {
+            await _cameraEventServiceManager.RemoveCameraAsync(id);
+          }
         }
 
-        var cam = await Camera.CreateAsync(ip, port, user, password);
-        if (cam == null)
-          continue;
-
-        _cameras[prop.Key] = cam;
-        await _cameraEventServiceManager.AddCameraAsync(prop.Key, cam);
+        // Создаём новую камеру
+        var cam = Camera.Create(ip, port, user, password);
+        _cameras[id] = cam;
+        await _cameraEventServiceManager.AddCameraAsync(id, cam);
       }
     }
+
 
 
     private void ConstructSync(CancellationTokenSource cancellationToken)
@@ -135,10 +158,14 @@ namespace AASubService
       await _sync.InitChildrenTypes(hierarchy);
 
       bool bInitRequest = true;
+      var configChangedTcs = new TaskCompletionSource();
 
       _sync.OnConfigurationChanged += () =>
       {
         bInitRequest = true;
+        // сбрасываем TCS, если оно ещё не выполнено
+        if (!configChangedTcs.Task.IsCompleted)
+          configChangedTcs.TrySetResult();
       };
 
       while (!cancellationToken.IsCancellationRequested)
@@ -157,29 +184,44 @@ namespace AASubService
           {
             var res = await UploadCamImage(cam);
             if (!res)
-            {
               events.Events.Add(await CreateNoImageEvent(cam));
-            }
           }
           catch (Exception ex)
           {
             events.Events.Add(await CreateNoImageEvent(cam));
-            Console.WriteLine(ex.ToString());
-          }         
+            Console.WriteLine(ex);
+          }
         }
+
         try
         {
           var client = Utils.ClientBase.Client;
           if (client != null && events.Events.Any())
-          {
-            var result = await client.UpdateEventsAsync(events);
-          }          
+            await client.UpdateEventsAsync(events);
         }
         catch (Exception ex)
         {
-          Console.WriteLine(ex.ToString());
+          Console.WriteLine(ex);
         }
-        await Task.Delay(30000, cancellationToken.Token);
+
+        // ждём либо 30 секунд, либо событие изменения
+        var delayTask = Task.Delay(30000, cancellationToken.Token);
+        var changeTask = configChangedTcs.Task;
+
+        var finished = await Task.WhenAny(delayTask, changeTask);
+
+        if (finished == changeTask)
+        {
+          // конфиг изменился, ждём ещё 2 секунды (debounce)
+          try
+          {
+            await Task.Delay(2000, cancellationToken.Token);
+          }
+          catch (TaskCanceledException) { }
+
+          // сбрасываем TCS на новый
+          configChangedTcs = new TaskCompletionSource();
+        }
       }
     }
     async private Task<EventProto> CreateNoImageEvent(KeyValuePair<string, Camera> cam)

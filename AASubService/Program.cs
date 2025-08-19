@@ -57,7 +57,7 @@ _ = Task.Run(async () =>
   {
     //http://172.16.254.136/onvif/services
     //var camera = await Camera.CreateAsync("172.16.254.103", 80, "admin", "en123456");
-    var camera = await Camera.CreateAsync("172.16.254.136", 80, "root", "root");
+    var camera = Camera.Create("172.16.254.136", 80, "root", "root");
     var service = await camera.GetEventService();
 
     if (service == null)

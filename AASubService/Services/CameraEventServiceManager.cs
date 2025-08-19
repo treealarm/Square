@@ -35,7 +35,7 @@ namespace AASubService.Services
 
         if (!_activeServices.TryAdd(cameraId, service))
         {
-          service.StopReceiving();
+          await service.StopReceivingAsync();
           service.Dispose();
         }
       }
@@ -46,21 +46,21 @@ namespace AASubService.Services
     }
 
 
-    public void RemoveCamera(string cameraId)
+    public async Task RemoveCameraAsync(string cameraId)
     {
       if (_activeServices.TryRemove(cameraId, out var service))
       {
         Console.WriteLine($"[{cameraId}] Stopping event service...");
-        service.StopReceiving();
+        await service.StopReceivingAsync();
         service.Dispose();
       }
     }
 
-    public void StopAll()
+    public async Task StopAll()
     {
       foreach (var (cameraId, service) in _activeServices)
       {
-        service.StopReceiving();
+        await service.StopReceivingAsync();
         service.Dispose();
       }
 
