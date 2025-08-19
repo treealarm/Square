@@ -226,6 +226,7 @@ namespace AASubService
     }
     async private Task<EventProto> CreateNoImageEvent(KeyValuePair<string, Camera> cam)
     {
+      await Task.Yield();
       var newEv = new EventProto();
       newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
 

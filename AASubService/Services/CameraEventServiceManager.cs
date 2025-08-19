@@ -56,7 +56,7 @@ namespace AASubService.Services
       }
     }
 
-    public async Task StopAll()
+    public async Task StopAllAsync()
     {
       foreach (var (cameraId, service) in _activeServices)
       {
