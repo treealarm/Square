@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import * as React from "react";
 import "./custom.css";
 
@@ -8,6 +9,7 @@ import { Layout } from "./components/Layout.tsx";
 import { Home } from "./components/Home.tsx";
 import { DiagramTypeEditor } from "./diagramtypeeditor/DiagramTypeEditor.tsx";
 import { EventViewer } from "./eventviewer/EventViewer.tsx";
+import { StatesViewer } from "./statesviewer/statesviewer.tsx";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 import * as RightsStore from './store/RightsStates.ts';
@@ -57,13 +59,14 @@ export default function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
-          <Route path="/" exact element={<Layout> <Home /> </Layout>} />
-          <Route path="/editdiagram" exact element={<Layout> <DiagramTypeEditor /> </Layout>} />
-          <Route path="/eventviewer" exact element={<Layout> <EventViewer /> </Layout>} />
+          <Route path="/" element={<Layout><Home /></Layout>} />
+          <Route path="/editdiagram" element={<Layout><DiagramTypeEditor /></Layout>} />
+          <Route path="/_events" element={<Layout><EventViewer /></Layout>} />
+          <Route path="/_states" element={<Layout><StatesViewer/></Layout>} />
         </Routes>
       </Router>
-       
     </ThemeProvider>
   );
+
 
 }

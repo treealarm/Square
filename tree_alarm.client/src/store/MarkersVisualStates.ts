@@ -1,12 +1,13 @@
 ﻿import { ApplicationState } from './index';
 import { DoFetch } from "./Fetcher";
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { AlarmObject, MarkerVisualStateDTO } from "./Marker";
+import { AlarmObject, MarkerVisualStateDTO, ObjectStateDTO } from "./Marker";
 import { ApiStatesRootString } from './constants';
 
 
 export interface MarkersVisualStates {
   visualStates: MarkerVisualStateDTO;
+  selected_state: ObjectStateDTO | null;
 }
 
 const unloadedState: MarkersVisualStates = {
@@ -14,7 +15,8 @@ const unloadedState: MarkersVisualStates = {
     states: [],
     states_descr: [],
     alarmed_objects: []
-  }
+  },
+  selected_state: null
 };
 
 async function UpdateVisualStates(ids: string[]): Promise<MarkerVisualStateDTO> {
@@ -55,6 +57,9 @@ const stateSlice = createSlice({
   name: 'StateStates',
   initialState: unloadedState,
   reducers: {
+    set_selected_state(state, action: PayloadAction<ObjectStateDTO | null>) {
+      (state as any).selected_state = action.payload;
+    }
   }
   ,
   extraReducers: (builder) => {
@@ -90,5 +95,7 @@ const stateSlice = createSlice({
       })
   },
 })
+
+export const { set_selected_state } = stateSlice.actions;
 
 export const reducer = stateSlice.reducer

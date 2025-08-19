@@ -1,7 +1,9 @@
-﻿
+﻿/* eslint-disable no-unused-vars */
+
 import {
   AppBar,
   Box,
+  Button,
   Toolbar
 } from "@mui/material";
 
@@ -13,8 +15,16 @@ import { EPanelType } from "../store/Marker";
 import { SearchApplyButton } from "../tree/SearchApplyButton";
 import { FlyToMyLocationButton } from "../tree/FlyToMyLocationButton";
 import DiagramNavigation from "../diagrams/DiagramNavigation";
+import { useNavigate } from "react-router-dom";
 
 export function MainToolbar() {
+
+  const navigate = useNavigate();
+
+  const goToStatesViewer = () => {
+    navigate("/_states"); // путь к твоему StateViewer
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar sx={{ backgroundColor: '#bbbbbb' }} >
@@ -38,6 +48,11 @@ export function MainToolbar() {
             <FlyToMyLocationButton />
             <DiagramNavigation />
           </Box>
+
+          {/* кнопка перехода в StateViewer */}
+          <Button onClick={goToStatesViewer} variant="contained" size="small" sx={{ ml: 2 }}>
+            States Viewer
+          </Button>
 
           <Box
             sx={{ flexGrow: 1 }}
