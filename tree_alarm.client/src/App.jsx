@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import * as React from "react";
 import "./custom.css";
@@ -10,6 +11,7 @@ import { Home } from "./components/Home.tsx";
 import { DiagramTypeEditor } from "./diagramtypeeditor/DiagramTypeEditor.tsx";
 import { EventViewer } from "./eventviewer/EventViewer.tsx";
 import { StatesViewer } from "./statesviewer/statesviewer.tsx";
+import { useWebSocketClient } from "./components/useWebSocketClient";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 import * as RightsStore from './store/RightsStates.ts';
@@ -52,8 +54,9 @@ export default function App() {
     if (!UserService.isLoggedIn()) {
       UserService.initKeycloak(setToken, onUserChangedCallback);
     }
-  });
+  }, []);
 
+  useWebSocketClient();
 
   return (
     <ThemeProvider theme={theme}>

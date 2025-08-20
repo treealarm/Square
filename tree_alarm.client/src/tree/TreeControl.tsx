@@ -49,6 +49,8 @@ export function TreeControl() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [debounceTimeout, setDebounceTimeout] = useState<any | null>(null);
 
+  const checked = useSelector((state: ApplicationState) => state?.guiStates?.checked) ?? [];
+
   const getTreeItemsByParent = useCallback((requestedState: RequestedState | null) => {
     if (requestedState) {
       requestedState = DeepCopy(requestedState);
@@ -85,19 +87,18 @@ export function TreeControl() {
     };
   }, [requestedState, requestTreeUpdate]);
 
-  const [checked, setChecked] = React.useState<Set<string>>(new Set());
+const handleChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const selectedId = event.target.id;
+  let newChecked: string[];
 
-  const handleChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedId = event.target.id;
-    const newChecked = new Set(checked);
-    if (event.target.checked) {
-      newChecked.add(selectedId);
-    } else {
-      newChecked.delete(selectedId);
-    }
-    setChecked(newChecked);
-    appDispatch(GuiStore.checkTreeItem(Array.from(newChecked)));
-  };
+  if (event.target.checked) {
+    newChecked = [...checked, selectedId];
+  } else {
+    newChecked = checked.filter(id => id !== selectedId);
+  }
+
+  appDispatch(GuiStore.checkTreeItem(newChecked));
+};
 
   const selectItem = (selectedMarker: TreeMarker | null) => {
     const selectedId = selectedMarker?.id === reduxSelectedId ? null : selectedMarker?.id ?? null;
@@ -286,7 +287,7 @@ export function TreeControl() {
                   <Checkbox
                     size="small"
                     edge="start"
-                    checked={checked.has(marker.id)}
+                    checked={checked.includes(marker.id)}
                     tabIndex={-1}
                     disableRipple
                     id={marker.id}

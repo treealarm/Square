@@ -7,7 +7,7 @@ import {
   Toolbar
 } from "@mui/material";
 
-import { WebSockClient } from "./WebSockClient";
+import { WebSockStatus } from "./WebSockStatus";
 import GlobalLayersOptions from "../tree/GlobalLayersOptions";
 import { Login } from "../auth/Login";
 import PanelSwitch from "./PanelSwitch";
@@ -35,7 +35,7 @@ export function MainToolbar() {
             justifyContent="flex-start"
           >
             <PanelSwitch panelType={EPanelType.Left} />
-            <WebSockClient />
+            <WebSockStatus/>
 
           </Box>
 

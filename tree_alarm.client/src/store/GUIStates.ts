@@ -12,6 +12,8 @@ export interface GUIState {
   map_option: ViewOption | null;
   searchFilter: SearchFilterGUI;
   diagramDiving: boolean;
+
+  cur_interface: string | null;
 }
 
 const initialState: GUIState = {
@@ -27,7 +29,8 @@ const initialState: GUIState = {
     },
     search_id: ""
   },
-  diagramDiving: false
+  diagramDiving: false,
+  cur_interface: null
 };
 
 // -----------------
@@ -54,6 +57,9 @@ const guiSlice = createSlice({
     },
     applyFilter(state, action: PayloadAction<SearchFilterGUI>) {
       state.searchFilter = action.payload;
+    },
+    set_cur_interface(state, action: PayloadAction<string>) {
+      state.cur_interface = action.payload;
     }
   }
 });
@@ -67,6 +73,7 @@ export const {
   requestTreeUpdate,
   setMapOption,
   applyFilter,
+  set_cur_interface,
   setDiagramDivingMode
 } = guiSlice.actions;
 
