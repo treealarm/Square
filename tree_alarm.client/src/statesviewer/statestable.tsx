@@ -35,7 +35,7 @@ export default function StatesTable() {
 
   const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked) ?? [];
   const visualStates = useSelector((state: ApplicationState) => state?.markersVisualStates?.visualStates);
-  const selectedState = useSelector((state: ApplicationState) => state?.markersVisualStates?.selected_state);
+  const selectedStateId = useSelector((state: ApplicationState) => state?.markersVisualStates?.selected_state_id);
 
   const isAlarmed = (id: string) =>
     visualStates?.alarmed_objects.some((a) => a.id === id && a.alarm);
@@ -50,10 +50,10 @@ export default function StatesTable() {
   }, [checked_ids]);
 
   const handleSelect = (obj: ObjectStateDTO) => {
-    if (selectedState?.id === obj.id) {
+    if (selectedStateId === obj.id) {
       appDispatch(MarkersVisualStore.set_selected_state(null));
     } else {
-      appDispatch(MarkersVisualStore.set_selected_state(obj));
+      appDispatch(MarkersVisualStore.set_selected_state(obj.id));
     }
   };
 
@@ -83,7 +83,7 @@ export default function StatesTable() {
           </TableHead>
           <TableBody>
             {visualStates?.states.map((obj: ObjectStateDTO) => {
-              const selected = selectedState?.id === obj.id;
+              const selected = selectedStateId == obj.id;
               return (
                 <TableRow
                   key={obj.id}

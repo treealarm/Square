@@ -26,7 +26,7 @@ export function StatesViewer() {
   const navigate = useNavigate();
 
   const selectedState: ObjectStateDTO | null = useSelector(
-    (state: ApplicationState) => state?.markersVisualStates?.selected_state ?? null
+    (state: ApplicationState) => state?.markersVisualStates?.selected_state_id ?? null
   );
 
   useEffect(() => {
