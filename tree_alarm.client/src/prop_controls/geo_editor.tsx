@@ -74,7 +74,7 @@ const GeoEditor = ({ props }: { props: IControlGeoProps }) => {
         />
       );
     }
-    return geometry.coord.map((coord: [number, number], index: number) => (
+    return geometry?.coord?.map((coord: [number, number], index: number) => (
       <CoordInput
         key={index}
         index={index}

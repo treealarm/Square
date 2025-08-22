@@ -1,20 +1,20 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+Ôªø/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { ICommonFig, IFigures, IPointCoord, IPolygonCoord, IPolylineCoord, PointType } from '../store/Marker';
+import { GeometryType, ICircle, ICommonFig, IFigures, IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LatLngPair, LineStringType, PointType, PolygonType } from '../store/Marker';
 import GeoEditor from '../prop_controls/geo_editor';
 import { useAppDispatch } from '../store/configureStore';
 import * as MarkersStore from '../store/MarkersStates';
-import { Box } from '@mui/material';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import GeoExtraPropertiesEditor from '../prop_controls/GeoExtraPropertiesEditor';
 
 export interface ChildEvents {
   clickSave: () => void;
 }
 
-// »ÌÚÂÙÂÈÒ ‰Îˇ props ‰Ó˜ÂÌÂ„Ó ÍÓÏÔÓÌÂÌÚ‡
+// –ò–Ω—Ç–µ—Ä—Ñ–µ–π—Å –¥–ª—è props –¥–æ—á–µ—Ä–Ω–µ–≥–æ –∫–æ–º–ø–æ–Ω–µ–Ω—Ç–∞
 export interface IGeoEditorProperties {
   events: ChildEvents;
 }
@@ -23,6 +23,7 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
   const appDispatch = useAppDispatch();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const selectedFig = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
+  const objProps: IObjProps | null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps ?? null);
 
   useEffect(() => {
     if (selected_id) {
@@ -30,11 +31,11 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
         // Fetch the figure if it's not already set
         const fetchData = async () => {
           try {
-            const fetchedFigures = await MarkersStore.requestMarkersByIds([selected_id]); // ∆‰ÂÏ ÂÁÛÎ¸Ú‡Ú Á‡ÔÓÒ‡
-            appDispatch(MarkersStore.selectMarkerLocally(fetchedFigures.figs[0])); // ”ÒÚ‡Ì‡‚ÎË‚‡ÂÏ ÔÂ‚Û˛ ÙË„ÛÛ
+            const fetchedFigures = await MarkersStore.requestMarkersByIds([selected_id]); // –ñ–¥–µ–º —Ä–µ–∑—É–ª—å—Ç–∞—Ç –∑–∞–ø—Ä–æ—Å–∞
+            appDispatch(MarkersStore.selectMarkerLocally(fetchedFigures.figs[0])); // –£—Å—Ç–∞–Ω–∞–≤–ª–∏–≤–∞–µ–º –ø–µ—Ä–≤—É—é —Ñ–∏–≥—É—Ä—É
           } catch (error) {
             console.error("Failed to fetch marker:", error);
-            appDispatch(MarkersStore.selectMarkerLocally(null)); // ”ÒÚ‡Ì‡‚ÎË‚‡ÂÏ null ‚ ÒÎÛ˜‡Â Ó¯Ë·ÍË
+            appDispatch(MarkersStore.selectMarkerLocally(null)); // –£—Å—Ç–∞–Ω–∞–≤–ª–∏–≤–∞–µ–º null –≤ —Å–ª—É—á–∞–µ –æ—à–∏–±–∫–∏
           }
         };
 
@@ -48,9 +49,9 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
   const handleSave = useCallback(() => {
     if (selectedFig) {
       const figures: IFigures = {
-        figs: [selectedFig],  // —‡ÁÛ Á‡‰‡ÂÏ figs
+        figs: [selectedFig],  // –°—Ä–∞–∑—É –∑–∞–¥–∞–µ–º figs
       };
-      appDispatch(MarkersStore.updateMarkers(figures));  // Œ·ÌÓ‚ÎˇÂÏ ÙË„ÛÛ Ì‡ ÒÂ‚ÂÂ
+      appDispatch(MarkersStore.updateMarkers(figures));  // –û–±–Ω–æ–≤–ª—è–µ–º —Ñ–∏–≥—É—Ä—É –Ω–∞ —Å–µ—Ä–≤–µ—Ä–µ
     }
   }, [selectedFig, props]);
 
@@ -90,15 +91,91 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
     }
   }, [props.events, selectedFig]);
 
+  const addDefaultGeometry = useCallback(() => {
+    if (!objProps) return;
+
+    const figure: ICircle = {
+      ...objProps,
+      geometry: { type: PointType, coord: [0, 0] },
+      radius: 100,
+    };
+
+    appDispatch(MarkersStore.selectMarkerLocally(figure));
+  }, [selected_id, objProps, appDispatch]);
+
+  const changeGeometryType = useCallback(
+    (newType: GeometryType) => {
+      if (!selectedFig || !selectedFig.geometry) return;
+
+      let newGeometry: IPointCoord | IPolygonCoord | IPolylineCoord;
+
+      const oldGeom = selectedFig.geometry;
+
+      switch (newType) {
+        case PointType: {
+          // –ï—Å–ª–∏ —Ç–µ–∫—É—â–∞—è –≥–µ–æ–º–µ—Ç—Ä–∏—è –º–∞—Å—Å–∏–≤ (Polygon/Polyline), –±–µ—Ä–µ–º –ø–µ—Ä–≤—É—é —Ç–æ—á–∫—É
+          let coord: LatLngPair = [0, 0];
+          if (oldGeom.type === PolygonType || oldGeom.type === LineStringType) {
+            const coordsArray = oldGeom.coord as LatLngPair[];
+            if (coordsArray.length > 0) coord = coordsArray[0];
+          } else if (oldGeom.type === PointType && oldGeom.coord) {
+            coord = oldGeom.coord;
+          }
+          newGeometry = { type: PointType, coord };
+          break;
+        }
+        case PolygonType: {
+          // –ï—Å–ª–∏ —Ç–µ–∫—É—â–∞—è –≥–µ–æ–º–µ—Ç—Ä–∏—è Point, –±–µ—Ä–µ–º coord –∏ –¥–µ–ª–∞–µ–º –º–∞—Å—Å–∏–≤
+          let coords: LatLngPair[] = [];
+          if (oldGeom.type === PointType && oldGeom.coord) {
+            coords = [oldGeom.coord];
+          } else if ((oldGeom.type === PolygonType || oldGeom.type === LineStringType) && Array.isArray(oldGeom.coord)) {
+            coords = oldGeom.coord;
+          }
+          newGeometry = { type: PolygonType, coord: coords };
+          break;
+        }
+        case LineStringType: {
+          let coords: LatLngPair[] = [];
+          if (oldGeom.type === PointType && oldGeom.coord) {
+            coords = [oldGeom.coord];
+          } else if ((oldGeom.type === PolygonType || oldGeom.type === LineStringType) && Array.isArray(oldGeom.coord)) {
+            coords = oldGeom.coord;
+          }
+          newGeometry = { type: LineStringType, coord: coords };
+          break;
+        }
+      }
+
+      const updatedFig: ICommonFig = {
+        ...selectedFig,
+        geometry: newGeometry,
+      };
+
+      appDispatch(MarkersStore.selectMarkerLocally(updatedFig));
+    },
+    [selectedFig, appDispatch]
+  );
+
 
 
   return (
     <Box style={{ width: '100%' }}>
+
+      {(!selectedFig?.geometry && selected_id) && (
+        <Button
+          variant="contained"
+          size="small"
+          onClick={addDefaultGeometry}
+         >
+          Add Geo
+        </Button>
+      )}
       {selectedFig ? (
         <>
         <GeoEditor
           props={{
-            val: selectedFig.geometry,  // œÂÂ‰‡˜‡ „ÂÓÏÂÚËË ‚ GeoEditor
+            val: selectedFig.geometry,  // –ü–µ—Ä–µ–¥–∞—á–∞ –≥–µ–æ–º–µ—Ç—Ä–∏–∏ –≤ GeoEditor
             prop_name: 'geometry',
             handleChangeProp: (event: any) => {
               handleChangeGeo(event);
@@ -110,9 +187,28 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
               radius: selectedFig.radius,
               zoom_level: selectedFig.zoom_level,
             }}
-            showRadius={selectedFig.geometry.type === PointType}
+            showRadius={selectedFig?.geometry?.type === PointType}
             handleChangeProp={(updatedProps) => handleChangeProp(updatedProps)}
           />
+          <FormControl size="small" sx={{ mb: 1, minWidth: 120 }}>
+            <InputLabel id="geometry-type-label">–¢–∏–ø –≥–µ–æ</InputLabel>
+            <Select
+              labelId="geometry-type-label"
+              value={
+                selectedFig.geometry?.type === PointType
+                  ? "Point"
+                  : selectedFig.geometry?.type === "Polygon"
+                    ? "Polygon"
+                    : "LineString"
+              }
+              label="–¢–∏–ø –≥–µ–æ"
+              onChange={(e) => changeGeometryType(e.target.value as "Point" | "Polygon" | "LineString")}
+            >
+              <MenuItem value="Point">Point</MenuItem>
+              <MenuItem value="Polygon">Polygon</MenuItem>
+              <MenuItem value="LineString">LineString</MenuItem>
+            </Select>
+          </FormControl>
           </>
       ) : null
       }

@@ -63,7 +63,7 @@ export function useWebSocketClient() {
     } catch (err) {
       console.log(err);
     }
-  }, [appDispatch]);
+  }, []);
 
   const connect = useCallback(() => {
     if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
