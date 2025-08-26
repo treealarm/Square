@@ -257,7 +257,7 @@ export interface ViewOption {
   find_current_pos?: boolean;
 }
 
-export interface ObjectStateDTO {
+export interface IObjectStateDTO {
   id: string;
   states: string[];
 }
@@ -276,7 +276,7 @@ export interface AlarmObject {
 }
 
 export interface MarkerVisualStateDTO {
-  states: ObjectStateDTO[];
+  states: IObjectStateDTO[];
   states_descr: ObjectStateDescriptionDTO[]; 
   alarmed_objects: AlarmObject[];
 }

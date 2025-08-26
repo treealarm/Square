@@ -307,6 +307,15 @@ namespace LeafletAlarms.Controllers
       return CreatedAtAction(nameof(GetByIds), figures);
     }
 
+    [HttpPost]
+    [Route("GetMarkersByIds")]
+    public async Task<ActionResult<BaseMarkerDTO>> GetMarkersByIds(List<string> ids)
+    {
+      var markers = await _mapService.GetAsync(ids);
+
+      return CreatedAtAction(nameof(GetMarkersByIds), markers.Values);
+    }
+
     [HttpGet]
     [Route("GetGeoObject")]
     public async Task<ActionResult<GeoObjectDTO>> GetGeoObject(string id)

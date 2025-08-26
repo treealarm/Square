@@ -16,7 +16,7 @@ import StatesTable from './statestable';       // таблица состояний
 import { StateProperties } from './stateproperties'; // отдельный компонент для детальной инфы
 
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
-import { ObjectStateDTO } from "../store/Marker";
+import { IObjectStateDTO } from "../store/Marker";
 import { useNavigate } from "react-router-dom";
 import { TreeControl } from "../tree/TreeControl";
 
@@ -25,7 +25,7 @@ export function StatesViewer() {
 
   const navigate = useNavigate();
 
-  const selectedState: ObjectStateDTO | null = useSelector(
+  const selectedState: IObjectStateDTO | null = useSelector(
     (state: ApplicationState) => state?.markersVisualStates?.selected_state_id ?? null
   );
 
@@ -34,7 +34,7 @@ export function StatesViewer() {
   }, []);
 
   // обработчик выбора строки
-  const handleSelect = useCallback((row: ObjectStateDTO | null) => {
+  const handleSelect = useCallback((row: IObjectStateDTO | null) => {
     if (selectedState?.id === row?.id) {
       appDispatch(MarkersVisualStore.set_selected_state(null));
     } else {

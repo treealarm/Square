@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from './store';
 import { ApiRootString } from './constants';
 import { DoFetch } from './Fetcher';
-import { BoundBox, ICommonFig, IFigures, IGeoObjectDTO } from './Marker';
+import { BoundBox, ICommonFig, IFigures, IGeoObjectDTO, Marker } from './Marker';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -109,6 +109,24 @@ export const requestMarkersByIds =
   return data;
 }
 
+export const requestSimpleMarkersByIds =
+  async (ids: string[]): Promise<Marker[]> => {
+    const body = JSON.stringify(ids);
+    const response = await DoFetch(`${ApiRootString}/GetMarkersByIds`, {
+      method: 'POST',
+      headers: { 'Content-type': 'application/json' },
+      body: body,
+    });
+
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    const data = (await response.json()) as Marker[];
+    return data;
+  }
+
+
 export const getGeoObject = createAsyncThunk<IGeoObjectDTO, string>(
   'markers/getGeoObject',
   async (id: string) => {
@@ -131,6 +149,23 @@ export const fetchMarkersByIds = createAsyncThunk(
     } catch (error) {
       console.log("fetchMarkersByIds:", error);
       return rejectWithValue(null);
+    }
+  }
+);
+
+export const fetchSimpleMarkersByIds = createAsyncThunk<
+  Marker[],        // что возвращаем
+  string[],        // аргумент Ч массив id
+  { rejectValue: string } // тип ошибки
+>(
+  'markers/fetchSimpleMarkersByIds',
+  async (ids, { rejectWithValue }) => {
+    try {
+      const data = await requestSimpleMarkersByIds(ids);
+      return data;
+    } catch (error) {
+      console.error("fetchSimpleMarkersByIds:", error);
+      return rejectWithValue("Error fetchSimpleMarkersByIds");
     }
   }
 );
