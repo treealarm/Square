@@ -23,6 +23,8 @@ namespace DbLayer.Services
       {
         var defaults = new List<DBObjectStateDescription>
         {
+          new() { state = "CONNECTED", state_descr = "Connected", state_color = "#00FF00", alarm = false },
+          new() { state = "DISCONNECTED", state_descr = "Disconnected", state_color = "#FF0000", alarm = true },
           new() { state = "ALARM", state_descr = "Alarm", state_color = "#FF0000", alarm = true },
           new() { state = "INFO",  state_descr = "Info",  state_color = "#00FF00", alarm = false },
           new() { state = "NORM",  state_descr = "Normal", state_color = "#0000FF", alarm = false }

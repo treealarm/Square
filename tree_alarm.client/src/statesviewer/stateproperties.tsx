@@ -3,10 +3,13 @@ import { useSelector } from "react-redux";
 import { Box, Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
 import { useMemo } from "react";
 import { ApplicationState } from "../store";
-import { MarkerVisualStateDTO, ObjectStateDescriptionDTO } from "../store/Marker";
+import { IObjProps, MarkerVisualStateDTO, ObjectStateDescriptionDTO, VisualTypes } from "../store/Marker";
+import { ControlSelector } from "../prop_controls/control_selector";
 
 export function StateProperties()
 {
+  const objProps: IObjProps | null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps ?? null);
+
   const selected_state = useSelector(
     (state: ApplicationState) =>
       state?.markersVisualStates?.visualStates?.states.find(
@@ -34,6 +37,8 @@ export function StateProperties()
     );
   }
 
+  var item = objProps?.extra_props?.find(p => p.visual_type == VisualTypes.SnapShot);
+
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h6" gutterBottom>
@@ -56,7 +61,19 @@ export function StateProperties()
               secondary={`Code: ${desc.state}, Alarm: ${desc.alarm}`}
             />
           </ListItem>
+         
         ))}
+        {
+          item ? <ListItem>
+            <ControlSelector
+              prop_name={item?.prop_name}
+              str_val={item?.str_val}
+              visual_type={item?.visual_type ?? null}
+              handleChangeProp={() => { }}
+              object_id={objProps?.id ?? null} />
+          </ListItem> : <Divider sx={{ my: 1 }} />
+        }
+        
       </List>
     </Box>
   );

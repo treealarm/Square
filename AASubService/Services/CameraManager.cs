@@ -29,6 +29,7 @@ namespace AASubService
     const string GetSnapshot = "get_snapshot";
     const string CredentialListParam = "credential_list";
     const string PortListParam = "port_list";
+
     public CameraManager(ISubService sub, CameraEventServiceManager cameraEventServiceManager)
     {
       _sub = sub;
@@ -167,6 +168,8 @@ namespace AASubService
         if (!configChangedTcs.Task.IsCompleted)
           configChangedTcs.TrySetResult();
       };
+
+      StartCameraMonitor(new TimeSpan(0, 0, 3), cancellationToken);
 
       while (!cancellationToken.IsCancellationRequested)
       {
@@ -677,6 +680,54 @@ namespace AASubService
         Success = false,
         Message = "not implemented"
       };
+    }  
+
+    public void StartCameraMonitor(TimeSpan interval, CancellationTokenSource cancellationToken)
+    {
+      // Запускаем задачу в фоне
+      Task.Run(async () =>
+      {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+          await Task.Delay(interval.Milliseconds, cancellationToken.Token); // ждем перед следующим циклом
+          var client = Utils.ClientBase;
+
+          if (client == null || client.IsDead)
+          {
+            continue;
+          }
+          var states = new ProtoObjectStates();
+
+          var tasks = _cameras.Select(async kvp =>
+          {
+            var id = kvp.Key;
+            var camera = kvp.Value;
+
+            bool alive = false;
+            try
+            {
+              var list = await camera.GetProfiles();
+              alive = list?.Count > 0;
+            }
+            catch
+            {
+              alive = false;
+            }
+
+            var state = alive ? "CONNECTED" : "DISCONNECTED";
+
+            var proto_state = new ProtoObjectState();
+            proto_state.Id = id;
+            proto_state.States.Add(state);
+            proto_state.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
+            states.States.Add(proto_state);
+          });
+
+          await Task.WhenAll(tasks); // ждем завершения всех проверок
+          await client.Client!.UpdateStatesAsync(states);
+        }
+      });
     }
+
   }
 }

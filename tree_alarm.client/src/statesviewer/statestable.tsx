@@ -15,6 +15,7 @@ import { ApplicationState } from '../store';
 import { IObjectStateDTO, Marker, ObjectStateDescriptionDTO } from '../store/Marker';
 import { useAppDispatch } from '../store/configureStore';
 import * as MarkersVisualStore from '../store/MarkersVisualStates';
+import * as GuiStore from '../store/GUIStates';
 import { fetchSimpleMarkersByIds } from '../store/MarkersStates';
 import { useState } from 'react';
 
@@ -69,10 +70,10 @@ export default function StatesTable() {
   };
 
   React.useEffect(() => {
-    if (checked_ids.length > 0) {
-      // Redux — состояния объектов
-      appDispatch(MarkersVisualStore.requestMarkersVisualStates(checked_ids));
+    // Redux — состояния объектов
+    appDispatch(MarkersVisualStore.requestMarkersVisualStates(checked_ids));
 
+    if (checked_ids.length > 0) { 
       // Локально — имена маркеров
       loadMarkers(checked_ids);
     } else {
@@ -83,8 +84,10 @@ export default function StatesTable() {
 
   const handleSelect = (obj: IObjectStateDTO) => {
     if (selectedStateId === obj.id) {
+      appDispatch(GuiStore.selectTreeItem(null));
       appDispatch(MarkersVisualStore.set_selected_state(null));
     } else {
+      appDispatch(GuiStore.selectTreeItem(obj.id));
       appDispatch(MarkersVisualStore.set_selected_state(obj.id));
     }
   };
