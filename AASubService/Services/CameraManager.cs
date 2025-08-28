@@ -140,6 +140,18 @@ namespace AASubService
         StrVal = "root",
         VisualType = VisualTypes.Password
       });
+      type_to_props[CamStr]!.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "__image",
+        StrVal = @"images/videocamera.png",
+        VisualType = VisualTypes.String
+      });
+      type_to_props[CamStr]!.Add(new ProtoObjExtraProperty()
+      {
+        PropName = "__image_rotate",
+        StrVal = @"90",
+        VisualType = VisualTypes.Int
+      });
       _sync = new IntegrationSyncFull(_sub, type_to_props, cancellationToken.Token);
     }
 
@@ -635,6 +647,7 @@ namespace AASubService
       var name = $"cam {cam.Ip}:{cam.Port}";
       await _sync!.CreateFullObject(cam_prop, name, CamStr);
     }
+
     private async Task<ProtoObjProps> BuildCameraPropsAsync(Camera cam)
     {
       var existing = _cameras.FirstOrDefault(c => c.Value.Url == cam.Url);

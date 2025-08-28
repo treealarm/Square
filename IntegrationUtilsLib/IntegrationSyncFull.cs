@@ -110,9 +110,19 @@ namespace IntegrationUtilsLib
     public async Task SyncPropObjects()
     {
       var missingIntegros = _integros
-        .Where(kvp => !_obj_props.ContainsKey(kvp.Key))
-        .Select(kvp => kvp.Value)
-        .ToList();
+          .Where(kvp =>
+          {
+            if (!_obj_props.TryGetValue(kvp.Key, out var objProps))
+              return true; // ключа нет => добавляем
+
+            return objProps == null ||
+             objProps.Properties == null ||
+             !objProps.Properties.Any(); // пустые свойства => тоже добавляем
+          })
+          .Select(kvp => kvp.Value)
+          .ToList();
+
+
       var toSend = new ProtoObjPropsList();
 
       foreach (var integro in missingIntegros)
@@ -136,6 +146,10 @@ namespace IntegrationUtilsLib
           _obj_props[integro.ObjectId] = null;
         }
         toSend.Objects.Add(protoProp);
+      }
+      if (toSend.Objects.Count == 0)
+      {
+        return;
       }
       var client = Utils.ClientBase;
       await client!.Client!.UpdatePropertiesAsync(toSend);
