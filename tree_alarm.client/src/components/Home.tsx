@@ -19,7 +19,7 @@ import { EPanelType, IPanelsStatesDTO, IPanelTypes } from "../store/Marker";
 import { MainToolbar } from "./MainToolbar";
 import { AccordionPanels } from "./AccordionPanels";
 import DiagramViewer from "../diagrams/DiagramViewer";
-import { ObjectPropertiesUpdater } from "./ObjectPropertiesUpdater";
+
 import { ActionsControl } from '../actions/ActionsControl';
 
 const LeftPanel = () => {
@@ -88,8 +88,7 @@ export function Home() {
       <Box sx={{
         width: '100%'
       }}
-      >
-        <ObjectPropertiesUpdater />
+      >        
         <MainToolbar />
         <Toolbar />
       </Box>

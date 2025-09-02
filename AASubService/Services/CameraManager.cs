@@ -719,10 +719,10 @@ namespace AASubService
             bool alive = false;
             try
             {
-              var list = await camera.GetProfiles();
-              alive = list?.Count > 0;
+              var time = await camera.GetDeviceTimeAsync();
+              alive = time != null;
             }
-            catch
+            catch(Exception ex)
             {
               alive = false;
             }
@@ -733,10 +733,12 @@ namespace AASubService
             proto_state.Id = id;
             proto_state.States.Add(state);
             proto_state.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
-            states.States.Add(proto_state);
+            return proto_state;
+            
           });
 
-          await Task.WhenAll(tasks); // ждем завершения всех проверок
+          var results = await Task.WhenAll(tasks); // ждем завершения всех проверок
+          states.States.AddRange(results);
           await client.Client!.UpdateStatesAsync(states);
         }
       });

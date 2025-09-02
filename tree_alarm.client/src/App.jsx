@@ -12,6 +12,7 @@ import { DiagramTypeEditor } from "./diagramtypeeditor/DiagramTypeEditor.tsx";
 import { EventViewer } from "./eventviewer/EventViewer.tsx";
 import { StatesViewer } from "./statesviewer/statesviewer.tsx";
 import { useWebSocketClient } from "./components/useWebSocketClient";
+import { ObjectPropertiesUpdater } from "./components/ObjectPropertiesUpdater";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 import * as RightsStore from './store/RightsStates.ts';
@@ -61,6 +62,7 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
+      <ObjectPropertiesUpdater />
         <Routes>
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/editdiagram" element={<Layout><DiagramTypeEditor /></Layout>} />
