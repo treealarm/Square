@@ -40,7 +40,7 @@ export function StatesViewer() {
     } else {
       appDispatch(MarkersVisualStore.set_selected_state(row));
     }
-  }, [selectedState, appDispatch]);
+  }, [selectedState]);
 
   const goHome = () => {
     navigate("/"); // переход на главную

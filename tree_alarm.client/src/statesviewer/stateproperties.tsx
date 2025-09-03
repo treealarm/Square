@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { ApplicationState } from "../store";
 import { IObjProps, MarkerVisualStateDTO, ObjectStateDescriptionDTO, VisualTypes } from "../store/Marker";
 import { ControlSelector } from "../prop_controls/control_selector";
+import { SnapshotSimpleViewer } from "../prop_controls/SnapshotSimpleViewer";
 
 export function StateProperties()
 {
@@ -73,7 +74,9 @@ export function StateProperties()
               object_id={objProps?.id ?? null} />
           </ListItem> : <Divider sx={{ my: 1 }} />
         }
-        
+      <ListItem>
+          <SnapshotSimpleViewer imageSrc={item?.str_val ?? ""} />
+      </ListItem>
       </List>
     </Box>
   );

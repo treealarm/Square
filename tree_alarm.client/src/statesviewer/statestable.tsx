@@ -93,6 +93,9 @@ export default function StatesTable() {
   };
 
   let sortedStates = visualStates?.states ?? [];
+  if (checked_ids?.length) {
+    sortedStates = sortedStates.filter(s => checked_ids.includes(s.id));
+  }
 
   if (sortConfig) {
     sortedStates = [...sortedStates].sort((a, b) => {
