@@ -4,7 +4,7 @@
 import { useSelector } from "react-redux";
 
 import {
-  Box, ToggleButton, ButtonGroup, Grid, IconButton, Toolbar, Tooltip, Checkbox, FormControlLabel
+  Box, ToggleButton, ButtonGroup, Grid, IconButton, Toolbar, Tooltip, Checkbox, FormControlLabel, Button
 } from "@mui/material";
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
@@ -34,6 +34,8 @@ import { PropertyFilterEditor } from "./PropertyFilterEditor";
 import { PropertyListEditor } from "./PropertyListEditor";
 import PaginationControl from "../components/PaginationControl";
 import { EventGallery } from "./EventGallery";
+import { useNavigate } from "react-router-dom";
+import * as GuiStore from '../store/GUIStates';
 
 dayjs.extend(utc);
 
@@ -64,6 +66,7 @@ const TimePicker = ({
 
 export function EventViewer() {
 
+  const navigate = useNavigate();
   const appDispatch = useAppDispatch();
   //const guid = useId();
   //console.log("guid=", guid);
@@ -87,6 +90,10 @@ export function EventViewer() {
 
     appDispatch(EventsStore.set_local_filter(newFilter));
   }, [])
+
+  useEffect(() => {
+    appDispatch(GuiStore.set_cur_interface("_events"));
+  }, []);
 
   useEffect(() => {
     if (timeoutIdRef.current != null) {
@@ -160,6 +167,9 @@ export function EventViewer() {
     }
   };
 
+  const goHome = () => {
+    navigate("/");
+  };
   function clearTextSearch() {
     var newFilter = DeepCopy(searchFilter);
     if (newFilter) {
@@ -235,6 +245,9 @@ export function EventViewer() {
                 divider={<Divider orientation="vertical" flexItem />}
                 spacing={1}
             >
+              <Button variant="contained" onClick={goHome}>
+                Home
+              </Button>
               <PaginationControl key='pager' OnNavigate={OnNavigate} autoUpdate={autoUpdate} />
 
               <PropertyListEditor onChange={handleGroupsChange} btn_text={'Group filter'} />

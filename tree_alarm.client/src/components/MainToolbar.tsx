@@ -22,7 +22,11 @@ export function MainToolbar() {
   const navigate = useNavigate();
 
   const goToStatesViewer = () => {
-    navigate("/_states"); // путь к твоему StateViewer
+    navigate("/_states");
+  };
+
+  const goToEventViewer = () => {
+    navigate("/_events");
   };
 
   return (
@@ -52,6 +56,10 @@ export function MainToolbar() {
           {/* кнопка перехода в StateViewer */}
           <Button onClick={goToStatesViewer} variant="contained" size="small" sx={{ ml: 2 }}>
             States Viewer
+          </Button>
+
+          <Button onClick={goToEventViewer} variant="contained" size="small" sx={{ ml: 2 }}>
+            Event Viewer
           </Button>
 
           <Box
