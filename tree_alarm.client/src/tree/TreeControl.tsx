@@ -51,12 +51,14 @@ export function TreeControl() {
 
   const checked = useSelector((state: ApplicationState) => state?.guiStates?.checked) ?? [];
 
+  const [allChecked, setAllChecked] = useState<boolean>(false);
+
   const getTreeItemsByParent = useCallback((requestedState: RequestedState | null) => {
     if (requestedState) {
       requestedState = DeepCopy(requestedState);
     }
     appDispatch(TreeStore.setParentIdLocally(requestedState));
-  }, [appDispatch]);
+  }, []);
  
 
   useEffect(() => {
@@ -66,6 +68,18 @@ export function TreeControl() {
       end_id: startEndBounds?.end_id
     });
   }, [user, getTreeItemsByParent]);
+
+  useEffect(() => {
+    const childrenIds: string[] = (markers
+      ?.filter(m => m.parent_id === parentMarkerId)
+      .map(m => String(m.id))
+      .filter(id => id !== "null" && id !== "undefined")
+    ) ?? [];
+
+    const allCheckedTemp = childrenIds.length > 0 && childrenIds.every(id => checked.includes(id));
+    setAllChecked(allCheckedTemp);
+  }, [parentMarkerId, markers, checked]);
+  
 
   useEffect(() => {
     // Если есть предыдущий таймер, его нужно очистить
@@ -98,12 +112,37 @@ const handleChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
   }
 
   appDispatch(GuiStore.checkTreeItem(newChecked));
-};
-
-  const selectItem = (selectedMarker: TreeMarker | null) => {
-    const selectedId = selectedMarker?.id === reduxSelectedId ? null : selectedMarker?.id ?? null;
-    appDispatch(GuiStore.selectTreeItem(selectedId));
   };
+
+  const handleAllChecked = (check: boolean) => {
+    if (!parentMarkerId) return;
+
+    setAllChecked(check);
+    const childrenIds: string[] = (markers
+      ?.filter(m => m.parent_id === parentMarkerId)
+      .map(m => String(m.id))
+      .filter(id => id !== "null" && id !== "undefined")
+    ) ?? [];
+
+    if (childrenIds.length === 0) return;
+
+    let newChecked: string[];
+    if (check) {
+      // Отмечаем всех
+      newChecked = [...new Set([...checked, ...childrenIds])];
+    } else {
+      // Снимаем со всех
+      newChecked = checked.filter(id => !childrenIds.includes(id));
+    }
+
+    appDispatch(GuiStore.checkTreeItem(newChecked));
+  };
+
+
+const selectItem = (selectedMarker: TreeMarker | null) => {
+  const selectedId = selectedMarker?.id === reduxSelectedId ? null : selectedMarker?.id ?? null;
+  appDispatch(GuiStore.selectTreeItem(selectedId));
+};
 
   
   const handleSelect = (selected: TreeMarker) => () => selectItem(selected);
@@ -192,6 +231,11 @@ const handleChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
               <RefreshIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title={allChecked ? "Uncheck all children" : "Check all children"}>
+            <IconButton onClick={() => handleAllChecked(!allChecked)}>
+              <Checkbox checked={allChecked} />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Go to next page">
             <IconButton onClick={() => onNavigate(true)}>
               <ArrowForwardIcon />
@@ -217,8 +261,7 @@ const handleChecked = (event: React.ChangeEvent<HTMLInputElement>) => {
                         <AddIcon />
                       </IconButton>
                     </Tooltip>
-
-                    
+                  
                     {childTypes.length > 0 && (
                       <>
                         <Tooltip title="Add new typed child">
