@@ -7,8 +7,6 @@ using GrpcDaprLib;
 using IntegrationUtilsLib;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using PubSubLib;
-using System.Text;
-using System.Xml;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +51,7 @@ app.MapGrpcService<ActionsServiceImpl>();
 
 _ = Task.Run(async () =>
 {
+  return;
   try
   {
     //http://172.16.254.136/onvif/services
