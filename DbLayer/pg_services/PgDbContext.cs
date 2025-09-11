@@ -8,6 +8,8 @@ namespace DbLayer
   internal class PgDbContext : DbContext
   {
     private readonly NpgsqlDataSource _source;
+    public DbSet<DBObjectRightValue> Rights { get; set; }
+
     public DbSet<DBEvent> Events { get; set; }
 
     public DbSet<DBIntegro> Integro { get; set; }
@@ -46,7 +48,23 @@ namespace DbLayer
       ConfigureIntegro(modelBuilder);
       ConfigureEvents(modelBuilder);
       ConfigureActions(modelBuilder);
-      ConfigureStates(modelBuilder); // добавляем states
+      ConfigureStates(modelBuilder);
+      ConfigureRights(modelBuilder);
+    }
+
+
+    private void ConfigureRights(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<DBObjectRightValue>(entity =>
+      {
+        entity.ToTable("rights");
+
+        entity.HasKey(e => new { e.object_id, e.role }); // композитный PK
+
+        entity.Property(e => e.object_id).IsRequired();
+        entity.Property(e => e.role).IsRequired();
+        entity.Property(e => e.value).IsRequired();
+      });
     }
     private void ConfigureValues(ModelBuilder modelBuilder) 
     {

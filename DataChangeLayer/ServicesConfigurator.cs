@@ -12,7 +12,7 @@ namespace DataChangeLayer
       services.AddSingleton<IDiagramUpdateService, DiagramUpdateService>();
       services.AddSingleton<IDiagramTypeUpdateService, DiagramTypeUpdateService>();
       services.AddScoped<IEventsUpdateService, EventsUpdateService>();
-      services.AddSingleton<IRightUpdateService, RightUpdateService>();
+      services.AddScoped<IRightUpdateService, RightUpdateService>();
       services.AddScoped<IStatesUpdateService, StatesUpdateService>();
       
       services.AddScoped<IValuesUpdateService, ValuesUpdateService>();

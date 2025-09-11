@@ -9,3 +9,4 @@
 \i 'actions.sql'
 \i 'db_values.sql'
 \i 'states.sql'
+\i 'rights.sql'

@@ -6,21 +6,21 @@ namespace DataChangeLayer
 {
   internal class RightUpdateService : IRightUpdateService
   {
-    private readonly IRightService _rightsService;
+    private readonly IRightServiceInternal _rightsService;
     public RightUpdateService(
-     IRightService rightsService
+     IRightServiceInternal rightsService
      )
     {
       _rightsService = rightsService;
     }
     public async Task<long> Delete(string id)
     {
-       return await _rightsService.DeleteAsync(id);
+       return await _rightsService.Delete(id);
     }
 
-    public async Task<List<ObjectRightsDTO>> Update(List<ObjectRightsDTO> newObjs)
+    public async Task<List<ObjectRightValueDTO>> Update(List<ObjectRightValueDTO> newObjs)
     {
-      await _rightsService.UpdateListAsync(newObjs);
+      await _rightsService.Update(newObjs);
       return newObjs;
     }
   }

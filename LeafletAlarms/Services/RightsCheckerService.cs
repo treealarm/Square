@@ -56,7 +56,7 @@ namespace LeafletAlarms.Services
       {
         if (rights.TryGetValue(id, out var right))
         {
-          var myRights = right.rights.Where(r => roles.Contains(r.role));
+          var myRights = right.Where(r => roles.Contains(r.role));
 
           foreach (var r in myRights)
           {

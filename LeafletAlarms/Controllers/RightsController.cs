@@ -8,7 +8,7 @@ namespace LeafletAlarms.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin)]
+  //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin)]
   
   public class RightsController: ControllerBase
   {
@@ -27,7 +27,7 @@ namespace LeafletAlarms.Controllers
     }
 
     [HttpGet("{id:length(24)}")]
-    public async Task<ActionResult<ObjectRightsDTO>> Get(string id)
+    public async Task<ActionResult<List<ObjectRightValueDTO>>> Get(string id)
     {
       var obj = await _rightsService.GetListByIdsAsync(new List<string>() { id });
 
@@ -41,10 +41,10 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost()]
     [Route("GetRights")]
-    public async Task<List<ObjectRightsDTO>> GetRights(List<string> ids)
+    public async Task<List<ObjectRightValueDTO>> GetRights(List<string> ids)
     {
       var data = await _rightsService.GetListByIdsAsync(ids);
-      return data.Values.ToList();
+      return data.Values.SelectMany(list => list).ToList();
     }    
     
 
@@ -81,7 +81,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost]
     [Route("UpdateRights")]
-    public async Task<ActionResult<List<ObjectRightsDTO>>> Update(List<ObjectRightsDTO> newObjs)
+    public async Task<ActionResult<List<ObjectRightValueDTO>>> Update(List<ObjectRightValueDTO> newObjs)
     {
       await _rightUpdateService.Update(newObjs);
       return CreatedAtAction(nameof(Update), newObjs);

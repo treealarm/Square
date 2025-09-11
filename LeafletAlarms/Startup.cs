@@ -52,7 +52,7 @@ namespace LeafletAlarms
       DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
 
 
-      services.AddSingleton<RightsCheckerService>();
+      services.AddScoped<RightsCheckerService>();
 
       services.AddSingleton<WebSockListService>();
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>());

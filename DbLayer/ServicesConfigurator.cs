@@ -65,8 +65,9 @@ namespace DbLayer
       services.AddSingleton<IDiagramServiceInternal>(provider => provider.GetRequiredService<DiagramService>());
 
 
-      services.AddSingleton<IRightService, RightService>();
-      //services.AddSingleton<IEventsService, EventsService>();
+      services.AddScoped<RightService>();
+      services.AddScoped<IRightService>(provider => provider.GetRequiredService<RightService>());
+      services.AddScoped<IRightServiceInternal>(provider => provider.GetRequiredService<RightService>());
 
 
       services.AddScoped<ValuesService>();

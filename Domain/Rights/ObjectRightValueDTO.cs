@@ -13,6 +13,7 @@ namespace Domain
       //,Delete = 4
       //,Add = 8
     }
+    public string? object_id { get; set; }
     public string? role { get; set; }
     public ERightValue value { get; set; }
   }
