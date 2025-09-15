@@ -19,7 +19,7 @@ namespace DbLayer.Services
 
     async Task<long> IRightUpdateService.Delete(string id)
     {
-      var guid = Utils.ConvertObjectIdToGuid(id);
+      var guid = Domain.Utils.ConvertObjectIdToGuid(id);
 
       var rows = await _db.Rights
         .Where(r => r.object_id == guid)
@@ -31,7 +31,7 @@ namespace DbLayer.Services
     async Task<Dictionary<string, List<ObjectRightValueDTO>>> IRightService.GetListByIdsAsync(List<string> ids)
     {
       var guids = ids
-        .Select(id => Utils.ConvertObjectIdToGuid(id))
+        .Select(id => Domain.Utils.ConvertObjectIdToGuid(id))
         .Where(g => g != null)
         .Select(g => g!.Value)
         .ToList();
@@ -59,7 +59,7 @@ namespace DbLayer.Services
     {
       // 1. Получаем уникальные object_id
       var uniqueIds = newObjs
-          .Select(r => Utils.ConvertObjectIdToGuid(r.object_id))
+          .Select(r => Domain.Utils.ConvertObjectIdToGuid(r.object_id))
           .Where(g => g != null)
           .Select(g => g!.Value)
           .Distinct()
@@ -72,10 +72,10 @@ namespace DbLayer.Services
 
       // 3. Создаём новые права
       var newRights = newObjs
-          .Where(r => Utils.ConvertObjectIdToGuid(r.object_id) != null)
+          .Where(r => Domain.Utils.ConvertObjectIdToGuid(r.object_id) != null)
           .Select(r => new DBObjectRightValue
           {
-            object_id = Utils.ConvertObjectIdToGuid(r.object_id)!.Value,
+            object_id = Domain.Utils.ConvertObjectIdToGuid(r.object_id)!.Value,
             role = r.role,
             value = (int)r.value
           })

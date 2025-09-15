@@ -1,4 +1,4 @@
-﻿CREATE TABLE IF NOT EXISTS public.rights (
+CREATE TABLE IF NOT EXISTS public.rights (
     object_id uuid NOT NULL,
     role varchar NOT NULL,
     value integer NOT NULL,

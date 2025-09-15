@@ -36,7 +36,7 @@ namespace DbLayer.Services
       var ret = new DBActionExe
       {
         id = Guid.Parse(dto.action_execution_id),
-        object_id = Utils.ConvertObjectIdToGuid(dto.object_id!) ?? Guid.Empty,
+        object_id = Domain.Utils.ConvertObjectIdToGuid(dto.object_id!) ?? Guid.Empty,
         name = dto.name,
         timestamp = DateTime.UtcNow
       };
@@ -124,7 +124,7 @@ namespace DbLayer.Services
     public async Task<List<ActionExeInfoDTO>> GetActionsByObjectId(ActionExeInfoRequestDTO request)
     {
       var ret = new List<ActionExeInfoDTO>();
-      var objectGuid = Utils.ConvertObjectIdToGuid(request.object_id);
+      var objectGuid = Domain.Utils.ConvertObjectIdToGuid(request.object_id);
 
       var existing = await _dbContext.Actions
         .Where(a => a.object_id == objectGuid)
@@ -150,7 +150,7 @@ namespace DbLayer.Services
 
         var info = new ActionExeInfoDTO();
         info.name = action.name;
-        info.object_id = Utils.ConvertGuidToObjectId(action.object_id);
+        info.object_id = Domain.Utils.ConvertGuidToObjectId(action.object_id);
         ret.Add(info);
 
         info.result = new ActionExeResultDTO()
@@ -209,7 +209,7 @@ namespace DbLayer.Services
     {
       var ret = new List<ActionExeDTO>();
       var list_guids = ids
-          .Select(Utils.ConvertObjectIdToGuid)
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
           .Where(g => g.HasValue)
           .Select(g => g.Value)
           .ToList();

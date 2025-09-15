@@ -53,10 +53,10 @@ namespace DbLayer
       services.AddSingleton<IUtilService, UtilService>();
 
       services.AddSingleton<IMapService, MapService>();
-      services.AddSingleton<IGeoService, GeoService>();
-      services.AddSingleton<ITrackService, TrackService>();
-      services.AddSingleton<IRoutService, RoutService>();
-      services.AddSingleton<ILevelService, LevelService>();
+      services.AddScoped<IGeoService, GeoService>();
+      services.AddScoped<ITrackService, TrackService>();
+      services.AddScoped<IRoutService, RoutService>();
+      services.AddScoped<ILevelService, LevelService>();
       services.AddScoped<IStateService, StateService>();
 
       services.AddSingleton<IDiagramTypeService, DiagramTypeService>();

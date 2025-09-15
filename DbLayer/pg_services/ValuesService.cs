@@ -19,13 +19,13 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
 
   public async Task<Dictionary<string, ValueDTO>> GetListByIdsAsync(List<string> ids)
   {
-    var guids = ids.Select(Utils.ConvertObjectIdToGuid).Where(g => g != null).ToList();
+    var guids = ids.Select(Domain.Utils.ConvertObjectIdToGuid).Where(g => g != null).ToList();
     var entities = await _dbContext.Values
       .Where(v => guids.Contains(v.id))
       .ToListAsync();
 
     return entities.ToDictionary(
-      v => Utils.ConvertGuidToObjectId(v.id),
+      v => Domain.Utils.ConvertGuidToObjectId(v.id),
       v => ConvertDB2DTO(v));
   }
 
@@ -42,7 +42,7 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
 
   public async Task RemoveAsync(List<string> ids)
   {
-    var guids = ids.Select(Utils.ConvertObjectIdToGuid).Where(g => g != null).ToList();
+    var guids = ids.Select(Domain.Utils.ConvertObjectIdToGuid).Where(g => g != null).ToList();
     var toRemove = await _dbContext.Values
       .Where(v => guids.Contains(v.id))
       .ExecuteDeleteAsync();
@@ -50,14 +50,14 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
 
   public async Task<Dictionary<string, ValueDTO>> GetListByOwnersAsync(List<string> owners)
   {
-    var guids = owners.Select(id => Utils.ConvertObjectIdToGuid(id)).ToList();
+    var guids = owners.Select(id => Domain.Utils.ConvertObjectIdToGuid(id)).ToList();
 
     var entities = await _dbContext.Values
       .Where(v => guids.Contains(v.owner_id))
       .ToListAsync();
 
     return entities.ToDictionary(
-      v => Utils.ConvertGuidToObjectId(v.id),
+      v => Domain.Utils.ConvertGuidToObjectId(v.id),
       v => ConvertDB2DTO(v));
   }
 
@@ -65,9 +65,9 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
   {
     return new DBValue
     {
-      id = Utils.ConvertObjectIdToGuid(dto.id) ?? Guid.NewGuid(),
+      id = Domain.Utils.ConvertObjectIdToGuid(dto.id) ?? Guid.NewGuid(),
       name = dto.name,
-      owner_id = Utils.ConvertObjectIdToGuid(dto.owner_id) ?? Guid.NewGuid(),
+      owner_id = Domain.Utils.ConvertObjectIdToGuid(dto.owner_id) ?? Guid.NewGuid(),
       value = JsonSerializer.SerializeToDocument(dto.value)
     };
   }
@@ -76,9 +76,9 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
   {
     return new ValueDTO
     {
-      id = Utils.ConvertGuidToObjectId(dbo.id),
+      id = Domain.Utils.ConvertGuidToObjectId(dbo.id),
       name = dbo.name,
-      owner_id = Utils.ConvertGuidToObjectId(dbo.owner_id),
+      owner_id = Domain.Utils.ConvertGuidToObjectId(dbo.owner_id),
       value = dbo.value?.Deserialize<object>()
     };
   }
@@ -89,7 +89,7 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
 
     foreach (var dto in values)
     {
-      var ownerGuid = Utils.ConvertObjectIdToGuid(dto.owner_id) ?? Guid.NewGuid();
+      var ownerGuid = Domain.Utils.ConvertObjectIdToGuid(dto.owner_id) ?? Guid.NewGuid();
 
       var existing = await _dbContext.Values
         .FirstOrDefaultAsync(v => v.owner_id == ownerGuid && v.name == dto.name);
@@ -103,7 +103,7 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
         {
           id = existing.id.ToString(),
           name = existing.name,
-          owner_id = Utils.ConvertGuidToObjectId(existing.owner_id),
+          owner_id = Domain.Utils.ConvertGuidToObjectId(existing.owner_id),
           value = dto.value
         };
       }
@@ -124,7 +124,7 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
         {
           id = newId.ToString(),
           name = newValue.name,
-          owner_id = Utils.ConvertGuidToObjectId(ownerGuid),
+          owner_id = Domain.Utils.ConvertGuidToObjectId(ownerGuid),
           value = dto.value
         };
       }

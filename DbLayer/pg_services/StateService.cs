@@ -41,7 +41,7 @@ namespace DbLayer.Services
         return 0;
  
       var idsToUpdate = newObjs
-          .Select(x => Utils.ConvertObjectIdToGuid(x.id))
+          .Select(x => Domain.Utils.ConvertObjectIdToGuid(x.id))
           .ToList();
 
       var existing = await _dbContext.ObjectStates
@@ -56,7 +56,7 @@ namespace DbLayer.Services
 
       foreach (var dto in newObjs)
       {
-        var objId = Utils.ConvertObjectIdToGuid(dto.id) ?? Guid.Empty;
+        var objId = Domain.Utils.ConvertObjectIdToGuid(dto.id) ?? Guid.Empty;
 
         var states = dto.states.Select(s => new DBObjectStateValue
         {
@@ -105,7 +105,7 @@ namespace DbLayer.Services
 
       var newEntities = newObjs.Select(x => new DBObjectStateDescription
       {
-        id = Utils.ConvertObjectIdToGuid(x.id) ?? Guid.Empty,
+        id = Domain.Utils.ConvertObjectIdToGuid(x.id) ?? Guid.Empty,
         state = x.state,
         state_descr = x.state_descr,
         state_color = x.state_color,
@@ -118,7 +118,7 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, ObjectStateDTO>> GetStatesAsync(List<string> ids)
     {
-      var parsedIds = ids.Select(Utils.ConvertObjectIdToGuid).ToList();
+      var parsedIds = ids.Select(Domain.Utils.ConvertObjectIdToGuid).ToList();
 
       var states = await _dbContext.ObjectStates
         .Include(x => x.states)
@@ -126,10 +126,10 @@ namespace DbLayer.Services
         .ToListAsync();
 
       return states.ToDictionary(
-        x => Utils.ConvertGuidToObjectId(x.id),
+        x => Domain.Utils.ConvertGuidToObjectId(x.id),
         x => new ObjectStateDTO
         {
-          id = Utils.ConvertGuidToObjectId(x.id),
+          id = Domain.Utils.ConvertGuidToObjectId(x.id),
           states = x.states.Select(s => s.state).ToList(),
           timestamp = x.timestamp
         });
@@ -143,7 +143,7 @@ namespace DbLayer.Services
 
       return result.Select(x => new ObjectStateDescriptionDTO
       {
-        id = Utils.ConvertGuidToObjectId(x.id),
+        id = Domain.Utils.ConvertGuidToObjectId(x.id),
         state = x.state,
         state_descr = x.state_descr,
         state_color = x.state_color,
@@ -155,7 +155,7 @@ namespace DbLayer.Services
     {
       foreach (var alarm in alarms)
       {
-        var id = Utils.ConvertObjectIdToGuid(alarm.id) ?? Guid.Empty;
+        var id = Domain.Utils.ConvertObjectIdToGuid(alarm.id) ?? Guid.Empty;
         var existing = await _dbContext.AlarmStates.FindAsync(id);
 
         if (existing != null)
@@ -177,17 +177,17 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, AlarmState>> GetAlarmStatesAsync(List<string> ids)
     {
-      var parsedIds = ids.Select(Utils.ConvertObjectIdToGuid).ToList();
+      var parsedIds = ids.Select(Domain.Utils.ConvertObjectIdToGuid).ToList();
 
       var result = await _dbContext.AlarmStates
         .Where(x => parsedIds.Contains(x.id))
         .ToListAsync();
 
       return result.ToDictionary(
-        x => Utils.ConvertGuidToObjectId(x.id),
+        x => Domain.Utils.ConvertGuidToObjectId(x.id),
         x => new AlarmState
         {
-          id = Utils.ConvertGuidToObjectId(x.id),
+          id = Domain.Utils.ConvertGuidToObjectId(x.id),
           alarm = x.alarm
         });
     }
@@ -214,7 +214,7 @@ namespace DbLayer.Services
         x => x.state,
         x => new ObjectStateDescriptionDTO
         {
-          id = Utils.ConvertGuidToObjectId(x.id),
+          id = Domain.Utils.ConvertGuidToObjectId(x.id),
           state = x.state,
           state_descr = x.state_descr,
           state_color = x.state_color,
@@ -233,10 +233,10 @@ namespace DbLayer.Services
         .ToListAsync();
 
       return result.ToDictionary(
-        x => Utils.ConvertGuidToObjectId(x.id),
+        x => Domain.Utils.ConvertGuidToObjectId(x.id),
         x => new ObjectStateDTO
         {
-          id = Utils.ConvertGuidToObjectId(x.id),
+          id = Domain.Utils.ConvertGuidToObjectId(x.id),
           states = x.states.Select(s => s.state).ToList()
         });
     }

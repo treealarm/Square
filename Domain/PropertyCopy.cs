@@ -185,7 +185,22 @@ namespace Domain
           if (sourceProperty.PropertyType == targetProperty.PropertyType)
           {
             targetProperty.SetValue(target, sourceProperty.GetValue(source, null), null);
-          }              
+          }
+          else if (sourceProperty.PropertyType == typeof(Guid) && targetProperty.PropertyType == typeof(string))
+          {
+            var guid = (Guid)sourceProperty.GetValue(source, null);
+            var objectIdLike = Utils.ConvertGuidToObjectId(guid);
+            targetProperty.SetValue(target, objectIdLike, null);
+          }
+          else if (sourceProperty.PropertyType == typeof(string) && targetProperty.PropertyType == typeof(Guid))
+          {
+            var str = (string)sourceProperty.GetValue(source, null);
+            var guid = Utils.ConvertObjectIdToGuid(str);
+            if (guid != null)
+            {
+              targetProperty.SetValue(target, guid.Value, null);
+            }
+          }
         }
       }
 

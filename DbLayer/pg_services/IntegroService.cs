@@ -68,7 +68,7 @@ namespace DbLayer.Services
       // Список id, которые нам нужно обновить или добавить
       var idsToUpdate = obj2UpdateIn
         .Where(i=> !string.IsNullOrEmpty(i.id))
-        .Select(item => Utils.ConvertObjectIdToGuid(item.id)).ToList();
+        .Select(item => Domain.Utils.ConvertObjectIdToGuid(item.id)).ToList();
 
       // 1. Извлекаем все объекты, которые уже есть в базе
       var existingEntities = await dbSet
@@ -96,7 +96,7 @@ namespace DbLayer.Services
           // Если сущности нет, добавляем в список для добавления
           if (updatedObj.id == Guid.Empty)
           {
-            updatedObj.id = Utils.ConvertObjectIdToGuid(
+            updatedObj.id = Domain.Utils.ConvertObjectIdToGuid(
               Utils.GenerateId24().ToString()) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
           }
           toAdd.Add(updatedObj);
@@ -114,7 +114,7 @@ namespace DbLayer.Services
     {
       DBIntegro dbo = new DBIntegro()
       {
-        id = Utils.ConvertObjectIdToGuid(dto.id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid"),
+        id = Domain.Utils.ConvertObjectIdToGuid(dto.id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid"),
         i_name = dto.i_name,
         i_type = dto.i_type
       };
@@ -124,7 +124,7 @@ namespace DbLayer.Services
     {
       var o_out = new IntegroDTO()
       {
-        id = Utils.ConvertGuidToObjectId(o_in.id),
+        id = Domain.Utils.ConvertGuidToObjectId(o_in.id),
         i_name = o_in.i_name,
         i_type = o_in.i_type
       };
@@ -164,7 +164,7 @@ namespace DbLayer.Services
     public async Task RemoveAsync(List<string> ids)
     {
       // Преобразуем все ids в Guid
-      var guids = ids.Select(id => Utils.ConvertObjectIdToGuid(id)).ToList();
+      var guids = ids.Select(id => Domain.Utils.ConvertObjectIdToGuid(id)).ToList();
 
       // Удаляем объекты с соответствующими id (Guid)
       await _dbContext.Integro
@@ -175,7 +175,7 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, IntegroDTO>> GetListByIdsAsync(List<string> ids)
     {
-      var guids = ids.Select(id => Utils.ConvertObjectIdToGuid(id)).ToList();
+      var guids = ids.Select(id => Domain.Utils.ConvertObjectIdToGuid(id)).ToList();
 
       var dbObjs = await _dbContext.Integro.Where(i => guids.Contains(i.id)).ToListAsync();
       var result = ConvertListDB2DTO(dbObjs);

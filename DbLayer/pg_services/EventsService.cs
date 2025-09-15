@@ -56,8 +56,8 @@ namespace DbLayer.Services
         //timestamp = db_event.timestamp,
       };
       db_event.CopyAllTo(dto);
-      dto.id = Utils.ConvertGuidToObjectId(db_event.id);
-      dto.object_id = Utils.ConvertGuidToObjectId(db_event.object_id);
+      dto.id = Domain.Utils.ConvertGuidToObjectId(db_event.id);
+      dto.object_id = Domain.Utils.ConvertGuidToObjectId(db_event.object_id);
       dto.extra_props = ConverDBExtraProp2DTO(db_event.extra_props);
       return dto;
     }
@@ -101,7 +101,7 @@ namespace DbLayer.Services
           owner_id = owner_id,
         };
 
-        newProp.id = Utils.ConvertObjectIdToGuid(ObjectId.GenerateNewId().ToString())
+        newProp.id = Domain.Utils.ConvertObjectIdToGuid(ObjectId.GenerateNewId().ToString())
           ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
 
         if (prop.visual_type == BsonType.Double.ToString())
@@ -151,8 +151,8 @@ namespace DbLayer.Services
         var dbTrack = new DBEvent();
 
         ev.CopyAllTo(dbTrack);
-        dbTrack.id = Utils.ConvertObjectIdToGuid(ev.id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
-        dbTrack.object_id = Utils.ConvertObjectIdToGuid(ev.object_id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
+        dbTrack.id = Domain.Utils.ConvertObjectIdToGuid(ev.id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
+        dbTrack.object_id = Domain.Utils.ConvertObjectIdToGuid(ev.object_id) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
         dbTrack.extra_props = ConvertExtraPropsToDB(ev.extra_props, dbTrack.id);
         list.Add(dbTrack);
       }
@@ -196,7 +196,7 @@ namespace DbLayer.Services
       if (filter_in.groups.Count > 0)
       {
         var objs = await _groupsService.GetListByNamesAsync(filter_in.groups);
-        var ids = objs.Values.Select(t => Utils.ConvertObjectIdToGuid(t.objid)).ToList();
+        var ids = objs.Values.Select(t => Domain.Utils.ConvertObjectIdToGuid(t.objid)).ToList();
         query = query.Where(e => ids.Contains(e.object_id));
       }
 

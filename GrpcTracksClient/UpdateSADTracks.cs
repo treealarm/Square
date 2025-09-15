@@ -53,7 +53,7 @@ namespace GrpcTracksClient
 
     public static async Task MoveGrpc(TrackPointsProto figs, ProtoGeoObject fig)
     {
-      var client = Utils.ClientBase;
+      var client = IntegrationUtilsLib.Utils.ClientBase;
 
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);

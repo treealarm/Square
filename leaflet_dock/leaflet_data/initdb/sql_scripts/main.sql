@@ -10,3 +10,4 @@
 \i 'db_values.sql'
 \i 'states.sql'
 \i 'rights.sql'
+\i 'levels.sql'

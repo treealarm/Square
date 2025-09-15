@@ -28,8 +28,8 @@ namespace GrpcTracksClient.Services
       while (true && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
-        var client = Utils.ClientBase.Client;
-        var clientIntegro = Utils.ClientIntegro;
+        var client = IntegrationUtilsLib.Utils.ClientBase.Client;
+        var clientIntegro = IntegrationUtilsLib.Utils.ClientIntegro;
         var integroObjects = await _sync.GetIntegroObjectsByType(_car_str);
 
         if (integroObjects == null)
@@ -48,7 +48,7 @@ namespace GrpcTracksClient.Services
         for (long carId = start_car_index; carId < IMoveObjectService.MaxCars; carId++)
         {
           var carNum = carId + 1;
-          var carUid = await Utils.GenerateObjectId(_car_str, carNum);
+          var carUid = await IntegrationUtilsLib.Utils.GenerateObjectId(_car_str, carNum);
 
           integroRequest.Objects.Add(new IntegroProto()
           {
@@ -82,7 +82,7 @@ namespace GrpcTracksClient.Services
           try
           {
             var carNum = carId + 1;
-            var carUid = await Utils.GenerateObjectId(_car_str, carNum);
+            var carUid = await IntegrationUtilsLib.Utils.GenerateObjectId(_car_str, carNum);
             // set parent_id as main_obj id 
             var movingCar = new MovingCar(_router, $"Car {carNum}", carUid, _sync.MainObj.Id);
             _cars.TryAdd(movingCar.Id, movingCar);
@@ -105,8 +105,8 @@ namespace GrpcTracksClient.Services
       await _sync.InitMainObject(token);
       await InitCarObjects(token);
 
-      var client = Utils.ClientBase;
-      var clientIntegro = Utils.ClientIntegro;
+      var client = IntegrationUtilsLib.Utils.ClientBase;
+      var clientIntegro = IntegrationUtilsLib.Utils.ClientIntegro;
       bool inited = false;
       while (!token.IsCancellationRequested)
       {
@@ -267,7 +267,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.618727730916895
       });
 
-      var client = Utils.ClientBase;
+      var client = IntegrationUtilsLib.Utils.ClientBase;
 
       double step = 0.001;
 
@@ -340,7 +340,7 @@ namespace GrpcTracksClient.Services
         Lon = 37.621130
       };
 
-      var client = Utils.ClientBase;
+      var client = IntegrationUtilsLib.Utils.ClientBase;
       var step = 0.0001;
 
       for (int i = 0; i < 1000000; i++)

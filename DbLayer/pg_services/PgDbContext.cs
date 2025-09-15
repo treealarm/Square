@@ -8,6 +8,7 @@ namespace DbLayer
   internal class PgDbContext : DbContext
   {
     private readonly NpgsqlDataSource _source;
+    public DbSet<DBLevel> Levels { get; set; }
     public DbSet<DBObjectRightValue> Rights { get; set; }
 
     public DbSet<DBEvent> Events { get; set; }
@@ -50,9 +51,36 @@ namespace DbLayer
       ConfigureActions(modelBuilder);
       ConfigureStates(modelBuilder);
       ConfigureRights(modelBuilder);
+      ConfigureLevels(modelBuilder);
     }
 
 
+    private void ConfigureLevels(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<DBLevel>(entity =>
+      {
+        entity.ToTable("levels");
+
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+
+        entity.Property(e => e.zoom_level)
+            .HasColumnName("zoom_level")
+            .IsRequired();
+
+        entity.Property(e => e.zoom_min)
+            .HasColumnName("zoom_min")
+            .IsRequired();
+
+        entity.Property(e => e.zoom_max)
+            .HasColumnName("zoom_max")
+            .IsRequired();
+      });
+
+    }
     private void ConfigureRights(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<DBObjectRightValue>(entity =>

@@ -210,7 +210,7 @@ namespace AASubService
 
         try
         {
-          var client = Utils.ClientBase.Client;
+          var client = IntegrationUtilsLib.Utils.ClientBase.Client;
           if (client != null && events.Events.Any())
             await client.UpdateEventsAsync(events);
         }
@@ -282,7 +282,7 @@ namespace AASubService
         protoUploadFile.FileData = Google.Protobuf.ByteString.CopyFrom(data.Data);
 
         // Создаем клиента gRPC и подключаемся
-        var client = Utils.ClientBase.Client;
+        var client = IntegrationUtilsLib.Utils.ClientBase.Client;
 
         if (client == null)
         {
@@ -480,7 +480,7 @@ namespace AASubService
         Progress = progress,
         Result = result
       });
-      var clientIntegro = Utils.ClientIntegro;
+      var clientIntegro = IntegrationUtilsLib.Utils.ClientIntegro;
       await clientIntegro!.Client!.UpdateActionResultsAsync(progressRequest);
     }
     private async Task HandleActionRefreshAsync(ProtoActionExe action, CancellationToken token)
@@ -654,7 +654,7 @@ namespace AASubService
 
       string? objId = existing.Value != null
           ? existing.Key
-          : await Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
+          : await IntegrationUtilsLib.Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
 
       var ipProp = new ProtoObjProps
       {
@@ -703,7 +703,7 @@ namespace AASubService
         while (!cancellationToken.IsCancellationRequested)
         {
           await Task.Delay(interval.Milliseconds, cancellationToken.Token); // ждем перед следующим циклом
-          var client = Utils.ClientBase;
+          var client = IntegrationUtilsLib.Utils.ClientBase;
 
           if (client == null || client.IsDead)
           {
