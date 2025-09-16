@@ -12,6 +12,7 @@
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\integro.sql" Link="sql\integro.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\levels.sql" Link="sql\levels.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\main.sql" Link="sql\main.sql" />
+    <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\objects.sql" Link="sql\objects.sql" />
     <None Include="D:\TESTS\Leaflet\leaflet_dock\leaflet_data\initdb\sql_scripts\rights.sql" Link="rights.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\states.sql" Link="sql\states.sql" />
   </ItemGroup>

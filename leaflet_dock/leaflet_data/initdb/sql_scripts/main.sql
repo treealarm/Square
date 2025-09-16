@@ -11,3 +11,4 @@
 \i 'states.sql'
 \i 'rights.sql'
 \i 'levels.sql'
+\i 'objects.sql'

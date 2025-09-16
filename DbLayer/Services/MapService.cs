@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -12,7 +13,7 @@ namespace DbLayer.Services
 {
   internal class MapService : IMapService
   {
-    private readonly IMongoCollection<DBMarker> _markerCollection;
+    private readonly PgDbContext _db;
 
     private readonly IMongoCollection<DBMarkerProperties> _propCollection;
 
@@ -21,7 +22,9 @@ namespace DbLayer.Services
     private readonly IOptions<MapDatabaseSettings> _geoStoreDBSettings;   
 
     public MapService(
-        IOptions<MapDatabaseSettings> geoStoreDatabaseSettings, IMongoClient mongoClient)
+        IOptions<MapDatabaseSettings> geoStoreDatabaseSettings, 
+        IMongoClient mongoClient, 
+        PgDbContext db)
     {
       _geoStoreDBSettings = geoStoreDatabaseSettings;
       _mongoClient = mongoClient;
@@ -29,8 +32,7 @@ namespace DbLayer.Services
       _mongoDB = _mongoClient.GetDatabase(
           geoStoreDatabaseSettings.Value.DatabaseName);
 
-      _markerCollection = _mongoDB.GetCollection<DBMarker>(
-          geoStoreDatabaseSettings.Value.ObjectsCollectionName);
+      _db = db;
 
       _propCollection = _mongoDB.GetCollection<DBMarkerProperties>(
           geoStoreDatabaseSettings.Value.PropCollectionName);
@@ -40,47 +42,6 @@ namespace DbLayer.Services
 
     private void CreateIndexes()
     {
-      {
-        IndexKeysDefinition<DBMarker> keys =
-          new IndexKeysDefinitionBuilder<DBMarker>()
-          .Ascending(d => d.parent_id)
-          ;
-
-        var indexModel = new CreateIndexModel<DBMarker>(
-          keys, new CreateIndexOptions()
-          { Name = "parent" }
-        );
-
-        _markerCollection.Indexes.CreateOneAsync(indexModel);
-      }
-
-      {
-        // Индекс для запросов по комбинации id и owner_id
-        IndexKeysDefinition<DBMarker> compositeKeys = Builders<DBMarker>.IndexKeys
-            .Ascending(d => d.id)
-            .Ascending(d => d.owner_id);
-
-        var compositeIndexModel = new CreateIndexModel<DBMarker>(
-            compositeKeys, new CreateIndexOptions
-            {
-              Name = "owner_id"
-            });
-
-        _markerCollection.Indexes.CreateOneAsync(compositeIndexModel);
-
-        // Индекс для запросов только по owner_id
-        IndexKeysDefinition<DBMarker> ownerKey = Builders<DBMarker>.IndexKeys
-            .Ascending(d => d.owner_id);
-
-        var ownerIndexModel = new CreateIndexModel<DBMarker>(
-            ownerKey, new CreateIndexOptions
-            {
-              Name = "owner"
-            });
-
-        _markerCollection.Indexes.CreateOneAsync(ownerIndexModel);
-      }
-
       {
         var keys = Builders<DBMarkerProperties>.IndexKeys.Combine(
           Builders<DBMarkerProperties>.IndexKeys
@@ -99,65 +60,134 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetAsync(List<string> ids)
     {
-      var list = await _markerCollection.Find(i => ids.Contains(i.id)).ToListAsync();
-      return ConvertMarkerListDB2DTO(list);
+      var guids = ids
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
+          .Where(g => g != null)
+          .Select(g => g.Value)
+          .ToList();
+
+      if (guids.Count == 0)
+        return new Dictionary<string, BaseMarkerDTO>();
+
+      var entities = await _db.Markers
+          .Where(m => guids.Contains(m.id))
+          .ToListAsync();
+
+      var result = new Dictionary<string, BaseMarkerDTO>();
+
+      foreach (var entity in entities)
+      {
+        var dto = new MarkerDTO();
+        entity.CopyAllTo(dto);
+
+        // для совместимости возвращаем ключ словаря как ObjectId-строку
+        var key = Domain.Utils.ConvertGuidToObjectId(entity.id);
+        result[key] = dto;
+      }
+
+      return result;
     }
+
 
     public async Task<BaseMarkerDTO> GetAsync(string id)
     {
-      var result = await _markerCollection.Find(x => x.id == id).FirstOrDefaultAsync();
-      return ConvertMarkerDB2DTO(result);
+      var guid = Domain.Utils.ConvertObjectIdToGuid(id);
+      if (guid == null)
+        return null;
+
+      var entity = await _db.Markers.FirstOrDefaultAsync(m => m.id == guid.Value);
+      if (entity == null)
+        return null;
+
+      var dto = new MarkerDTO();
+      entity.CopyAllTo(dto); // твой extension для копирования
+      return dto;
     }
 
     public async Task<BaseMarkerDTO> GetParent(string id)
     {
-      var result = await _markerCollection.Find(x => x.id == id).FirstOrDefaultAsync();
-      return ConvertMarkerDB2DTO(result);
+      var guid = Domain.Utils.ConvertObjectIdToGuid(id);
+      if (guid == null)
+        return null;
+
+      var entity = await _db.Markers
+          .Where(m => m.id == guid.Value)
+          .Select(m => m.parent_id)
+          .FirstOrDefaultAsync();
+
+      if (entity == Guid.Empty)
+        return null;
+
+      var parent = await _db.Markers.FirstOrDefaultAsync(m => m.id == entity);
+      if (parent == null)
+        return null;
+
+      var dto = new MarkerDTO();
+      parent.CopyAllTo(dto);
+      return dto;
     }
+
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdsAsync(
-      List<string> parent_ids,
-      string start_id,
-      string end_id,
-      int count
-    )
+        List<string> parent_ids,
+        string start_id,
+        string end_id,
+        int count)
     {
-      List<DBMarker> retVal;
+      // Сначала конвертируем parent_ids в Guid, игнорируя пустые строки
+      var parentGuids = parent_ids
+          .Where(id => !string.IsNullOrEmpty(id))
+          .Select(id => Domain.Utils.ConvertObjectIdToGuid(id))
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
 
-      if (start_id != null)
+      // Флаг, есть ли среди parent_ids пустые или null
+      bool includeNull = parent_ids.Any(string.IsNullOrEmpty);
+
+
+      if (!parentGuids.Any() && !includeNull)
+        return new Dictionary<string, BaseMarkerDTO>();
+
+      IQueryable<DBMarker> query = _db.Markers
+          .Where(m => (m.parent_id.HasValue && parentGuids.Contains(m.parent_id.Value))
+                      || (!m.parent_id.HasValue && includeNull))
+          .OrderBy(m => m.id);
+
+
+      // Применяем фильтр по start_id / end_id
+      if (!string.IsNullOrEmpty(start_id))
       {
-        var filter = Builders<DBMarker>.Filter.Gte("_id", new ObjectId(start_id))
-          & Builders<DBMarker>.Filter.In("parent_id", parent_ids);
-
-        retVal = await _markerCollection
-          .Find(filter)
-          .Limit(count)
-          .ToListAsync();
+        var startGuid = Domain.Utils.ConvertObjectIdToGuid(start_id);
+        if (startGuid != null)
+        {
+          query = query.Where(m => m.id.CompareTo(startGuid.Value) >= 0);            
+        }
       }
-      else if (end_id != null)
+      else if (!string.IsNullOrEmpty(end_id))
       {
-        var filter = Builders<DBMarker>.Filter.Lte("_id", new ObjectId(end_id))
-          & Builders<DBMarker>.Filter.In("parent_id", parent_ids);
-
-        retVal = await _markerCollection
-          .Find(filter)
-          .SortByDescending(x => x.id)
-          .Limit(count)
-          .ToListAsync()
-          ;
-
-        retVal.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
+        var endGuid = Domain.Utils.ConvertObjectIdToGuid(end_id);
+        if (endGuid != null)
+        {
+          query = query.Where(m => m.id.CompareTo(endGuid.Value) <= 0)
+                       .OrderByDescending(m => m.id);
+        }
       }
-      else
+
+      var list = await query.Take(count).ToListAsync();
+
+      // Если сортировали по end_id, то вернём по возрастанию
+      if (!string.IsNullOrEmpty(end_id))
+        list.Sort((x, y) => x.id.CompareTo(y.id));
+
+      return list.ToDictionary(m => Domain.Utils.ConvertGuidToObjectId(m.id), m =>
       {
-        retVal = await _markerCollection
-                .Find(x => parent_ids.Contains(x.parent_id))
-                .Limit(count)
-                .ToListAsync();
-      }
-
-      return ConvertMarkerListDB2DTO(retVal);
+        var dto = new BaseMarkerDTO();
+        m.CopyAllTo(dto);
+        return dto;
+      });
     }
+
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetByParentIdAsync(
       string parent_id,
@@ -171,33 +201,57 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetByNameAsync(string name)
     {
-      var retVal = await _markerCollection.Find(x => x.name == name).ToListAsync();
-      return ConvertMarkerListDB2DTO(retVal);
+      var list = await _db.Markers
+          .Where(m => m.name == name)
+          .ToListAsync();
+
+      return list.ToDictionary(
+          m => Domain.Utils.ConvertGuidToObjectId(m.id), // ключ — старый ObjectId строкой
+          m =>
+          {
+            var dto = new BaseMarkerDTO();
+            m.CopyAllTo(dto);
+            return dto;
+          });
     }
+
 
     public async Task<List<BaseMarkerDTO>> GetByChildIdAsync(string object_id)
     {
       var parents = new List<BaseMarkerDTO>();
-      var marker = await GetAsync(object_id);      
 
+      var marker = await GetAsync(object_id); // используем уже адаптированный GetAsync(string id)
       while (marker != null)
       {
-        if (string.IsNullOrEmpty(marker.id))
-        {
-          // Normally id == null is impossible.
-          break;
-        }
-
         parents.Add(marker);
 
-        var dbMarker = await _markerCollection
-          .Find(x => x.id == marker.parent_id)
-          .FirstOrDefaultAsync();
+        if (string.IsNullOrEmpty(marker.parent_id))
+        {
+          break; // достигли корня
+        }
 
-        marker = ConvertMarkerDB2DTO(dbMarker);
+        var parentGuid = Domain.Utils.ConvertObjectIdToGuid(marker.parent_id);
+        if (parentGuid == null)
+          break;
+
+        var parentEntity = await _db.Markers
+            .FirstOrDefaultAsync(m => m.id == parentGuid.Value);
+
+        if (parentEntity == null)
+          break;
+
+        marker = new BaseMarkerDTO
+        {
+          parent_id = parentEntity.parent_id.HasValue ? Domain.Utils.ConvertGuidToObjectId(parentEntity.parent_id.Value) : null,
+          owner_id = parentEntity.owner_id.HasValue ? Domain.Utils.ConvertGuidToObjectId(parentEntity.owner_id.Value) : null,
+          name = parentEntity.name,
+          id = Domain.Utils.ConvertGuidToObjectId(parentEntity.id)
+        };
       }
+
       return parents;
     }
+
 
     public async Task<List<BaseMarkerDTO>> GetAllChildren(string parent_id)
     {
@@ -239,7 +293,7 @@ namespace DbLayer.Services
 
       foreach (var dbItem in dbMarkers)
       {
-        result.Add(dbItem.id, ConvertMarkerDB2DTO(dbItem));
+        result.Add(Domain.Utils.ConvertGuidToObjectId(dbItem.id), ConvertMarkerDB2DTO(dbItem));
       }
 
       return result;
@@ -247,76 +301,118 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetTopChildren(List<string> parentIds)
     {
-      var result = await _markerCollection
-        .Aggregate()
-        .Match(x => parentIds.Contains(x.parent_id))
-        //.Group("{ _id : '$parent_id'}")
-        .Group(
-          z => z.parent_id,
-          g => new DBMarker() { id = g.Key })
-        .ToListAsync();
+      // Конвертируем parentIds в Guid, игнорируя пустые или некорректные
+      var parentGuids = parentIds
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
 
-      return ConvertMarkerListDB2DTO(result);
+      if (!parentGuids.Any())
+        return new Dictionary<string, BaseMarkerDTO>();
+
+      // Берём "первого" ребёнка для каждого parent_id
+      var topChildren = await _db.Markers
+          .Where(m => m.parent_id.HasValue && parentGuids.Contains(m.parent_id.Value))
+          .GroupBy(m => m.parent_id.Value)
+          .Select(g => g.OrderBy(m => m.id).FirstOrDefault())
+          .ToListAsync();
+
+      var dict = new Dictionary<string, BaseMarkerDTO>();
+      foreach (var entity in topChildren)
+      {
+        if (entity != null)
+        {
+          var dto = new BaseMarkerDTO
+          {
+            id = Domain.Utils.ConvertGuidToObjectId(entity.id),
+          };
+          dict[Domain.Utils.ConvertGuidToObjectId(entity.parent_id??Guid.Empty)] = dto;
+        }
+      }
+
+      return dict;
     }
+
+
 
     public async Task UpdateHierarchyAsync(IEnumerable<BaseMarkerDTO> updatedList)
     {
       if (!updatedList.Any())
-      {
         return;
-      }
+
+      var ids = updatedList
+        .Select(u => Domain.Utils.ConvertObjectIdToGuid(u.id))
+        .Where(g => g.HasValue)
+        .Select(g => g.Value)
+        .ToList();
+
+      var existingEntities = await _db.Markers
+          .Where(m => ids.Contains(m.id))
+          .ToDictionaryAsync(m => m.id);
 
       var dbUpdated = new Dictionary<BaseMarkerDTO, DBMarker>();
-      var bulkWrites = new List<WriteModel<DBMarker>>();
 
       foreach (var item in updatedList)
       {
         var dbObj = new DBMarker();
         item.CopyAllTo(dbObj);
 
-        if (string.IsNullOrEmpty(dbObj.parent_id))
-        {
-          dbObj.parent_id = null;
-        }
+        // parent_id и owner_id как Guid? (nullable)
+        dbObj.parent_id = string.IsNullOrEmpty(item.parent_id)
+            ? null
+            : Domain.Utils.ConvertObjectIdToGuid(item.parent_id);
 
-        if (string.IsNullOrEmpty(dbObj.id))
-        {
-          dbObj.id = null;
-        }
+        dbObj.owner_id = string.IsNullOrEmpty(item.owner_id)
+            ? null
+            : Domain.Utils.ConvertObjectIdToGuid(item.owner_id);
 
-        if (string.IsNullOrEmpty(dbObj.owner_id))
+        // id
+        if (string.IsNullOrEmpty(item.id))
         {
-          dbObj.owner_id = null;
+          var newGuid = Guid.NewGuid();
+          dbObj.id = Domain.Utils.ConvertObjectIdToGuid(
+              Domain.Utils.ConvertGuidToObjectId(newGuid)) ?? newGuid;
         }
 
         dbUpdated.Add(item, dbObj);
-        
-        var filter = Builders<DBMarker>.Filter.Eq(x => x.id, dbObj.id);
+      }
 
-        if (string.IsNullOrEmpty(dbObj.id))
+      // Сохраняем все объекты через EF Core
+      foreach (var kvp in dbUpdated)
+      {
+        if (!existingEntities.TryGetValue(kvp.Value.id, out var entity))
         {
-          var request = new InsertOneModel<DBMarker>(dbObj);
-          bulkWrites.Add(request);
+          _db.Markers.Add(kvp.Value);
         }
         else
         {
-          var request = new ReplaceOneModel<DBMarker>(filter, dbObj);
-          request.IsUpsert = true;
-          bulkWrites.Add(request);
-        }
+          _db.Markers.Update(entity);
+        }          
       }
-      
-      var writeResult = await _markerCollection.BulkWriteAsync(bulkWrites);
 
+      await _db.SaveChangesAsync();
+
+      // Обновляем DTO
       foreach (var pair in dbUpdated)
       {
-        pair.Key.id = pair.Value.id;
-      }      
+        pair.Key.id = Domain.Utils.ConvertGuidToObjectId(pair.Value.id);
+      }
     }
+
 
     public async Task<long> RemoveAsync(List<string> ids)
     {
       List<ObjectId> objIds = ids.Select(s => new ObjectId(s)).ToList();
+      // Конвертируем ObjectId строки в Guid
+      var guids = ids
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
+
+      if (!guids.Any())
+        return 0;
 
       var filter = Builders<BsonDocument>.Filter.In("meta.figure._id", objIds);
 
@@ -338,9 +434,12 @@ namespace DbLayer.Services
       await states.DeleteManyAsync(filter1);
 
       await _propCollection.DeleteManyAsync(x => ids.Contains(x.id));
-      var result = await _markerCollection.DeleteManyAsync(x => ids.Contains(x.id));
 
-      return result.DeletedCount;
+      var deletedCount = await _db.Markers
+        .Where(m => guids.Contains(m.id))
+        .ExecuteDeleteAsync();
+
+      return deletedCount;
     }
 
     private static DBMarkerProperties ConvertDTO2Property(IObjectProps propsIn)
@@ -539,78 +638,104 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetOwnersAsync(List<string> ids)
     {
-      var list_objects = await _markerCollection
-        .Find(
-         i =>
-          ids.Contains(i.id))
-        .ToListAsync();
+      // Конвертируем ObjectId строки в Guid
+      var guids = ids
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
 
-      var views = list_objects
-        .Where(i => !string.IsNullOrEmpty(i.owner_id));
+      if (!guids.Any())
+        return new Dictionary<string, BaseMarkerDTO>();
+
+      // Получаем все объекты с этими id
+      var listObjects = await _db.Markers
+          .Where(m => guids.Contains(m.id))
+          .ToListAsync();
+
+      // Представления — объекты с owner_id != null
+      var views = listObjects
+          .Where(m => m.owner_id.HasValue)
+          .ToList();
 
       if (!views.Any())
       {
-        return ConvertMarkerListDB2DTO(list_objects);
+        // Все объекты без owner_id
+        return ConvertMarkerListDB2DTO(listObjects);
       }
 
-      var owners = list_objects
-        .Where(i => string.IsNullOrEmpty(i.owner_id));
+      // Владельцы — объекты с owner_id == null
+      var owners = listObjects
+          .Where(m => !m.owner_id.HasValue)
+          .ToList();
 
-      var owner_ids = views.Select(i => i.owner_id);
+      var ownerGuids = views
+          .Select(v => v.owner_id.Value)
+          .ToList();
 
-      // Search only real objects which doesn't have any owner
-      // and as a result return owners of objects
-      var owners_db = await _markerCollection
-        .Find(
-         i => 
-         string.IsNullOrEmpty(i.owner_id) && 
-          owner_ids.Contains(i.id))
-        .ToListAsync();
+      // Получаем владельцев из базы, которых еще нет в listObjects
+      var ownersDb = await _db.Markers
+          .Where(m => !m.owner_id.HasValue && ownerGuids.Contains(m.id))
+          .ToListAsync();
 
-      owners = owners.Union(owners_db);
-      return ConvertMarkerListDB2DTO(owners.ToList());
+      owners = owners.Union(ownersDb).ToList();
+
+      return ConvertMarkerListDB2DTO(owners);
     }
+
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetOwnersAndViewsAsync(List<string> ids)
     {
+      // Конвертируем строки в Guid
+      var guids = ids
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
+
+      if (!guids.Any())
+        return new Dictionary<string, BaseMarkerDTO>();
+
       // Получаем все маркеры с указанными ID
-      var listObjects = await _markerCollection
-          .Find(i => ids.Contains(i.id))
+      var listObjects = await _db.Markers
+          .Where(m => guids.Contains(m.id))
           .ToListAsync();
 
-      // Находим представления (маркеры с owner_id)
+      // Представления — объекты с owner_id != null
       var views = listObjects
-          .Where(i => !string.IsNullOrEmpty(i.owner_id))
+          .Where(m => m.owner_id.HasValue)
           .ToList();
 
       if (!views.Any())
       {
         return ConvertMarkerListDB2DTO(listObjects);
       }
-      // Находим владельцев (owner_id = null) и собираем owner_ids для следующего поиска
+
+      // Владельцы среди уже полученных объектов (owner_id == null)
       var owners = listObjects
-          .Where(i => string.IsNullOrEmpty(i.owner_id))
+          .Where(m => !m.owner_id.HasValue)
           .ToList();
 
-      var ownerIds = views
-          .Select(i => i.owner_id)
+      // Список owner_id для поиска недостающих владельцев
+      var ownerGuids = views
+          .Select(v => v.owner_id.Value)
           .ToList();
 
-      // Запрашиваем владельцев из базы, если есть ownerIds
-      var ownersDb = ownerIds.Any()
-          ? await _markerCollection
-              .Find(i => string.IsNullOrEmpty(i.owner_id) && ownerIds.Contains(i.id))
+      // Получаем владельцев из базы, которых ещё нет в owners
+      var ownersDb = ownerGuids.Any()
+          ? await _db.Markers
+              .Where(m => !m.owner_id.HasValue && ownerGuids.Contains(m.id))
               .ToListAsync()
           : new List<DBMarker>();
 
-      // Объединяем найденные маркеры (владельцев и представления)
+      // Объединяем представления и владельцев
       var allObjects = views
           .Union(ownersDb)
           .ToList();
 
-      // Конвертируем в DTO и возвращаем
       return ConvertMarkerListDB2DTO(allObjects);
     }
+
 
     public async Task<FiguresDTO> GetFigures(Dictionary<string, GeoObjectDTO> geo)
     {

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS public.values (
+CREATE TABLE IF NOT EXISTS public.db_values (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     owner_id uuid NOT NULL,
     name character varying NOT NULL,

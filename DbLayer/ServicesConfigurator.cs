@@ -50,19 +50,19 @@ namespace DbLayer
 
       services.AddScoped<IEventsService, EventsService>();
 
-      services.AddSingleton<IUtilService, UtilService>();
+      services.AddScoped<IUtilService, UtilService>();
 
-      services.AddSingleton<IMapService, MapService>();
+      services.AddScoped<IMapService, MapService>();
       services.AddScoped<IGeoService, GeoService>();
       services.AddScoped<ITrackService, TrackService>();
       services.AddScoped<IRoutService, RoutService>();
       services.AddScoped<ILevelService, LevelService>();
       services.AddScoped<IStateService, StateService>();
 
-      services.AddSingleton<IDiagramTypeService, DiagramTypeService>();
-      services.AddSingleton<DiagramService>();
-      services.AddSingleton<IDiagramService>(provider => provider.GetRequiredService<DiagramService>());
-      services.AddSingleton<IDiagramServiceInternal>(provider => provider.GetRequiredService<DiagramService>());
+      services.AddScoped<IDiagramTypeService, DiagramTypeService>();
+      services.AddScoped<DiagramService>();
+      services.AddScoped<IDiagramService>(provider => provider.GetRequiredService<DiagramService>());
+      services.AddScoped<IDiagramServiceInternal>(provider => provider.GetRequiredService<DiagramService>());
 
 
       services.AddScoped<RightService>();
@@ -81,9 +81,9 @@ namespace DbLayer
       services.AddScoped<IIntegroTypesService>(provider => provider.GetRequiredService<IntegroService>());
       services.AddScoped<IIntegroTypesInternal>(provider => provider.GetRequiredService<IntegroService>());
 
-      services.AddSingleton<GroupsService>();
-      services.AddSingleton<IGroupsService>(provider => provider.GetRequiredService<GroupsService>());
-      services.AddSingleton<IIGroupsServiceInternal>(provider => provider.GetRequiredService<GroupsService>());
+      services.AddScoped<GroupsService>();
+      services.AddScoped<IGroupsService>(provider => provider.GetRequiredService<GroupsService>());
+      services.AddScoped<IIGroupsServiceInternal>(provider => provider.GetRequiredService<GroupsService>());
 
       services.AddScoped<ActionsService>();
       services.AddScoped<IActionsService>(provider => provider.GetRequiredService<ActionsService>());

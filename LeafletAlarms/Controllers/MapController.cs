@@ -165,8 +165,8 @@ namespace LeafletAlarms.Controllers
 
       List<string> parentIds = new List<string>();
 
-      string minId = null;
-      string maxId = null;
+      Guid? minGuid = null;
+      Guid? maxGuid = null;
 
       foreach (var marker in markers.Values)
       {
@@ -174,18 +174,22 @@ namespace LeafletAlarms.Controllers
         retVal.children.Add(markerDto);
         parentIds.Add(marker.id);
 
-        if (minId == null || string.Compare(marker.id, minId) < 0)
-        {
-          minId = marker.id;
-        }
-        if (maxId == null || string.Compare(marker.id, maxId) > 0)
-        {
-          maxId = marker.id;
-        }
+        var markerGuid = Domain.Utils.ConvertObjectIdToGuid(marker.id);
+
+        if (!markerGuid.HasValue)
+          continue;
+
+        if (!minGuid.HasValue || markerGuid.Value.CompareTo(minGuid.Value) < 0)
+          minGuid = markerGuid;
+
+        if (!maxGuid.HasValue || markerGuid.Value.CompareTo(maxGuid.Value) > 0)
+          maxGuid = markerGuid;
       }
 
-      retVal.start_id = minId;
-      retVal.end_id = maxId;
+      // Присваиваем обратно в строки
+      retVal.start_id = minGuid.HasValue ? Domain.Utils.ConvertGuidToObjectId(minGuid.Value) : null;
+      retVal.end_id = maxGuid.HasValue ? Domain.Utils.ConvertGuidToObjectId(maxGuid.Value) : null;
+
 
       //retVal.start_id = retVal.children.FirstOrDefault()?.id;
       //retVal.end_id = retVal.children.LastOrDefault()?.id;

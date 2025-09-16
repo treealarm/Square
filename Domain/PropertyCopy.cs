@@ -177,30 +177,40 @@ namespace Domain
           .Where(targetProperty => sourceProperty.Name == targetProperty.Name)
           .Where(targetProperty => targetProperty.SetMethod != null))
         {
-          if (!IsSimpleType(sourceProperty.PropertyType))
+          if (sourceProperty == null || !IsSimpleType(sourceProperty.PropertyType))
           {
             continue;
           }
 
-          if (sourceProperty.PropertyType == targetProperty.PropertyType)
+          Type GetUnderlyingType(Type t) => Nullable.GetUnderlyingType(t) ?? t;
+
+          var sourceType = GetUnderlyingType(sourceProperty.PropertyType);
+          var targetType = GetUnderlyingType(targetProperty.PropertyType);
+
+          if (sourceType == targetType)
           {
             targetProperty.SetValue(target, sourceProperty.GetValue(source, null), null);
           }
-          else if (sourceProperty.PropertyType == typeof(Guid) && targetProperty.PropertyType == typeof(string))
+          else if (sourceType == typeof(Guid) && targetType == typeof(string))
           {
-            var guid = (Guid)sourceProperty.GetValue(source, null);
-            var objectIdLike = Utils.ConvertGuidToObjectId(guid);
-            targetProperty.SetValue(target, objectIdLike, null);
-          }
-          else if (sourceProperty.PropertyType == typeof(string) && targetProperty.PropertyType == typeof(Guid))
-          {
-            var str = (string)sourceProperty.GetValue(source, null);
-            var guid = Utils.ConvertObjectIdToGuid(str);
-            if (guid != null)
+            var guid = (Guid?)sourceProperty.GetValue(source, null);
+            if (guid.HasValue)
             {
-              targetProperty.SetValue(target, guid.Value, null);
+              var objectIdLike = Utils.ConvertGuidToObjectId(guid.Value);
+              targetProperty.SetValue(target, objectIdLike, null);
             }
           }
+          else if (sourceType == typeof(string) && targetType == typeof(Guid))
+          {
+            var str = (string?)sourceProperty.GetValue(source, null);
+            if (!string.IsNullOrEmpty(str))
+            {
+              var guid = Utils.ConvertObjectIdToGuid(str);
+              if (guid != null)
+                targetProperty.SetValue(target, guid.Value, null);
+            }
+          }
+
         }
       }
 

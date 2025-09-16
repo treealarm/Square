@@ -8,6 +8,7 @@ namespace DbLayer
   internal class PgDbContext : DbContext
   {
     private readonly NpgsqlDataSource _source;
+    public DbSet<DBMarker> Markers { get; set; }
     public DbSet<DBLevel> Levels { get; set; }
     public DbSet<DBObjectRightValue> Rights { get; set; }
 
@@ -52,8 +53,20 @@ namespace DbLayer
       ConfigureStates(modelBuilder);
       ConfigureRights(modelBuilder);
       ConfigureLevels(modelBuilder);
+      ConfigureMarkers(modelBuilder);
     }
+    private void ConfigureMarkers(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<DBMarker>(entity =>
+      {
+        entity.ToTable("objects");
+        entity.HasKey(e => e.id);
 
+        entity.HasIndex(e => e.parent_id).HasDatabaseName("idx_objects_parent_id");
+        entity.HasIndex(e => e.owner_id).HasDatabaseName("idx_objects_owner_id");
+        entity.HasIndex(e => new { e.id, e.owner_id }).HasDatabaseName("idx_objects_id_owner_id");
+      });
+    }
 
     private void ConfigureLevels(ModelBuilder modelBuilder)
     {

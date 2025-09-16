@@ -9,14 +9,14 @@ namespace DataChangeLayer
     {
       services.AddScoped<ITracksUpdateService, TracksUpdateService>();      
       services.AddScoped<IMapUpdateService, MapUpdateService>();
-      services.AddSingleton<IDiagramUpdateService, DiagramUpdateService>();
-      services.AddSingleton<IDiagramTypeUpdateService, DiagramTypeUpdateService>();
+      services.AddScoped<IDiagramUpdateService, DiagramUpdateService>();
+      services.AddScoped<IDiagramTypeUpdateService, DiagramTypeUpdateService>();
       services.AddScoped<IEventsUpdateService, EventsUpdateService>();
       services.AddScoped<IRightUpdateService, RightUpdateService>();
       services.AddScoped<IStatesUpdateService, StatesUpdateService>();
       
       services.AddScoped<IValuesUpdateService, ValuesUpdateService>();
-      services.AddSingleton<IGroupUpdateService, GroupUpdateService>();
+      services.AddScoped<IGroupUpdateService, GroupUpdateService>();
 
       services.AddScoped<IntegroUpdateService>();
       services.AddScoped<IIntegroUpdateService>(provider => provider.GetRequiredService<IntegroUpdateService>());

@@ -1,23 +1,14 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using System;
 
 namespace DbLayer
 {
-  [BsonIgnoreExtraElements]
   internal class DBMarker
   {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    [BsonIgnoreIfDefault]
-    public string id { get; set; }
+    public Guid id { get; set; }
 
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string parent_id { get; set; }
+    public Guid? parent_id { get; set; }
+    public Guid? owner_id { get; set; }// points to object which receive and own all states
 
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string owner_id { get; set; }// points to object which receive and own all states
-
-    [BsonElement("name")]
     public string name { get; set; }
   }
 }
