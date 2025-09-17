@@ -79,6 +79,7 @@ namespace DbLayer.Services
     }
     private void CreateIndexes()
     {
+      return;
       {
         IndexKeysDefinition<DBTrackPoint> keys =
                 new IndexKeysDefinitionBuilder<DBTrackPoint>()
@@ -155,6 +156,7 @@ namespace DbLayer.Services
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
       List<DBTrackPoint> list = new List<DBTrackPoint>();
+      return DBListToDTO(list);
 
       foreach (var track in newObjs)
       {
@@ -164,7 +166,7 @@ namespace DbLayer.Services
         };
         dbTrack.meta.id = ObjectId.GenerateNewId().ToString();
         dbTrack.meta.figure = ModelGate.ConvertDTO2DB(track.figure);
-        dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB(track.extra_props);
+        dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB<DBObjExtraProperty>(track.extra_props);
         list.Add(dbTrack);
       }
 

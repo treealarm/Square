@@ -5,7 +5,6 @@ using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,7 +21,7 @@ namespace DbLayer.Services
       _groupsService = groupsService;
     }
 
-    public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO(List<PgDBObjExtraProperty> props)
+    public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO(List<EventProp> props)
     {
       var retVal = new List<ObjExtraPropertyDTO>();
 
@@ -71,14 +70,14 @@ namespace DbLayer.Services
       }
       return list;
     }
-    public static List<PgDBObjExtraProperty> ConvertExtraPropsToDB(
+    public static List<EventProp> ConvertExtraPropsToDB(
       List<ObjExtraPropertyDTO> extra_props, 
       Guid owner_id)
     {
       if (extra_props == null)
       { return null; }
 
-      var ep_db = new List<PgDBObjExtraProperty>();
+      var ep_db = new List<EventProp>();
       var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
 
       propertieNames.AddRange(
@@ -94,7 +93,7 @@ namespace DbLayer.Services
           continue;
         }
 
-        var newProp = new PgDBObjExtraProperty()
+        var newProp = new EventProp()
         {
           prop_name = prop.prop_name,
           visual_type = prop.visual_type,

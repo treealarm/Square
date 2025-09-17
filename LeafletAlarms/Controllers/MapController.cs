@@ -252,7 +252,7 @@ namespace LeafletAlarms.Controllers
         var ids = propsObjs.Select(i => i.id).ToList();
 
         // History, so limit by time.
-        var tracks = await _tracksService.GetFirstTracksByTime(
+        var tracks = await _tracksService?.GetFirstTracksByTime(
           filter.time_start,
           filter.time_end,
           ids

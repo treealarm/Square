@@ -156,28 +156,24 @@ namespace DbLayer
       return ret;
     }
 
-    public static List<DBObjExtraProperty> ConvertExtraPropsToDB(List<ObjExtraPropertyDTO> extra_props)
+    public static List<T> ConvertExtraPropsToDB<T>(List<ObjExtraPropertyDTO> extra_props)
+    where T : DBObjExtraProperty, new()
     {
       if (extra_props == null)
-      { return null; }
+        return null;
 
-      var ep_db = new List<DBObjExtraProperty>();
-      var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
+      var ep_db = new List<T>();
 
-      propertieNames.AddRange(
-        typeof(FigureGeoDTO).GetProperties().Select(x => x.Name)
-        );
-
+      // Исключаем свойства, которые есть в других DTO
+      var propertyNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
+      propertyNames.AddRange(typeof(FigureGeoDTO).GetProperties().Select(x => x.Name));
 
       foreach (var prop in extra_props)
       {
-        // "radius", "zoom_level"
-        if (propertieNames.Contains(prop.prop_name))
-        {
+        if (propertyNames.Contains(prop.prop_name))
           continue;
-        }
 
-        DBObjExtraProperty newProp = new DBObjExtraProperty()
+        var newProp = new T
         {
           prop_name = prop.prop_name,
           visual_type = prop.visual_type
@@ -185,31 +181,24 @@ namespace DbLayer
 
         if (prop.visual_type == VisualTypes.Double)
         {
-          if(double.TryParse(
-            prop.str_val,
-            NumberStyles.Any,
-            CultureInfo.InvariantCulture,
-            out var result))
-          {
-            newProp.str_val = result;
-          }
-         }
-        else
-        if (prop.visual_type == VisualTypes.DateTime)
+          if (double.TryParse(prop.str_val, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
+            newProp.str_val = result.ToString();
+        }
+        else if (prop.visual_type == VisualTypes.DateTime)
         {
-          newProp.str_val = DateTime
-              .Parse(prop.str_val)
-              .ToUniversalTime();
+          if (DateTime.TryParse(prop.str_val, out var dt))
+            newProp.str_val = dt.ToUniversalTime().ToString();
         }
 
         if (newProp.str_val == null)
-        {
           newProp.str_val = prop.str_val;
-        }
+
         ep_db.Add(newProp);
       }
+
       return ep_db;
     }
+
 
     public static string GetDefaultVisualType(DBObjExtraProperty prop)
     {
@@ -224,42 +213,46 @@ namespace DbLayer
       }
       return prop.visual_type;
     }
-    public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO(List<DBObjExtraProperty> props)
+    // Конвертация списка дочерних свойств в DTO
+    public static List<ObjExtraPropertyDTO> ConverDBExtraProp2DTO<T>(List<T> props)
+        where T : DBObjExtraProperty
     {
-      var retVal = new List<ObjExtraPropertyDTO> ();
+      var retVal = new List<ObjExtraPropertyDTO>();
 
       if (props == null)
-      {
         return retVal;
-      }
 
       foreach (var prop in props)
       {
-        ObjExtraPropertyDTO newProp = new ObjExtraPropertyDTO()
+        retVal.Add(new ObjExtraPropertyDTO
         {
           prop_name = prop.prop_name,
           str_val = prop.str_val.ToString(),
           visual_type = GetDefaultVisualType(prop)
-        };
-        retVal.Add(newProp);
+        });
       }
 
       return retVal;
     }
-    public static ObjPropsDTO Conver2Property2DTO(DBMarkerProperties props)
+
+    // Конвертация родителя (DBMarkerProperties, DBEvent и др.) в DTO
+    public static ObjPropsDTO Conver2Property2DTO<TParent, TChild>(TParent props)
+        where TParent : class
+        where TChild : DBObjExtraProperty
     {
       if (props == null)
-      {
         return null;
-      }
 
-      ObjPropsDTO mProps = new ObjPropsDTO()
+      // Получаем свойство extra_props через reflection, чтобы было общее для любых TParent
+      var extraPropsProp = typeof(TParent).GetProperty("extra_props");
+      var extraProps = extraPropsProp?.GetValue(props) as List<TChild>;
+
+      return new ObjPropsDTO
       {
-        extra_props = ConverDBExtraProp2DTO(props.extra_props),
-        id = props.id
+        extra_props = ConverDBExtraProp2DTO(extraProps),
+        id = props.ToString() // или можно взять конкретное поле id через reflection
       };
-
-      return mProps;
     }
+
   }
 }

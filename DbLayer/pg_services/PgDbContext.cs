@@ -8,6 +8,8 @@ namespace DbLayer
   internal class PgDbContext : DbContext
   {
     private readonly NpgsqlDataSource _source;
+
+    public DbSet<DBMarkerProperties> Properties { get; set; }
     public DbSet<DBMarker> Markers { get; set; }
     public DbSet<DBLevel> Levels { get; set; }
     public DbSet<DBObjectRightValue> Rights { get; set; }
@@ -54,7 +56,34 @@ namespace DbLayer
       ConfigureRights(modelBuilder);
       ConfigureLevels(modelBuilder);
       ConfigureMarkers(modelBuilder);
+      ConfigureProperties(modelBuilder);
     }
+
+    private void ConfigureProperties(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<DBMarkerProperties>(entity =>
+      {
+        entity.ToTable("properties"); // Таблица для DBMarkerProperties
+        entity.HasKey(e => e.id);
+
+        entity.HasMany(e => e.extra_props)               // у properties есть коллекция extra_props
+              .WithOne()                                 // у PgDBObjExtraProperty нет навигации назад
+              .HasForeignKey(ep => ep.owner_id)          // внешний ключ
+              .OnDelete(DeleteBehavior.Cascade);         // удаляем каскадом
+      });
+
+      modelBuilder.Entity<MarkerProp>(entity =>
+      {
+        entity.ToTable("properties_extra_props");
+        entity.HasKey(e => e.id);
+
+        // Индекс для выборки по owner_id
+        entity.HasIndex(e => e.owner_id)
+              .HasDatabaseName("idx_properties_extra_props_owner_id");
+      });
+    }
+
+
     private void ConfigureMarkers(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<DBMarker>(entity =>
@@ -162,7 +191,7 @@ namespace DbLayer
       });
 
       // Настройка таблицы DBObjExtraProperty, связанной с таблицей event_props
-      modelBuilder.Entity<PgDBObjExtraProperty>(entity =>
+      modelBuilder.Entity<EventProp>(entity =>
       {
         entity.ToTable("event_props"); // Указываем имя таблицы для DBObjExtraProperty
       });

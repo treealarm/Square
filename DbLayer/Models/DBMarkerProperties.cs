@@ -1,22 +1,12 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System;
+using DbLayer.Models;
 
 namespace DbLayer
 {
   internal class DBObjExtraProperty
-  {
-    public string prop_name { get; set; }
-    [BsonIgnoreIfNull]
-    public BsonValue str_val { get; set; }
-    [BsonIgnoreIfNull]
-    public string visual_type { get; set; }
-  }
-
-  internal class PgDBObjExtraProperty
   {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -27,12 +17,10 @@ namespace DbLayer
     public Guid owner_id { get; set; }
   }
 
-  internal class DBMarkerProperties
+  internal class MarkerProp : DBObjExtraProperty { }
+
+  internal record DBMarkerProperties: BasePgEntity
   {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string id { get; set; }
-    [BsonIgnoreIfNull]
-    public List<DBObjExtraProperty> extra_props { get; set; }
+    public List<MarkerProp> extra_props { get; set; }
   }
 }

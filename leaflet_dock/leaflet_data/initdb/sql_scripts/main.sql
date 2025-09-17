@@ -12,3 +12,4 @@
 \i 'rights.sql'
 \i 'levels.sql'
 \i 'objects.sql'
+\i 'properties.sql'

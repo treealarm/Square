@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace DbLayer.Models
 {
+  internal class EventProp : DBObjExtraProperty { }
+
   internal record DBEvent: BasePgEntity
   {
     public DateTime timestamp { get; set; }
@@ -13,6 +15,6 @@ namespace DbLayer.Models
     public string param0 { get; set; }
     public string param1 { get; set; }
     public int event_priority { get; set; }
-    public List<PgDBObjExtraProperty> extra_props { get; set; }
+    public List<EventProp> extra_props { get; set; }
   }
 }

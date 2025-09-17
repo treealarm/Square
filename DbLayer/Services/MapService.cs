@@ -15,8 +15,6 @@ namespace DbLayer.Services
   {
     private readonly PgDbContext _db;
 
-    private readonly IMongoCollection<DBMarkerProperties> _propCollection;
-
     private readonly IMongoClient _mongoClient;
     private readonly IMongoDatabase _mongoDB;
     private readonly IOptions<MapDatabaseSettings> _geoStoreDBSettings;   
@@ -34,28 +32,12 @@ namespace DbLayer.Services
 
       _db = db;
 
-      _propCollection = _mongoDB.GetCollection<DBMarkerProperties>(
-          geoStoreDatabaseSettings.Value.PropCollectionName);
-
       CreateIndexes();
     }
 
     private void CreateIndexes()
     {
-      {
-        var keys = Builders<DBMarkerProperties>.IndexKeys.Combine(
-          Builders<DBMarkerProperties>.IndexKeys
-          .Ascending($"{nameof(DBMarkerProperties.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}"),
-          Builders<DBMarkerProperties>.IndexKeys
-          .Ascending($"{nameof(DBMarkerProperties.extra_props)}.{nameof(DBObjExtraProperty.str_val)}"));
 
-           var indexModel = new CreateIndexModel<DBMarkerProperties>(
-          keys, new CreateIndexOptions()
-          { Name = "ep" }
-        );
-
-        _propCollection.Indexes.CreateOneAsync(indexModel);
-      }
     }
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetAsync(List<string> ids)
@@ -334,8 +316,6 @@ namespace DbLayer.Services
       return dict;
     }
 
-
-
     public async Task UpdateHierarchyAsync(IEnumerable<BaseMarkerDTO> updatedList)
     {
       if (!updatedList.Any())
@@ -433,7 +413,11 @@ namespace DbLayer.Services
 
       await states.DeleteManyAsync(filter1);
 
-      await _propCollection.DeleteManyAsync(x => ids.Contains(x.id));
+      var propsToDelete = await _db.Properties
+         .Where(x => guids.Contains(x.id))
+         .ToListAsync();
+
+      _db.Properties.RemoveRange(propsToDelete);
 
       var deletedCount = await _db.Markers
         .Where(m => guids.Contains(m.id))
@@ -448,8 +432,8 @@ namespace DbLayer.Services
 
       DBMarkerProperties mProps = new DBMarkerProperties()
       {
-        extra_props = new List<DBObjExtraProperty>(),
-        id = propsIn.id
+        extra_props = new List<MarkerProp>(),
+        id = Domain.Utils.ConvertObjectIdToGuid(propsIn.id) ?? Guid.Empty
       };
 
       if (props.extra_props == null)
@@ -457,184 +441,210 @@ namespace DbLayer.Services
         return mProps;
       }
 
-      mProps.extra_props = ModelGate.ConvertExtraPropsToDB(props.extra_props);
+      mProps.extra_props = ModelGate.ConvertExtraPropsToDB<MarkerProp>(props.extra_props);
 
       return mProps;
     }
 
-    public async Task UpdatePropAsync(IEnumerable<ObjPropsDTO> updatedObjs)
+    async Task IMapService.UpdatePropAsync(IEnumerable<ObjPropsDTO> updatedObjs)
     {
-      var models = new List<WriteModel<DBMarkerProperties>>();
+      if (!updatedObjs.Any())
+        return;
+
+      var idsToUpdate = updatedObjs
+          .Select(x => Domain.Utils.ConvertObjectIdToGuid(x.id))
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
+
+      var existing = await _db.Properties
+          .Include(x => x.extra_props)
+          .Where(x => idsToUpdate.Contains(x.id))
+          .ToListAsync();
+
+      var existingDict = existing.ToDictionary(x => x.id);
+
+      var toUpdate = new List<DBMarkerProperties>();
+      var toAdd = new List<DBMarkerProperties>();
 
       foreach (var dto in updatedObjs)
       {
-        var props = ConvertDTO2Property(dto);
+        var objId = Domain.Utils.ConvertObjectIdToGuid(dto.id) ?? Guid.Empty;
 
-        var filter = Builders<DBMarkerProperties>.Filter.Eq(x => x.id, dto.id);
-        var replace = new ReplaceOneModel<DBMarkerProperties>(filter, props)
+        var props = dto.extra_props.Select(p => new MarkerProp
         {
-          IsUpsert = true
-        };
+          prop_name = p.prop_name,
+          str_val = p.str_val,
+          visual_type = p.visual_type,
+          owner_id = objId
+        }).ToList();
 
-        models.Add(replace);
+        if (existingDict.TryGetValue(objId, out var existingEntity))
+        {
+          // Очищаем старые свойства и заменяем новыми
+          existingEntity.extra_props.Clear();
+          existingEntity.extra_props.AddRange(props);
+
+          toUpdate.Add(existingEntity);
+        }
+        else
+        {
+          var newEntity = new DBMarkerProperties
+          {
+            id = objId,
+            extra_props = props
+          };
+
+          toAdd.Add(newEntity);
+        }
       }
 
-      if (models.Count > 0)
-      {
-        await _propCollection.BulkWriteAsync(models);
-      }
+      _db.Properties.UpdateRange(toUpdate);
+      await _db.Properties.AddRangeAsync(toAdd);
+      await _db.SaveChangesAsync();
     }
+
 
     public async Task UpdatePropNotDeleteAsync(IEnumerable<IObjectProps> listUpdate)
     {
       if (!listUpdate.Any())
-      {
         return;
-      }
 
-      var bulkWrites = new List<WriteModel<DBMarkerProperties>>();
+      var idsToUpdate = listUpdate.Select(x => Domain.Utils.ConvertObjectIdToGuid(x.id) ?? Guid.Empty)
+                                  .ToList();
 
-      // Метод для добавления запроса Pull и Push
-      void AddUpdateRequests(DBMarkerProperties propToUpdate, IEnumerable<string> propNames, string id)
+      var existingEntities = await _db.Properties
+          .Include(p => p.extra_props)
+          .Where(p => idsToUpdate.Contains(p.id))
+          .ToListAsync();
+
+      var existingDict = existingEntities.ToDictionary(e => e.id);
+
+      foreach (var dto in listUpdate)
       {
-        var filter = Builders<DBMarkerProperties>.Filter.Where(x => x.id == id);
-
-        var updatePull = Builders<DBMarkerProperties>.Update.PullFilter(u => u.extra_props, c => propNames.Contains(c.prop_name));
-        var updatePush = Builders<DBMarkerProperties>.Update.PushEach(u => u.extra_props, propToUpdate.extra_props);
-
-        bulkWrites.Add(new UpdateOneModel<DBMarkerProperties>(filter, updatePull) { IsUpsert = true });
-        bulkWrites.Add(new UpdateOneModel<DBMarkerProperties>(filter, updatePush) { IsUpsert = true });
-      }
-
-      foreach (var props in listUpdate)
-      {
-        // Проверка, что extra_props не пустой
-        if (props?.extra_props?.Any() != true)
-        {
+        if (dto?.extra_props?.Any() != true)
           continue;
+
+        var objId = Domain.Utils.ConvertObjectIdToGuid(dto.id) ?? Guid.Empty;
+
+        var newProps = dto.extra_props.Select(p => new MarkerProp
+        {
+          prop_name = p.prop_name,
+          str_val = p.str_val,
+          visual_type = p.visual_type,
+          owner_id = objId
+        }).ToList();
+
+        if (existingDict.TryGetValue(objId, out var existingEntity))
+        {
+          // Удаляем из коллекции только свойства с совпадающими prop_name
+          existingEntity.extra_props.RemoveAll(ep => newProps.Select(np => np.prop_name).Contains(ep.prop_name));
+
+          // Добавляем новые/обновлённые
+          existingEntity.extra_props.AddRange(newProps);
+
+          _db.Properties.Update(existingEntity);
         }
-
-        // Преобразование объекта
-        var propToUpdate = ConvertDTO2Property(props);
-
-        // Получение имен свойств
-        var propNames = propToUpdate.extra_props.Select(p => p.prop_name).ToList();
-
-        // Добавление запросов Pull и Push
-        AddUpdateRequests(propToUpdate, propNames, props.id);
+        else
+        {
+          // Если объекта нет, создаём новый
+          var newEntity = new DBMarkerProperties
+          {
+            id = objId,
+            extra_props = newProps
+          };
+          await _db.Properties.AddAsync(newEntity);
+        }
       }
 
-      if (bulkWrites.Any())
-      {
-        await _propCollection.BulkWriteAsync(bulkWrites);
-      }
+      await _db.SaveChangesAsync();
     }
+
 
 
     public async Task<ObjPropsDTO> GetPropAsync(string id)
     {
-      var obj = await _propCollection.Find(x => x.id == id).FirstOrDefaultAsync();
-      return ModelGate.Conver2Property2DTO(obj);
+      // Преобразуем id в Guid (если в PostgreSQL используем Guid)
+      var guidId = Domain.Utils.ConvertObjectIdToGuid(id) ?? Guid.Empty;
+
+      var entity = await _db.Properties
+          .Include(p => p.extra_props) // включаем дочерние свойства
+          .FirstOrDefaultAsync(p => p.id == guidId);
+
+      return ModelGate.Conver2Property2DTO<DBMarkerProperties, MarkerProp>(entity);
     }
+
 
     public async Task<Dictionary<string, ObjPropsDTO>> GetPropsAsync(List<string> ids)
     {
-      var list = new Dictionary<string, ObjPropsDTO>();
-      var objs = await _propCollection.Find(x => ids.Contains(x.id)).ToListAsync();
+      var guidIds = ids
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
 
-      foreach (var obj in objs)
-      {
-        list.Add(obj.id, ModelGate.Conver2Property2DTO(obj));
-      }
-      return list;
+      var entities = await _db.Properties
+          .Include(p => p.extra_props)      // загружаем дочерние свойства
+          .Where(p => guidIds.Contains(p.id))
+          .ToListAsync();
+
+      var result = entities.ToDictionary(
+          e => Domain.Utils.ConvertGuidToObjectId(e.id),             // преобразуем обратно в string, если DTO использует string id
+          e => ModelGate.Conver2Property2DTO<DBMarkerProperties, MarkerProp>(e)
+      );
+
+      return result;
     }
+
 
     public async Task<List<ObjPropsDTO>> GetPropByValuesAsync(
-      ObjPropsSearchDTO propFilter,
-      string start_id,
-      int forward,
-      int count
-    )
+        ObjPropsSearchDTO propFilter,
+        string start_id,
+        int forward,
+        int count)
     {
-      List<ObjPropsDTO> ret = new List<ObjPropsDTO>();
-      List<DBMarkerProperties> retObjProps = new List<DBMarkerProperties>();
+      var query = _db.Properties
+          .Include(p => p.extra_props)
+          .AsQueryable();
 
-      var builder = Builders<DBMarkerProperties>.Filter;
-      var filter = builder.Empty;
-
-      var filterPaging = builder.Empty;
-
+      // Пагинация по Guid
       if (!string.IsNullOrEmpty(start_id))
       {
+        var startGuid = Domain.Utils.ConvertObjectIdToGuid(start_id) ?? Guid.Empty;
+
         if (forward > 0)
-          filterPaging = Builders<DBMarkerProperties>.Filter.Gt("_id", new ObjectId(start_id));
+          query = query.Where(p => p.id.CompareTo(startGuid) > 0);
         else
-          filterPaging = Builders<DBMarkerProperties>.Filter.Lt("_id", new ObjectId(start_id));
+          query = query.Where(p => p.id.CompareTo(startGuid) < 0);
       }
 
-      if (propFilter != null)
+      // Фильтр по свойствам
+      if (propFilter?.props?.Any() == true)
       {
-        foreach (var prop in propFilter.props)
-        {
-          var request =
-            string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
-            prop.prop_name,
-            prop.str_val);
+        var propNames = propFilter.props.Select(p => p.prop_name).ToList();
+        var propValues = propFilter.props.ToDictionary(p => p.prop_name, p => p.str_val);
 
-          var f1 = Builders<DBMarkerProperties>
-            .Filter
-            .ElemMatch(t => t.extra_props, request)
-            ;
-
-          var metaValue = new BsonDocument(
-              "str_val",
-              prop.str_val
-              );
-
-          if (filter == builder.Empty)
-          {
-            filter = f1;
-          }
-          else
-          {
-            filter |= f1;
-          }
-        }
+        query = query.Where(p =>
+            p.extra_props.Any(ep =>
+                propValues.ContainsKey(ep.prop_name) &&
+                ep.str_val == propValues[ep.prop_name]
+            )
+        );
       }
 
-      if (filterPaging != builder.Empty)
-      {
-        filter = filter & filterPaging;
-      }
+      // Сортировка
+      query = forward > 0 ? query.OrderBy(p => p.id) : query.OrderByDescending(p => p.id);
 
+      // Лимит
+      var entities = await query.Take(count).ToListAsync();
 
-      if (forward > 0)
-      {
-        retObjProps = await _propCollection
-        .Find(filter)
-        .Limit(count)
-        .ToListAsync();
-      }
-      else
-      {
-        retObjProps = await _propCollection
-                  .Find(filter)
-                  .SortByDescending(x => x.id)
-                  .Limit(count)
-                  .ToListAsync()
-                  ;
+      // Если сортировка была Desc и forward <= 0, нужно вернуть в Asc (как у тебя)
+      if (forward <= 0)
+        entities.Reverse();
 
-        retObjProps.Sort((x, y) => new ObjectId(x.id).CompareTo(new ObjectId(y.id)));
-      }
-     
-
-      foreach (var obj in retObjProps)
-      {
-        ret.Add(ModelGate.Conver2Property2DTO(obj));
-      }
-
-      return ret;
+      return entities.Select(ModelGate.Conver2Property2DTO<DBMarkerProperties, MarkerProp>).ToList();
     }
+
 
     public async Task<Dictionary<string, BaseMarkerDTO>> GetOwnersAsync(List<string> ids)
     {
@@ -788,6 +798,5 @@ namespace DbLayer.Services
       }
       return result;
     }
-
   }
 }

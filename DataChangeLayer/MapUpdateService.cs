@@ -6,7 +6,6 @@ namespace DataChangeLayer
   {
     private readonly IMapService _mapService;
     private readonly IGeoService _geoService;
-    private readonly ITrackService _tracksService;
     private readonly ILevelService _levelService;
     private readonly IDiagramUpdateService _diagramUpdateService;
     private readonly ITracksUpdateService _trackUpdateService;
@@ -23,7 +22,6 @@ namespace DataChangeLayer
     {
       _mapService = mapService;
       _geoService = geoService;
-      _tracksService = tracksService;
       _levelService = levelService;
       _diagramUpdateService = diagramUpdateService;
       _trackUpdateService = trackUpdateService;
