@@ -22,6 +22,10 @@ namespace DataChangeLayer
 
     public async Task<bool> UpdateStates(List<ObjectStateDTO> objStates)
     {
+      if (!objStates.Any())
+      {
+        return true;
+      }
       //First select only owners
       List<string> ids = objStates.Select(i => i.id ?? "").ToList();
       var objsToUpdate = await _mapService.GetOwnersAsync(ids);

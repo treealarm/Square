@@ -201,7 +201,7 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
                     ? "Polygon"
                     : "LineString"
               }
-              label="Тип гео"
+              label="geo type"
               onChange={(e) => changeGeometryType(e.target.value as "Point" | "Polygon" | "LineString")}
             >
               <MenuItem value="Point">Point</MenuItem>

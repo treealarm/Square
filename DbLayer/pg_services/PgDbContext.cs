@@ -9,7 +9,7 @@ namespace DbLayer
   {
     private readonly NpgsqlDataSource _source;
 
-    public DbSet<DBMarkerProperties> Properties { get; set; }
+    public DbSet<DBMarkerProp> Properties { get; set; }
     public DbSet<DBMarker> Markers { get; set; }
     public DbSet<DBLevel> Levels { get; set; }
     public DbSet<DBObjectRightValue> Rights { get; set; }
@@ -61,28 +61,29 @@ namespace DbLayer
 
     private void ConfigureProperties(ModelBuilder modelBuilder)
     {
-      modelBuilder.Entity<DBMarkerProperties>(entity =>
+      modelBuilder.Entity<DBMarkerProp>(entity =>
       {
-        entity.ToTable("properties"); // Таблица для DBMarkerProperties
+        entity.ToTable("properties");
         entity.HasKey(e => e.id);
 
-        entity.HasMany(e => e.extra_props)               // у properties есть коллекция extra_props
-              .WithOne()                                 // у PgDBObjExtraProperty нет навигации назад
-              .HasForeignKey(ep => ep.owner_id)          // внешний ключ
-              .OnDelete(DeleteBehavior.Cascade);         // удаляем каскадом
-      });
+        entity.Property(e => e.prop_name).IsRequired();
+        entity.Property(e => e.str_val);
+        entity.Property(e => e.visual_type);
+        entity.Property(e => e.object_id).IsRequired();
 
-      modelBuilder.Entity<MarkerProp>(entity =>
-      {
-        entity.ToTable("properties_extra_props");
-        entity.HasKey(e => e.id);
+        // Индекс для выборки по объекту
+        entity.HasIndex(e => e.object_id)
+              .HasDatabaseName("idx_properties_object_id");
 
-        // Индекс для выборки по owner_id
-        entity.HasIndex(e => e.owner_id)
-              .HasDatabaseName("idx_properties_extra_props_owner_id");
+        // Индекс для поиска по имени свойства
+        entity.HasIndex(e => e.prop_name)
+              .HasDatabaseName("idx_properties_prop_name");
+
+        // Составной индекс: имя + значение
+        entity.HasIndex(e => new { e.prop_name, e.str_val })
+              .HasDatabaseName("idx_properties_prop_name_str_val");
       });
     }
-
 
     private void ConfigureMarkers(ModelBuilder modelBuilder)
     {

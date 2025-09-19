@@ -123,48 +123,56 @@ namespace LeafletAlarms.Services
 
       while (!result.CloseStatus.HasValue)
       {
-        string s = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
-
-        var json = JsonSerializer.Deserialize<StateBaseReceiveDTO>(s);
-
-        if (json.action.ToString() == "set_box")
+        try
         {
-          BoxDTO setBox = JsonSerializer.Deserialize<BoxDTO>(json.data.ToString());
+          string s = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-          if (setBox != null)
+          var json = JsonSerializer.Deserialize<StateBaseReceiveDTO>(s);
+
+          if (json.action.ToString() == "set_box")
           {
-            await OnSetBox(setBox);
+            BoxDTO setBox = JsonSerializer.Deserialize<BoxDTO>(json.data.ToString());
+
+            if (setBox != null)
+            {
+              await OnSetBox(setBox);
+            }
           }
-        }
 
-        if (json.action.ToString() == "set_ids")
-        {
-          List<string> ids = JsonSerializer.Deserialize<List<string>>(json.data.ToString());
-
-          if (ids != null)
+          if (json.action.ToString() == "set_ids")
           {
-            await OnSetIds(ids);
+            List<string> ids = JsonSerializer.Deserialize<List<string>>(json.data.ToString());
+
+            if (ids != null)
+            {
+              await OnSetIds(ids);
+            }
           }
-        }
 
-        if (json.action.ToString() == "update_values_periodically")
+          if (json.action.ToString() == "update_values_periodically")
+          {
+            _update_values_periodically = JsonSerializer.Deserialize<bool>(json.data.ToString());
+          }
+
+          var replay = JsonSerializer.SerializeToUtf8Bytes(json);
+
+          //await _webSocket.SendAsync(
+          //  new ArraySegment<byte>(buffer, 0, replay.Length),
+          //  result.MessageType,
+          //  result.EndOfMessage,
+          //  CancellationToken.None
+          //);
+
+          result = await _webSocket.ReceiveAsync(
+            new ArraySegment<byte>(buffer),
+            CancellationToken.None
+          );
+        }
+        catch (Exception ex)
         {
-          _update_values_periodically = JsonSerializer.Deserialize<bool>(json.data.ToString());
+          Console.Error.WriteLine(ex.ToString());
+          break;
         }
-
-        var replay = JsonSerializer.SerializeToUtf8Bytes(json);
-
-        //await _webSocket.SendAsync(
-        //  new ArraySegment<byte>(buffer, 0, replay.Length),
-        //  result.MessageType,
-        //  result.EndOfMessage,
-        //  CancellationToken.None
-        //);
-
-        result = await _webSocket.ReceiveAsync(
-          new ArraySegment<byte>(buffer),
-          CancellationToken.None
-        );
       }
 
       _cancellationTokenSource.Cancel();

@@ -4,7 +4,13 @@ using System.Collections.Generic;
 
 namespace DbLayer.Models
 {
-  internal class EventProp : DBObjExtraProperty { }
+  internal record EventProp : BasePgEntity
+  {
+    public string prop_name { get; set; }
+    public string str_val { get; set; }
+    public string visual_type { get; set; }
+    public Guid owner_id { get; set; }
+  }
 
   internal record DBEvent: BasePgEntity
   {

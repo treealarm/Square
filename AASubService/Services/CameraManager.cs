@@ -702,7 +702,7 @@ namespace AASubService
       {
         while (!cancellationToken.IsCancellationRequested)
         {
-          await Task.Delay(interval.Milliseconds, cancellationToken.Token); // ждем перед следующим циклом
+          await Task.Delay(interval, cancellationToken.Token); // ждем перед следующим циклом
           var client = IntegrationUtilsLib.Utils.ClientBase;
 
           if (client == null || client.IsDead)
@@ -739,7 +739,11 @@ namespace AASubService
 
           var results = await Task.WhenAll(tasks); // ждем завершения всех проверок
           states.States.AddRange(results);
-          await client.Client!.UpdateStatesAsync(states);
+
+          if (states.States.Count > 0)
+          {
+            await client.Client!.UpdateStatesAsync(states);
+          }
         }
       });
     }

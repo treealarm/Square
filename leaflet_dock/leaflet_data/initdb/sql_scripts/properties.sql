@@ -1,19 +1,27 @@
--- Основная таблица properties
+-- Основная таблица для свойств объектов
 CREATE TABLE IF NOT EXISTS public.properties (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY
-);
-
--- Таблица для свойств объекта
-CREATE TABLE IF NOT EXISTS public.properties_extra_props (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     prop_name character varying NOT NULL,
     str_val text,
     visual_type character varying,
-    owner_id uuid NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE
+    object_id uuid NOT NULL
 );
 
--- Индексы (минимум для owner_id, чтобы быстро доставать все свойства объекта)
-CREATE INDEX IF NOT EXISTS idx_properties_extra_props_owner_id
-    ON public.properties_extra_props(owner_id);
+-- Индекс для быстрых выборок всех свойств по объекту
+CREATE INDEX IF NOT EXISTS idx_properties_object_id
+    ON public.properties(object_id);
 
--- Если потом появится поиск по prop_name/str_val → можно будет добавить такие же индексы, как у event_props
+-- Индекс для поиска по имени свойства
+CREATE INDEX IF NOT EXISTS idx_properties_prop_name
+    ON public.properties(prop_name);
+
+-- Составной индекс: имя + значение
+-- ускоряет WHERE prop_name = ? AND str_val = ?
+CREATE INDEX IF NOT EXISTS idx_properties_prop_name_str_val
+    ON public.properties(prop_name, str_val);
+
+-- (опционально) если нужен поиск по подстроке в str_val
+-- требует расширение pg_trgm:
+-- CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- CREATE INDEX IF NOT EXISTS idx_properties_str_val_trgm
+--   ON public.properties USING gin (str_val gin_trgm_ops);
