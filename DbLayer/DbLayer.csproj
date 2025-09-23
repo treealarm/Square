@@ -14,6 +14,7 @@
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\main.sql" Link="sql\main.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\objects.sql" Link="sql\objects.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\properties.sql" Link="sql\properties.sql" />
+    <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\track_points.sql" Link="sql\track_points.sql" />
     <None Include="D:\TESTS\Leaflet\leaflet_dock\leaflet_data\initdb\sql_scripts\rights.sql" Link="rights.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\states.sql" Link="sql\states.sql" />
   </ItemGroup>
@@ -23,6 +24,7 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
     <PackageReference Include="MongoDB.Driver" Version="3.4.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>

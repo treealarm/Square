@@ -9,6 +9,7 @@ namespace DbLayer
   {
     private readonly NpgsqlDataSource _source;
 
+    public DbSet<DBTrackPoint> Tracks { get; set; }
     public DbSet<DBMarkerProp> Properties { get; set; }
     public DbSet<DBMarker> Markers { get; set; }
     public DbSet<DBLevel> Levels { get; set; }
@@ -37,10 +38,15 @@ namespace DbLayer
     }
 
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-      optionsBuilder.UseNpgsql(
-        _source
+      builder.UseNpgsql(
+        _source,
+        npgsqlOptions =>
+        {
+          npgsqlOptions.UseNetTopologySuite();
+          npgsqlOptions.MigrationsAssembly(typeof(PgDbContext).Assembly.FullName);
+        }
       //    @"Server=(localdb)\mssqllocaldb;Database=Test;ConnectRetryCount=0"
       );
     }
@@ -57,8 +63,53 @@ namespace DbLayer
       ConfigureLevels(modelBuilder);
       ConfigureMarkers(modelBuilder);
       ConfigureProperties(modelBuilder);
+      ConfigureTrackPoints(modelBuilder);
     }
 
+    private void ConfigureTrackPoints(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<DBTrackPoint>(entity =>
+      {
+        entity.ToTable("track_points");
+
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.object_id)
+              .HasColumnName("object_id");
+
+        // timestamp
+        entity.Property(e => e.timestamp)
+              .IsRequired()
+              .HasColumnName("timestamp");
+
+        // figure (геометрия)
+        entity.Property(e => e.figure)
+              .IsRequired()
+              .HasColumnName("figure")
+              .HasColumnType("geometry")
+              ; // EF Core + NetTopologySuite
+
+        // radius
+        entity.Property(e => e.radius)
+              .HasColumnName("radius");
+
+        // zoom_level
+        entity.Property(e => e.zoom_level)
+              .HasColumnName("zoom_level");
+
+        // extra_props как jsonb
+        entity.Property(e => e.extra_props)
+              .HasColumnName("extra_props")
+              .HasColumnType("jsonb");
+
+        // индексы
+        entity.HasIndex(e => e.timestamp).HasDatabaseName("idx_track_points_ts");
+        entity.HasIndex(e => e.figure).HasDatabaseName("idx_track_points_figure_gist")
+              .HasMethod("gist");
+        entity.HasIndex(e => e.extra_props).HasDatabaseName("idx_track_points_extra_props")
+              .HasMethod("gin");
+      });
+    }
     private void ConfigureProperties(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<DBMarkerProp>(entity =>

@@ -651,8 +651,11 @@ namespace DbLayer.Services
           ? query.OrderBy(p => p.object_id)
           : query.OrderByDescending(p => p.object_id);
 
+      query = query.Take(count * 10);
+      string sql = query.ToQueryString();
+      Console.WriteLine(sql);
       // Достаём свойства
-      var props = await query.Take(count * 10).ToListAsync();
+      var props = await query.ToListAsync();
       // ×10 — чтобы набрать с запасом, т.к. несколько строк = один объект
 
       // Группируем по объектам

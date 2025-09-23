@@ -1,27 +1,33 @@
--- Основная таблица для свойств объектов
-CREATE TABLE IF NOT EXISTS public.properties (
-    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-    prop_name character varying NOT NULL,
-    str_val text,
-    visual_type character varying,
-    object_id uuid NOT NULL
+-- Нужно расширение PostGIS для работы с геометрией
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- Таблица трек-точек
+CREATE TABLE track_points (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    object_id UUID NULL,
+    timestamp TIMESTAMPTZ NOT NULL,
+
+    -- геометрия фигуры (Point, Polygon, LineString)
+    figure geometry(GEOMETRY, 4326) NOT NULL,
+    radius double precision,
+    zoom_level text,
+
+    -- метаданные
+    extra_props jsonb
 );
 
--- Индекс для быстрых выборок всех свойств по объекту
-CREATE INDEX IF NOT EXISTS idx_properties_object_id
-    ON public.properties(object_id);
+-- индекс по object_id для фильтрации по объекту
+CREATE INDEX idx_track_points_object_id ON track_points(object_id);
 
--- Индекс для поиска по имени свойства
-CREATE INDEX IF NOT EXISTS idx_properties_prop_name
-    ON public.properties(prop_name);
+-- Индекс для быстрого поиска по времени
+CREATE INDEX idx_track_points_ts ON track_points(timestamp);
 
--- Составной индекс: имя + значение
--- ускоряет WHERE prop_name = ? AND str_val = ?
-CREATE INDEX IF NOT EXISTS idx_properties_prop_name_str_val
-    ON public.properties(prop_name, str_val);
+-- GIN-индекс для быстрого поиска по jsonb свойствам
+CREATE INDEX idx_track_points_extra_props ON track_points USING gin (extra_props);
 
--- (опционально) если нужен поиск по подстроке в str_val
--- требует расширение pg_trgm:
--- CREATE EXTENSION IF NOT EXISTS pg_trgm;
--- CREATE INDEX IF NOT EXISTS idx_properties_str_val_trgm
---   ON public.properties USING gin (str_val gin_trgm_ops);
+-- Пример поиска по свойству в jsonb:
+-- SELECT * FROM track_points
+-- WHERE extra_props @> '[{"prop_name": "track_name", "str_val": "sad"}]';
+
+-- Индекс для гео-запросов (например ближайшие точки)
+CREATE INDEX idx_track_points_figure_gist ON track_points USING gist (figure);

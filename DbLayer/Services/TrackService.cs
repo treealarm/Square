@@ -1,227 +1,261 @@
 ﻿using Domain;
-using Microsoft.Extensions.Options;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using MongoDB.Driver.GeoJsonObjectModel;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using NetTopologySuite;
 
 namespace DbLayer.Services
 {
   internal class TrackService : ITrackService
   {
-    private IMongoCollection<DBTrackPoint> _collFigures;
-    private readonly IMongoClient _mongoClient;
+    private readonly PgDbContext _dbContext;
     private readonly ILevelService _levelService;
-    private readonly IOptions<MapDatabaseSettings> _geoStoreDatabaseSettings;
-    IMongoCollection<DBTrackPoint> Coll
+
+    public TrackService(PgDbContext dbContext, ILevelService levelService)
     {
-      get
+      _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+      _levelService = levelService ?? throw new ArgumentNullException(nameof(levelService));
+    }
+
+
+    static public Geometry ConvertGeoDTO2DB(GeometryDTO location, GeometryFactory factory = null)
+    {
+      if (location == null) return null;
+
+      Geometry geom = null;
+      if (factory == null)
+        factory = new GeometryFactory(new PrecisionModel(), 4326); // 4326 = WGS84
+
+      switch (location)
       {
-        if (_collFigures == null)
+        case GeometryCircleDTO point:
+          geom = factory.CreatePoint(new Coordinate(point.coord.Lon, point.coord.Lat));
+          
+          break;
+
+        case GeometryPolygonDTO polygon:
+          var coordsPoly = polygon.coord
+              .Select(c => new Coordinate(c[1], c[0]))
+              .ToList();
+
+          // замыкаем полигон
+          coordsPoly.Add(coordsPoly[0]);
+
+          geom = factory.CreatePolygon(coordsPoly.ToArray());
+          break;
+
+        case GeometryPolylineDTO line:
+          var coordsLine = line.coord
+              .Select(c => new Coordinate(c[1], c[0]))
+              .ToArray();
+
+          geom = factory.CreateLineString(coordsLine);
+          break;
+      }
+      geom.SRID = 4326;
+      return geom;
+    }
+
+
+    public static string ConvertExtraPropsToJsonString(List<ObjExtraPropertyDTO> extra_props)
+    {
+      if (extra_props == null || extra_props.Count == 0)
+        return null;
+
+      var propertyNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
+      propertyNames.AddRange(typeof(FigureGeoDTO).GetProperties().Select(x => x.Name));
+
+      var jsonList = new List<Dictionary<string, string>>();
+
+      foreach (var prop in extra_props)
+      {
+        if (propertyNames.Contains(prop.prop_name))
+          continue;
+
+        string value = prop.str_val;
+
+        if (prop.visual_type == VisualTypes.Double &&
+            double.TryParse(prop.str_val, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
         {
-          CreateCollections();
+          value = d.ToString(CultureInfo.InvariantCulture);
         }
-        return _collFigures;
-      }
-    }
-    public TrackService(
-      IOptions<MapDatabaseSettings> geoStoreDatabaseSettings,
-      ILevelService levelService,
-      IMongoClient mongoClient
-    )
-    {
-      _mongoClient = mongoClient;
-      _levelService = levelService;
-      _geoStoreDatabaseSettings = geoStoreDatabaseSettings;
-      CreateCollections();
-    }
-
-    private void CreateCollections()
-    {
-      var mongoDatabase = _mongoClient.GetDatabase(
-        _geoStoreDatabaseSettings.Value.DatabaseName);
-
-      var filter = new BsonDocument("name", _geoStoreDatabaseSettings.Value.TracksCollectionName);
-      var options = new ListCollectionNamesOptions { Filter = filter };
-
-      try
-      {
-        if (!mongoDatabase.ListCollectionNames(options).Any())
+        else if (prop.visual_type == VisualTypes.DateTime &&
+                 DateTime.TryParse(prop.str_val, out var dt))
         {
-          var createOptions = new CreateCollectionOptions();
-
-          var timeField = nameof(DBTrackPoint.timestamp);
-          var metaField = nameof(DBTrackPoint.meta);
-
-          createOptions.TimeSeriesOptions =
-            new TimeSeriesOptions(timeField, metaField, TimeSeriesGranularity.Seconds);
-
-          mongoDatabase.CreateCollection(
-            _geoStoreDatabaseSettings.Value.TracksCollectionName,
-            createOptions);
+          value = dt.ToUniversalTime().ToString("o"); // ISO 8601
         }
-        _collFigures =
-        mongoDatabase.GetCollection<DBTrackPoint>(
-          _geoStoreDatabaseSettings.Value.TracksCollectionName
-        );
 
-
-
-        CreateIndexes();
+        jsonList.Add(new Dictionary<string, string>
+        {
+          ["prop_name"] = prop.prop_name,
+          ["str_val"] = value,
+          ["visual_type"] = prop.visual_type
+        });
       }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }      
+
+      return JsonSerializer.Serialize(jsonList);
     }
-    private void CreateIndexes()
-    {
-      return;
-      {
-        IndexKeysDefinition<DBTrackPoint> keys =
-                new IndexKeysDefinitionBuilder<DBTrackPoint>()
-                .Geo2DSphere(d => d.meta.figure.location)
-                .Ascending(d => d.meta.figure.zoom_level)
-                .Ascending(d => d.meta.figure.id)
-                .Ascending(d => d.timestamp)
-                ;
 
-        var indexModel = new CreateIndexModel<DBTrackPoint>(
-          keys, new CreateIndexOptions()
-          { Name = "combo" }
-        );
-
-        _collFigures.Indexes.CreateOneAsync(indexModel);
-      }
-      {
-        IndexKeysDefinition<DBTrackPoint> keys =
-                new IndexKeysDefinitionBuilder<DBTrackPoint>()
-                  .Ascending(d => d.meta.id)
-                ;
-
-        var indexModel = new CreateIndexModel<DBTrackPoint>(
-          keys, new CreateIndexOptions()
-          { Name = "mid" }
-        );
-
-        _collFigures.Indexes.CreateOneAsync(indexModel);
-      }
-
-      {
-        IndexKeysDefinition<DBTrackPoint> keys =
-                new IndexKeysDefinitionBuilder<DBTrackPoint>()
-                  .Ascending(d => d.meta.figure.id)
-                ;
-
-        var indexModel = new CreateIndexModel<DBTrackPoint>(
-          keys, new CreateIndexOptions()
-          { Name = "fid" }
-        );
-
-        _collFigures.Indexes.CreateOneAsync(indexModel);
-      }
-      {
-        IndexKeysDefinition<DBTrackPoint> keys =
-                new IndexKeysDefinitionBuilder<DBTrackPoint>()
-                  .Ascending(d => d.meta.figure.id)
-                  .Ascending(d => d.timestamp)
-                ;
-
-        var indexModel = new CreateIndexModel<DBTrackPoint>(
-          keys, new CreateIndexOptions()
-          { Name = "fid_ts" }
-        );
-
-        _collFigures.Indexes.CreateOneAsync(indexModel);
-      }
-
-      {
-        var keys = Builders<DBTrackPoint>.IndexKeys.Combine(
-          Builders<DBTrackPoint>.IndexKeys
-          .Ascending($"{nameof(DBTrackPoint.meta.extra_props)}.{nameof(DBObjExtraProperty.prop_name)}"),
-          Builders<DBTrackPoint>.IndexKeys
-          .Ascending($"{nameof(DBTrackPoint.meta.extra_props)}.{nameof(DBObjExtraProperty.str_val)}"));
-
-        var indexModel = new CreateIndexModel<DBTrackPoint>(
-           keys, new CreateIndexOptions()
-           { Name = "ep" }
-         );
-
-        _collFigures.Indexes.CreateOneAsync(indexModel);
-      }
-    }
     public async Task<List<TrackPointDTO>> InsertManyAsync(List<TrackPointDTO> newObjs)
     {
-      List<DBTrackPoint> list = new List<DBTrackPoint>();
-      return DBListToDTO(list);
+      if (newObjs == null || newObjs.Count == 0)
+        return new List<TrackPointDTO>();
+
+      var list = new List<DBTrackPoint>();
 
       foreach (var track in newObjs)
       {
         var dbTrack = new DBTrackPoint()
         {
-          timestamp = track.timestamp ?? DateTime.UtcNow          
+          object_id = Domain.Utils.ConvertObjectIdToGuid(track.id),
+          timestamp = track.timestamp ?? DateTime.UtcNow,
+          figure = ConvertGeoDTO2DB(track.figure.location), // возвращает Geometry
+          radius = track.figure?.radius,
+          zoom_level = track.figure?.zoom_level,
+          extra_props = ConvertExtraPropsToJsonString(track.extra_props) // возвращает JsonDocument
         };
-        dbTrack.meta.id = ObjectId.GenerateNewId().ToString();
-        dbTrack.meta.figure = ModelGate.ConvertDTO2DB(track.figure);
-        dbTrack.meta.extra_props = ModelGate.ConvertExtraPropsToDB<DBObjExtraProperty>(track.extra_props);
+
         list.Add(dbTrack);
       }
 
       if (list.Count > 0)
       {
-        await Coll.InsertManyAsync(list);
+        await _dbContext.Tracks.AddRangeAsync(list);
+        await _dbContext.SaveChangesAsync();
       }
 
-      return DBListToDTO(list);
+      // Конвертация обратно в DTO
+      var result = new List<TrackPointDTO>();
+      foreach (var t in list)
+      {
+        result.Add(ConvertDB2TrackPointDTO(t));
+      }
+
+      return result;
     }
 
-    private TrackPointDTO ConvertDB2DTO(DBTrackPoint t)
+    public static List<ObjExtraPropertyDTO> ConvertJsonStringToExtraProps(string json)
+    {
+      if (string.IsNullOrEmpty(json))
+        return new List<ObjExtraPropertyDTO>();
+
+      return JsonSerializer.Deserialize<List<ObjExtraPropertyDTO>>(json);
+    }
+
+    static public GeoObjectDTO ConvertDB2DTO(DBTrackPoint dbObj)
+    {
+      if (dbObj == null)
+        return null;
+
+      var retVal = new GeoObjectDTO()
+      {
+        id = Domain.Utils.ConvertGuidToObjectId(dbObj.object_id ?? Guid.Empty),
+        radius = dbObj.radius,
+        zoom_level = dbObj.zoom_level,
+        location = ConvertGeoDB2DTO(dbObj.figure) // Geometry → GeometryDTO
+      };
+
+      return retVal;
+    }
+
+    static private GeometryDTO ConvertGeoDB2DTO(Geometry geom)
+    {
+      if (geom == null)
+        return null;
+
+      GeometryDTO ret = null;
+
+      switch (geom)
+      {
+        case Point point:
+          ret = new GeometryCircleDTO(
+              new Geo2DCoordDTO { Lat = point.Y, Lon = point.X });
+          break;
+
+        case Polygon polygon:
+          var retPolygon = new GeometryPolygonDTO();
+          var coords = polygon.ExteriorRing.Coordinates;
+          foreach (var c in coords)
+          {
+            retPolygon.coord.Add(new Geo2DCoordDTO { Lat = c.Y, Lon = c.X });
+          }
+          // удаляем замкнутую последнюю точку
+          if (retPolygon.coord.Count > 3)
+            retPolygon.coord.RemoveAt(retPolygon.coord.Count - 1);
+
+          ret = retPolygon;
+          break;
+
+        case LineString line:
+          var retLine = new GeometryPolylineDTO();
+          foreach (var c in line.Coordinates)
+          {
+            retLine.coord.Add(new Geo2DCoordDTO { Lat = c.Y, Lon = c.X });
+          }
+          ret = retLine;
+          break;
+
+        default:
+          throw new NotSupportedException($"Geometry type {geom.GeometryType} not supported");
+      }
+
+      ret.type = geom.GeometryType; // Point, Polygon, LineString
+      return ret;
+    }
+
+
+    private TrackPointDTO ConvertDB2TrackPointDTO(DBTrackPoint t)
     {
       if (t == null)
-      {
         return null;
-      }
 
       var dto = new TrackPointDTO()
       {
-        id = t.meta.id,
+        id = Domain.Utils.ConvertGuidToObjectId(t.object_id),
         timestamp = t.timestamp,
-        figure = ModelGate.ConvertDB2DTO(t.meta.figure),
-        extra_props = ModelGate.ConverDBExtraProp2DTO(t.meta.extra_props)
+        figure = ConvertDB2DTO(t), // Geometry → DTO
+        extra_props = ConvertJsonStringToExtraProps(t.extra_props) // string → List<ObjExtraPropertyDTO>
       };
 
       return dto;
     }
 
+
     public async Task<TrackPointDTO> GetLastAsync(string figure_id, DateTime beforeTime)
     {
-      var builder = Builders<DBTrackPoint>.Filter;
+      if (string.IsNullOrEmpty(figure_id))
+        return null;
 
-      FilterDefinition<DBTrackPoint> filter =
-        builder
-        .Where(t => t.meta.figure.id == figure_id && t.timestamp < beforeTime);
-
-      Log(filter);
-
-      var dbTrack =
-        await Coll
-          .Find(filter)
-          .SortByDescending(t => t.timestamp)
+      // Поиск по фигуре и времени
+      var dbTrack = await _dbContext.Tracks
+          .Where(t => t.figure != null && t.figure is Geometry && t.timestamp < beforeTime)
+          // Для поиска по id фигуры, если храним в DBGeoObject.id:
+          .Where(t => t.object_id == Domain.Utils.ConvertObjectIdToGuid(figure_id))
+          .OrderByDescending(t => t.timestamp)
           .FirstOrDefaultAsync();
 
-      return ConvertDB2DTO(dbTrack);
+      return ConvertDB2TrackPointDTO(dbTrack);
     }
+
 
     public async Task<TrackPointDTO> GetByIdAsync(string id)
     {
-      var dbTrack =
-        await Coll.Find(t => t.meta.id == id)
+      if (string.IsNullOrEmpty(id))
+        return null;
+
+      if (!Guid.TryParse(id, out var guid))
+        return null;
+
+      var dbTrack = await _dbContext.Tracks
+          .Where(t => t.id == guid)
           .FirstOrDefaultAsync();
 
-      return ConvertDB2DTO(dbTrack);
+      return ConvertDB2TrackPointDTO(dbTrack);
     }
 
     private List<TrackPointDTO> DBListToDTO(List<DBTrackPoint> dbTracks)
@@ -229,266 +263,178 @@ namespace DbLayer.Services
       List<TrackPointDTO> list = new List<TrackPointDTO>();
       foreach (var t in dbTracks)
       {
-        var dto = ConvertDB2DTO(t);
+        var dto = ConvertDB2TrackPointDTO(t);
         list.Add(dto);
       }
       return list;
     }
 
-    private static void Log<T>(FilterDefinition<T> filter)
-    {
-      Utils.Log(filter);
-    }
-
     public async Task<List<TrackPointDTO>> GetFirstTracksByTime(
-      DateTime? time_start,
-      DateTime? time_end,
-      List<string> figIds
+        DateTime? time_start,
+        DateTime? time_end,
+        List<string> figIds
     )
     {
-      var idsFilled = (figIds != null && figIds.Count > 0);
-      var ids = figIds;
+      IQueryable<DBTrackPoint> query = _dbContext.Tracks;
 
-      List<DBTrackPoint> dbTracks = new List<DBTrackPoint>();
-
-      var builder = Builders<DBTrackPoint>.Filter;
-
-      FilterDefinition<DBTrackPoint>  filter = FilterDefinition<DBTrackPoint>.Empty;
-
-      if (time_start != null && time_end != null)
+      // фильтр по времени
+      if (time_start.HasValue && time_end.HasValue)
       {
-        filter =
-          builder.Where(t => t.timestamp >= time_start && t.timestamp <= time_end);      
+        query = query.Where(t => t.timestamp >= time_start.Value && t.timestamp <= time_end.Value);
       }
 
-      if (ids != null && ids.Count > 0)
+      // фильтр по object_id (ранее meta.figure.id)
+      if (figIds != null && figIds.Count > 0)
       {
-        FilterDefinition<DBTrackPoint> f;
+        var guidIds = figIds
+            .Select(f => Domain.Utils.ConvertObjectIdToGuid(f))
+            .Where(g => g.HasValue)
+            .Select(g => g.Value)
+            .ToList();
 
-        foreach (var id in ids)
+        if (guidIds.Count > 0)
         {
-          if (FilterDefinition<DBTrackPoint>.Empty == filter)
-          {
-            f = builder.Where(t => ids.Contains(t.meta.figure.id));
-          }
-          else
-          {
-            f = filter & builder.Where(t => t.meta.figure.id == id);
-          }
-
-          var track = await Coll.Find(f).FirstOrDefaultAsync();
-
-          if (track != null)
-          {
-            dbTracks.Add(track);
-          }
-        }        
-      }
-      else
-      {
-        dbTracks = await Coll
-          .Find(filter)
-          .Limit(10000)
-          .ToListAsync()
-          ;
-
-        dbTracks = dbTracks.DistinctBy(d => d.meta.id).ToList();
+          query = query.Where(t => t.object_id.HasValue && guidIds.Contains(t.object_id.Value));
+        }
       }
 
-      return DBListToDTO(dbTracks);
+      // ограничение количества
+      var dbTracks = await query
+          .OrderBy(t => t.timestamp) // можно менять сортировку
+          .Take(10000)
+          .ToListAsync();
+
+      // конвертация в DTO
+      return dbTracks.Select(ConvertDB2TrackPointDTO).ToList();
     }
+
 
     private async Task<List<TrackPointDTO>> DoGetTracksByBox(BoxTrackDTO box)
     {
-      int limit = 10000;
+      int limit = box.count > 0 ? box.count.Value : 10000;
+      IQueryable<DBTrackPoint> query = _dbContext.Tracks;
 
-      if (box.count != null && box.count > 0)
+      // Гео-фильтр
+      Geometry geometry = null;
+      var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+
+      if (box.zone != null && box.zone.Count > 0)
       {
-        limit = box.count.Value;
-      }
+        var polygons = box.zone
+        .Select(z => ConvertGeoDTO2DB(z, geometryFactory))
+        .Where(g => g != null)
+        .ToList();
 
-      var builder = Builders<DBTrackPoint>.Filter;
-
-      GeoJsonGeometry<GeoJson2DCoordinates> geometry;
-      FilterDefinition<DBTrackPoint> filter = FilterDefinition<DBTrackPoint>.Empty;
-
-      if (box.zone != null)
-      {
-        foreach ( var zone in box.zone)
-        {
-          geometry = ModelGate.ConvertGeoDTO2DB(zone);
-          var f1 = builder.GeoIntersects(t => t.meta.figure.location, geometry);
-
-          if (filter == FilterDefinition<DBTrackPoint>.Empty)
-          {
-            filter = f1;
-          }
-          else
-          {
-            filter = filter | f1;
-          }          
-        }        
+        // объединяем все зоны через OR
+        query = query.Where(t => polygons.Any(p => t.figure != null && t.figure.Intersects(p)));
       }
       else
       {
-        geometry = GeoJson.Polygon(
-          new GeoJson2DCoordinates[]
-          {
-                  GeoJson.Position(box.wn[0], box.wn[1]),
-                  GeoJson.Position(box.es[0], box.wn[1]),
-                  GeoJson.Position(box.es[0], box.es[1]),
-                  GeoJson.Position(box.wn[0], box.es[1]),
-                  GeoJson.Position(box.wn[0], box.wn[1])
-          }
-        );
-
-        filter = builder.GeoIntersects(t => t.meta.figure.location, geometry);
+        // создаём прямоугольник по wn/es
+        var rect = geometryFactory.CreatePolygon(new[]
+        {
+            new Coordinate(box.wn[0], box.wn[1]),
+            new Coordinate(box.es[0], box.wn[1]),
+            new Coordinate(box.es[0], box.es[1]),
+            new Coordinate(box.wn[0], box.es[1]),
+            new Coordinate(box.wn[0], box.wn[1])
+        });
+        query = query.Where(t => t.figure != null && t.figure.Intersects(rect));
       }
 
       if (box.not_in_zone)
       {
-        filter = builder.Not(filter);
+        query = query.Where(t => !t.figure.Intersects(geometry));
       }
 
+      // фильтр по zoom
       if (box.zoom != null)
       {
         var levels = await _levelService.GetLevelsByZoom(box.zoom);
-
-        filter = filter &
-          builder.Where(p => levels.Contains(p.meta.figure.zoom_level)
-          || string.IsNullOrEmpty(p.meta.figure.zoom_level));
-      } 
-
-
-      filter = filter & builder.Where(t => t.timestamp >= box.time_start
-        && t.timestamp <= box.time_end);
-
-
-      List<DBTrackPoint> dbObjects = new List<DBTrackPoint>();
-
-      if (box.ids != null &&
-        box.ids.Count > 0
-      )
-      {
-        filter = filter & builder.Where(t => box.ids.Contains(t.meta.figure.id));
+        query = query.Where(t => levels.Contains(t.zoom_level) || string.IsNullOrEmpty(t.zoom_level));
       }
 
+      // фильтр по времени
+      if (box.time_start.HasValue && box.time_end.HasValue)
+      {
+        query = query.Where(t => t.timestamp >= box.time_start.Value && t.timestamp <= box.time_end.Value);
+      }
+
+      // фильтр по объектам/figure ids
+      if (box.ids != null && box.ids.Count > 0)
+      {
+        var guidIds = box.ids
+            .Select(Domain.Utils.ConvertObjectIdToGuid)
+            .Where(g => g.HasValue)
+            .Select(g => g.Value)
+            .ToList();
+
+        query = query.Where(t => t.object_id.HasValue && guidIds.Contains(t.object_id.Value));
+      }
+
+      // фильтр по extra_props jsonb
       if (box.property_filter != null && box.property_filter.props.Count > 0)
       {
         foreach (var prop in box.property_filter.props)
         {
-          var request =
-            string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
-            prop.prop_name,
-            prop.str_val);
-
-          var f1 = Builders<DBTrackPoint>
-            .Filter
-            .ElemMatch(t => t.meta.extra_props, request)
-            ;
-
-          var metaValue = new BsonDocument(
-              "str_val",
-              prop.str_val
-              );
-
-          if (filter == builder.Empty)
-          {
-            filter = f1;
-          }
-          else
-          {
-            filter &= f1;
-          }
+          query = query.Where(t =>
+              EF.Functions.JsonContains(t.extra_props,
+                  $"[{{\"prop_name\":\"{prop.prop_name}\",\"str_val\":\"{prop.str_val}\"}}]"));
         }
       }
 
-      var finder = Coll.Find(filter).Limit(limit);
-
+      // сортировка
       if (box.sort < 0)
-      {
-        // Desc is bad on time series.
-        //finder = finder.SortByDescending(el => el.timestamp);
-      }
+        query = query.OrderByDescending(t => t.timestamp);
+      else
+        query = query.OrderBy(t => t.timestamp);
 
-      Log(filter);
+      // лимит
+      var dbTracks = await query.Take(limit).ToListAsync();
 
-      var list = await finder
-        .ToListAsync();
-
-      dbObjects.AddRange(list);
-
-      return DBListToDTO(dbObjects);
+      return dbTracks.Select(ConvertDB2TrackPointDTO).ToList();
     }
+
 
     public async Task<List<TrackPointDTO>> GetTracksByFilter(SearchFilterDTO filter_in)
     {
-      int limit = 10000;
+      int limit = filter_in.count > 0 ? filter_in.count : 10000;
 
-      if (filter_in.count > 0)
-      {
-        limit = filter_in.count;
-      }
+      // базовый запрос по времени
+      var query = _dbContext.Tracks
+          .Where(t => t.timestamp >= filter_in.time_start &&
+                      t.timestamp <= filter_in.time_end);
 
-      var builder = Builders<DBTrackPoint>.Filter;
-
-      FilterDefinition<DBTrackPoint> filter = 
-        builder
-        .Where(t => t.timestamp >= filter_in.time_start
-          && t.timestamp <= filter_in.time_end);
-
-
+      // Пагинация по start_id
       if (!string.IsNullOrEmpty(filter_in.start_id))
       {
-        FilterDefinition<DBTrackPoint> filterPaging = null;
-
-        if (filter_in.forward > 0)
-          filterPaging = Builders<DBTrackPoint>.Filter
-            .Gt("meta._id", new ObjectId(filter_in.start_id));
-        else
-          filterPaging = Builders<DBTrackPoint>.Filter
-            .Lt("meta._id", new ObjectId(filter_in.start_id));
-
-        filter = filter & filterPaging;
+        if (Guid.TryParse(filter_in.start_id, out var startGuid))
+        {
+          if (filter_in.forward > 0)
+            query = query.Where(t => t.id.CompareTo(startGuid) > 0);
+          else
+            query = query.Where(t => t.id.CompareTo(startGuid) < 0);
+        }
       }
 
-
-      List<DBTrackPoint> dbObjects = new List<DBTrackPoint>();
-
+      // Фильтр по extra_props (jsonb)
       if (filter_in.property_filter != null && filter_in.property_filter.props.Count > 0)
       {
         foreach (var prop in filter_in.property_filter.props)
         {
-          var request =
-            string.Format("{{prop_name:'{0}', str_val:'{1}'}}",
-            prop.prop_name,
-            prop.str_val);
-
-          var f1 = Builders<DBTrackPoint>
-            .Filter
-            .ElemMatch(t => t.meta.extra_props, request)
-            ;
-
-          var metaValue = new BsonDocument(
-              "str_val",
-              prop.str_val
-              );
-
-            filter &= f1;
+          var filterJson = JsonSerializer.Serialize(new { prop_name = prop.prop_name, str_val = prop.str_val });
+          query = query.Where(t => EF.Functions.JsonContains(t.extra_props, filterJson));
         }
       }
 
-      var finder = Coll.Find(filter).Limit(limit);
+      var dbObjects = await query
+          .OrderBy(t => t.timestamp) // или .OrderByDescending если нужно
+          .Take(limit)
+          .ToListAsync();
 
-      Log(filter);
-
-      var list = await finder
-        .ToListAsync();
-
-      dbObjects.AddRange(list);
-
-      return DBListToDTO(dbObjects);
+      return dbObjects.Select(ConvertDB2TrackPointDTO).ToList();
     }
+
     public async Task<List<TrackPointDTO>> GetTracksByBox(BoxTrackDTO box)
     {
       if (

@@ -1,18 +1,24 @@
-﻿using DbLayer.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿using NetTopologySuite.Geometries;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace DbLayer
 {
-  [BsonIgnoreExtraElements]
   internal class DBTrackPoint
   {
-    public DBFigTsMeta meta { get; set; } = new DBFigTsMeta();
-    public DateTime timestamp { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public Guid id { get; set; } // unique id
+    public Guid? object_id { get; set; }
+
+    public DateTime timestamp { get; set; }  // ts
+
+    public Geometry figure { get; set; } // геометрия Point/LineString/Polygon
+    public double? radius { get; set; }
+    public string zoom_level { get; set; }
+
+    public string extra_props { get; set; } // jsonb
   }
 }

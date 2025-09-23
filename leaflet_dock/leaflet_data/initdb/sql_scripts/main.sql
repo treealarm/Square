@@ -13,3 +13,4 @@
 \i 'levels.sql'
 \i 'objects.sql'
 \i 'properties.sql'
+\i 'track_points.sql'

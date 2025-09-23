@@ -28,9 +28,13 @@ namespace Domain
 
       return new Guid(uuidBytes);
     }
-    public static string ConvertGuidToObjectId(Guid guid)
+    public static string ConvertGuidToObjectId(Guid? guid)
     {
-      byte[] guidBytes = guid.ToByteArray();
+      if (guid == null)
+      {
+        return string.Empty;
+      }
+      byte[] guidBytes = guid.Value.ToByteArray();
       byte[] objectIdBytes = new byte[12];
       Array.Copy(guidBytes, objectIdBytes, 12); // Копируем первые 12 байт
 

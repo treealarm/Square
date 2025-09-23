@@ -43,6 +43,7 @@ namespace DbLayer
 
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.ConnectionString);
         dataSourceBuilder.EnableDynamicJson();
+        dataSourceBuilder.UseNetTopologySuite();
         var dataSource = dataSourceBuilder.Build();
         services.AddSingleton(dataSource);
         services.AddDbContext<PgDbContext>();
