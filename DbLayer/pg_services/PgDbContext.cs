@@ -9,6 +9,7 @@ namespace DbLayer
   {
     private readonly NpgsqlDataSource _source;
 
+    public DbSet<DBGroup> Groups { get; set; }
     public DbSet<DBTrackPoint> Tracks { get; set; }
     public DbSet<DBMarkerProp> Properties { get; set; }
     public DbSet<DBMarker> Markers { get; set; }
@@ -64,6 +65,41 @@ namespace DbLayer
       ConfigureMarkers(modelBuilder);
       ConfigureProperties(modelBuilder);
       ConfigureTrackPoints(modelBuilder);
+      ConfigureGroups(modelBuilder);
+    }
+
+    private void ConfigureGroups(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<DBGroup>(entity =>
+      {
+        entity.ToTable("groups");
+
+        // PK из BaseEntity
+        entity.HasKey(e => e.id);
+
+        // objid
+        entity.Property(e => e.objid)
+              .HasColumnName("objid")
+              .IsRequired();
+
+        // name
+        entity.Property(e => e.name)
+              .HasColumnName("name")
+              .IsRequired()
+              .HasMaxLength(255);
+
+        // индексы
+        entity.HasIndex(e => e.name)
+              .HasDatabaseName("idx_groups_name")
+              .IsUnique(); // если имена уникальны
+
+        entity.HasIndex(e => e.objid)
+              .HasDatabaseName("idx_groups_objid");
+
+        // если нужны составные индексы
+        // entity.HasIndex(e => new { e.objid, e.name })
+        //       .HasDatabaseName("idx_groups_objid_name");
+      });
     }
 
     private void ConfigureTrackPoints(ModelBuilder modelBuilder)

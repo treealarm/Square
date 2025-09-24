@@ -1,81 +1,21 @@
 ﻿using DbLayer.Models;
 using Domain;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DbLayer.Services
 {
   internal class GroupsService : IGroupsService, IIGroupsServiceInternal
   {
-    private IMongoCollection<DBGroup> _coll;
-    private readonly IMongoClient _mongoClient;
-    private readonly IOptions<MapDatabaseSettings> _databaseSettings;
-
-    private IMongoCollection<DBGroup> Coll
-    {
-      get
-      {
-        CreateCollections();
-        return _coll;
-      }
-    }
+    private readonly PgDbContext _dbContext;
 
     public GroupsService(
-      IOptions<MapDatabaseSettings> databaseSettings,
-      IMongoClient mongoClient)
+      PgDbContext context)
     {
-      _mongoClient = mongoClient;
-      _databaseSettings = databaseSettings;
-      CreateCollections();
-
-    }
-
-    private void CreateCollections()
-    {
-      var mongoDatabase = _mongoClient.GetDatabase(
-          _databaseSettings.Value.DatabaseName);
-
-      if (_coll != null)
-      {
-        return;
-      }
-      _coll =
-        mongoDatabase.GetCollection<DBGroup>
-        (_databaseSettings.Value.GroupsCollectionName);
-
-      CreateIndexes();
-    }
-
-    private void CreateIndexes()
-    {
-      {
-        IndexKeysDefinition<DBGroup> keys =
-                new IndexKeysDefinitionBuilder<DBGroup>()
-                .Ascending(d => d.name)
-                ;
-
-        var indexModel = new CreateIndexModel<DBGroup>(
-          keys, new CreateIndexOptions()
-          { Name = "name" }
-        );
-
-        Coll?.Indexes.CreateOneAsync(indexModel);
-      }
-      {
-        IndexKeysDefinition<DBGroup> keys =
-                new IndexKeysDefinitionBuilder<DBGroup>()
-                .Ascending(d => d.objid)
-                ;
-
-        var indexModel = new CreateIndexModel<DBGroup>(
-          keys, new CreateIndexOptions()
-          { Name = "objid" }
-        );
-
-        Coll?.Indexes.CreateOneAsync(indexModel);
-      }
+      _dbContext = context;
     }
 
     public static Dictionary<string, GroupDTO> ConvertListDB2DTO(List<DBGroup> dbObjs)
@@ -84,7 +24,7 @@ namespace DbLayer.Services
 
       foreach (var dbItem in dbObjs)
       {
-        result.Add(dbItem.id, ConvertDB2DTO(dbItem)!);
+        result.Add(Domain.Utils.ConvertGuidToObjectId(dbItem.id), ConvertDB2DTO(dbItem)!);
       }
 
       return result;
@@ -99,9 +39,9 @@ namespace DbLayer.Services
 
       var dto = new GroupDTO()
       {
-        id = dbo.id,
+        id = Domain.Utils.ConvertGuidToObjectId(dbo.id),
         name = dbo.name,
-        objid = dbo.objid
+        objid = Domain.Utils.ConvertGuidToObjectId(dbo.objid)
       };
 
       return dto;
@@ -115,9 +55,9 @@ namespace DbLayer.Services
 
       var dbo = new DBGroup()
       {
-        id = string.IsNullOrEmpty(dto.id) ? null : dto.id,
+        id = Domain.Utils.ConvertObjectIdToGuid(dto.id)??Guid.Empty,
         name = dto.name,
-        objid = dto.objid
+        objid = Domain.Utils.ConvertObjectIdToGuid(dto.objid) ?? Guid.Empty
       };
 
       return dbo;
@@ -125,36 +65,139 @@ namespace DbLayer.Services
 
     public async Task<Dictionary<string, GroupDTO>> GetListByIdsAsync(List<string> ids)
     {
-      var result = await MongoHelper.GetListByIdsAsync(
-        Coll,
-        ids,
-        ConvertListDB2DTO);
+      if (ids == null || ids.Count == 0)
+        return new Dictionary<string, GroupDTO>();
 
-      return result;
+      // Конвертируем строки в Guid, отбрасываем некорректные
+      List<Guid> guidIds = ids
+          .Select(s => Domain.Utils.ConvertObjectIdToGuid(s))
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
+
+      if (guidIds.Count == 0)
+        return new Dictionary<string, GroupDTO>();
+
+      // Фильтруем по чистому списку Guid
+      var groups = await _dbContext.Groups
+                                   .Where(g => guidIds.Contains(g.id))
+                                   .ToListAsync();
+
+      return GroupsService.ConvertListDB2DTO(groups);
     }
+
+
 
     public async Task RemoveAsync(List<string> ids)
     {
-      await MongoHelper.RemoveAsync(Coll, ids);
+      if (ids == null || ids.Count == 0)
+        return;
+
+      // Конвертируем строки в Guid, отбрасываем некорректные
+      List<Guid> guidIds = ids
+          .Select(s => Domain.Utils.ConvertObjectIdToGuid(s))
+          .Where(g => g.HasValue)
+          .Select(g => g.Value)
+          .ToList();
+
+      if (guidIds.Count == 0)
+        return;
+
+      // Находим сущности для удаления
+      var groupsToRemove = await _dbContext.Groups
+                                           .Where(g => guidIds.Contains(g.id))
+                                           .ToListAsync();
+
+      if (groupsToRemove.Count == 0)
+        return;
+
+      _dbContext.Groups.RemoveRange(groupsToRemove);
+      await _dbContext.SaveChangesAsync();
     }
+
 
     public async Task UpdateListAsync(List<GroupDTO> valuesToUpdate)
     {
-      await MongoHelper.UpdateListAsync(
-        Coll,
-        valuesToUpdate,
-        ConvertDTO2DB);
+      if (valuesToUpdate == null || valuesToUpdate.Count == 0)
+        return;
+
+      // Преобразуем DTO в Guid и готовим список
+      var dtoIdPairs = valuesToUpdate
+          .Select(dto =>
+          {
+            Guid id = Domain.Utils.ConvertObjectIdToGuid(dto.id) ?? Domain.Utils.NewGuid();
+            return new { Id = id, Dto = dto };
+          })
+          .ToList();
+
+      var ids = dtoIdPairs.Select(x => x.Id).ToList();
+
+      // Загружаем существующие группы
+      var existingGroups = await _dbContext.Groups
+                                           .Where(g => ids.Contains(g.id))
+                                           .ToListAsync();
+
+      // Словарь для быстрого поиска
+      var existingGroupsDict = existingGroups.ToDictionary(g => g.id, g => g);
+
+      foreach (var pair in dtoIdPairs)
+      {
+        if (existingGroupsDict.TryGetValue(pair.Id, out var existingGroup))
+        {
+          // Обновляем существующую запись
+          existingGroup.name = pair.Dto.name;
+          existingGroup.objid = Domain.Utils.ConvertObjectIdToGuid(pair.Dto.objid) ?? Guid.Empty;
+        }
+        else
+        {
+          // Создаём новую запись
+          var newGroup = new DBGroup
+          {
+            id = pair.Id,
+            name = pair.Dto.name,
+            objid = Domain.Utils.ConvertObjectIdToGuid(pair.Dto.objid) ?? Guid.Empty
+          };
+          _dbContext.Groups.Add(newGroup);
+
+          // Сохраняем id обратно в DTO, чтобы оставалось совместимо с предыдущим кодом
+          pair.Dto.id = newGroup.id.ToString();
+        }
+      }
+
+      await _dbContext.SaveChangesAsync();
     }
+
+
 
     public async Task<Dictionary<string, GroupDTO>> GetListByNamesAsync(List<string> names)
     {
-      var ret = await Coll.Find(g => names.Contains(g.name)).ToListAsync();
-      return ConvertListDB2DTO(ret);
+      if (names == null || names.Count == 0)
+        return new Dictionary<string, GroupDTO>();
+
+      var groups = await _dbContext.Groups
+                                   .Where(g => names.Contains(g.name))
+                                   .ToListAsync();
+
+      return GroupsService.ConvertListDB2DTO(groups);
     }
+
 
     public async Task RemoveByNameAsync(List<string> names)
     {
-      await Coll.DeleteManyAsync(g=> names.Contains(g.name));
+      if (names == null || names.Count == 0)
+        return;
+
+      // Находим группы для удаления
+      var groupsToRemove = await _dbContext.Groups
+                                           .Where(g => names.Contains(g.name))
+                                           .ToListAsync();
+
+      if (groupsToRemove.Count == 0)
+        return;
+
+      _dbContext.Groups.RemoveRange(groupsToRemove);
+      await _dbContext.SaveChangesAsync();
     }
+
   }
 }

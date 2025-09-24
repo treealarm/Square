@@ -1,12 +1,17 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
 
 namespace Domain
 {
   public class Utils
   {
-    public static Guid? ConvertObjectIdToGuid(string objectIdString)
+    public static Guid NewGuid()
     {
+      return ConvertObjectIdToGuid(ConvertGuidToObjectId(Guid.NewGuid())) ?? Guid.NewGuid();
+    }
+    public static Guid? ConvertObjectIdToGuid(string? objectIdString)
+    {
+      if (string.IsNullOrEmpty(objectIdString)) return null;
+
       if (Guid.TryParse(objectIdString, out Guid id)) 
       { 
         return id; 

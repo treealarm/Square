@@ -1,13 +1,12 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
+﻿
+using System;
 
 namespace DbLayer.Models
 {
-  internal record DBGroup : BaseEntity
+  internal record DBGroup : BasePgEntity
   {
 
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string objid { get; set; }
+    public Guid objid { get; set; }
     public string name { get; set; }
   }
 }
