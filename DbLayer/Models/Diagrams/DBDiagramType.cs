@@ -1,19 +1,22 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System;
 
 
 namespace DbLayer.Models
 {
-  internal class DBDiagramType
+  internal record DBDiagramTypeRegion : BasePgEntity
   {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string id { get; set; }
+    public Guid diagram_type_id { get; set; }
+    public DBDiagramType diagram_type { get; set; }
+    public string region_key { get; set; }
+    public DBDiagramCoord geometry { get; set; }
+    public Dictionary<string, string> styles { get; set; }
+  }
+
+  internal record DBDiagramType : BasePgEntity
+  {
     public string name { get; set; }
     public string src { get; set; }
-    
-    [BsonIgnoreIfNull]
-    public List<DBDiagramTypeRegion> regions { get; set; }    
+    public List<DBDiagramTypeRegion> regions { get; set; }
   }
 }

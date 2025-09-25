@@ -15,3 +15,4 @@
 \i 'properties.sql'
 \i 'track_points.sql'
 \i 'groups.sql'
+\i 'diagram_types.sql'

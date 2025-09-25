@@ -8,6 +8,7 @@
   <ItemGroup>
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\actions.sql" Link="sql\actions.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\db_values.sql" Link="sql\db_values.sql" />
+    <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\diagram_types.sql" Link="sql\diagram_types.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\events.sql" Link="sql\events.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\groups.sql" Link="sql\groups.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\integro.sql" Link="sql\integro.sql" />

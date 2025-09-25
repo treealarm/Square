@@ -2,6 +2,8 @@
 using DbLayer.Models.Actions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace DbLayer
 {
@@ -9,6 +11,8 @@ namespace DbLayer
   {
     private readonly NpgsqlDataSource _source;
 
+    public DbSet<DBDiagramTypeRegion> DiagramTypeRegions { get; set; }
+    public DbSet<DBDiagramType> DiagramTypes { get; set; }
     public DbSet<DBGroup> Groups { get; set; }
     public DbSet<DBTrackPoint> Tracks { get; set; }
     public DbSet<DBMarkerProp> Properties { get; set; }
@@ -66,7 +70,71 @@ namespace DbLayer
       ConfigureProperties(modelBuilder);
       ConfigureTrackPoints(modelBuilder);
       ConfigureGroups(modelBuilder);
+      ConfigureDiagramTypes(modelBuilder);
     }
+
+    private void ConfigureDiagramTypes(ModelBuilder modelBuilder)
+    {
+      // Родительская сущность
+      modelBuilder.Entity<DBDiagramType>(entity =>
+      {
+        entity.ToTable("diagram_types");
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.id)
+              .HasColumnName("id");
+
+        entity.Property(e => e.name)
+              .HasColumnName("name")
+              .IsRequired();
+
+        entity.Property(e => e.src)
+              .HasColumnName("src");
+
+        entity.HasIndex(e => e.name)
+              .HasDatabaseName("idx_diagram_types_name")
+              .IsUnique();
+
+        // Связь "один ко многим" через родителя
+        entity.HasMany(d => d.regions)           // один DiagramType имеет много регионов
+              .WithOne(r => r.diagram_type)      // у региона есть ссылка на родителя
+              .HasForeignKey(r => r.diagram_type_id)
+              .OnDelete(DeleteBehavior.Cascade);
+      });
+
+      // Дочерняя сущность
+      modelBuilder.Entity<DBDiagramTypeRegion>(entity =>
+      {
+        entity.ToTable("diagram_type_regions");
+        entity.HasKey(e => e.id);
+
+        entity.Property(e => e.id)
+              .HasColumnName("id");
+
+        entity.Property(e => e.region_key)
+              .HasColumnName("region_key")
+              .IsRequired();
+
+        entity.Property(e => e.geometry)
+              .HasColumnName("geometry")
+              .HasColumnType("jsonb")
+              .HasConversion(
+                  v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                  v => JsonSerializer.Deserialize<DBDiagramCoord>(v, (JsonSerializerOptions)null)
+              );
+
+        entity.Property(e => e.styles)
+              .HasColumnName("styles")
+              .HasColumnType("jsonb")
+              .HasConversion(
+                  v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                  v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, (JsonSerializerOptions)null)
+              );
+      });
+    }
+
+
+
 
     private void ConfigureGroups(ModelBuilder modelBuilder)
     {
