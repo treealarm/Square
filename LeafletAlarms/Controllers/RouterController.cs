@@ -13,22 +13,19 @@ namespace LeafletAlarms.Controllers
   {
     private readonly ValhallaRouter _valhalla_router;
     private readonly IRoutService _routService;
-    private readonly IRoutUpdateService _routUpdateService;
     private readonly IMapService _mapService;
     private readonly IPubService _pub;
     public RouterController(
       IPubService pubsub,
       IRoutService routService,
       IMapService mapService,
-      ValhallaRouter vrouter,
-      IRoutUpdateService routUpdateService
+      ValhallaRouter vrouter
     )
     {
       _routService = routService;
       _mapService = mapService;
       _pub = pubsub;
       _valhalla_router = vrouter;
-      _routUpdateService = routUpdateService;
     }
 
     private async Task AddIdsByProperties(BoxTrackDTO box)
@@ -135,16 +132,6 @@ namespace LeafletAlarms.Controllers
       await AddIdsByProperties(box);
       var geo = await _routService.GetRoutesByBox(box);
       return geo;
-    }
-
-    [HttpPost]
-    [Route("InsertRoutes")]
-    public async Task InsertRoutes(List<RoutLineDTO> newObjs)
-    {
-      if (newObjs.Count > 0)
-      {
-        await _routUpdateService.InsertRoutes(newObjs);
-      }
     }
   }
 }
