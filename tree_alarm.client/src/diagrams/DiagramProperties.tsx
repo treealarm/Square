@@ -283,7 +283,7 @@ export function DiagramProperties(props: IDiagramProperties) {
             >
               {
                 parentType?.regions.map((region, index) =>
-                  <MenuItem key={"menu" + index } value={region?.id}>{ region?.id}</MenuItem>
+                  <MenuItem key={"menu" + index } value={region?.region_key}>{ region?.region_key}</MenuItem>
                 )}
 
             </Select>

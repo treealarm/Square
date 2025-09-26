@@ -4,7 +4,7 @@ using System;
 
 namespace DbLayer.Models
 {
-  internal record DBDiagramTypeRegion : BasePgEntity
+  internal record DBDiagramTypeRegion
   {
     public Guid diagram_type_id { get; set; }
     public DBDiagramType diagram_type { get; set; }

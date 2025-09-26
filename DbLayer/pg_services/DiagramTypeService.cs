@@ -53,6 +53,7 @@ namespace DbLayer.Services
       {
         var obj = await _dbContext.DiagramTypes
                                   .Where(d => typeNames.Contains(d.name))
+                                  .Include(d => d.regions)
                                   .ToListAsync();
 
         return ConvertListDB2DTO(obj);
@@ -158,7 +159,7 @@ namespace DbLayer.Services
       if (newObjs == null || newObjs.Count == 0)
         return;
 
-      // конвертируем входящие DTO
+      // Конвертим DTO → DB и собираем пары для удобства
       var dtoIdPairs = newObjs
           .Select(dto =>
           {
@@ -169,7 +170,7 @@ namespace DbLayer.Services
 
       var ids = dtoIdPairs.Select(x => x.Id).ToList();
 
-      // тащим из БД существующие объекты
+      // Загружаем существующие объекты из БД вместе с регионами
       var existing = await _dbContext.DiagramTypes
                                      .Include(d => d.regions)
                                      .Where(d => ids.Contains(d.id))
@@ -183,39 +184,35 @@ namespace DbLayer.Services
       {
         if (existingDict.TryGetValue(pair.Id, out var dbObj))
         {
-          // --- обновление ---
+          // --- обновление родительского объекта ---
           dbObj.name = pair.Dto.name;
           dbObj.src = pair.Dto.src;
 
-          // Работа с regions: очищаем старые и добавляем новые
           var incomingRegions = pair.Dto.regions ?? new List<DiagramTypeRegionDTO>();
 
-          // 1. Удаляем регионы, которых нет в incoming
-          var incomingIds = incomingRegions
-              .Select(r => Domain.Utils.ConvertObjectIdToGuid(r.id) ?? Guid.Empty)
-              .Where(g => g != Guid.Empty)
+          // --- удаляем регионы, которых нет в incoming ---
+          var incomingKeys = incomingRegions
+              .Select(r => r.region_key)
               .ToHashSet();
 
           var toRemove = dbObj.regions
-              .Where(r => !incomingIds.Contains(r.id))
+              .Where(r => !incomingKeys.Contains(r.region_key))
               .ToList();
 
           foreach (var r in toRemove)
           {
             dbObj.regions.Remove(r);
-            _dbContext.DiagramTypeRegions.Remove(r); // обязательно убрать из контекста
+            _dbContext.DiagramTypeRegions.Remove(r);
           }
 
-          // 2. Обновляем существующие и 3. добавляем новые
+          // --- обновляем существующие регионы и добавляем новые ---
           foreach (var r in incomingRegions)
           {
-            var regionId = Domain.Utils.ConvertObjectIdToGuid(r.id) ?? Domain.Utils.NewGuid();
-            var existingRegion = dbObj.regions.FirstOrDefault(x => x.id == regionId);
+            var existingRegion = dbObj.regions.FirstOrDefault(x => x.region_key == r.region_key);
 
             if (existingRegion != null)
             {
               // обновляем существующий регион
-              existingRegion.region_key = r.id;
               existingRegion.geometry = new DBDiagramCoord
               {
                 top = r.geometry.top,
@@ -227,11 +224,11 @@ namespace DbLayer.Services
             }
             else
             {
+              // добавляем новый регион
               var newRegion = new DBDiagramTypeRegion
               {
-                id = regionId,
                 diagram_type_id = dbObj.id,
-                region_key = r.id,
+                region_key = r.region_key,
                 geometry = new DBDiagramCoord
                 {
                   top = r.geometry.top,
@@ -242,7 +239,6 @@ namespace DbLayer.Services
                 styles = r.styles
               };
 
-              // обязательно добавляем через DbSet
               _dbContext.DiagramTypeRegions.Add(newRegion);
               dbObj.regions.Add(newRegion);
             }
@@ -250,7 +246,7 @@ namespace DbLayer.Services
         }
         else
         {
-          // --- вставка ---
+          // --- вставка нового родителя вместе с регионами ---
           var newDbObj = new DBDiagramType
           {
             id = pair.Id,
@@ -258,9 +254,8 @@ namespace DbLayer.Services
             src = pair.Dto.src,
             regions = pair.Dto.regions?.Select(r => new DBDiagramTypeRegion
             {
-              id = Domain.Utils.ConvertObjectIdToGuid(r.id) ?? Domain.Utils.NewGuid(),
               diagram_type_id = pair.Id,
-              region_key = r.id,
+              region_key = r.region_key,
               geometry = new DBDiagramCoord
               {
                 top = r.geometry.top,
@@ -289,6 +284,7 @@ namespace DbLayer.Services
     }
 
 
+
     DBDiagramType ConvertDTO2DB(DiagramTypeDTO dto)
     {
       if (dto == null)
@@ -311,7 +307,7 @@ namespace DbLayer.Services
           dbo.regions.Add(new DBDiagramTypeRegion()
           {
             geometry = item.geometry.CopyAll<DiagramCoordDTO, DBDiagramCoord>(),
-            id = Domain.Utils.ConvertObjectIdToGuid(item.id) ?? Domain.Utils.NewGuid(),
+            region_key = item.region_key,
             styles = new Dictionary<string, string>(item.styles)
           });
         }
@@ -345,7 +341,7 @@ namespace DbLayer.Services
           {
             dto.regions.Add(new DiagramTypeRegionDTO()
             {
-              id = Domain.Utils.ConvertGuidToObjectId(item.id),
+              region_key = item.region_key,
               geometry = item.geometry.CopyAll<DBDiagramCoord, DiagramCoordDTO>(),
               styles = new Dictionary<string, string>(item.styles)
             });

@@ -23,7 +23,7 @@ const getValueByRegion = (
   }
 
   // Находим значение, соответствующее региону
-  const region_value = cur_values.find(v => v.name === region.id);
+  const region_value = cur_values.find(v => v.name === region.region_key);
 
   if (!region_value) {
     return null;
@@ -132,7 +132,7 @@ export default function DiagramElement(props: IDiagramElement) {
         var parent_type: IDiagramTypeDTO|null = diagram_content?.dgr_types.find(t => t.name == parent?.dgr_type) ?? null;
 
         if (parent_type != null) {
-          var region = parent_type.regions.find(r => r.id == diagram.region_id);
+          var region = parent_type.regions.find(r => r.region_key == diagram.region_id);
 
           if (region != null) {
             var w = parent_coord.width;

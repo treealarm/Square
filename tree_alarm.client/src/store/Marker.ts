@@ -395,7 +395,7 @@ export interface IDiagramFullDTO {
   parent_type?: IDiagramTypeDTO|null;
 }
 export interface IDiagramTypeRegionDTO {
-  id: string;
+  region_key: string;
   geometry: IDiagramCoord;
   styles?: {
     color?: string;

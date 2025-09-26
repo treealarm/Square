@@ -511,7 +511,7 @@ namespace LeafletAlarms.Grpc.Implementation
             src = proto.Src,
             regions = proto.Regions?.Select(region => new DiagramTypeRegionDTO
             {
-              id = region.Id,
+              region_key = region.Id,
               geometry = region.Geometry != null ? new DiagramCoordDTO
               {
                 top = region.Geometry.Top,
@@ -536,7 +536,7 @@ namespace LeafletAlarms.Grpc.Implementation
           {
             var diagramRegion = new DiagramTypeRegionProto
             {
-              Id = region.id,
+              Id = region.region_key,
               Geometry = region.geometry != null ? new DiagramCoordProto
               {
                 Top = region.geometry.top,

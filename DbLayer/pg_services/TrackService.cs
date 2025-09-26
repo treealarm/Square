@@ -112,6 +112,7 @@ namespace DbLayer.Services
       {
         var dbTrack = new DBTrackPoint()
         {
+          id = Domain.Utils.NewGuid(),
           object_id = Domain.Utils.ConvertObjectIdToGuid(track.id),
           timestamp = track.timestamp ?? DateTime.UtcNow,
           figure = ConvertGeoDTO2DB(track.figure.location), // возвращает Geometry

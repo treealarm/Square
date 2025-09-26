@@ -71,7 +71,7 @@ export function DiagramTypeProperties() {
     var copy = DeepCopy(diagramType);
     var newRegion: IDiagramTypeRegionDTO =
     {
-      id: copy?.regions?.length.toString(),
+      region_key: copy?.regions?.length.toString(),
       geometry: {
         left: 0,
         top: 0,
@@ -93,7 +93,7 @@ export function DiagramTypeProperties() {
     var index = val[1];
 
     if (textId == "editreg_id") {
-      copy.regions[index].id = value;
+      copy.regions[index].region_key = value;
     }
     else if (!isNaN(value)) {
       if (textId == "editreg_left") {
@@ -215,7 +215,7 @@ export function DiagramTypeProperties() {
                   fullWidth
                   label='id'
                   size="small"
-                  value={region.id}
+                  value={region.region_key}
                   onChange={handleChangeRegion}
                 >
 
