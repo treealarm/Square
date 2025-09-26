@@ -2,6 +2,7 @@
 using DbLayer.Models.Actions;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -41,20 +42,21 @@ namespace DbLayer
     {
       _source = source;
     }
-
-
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-      builder.UseNpgsql(
-        _source,
-        npgsqlOptions =>
-        {
-          npgsqlOptions.UseNetTopologySuite();
-          npgsqlOptions.MigrationsAssembly(typeof(PgDbContext).Assembly.FullName);
-        }
-      //    @"Server=(localdb)\mssqllocaldb;Database=Test;ConnectRetryCount=0"
-      );
+      builder.UseNpgsql(_source, npgsqlOptions =>
+      {
+        npgsqlOptions.UseNetTopologySuite();
+        npgsqlOptions.MigrationsAssembly(typeof(PgDbContext).Assembly.FullName);
+
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: int.MaxValue, // фактически бесконечно
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null
+        );
+      });
     }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);

@@ -216,7 +216,6 @@ export interface SearchFilterGUI {
 
   show_objects?: boolean;
   show_tracks?: boolean;
-  show_routes?: boolean;
 
   applied?: boolean;
 }
@@ -289,14 +288,6 @@ export interface IGeoObjectDTO {
   location: IGeometryDTO;
 }
 
-export interface IRoutLineDTO {
-  id: string;
-  id_start: string;
-  id_end: string;
-  figure: IGeoObjectDTO;
-  ts_start: string;
-  ts_end: string;
-}
 
 export interface ITrackPointDTO {
   id: string;

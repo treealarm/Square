@@ -38,17 +38,6 @@ const pathOptionsTracksSelected = {
   dashArray: '5,10'
 }
 
-var pathOptionsRoutes: any[] =
-[
-    { color: "red" },
-    { color: "blue" },
-    { color: "green" },
-    { color: "yellow" },
-    { color: "purple" },
-    { color: "#BAA" },
-    { color: "#CAA" },
-    { color: "black" }
-]
 function TrackPolygon(props: any) {
   const appDispatch = useAppDispatch();
 
@@ -199,7 +188,6 @@ export function TrackViewer() {
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked);
-  const routes = useSelector((state: ApplicationState) => state?.tracksStates?.routes);
   const tracks = useSelector((state: ApplicationState) => state?.tracksStates?.tracks);
   const selected_track = useSelector((state: ApplicationState) => state?.tracksStates?.selected_track);
   const user = useSelector((state: ApplicationState) => state?.rightsStates?.user);
@@ -277,18 +265,6 @@ export function TrackViewer() {
           >
           </CommonTrack>
         )}
-      {
-        searchFilter?.show_routes != false &&
-        routes?.map((route, index) =>
-          <CommonTrack
-            key={route?.id}
-            hidden={false}
-            marker={route?.figure}
-            pathOptions={pathOptionsRoutes[index]}
-          >
-          </CommonTrack>
-        )}
-
     </React.Fragment>
   );
 }

@@ -56,7 +56,7 @@ namespace DbLayer
       services.AddScoped<IMapService, MapService>();
       services.AddScoped<IGeoService, GeoService>();
       services.AddScoped<ITrackService, TrackService>();
-      services.AddScoped<IRoutService, RoutService>();
+
       services.AddScoped<ILevelService, LevelService>();
       services.AddScoped<IStateService, StateService>();
 

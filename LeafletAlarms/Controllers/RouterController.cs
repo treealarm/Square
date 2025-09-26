@@ -12,17 +12,14 @@ namespace LeafletAlarms.Controllers
   public class RouterController : ControllerBase
   {
     private readonly ValhallaRouter _valhalla_router;
-    private readonly IRoutService _routService;
     private readonly IMapService _mapService;
     private readonly IPubService _pub;
     public RouterController(
       IPubService pubsub,
-      IRoutService routService,
       IMapService mapService,
       ValhallaRouter vrouter
     )
     {
-      _routService = routService;
       _mapService = mapService;
       _pub = pubsub;
       _valhalla_router = vrouter;
@@ -103,35 +100,6 @@ namespace LeafletAlarms.Controllers
       }
 
       return CreatedAtAction(nameof(GetRoute), ret);
-    }
-
-    [HttpPost]
-    [Route("GetRoutesByTracksIds")]
-    public async Task<List<RoutLineDTO>> GetRoutesByTracksIds(List<string> ids)
-    {
-      var geo = await _routService.GetByIdsAsync(ids);
-
-      await _pub.Publish(Topics.OnRequestRoutes, ids);
-
-      return geo;
-    }
-
-    [HttpPost]
-    [Route("GetRoutesByBox")]
-    public async Task<List<RoutLineDTO>> GetRoutesByBox(BoxTrackDTO box)
-    {
-      if (
-        box.time_start == null &&
-        box.time_end == null
-      )
-      {
-        // We do not search without time diapason.
-        return new List<RoutLineDTO>();
-      }
-
-      await AddIdsByProperties(box);
-      var geo = await _routService.GetRoutesByBox(box);
-      return geo;
     }
   }
 }
