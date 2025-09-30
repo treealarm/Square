@@ -2,8 +2,6 @@
 using Domain;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 using Npgsql;
 using System;
 
@@ -20,10 +18,6 @@ namespace DbLayer
 
       // Загружаем объект вручную, если нужно
       var settings = mapDbSection.Get<MapDatabaseSettings>();
-
-      services.AddSingleton<IMongoClient>(s =>
-          new MongoClient(settings.ConnectionString) // Используем settings напрямую
-      );
 
       {
         var your_username = Environment.GetEnvironmentVariable("POSTGRES_USER");
@@ -50,8 +44,6 @@ namespace DbLayer
       }      
 
       services.AddScoped<IEventsService, EventsService>();
-
-      services.AddScoped<IUtilService, UtilService>();
 
       services.AddScoped<IMapService, MapService>();
       services.AddScoped<IGeoService, GeoService>();

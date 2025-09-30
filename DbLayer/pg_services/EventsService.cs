@@ -1,7 +1,6 @@
 ﻿using DbLayer.Models;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -71,69 +70,59 @@ namespace DbLayer.Services
       return list;
     }
     public static List<EventProp> ConvertExtraPropsToDB(
-      List<ObjExtraPropertyDTO> extra_props, 
-      Guid owner_id)
+        List<ObjExtraPropertyDTO> extra_props,
+        Guid owner_id)
     {
       if (extra_props == null)
-      { return null; }
+        return null;
 
       var ep_db = new List<EventProp>();
-      var propertieNames = typeof(FigureZoomedDTO).GetProperties().Select(x => x.Name).ToList();
 
-      propertieNames.AddRange(
-        typeof(FigureGeoDTO).GetProperties().Select(x => x.Name)
-        );
-
+      // Игнорируем свойства встроенных DTO
+      var propertyNames = typeof(FigureZoomedDTO).GetProperties().Select(p => p.Name).ToHashSet();
+      propertyNames.UnionWith(typeof(FigureGeoDTO).GetProperties().Select(p => p.Name));
 
       foreach (var prop in extra_props)
       {
-        // "radius", "zoom_level"
-        if (propertieNames.Contains(prop.prop_name))
-        {
+        if (propertyNames.Contains(prop.prop_name))
           continue;
-        }
 
-        var newProp = new EventProp()
+        var newProp = new EventProp
         {
+          id = Domain.Utils.NewGuid(),
           prop_name = prop.prop_name,
           visual_type = prop.visual_type,
-          owner_id = owner_id,
+          owner_id = owner_id
         };
 
-        newProp.id = Domain.Utils.ConvertObjectIdToGuid(ObjectId.GenerateNewId().ToString())
-          ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
-
-        if (prop.visual_type == BsonType.Double.ToString())
+        // Сохраняем значение как строку для jsonb
+        if (prop.visual_type == "Double")
         {
-          if (double.TryParse(
-            prop.str_val,
-            NumberStyles.Any,
-            CultureInfo.InvariantCulture,
-            out var result))
-          {
-            newProp.str_val = result.ToString();
-          }
+          if (double.TryParse(prop.str_val, NumberStyles.Any, CultureInfo.InvariantCulture, out var dbl))
+            newProp.str_val = dbl.ToString(CultureInfo.InvariantCulture);
+          else
+            newProp.str_val = prop.str_val;
         }
-        else if (prop.visual_type == BsonType.DateTime.ToString())
+        else if (prop.visual_type == "DateTime")
         {
-          newProp.str_val = DateTime
-              .Parse(prop.str_val)
-              .ToUniversalTime().ToString();
+          if (DateTime.TryParse(prop.str_val, out var dt))
+            newProp.str_val = dt.ToUniversalTime().ToString("o"); // ISO8601
+          else
+            newProp.str_val = prop.str_val;
         }
-
-        if (newProp.str_val == null)
+        else
         {
           newProp.str_val = prop.str_val;
         }
+
         ep_db.Add(newProp);
       }
+
       return ep_db;
     }
 
 
-
-
-  public async Task<long> InsertManyAsync(List<EventDTO> events)
+    public async Task<long> InsertManyAsync(List<EventDTO> events)
     {
       var list = new List<DBEvent>();
 
@@ -141,7 +130,7 @@ namespace DbLayer.Services
       {
         if (string.IsNullOrEmpty(ev.id))
         {
-          ev.id = ObjectId.GenerateNewId().ToString();
+          ev.id = Domain.Utils.ConvertGuidToObjectId(Domain.Utils.NewGuid());
         }
         if (string.IsNullOrEmpty(ev.object_id))
         {

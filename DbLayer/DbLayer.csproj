@@ -6,11 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="sql\geo_objects.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\actions.sql" Link="sql\actions.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\db_values.sql" Link="sql\db_values.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\diagrams.sql" Link="sql\diagrams.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\diagram_types.sql" Link="sql\diagram_types.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\events.sql" Link="sql\events.sql" />
+    <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\geo_objects.sql" Link="sql\geo_objects.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\groups.sql" Link="sql\groups.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\integro.sql" Link="sql\integro.sql" />
     <None Include="..\leaflet_dock\leaflet_data\initdb\sql_scripts\levels.sql" Link="sql\levels.sql" />
@@ -25,13 +30,16 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
-    <PackageReference Include="MongoDB.Driver" Version="3.4.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

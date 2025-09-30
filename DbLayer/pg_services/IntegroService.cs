@@ -1,7 +1,6 @@
 ﻿using DbLayer.Models;
 using Domain;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,8 +95,7 @@ namespace DbLayer.Services
           // Если сущности нет, добавляем в список для добавления
           if (updatedObj.id == Guid.Empty)
           {
-            updatedObj.id = Domain.Utils.ConvertObjectIdToGuid(
-              Utils.GenerateId24().ToString()) ?? throw new InvalidOperationException("ConvertObjectIdToGuid");
+            updatedObj.id = Domain.Utils.NewGuid();
           }
           toAdd.Add(updatedObj);
         }

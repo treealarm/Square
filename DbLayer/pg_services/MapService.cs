@@ -1,8 +1,5 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -354,7 +351,6 @@ namespace DbLayer.Services
 
     public async Task<long> RemoveAsync(List<string> ids)
     {
-      List<ObjectId> objIds = ids.Select(s => new ObjectId(s)).ToList();
       // Конвертируем ObjectId строки в Guid
       var guids = ids
           .Select(Domain.Utils.ConvertObjectIdToGuid)

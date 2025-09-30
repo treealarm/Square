@@ -1,10 +1,10 @@
 ﻿using Domain;
-using MongoDB.Bson;
-using MongoDB.Driver.GeoJsonObjectModel;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using NetTopologySuite;
 
 
 namespace DbLayer
@@ -15,10 +15,10 @@ namespace DbLayer
     {
       var res = new DBGeoObject()
       {
-        id = dto.id,
+        id = Domain.Utils.ConvertObjectIdToGuid(dto.id) ?? Domain.Utils.NewGuid(),
         radius = dto.radius,
         zoom_level = dto.zoom_level,
-        location = ConvertGeoDTO2DB(dto.location)
+        figure = ConvertGeoDTO2DB(dto.location)
       };
 
       return res;
@@ -46,48 +46,53 @@ namespace DbLayer
       }
       foreach (var item in dto)
       {
-        res.Add(item.id, ConvertDB2DTO(item));
+        res.Add(Domain.Utils.ConvertGuidToObjectId(item.id), ConvertDB2DTO(item));
       }
 
       return res;
     }
 
-    static public GeoJsonGeometry<GeoJson2DCoordinates> ConvertGeoDTO2DB(GeometryDTO location)
+    static public Geometry ConvertGeoDTO2DB(GeometryDTO location)
     {
-      GeoJsonGeometry<GeoJson2DCoordinates> ret = null;
+      if (location == null)
+        return null;
 
-      if (location is GeometryCircleDTO point)
+      var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+      Geometry ret = null;
+
+      switch (location)
       {
-        ret = new GeoJsonPoint<GeoJson2DCoordinates>(
-          GeoJson.Position(point.coord.Lon, point.coord.Lat)
-        );
+        case GeometryCircleDTO point:
+          ret = geometryFactory.CreatePoint(new Coordinate(point.coord.Lon, point.coord.Lat));
+          break;
+
+        case GeometryPolygonDTO polygon:
+          // формируем массив координат для внешнего кольца
+          var coords = new Coordinate[polygon.coord.Count + 1];
+          for (int i = 0; i < polygon.coord.Count; i++)
+          {
+            coords[i] = new Coordinate(polygon.coord[i].Lon, polygon.coord[i].Lat);
+          }
+          // закрываем полигон (последняя точка = первая)
+          coords[polygon.coord.Count] = new Coordinate(polygon.coord[0].Lon, polygon.coord[0].Lat);
+
+          var linearRing = geometryFactory.CreateLinearRing(coords);
+          ret = geometryFactory.CreatePolygon(linearRing);
+          break;
+
+        case GeometryPolylineDTO line:
+          var lineCoords = new Coordinate[line.coord.Count];
+          for (int i = 0; i < line.coord.Count; i++)
+          {
+            lineCoords[i] = new Coordinate(line.coord[i].Lon, line.coord[i].Lat);
+          }
+          ret = geometryFactory.CreateLineString(lineCoords);
+          break;
+
+        default:
+          throw new NotSupportedException($"GeometryDTO type {location.GetType().Name} not supported");
       }
 
-      if (location is GeometryPolygonDTO polygon)
-      {
-        List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-        for (int i = 0; i < polygon.coord.Count; i++)
-        {
-          coordinates.Add(GeoJson.Position(polygon.coord[i][1], polygon.coord[i][0]));
-        }
-
-        coordinates.Add(GeoJson.Position(polygon.coord[0][1], polygon.coord[0][0]));
-
-        ret = GeoJson.Polygon(coordinates.ToArray());
-      }
-
-      if (location is GeometryPolylineDTO line)
-      {
-        List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-        for (int i = 0; i < line.coord.Count; i++)
-        {
-          coordinates.Add(GeoJson.Position(line.coord[i][1], line.coord[i][0]));
-        }
-
-        ret = GeoJson.LineString(coordinates.ToArray());
-      }
       return ret;
     }
 
@@ -100,63 +105,68 @@ namespace DbLayer
 
       GeoObjectDTO retVal = new GeoObjectDTO()
       {
-        id = dbObj.id,
+        id = Domain.Utils.ConvertGuidToObjectId(dbObj.id),
         radius = dbObj.radius,
         zoom_level = dbObj.zoom_level,
-        location = ConvertGeoDB2DTO(dbObj.location)
+        location = ConvertGeoDB2DTO(dbObj.figure)
       };
 
       return retVal;
     }
 
-    static private GeometryDTO ConvertGeoDB2DTO(GeoJsonGeometry<GeoJson2DCoordinates> location)
+  static private GeometryDTO ConvertGeoDB2DTO(Geometry location)
+  {
+    if (location == null)
+      return null;
+
+    GeometryDTO ret = null;
+
+    switch (location)
     {
-      if (location == null)
-      { return null; }
-
-      GeometryDTO ret = null;
-
-      if (location is GeoJsonPoint<GeoJson2DCoordinates> point)
-      {
+      case Point point:
         ret = new GeometryCircleDTO(
-          new Geo2DCoordDTO() { point.Coordinates.Y, point.Coordinates.X }
+            new Geo2DCoordDTO { Y = point.Y, X = point.X }
         );
-      }
+        break;
 
-      if (location is GeoJsonPolygon<GeoJson2DCoordinates> polygon)
-      {
-        List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
+      case Polygon polygon:
         var retPolygon = new GeometryPolygonDTO();
-
-        foreach (var cur in polygon.Coordinates.Exterior.Positions)
+        // Берем внешнее кольцо полигона
+        var coords = polygon.ExteriorRing.Coordinates;
+        foreach (var cur in coords)
         {
-          retPolygon.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
+          retPolygon.coord.Add(new Geo2DCoordDTO { Y = cur.Y, X = cur.X });
         }
-
-        if (retPolygon.coord.Count > 3)
+        // Убираем последнюю точку, если совпадает с первой (как в GeoJSON)
+        if (retPolygon.coord.Count > 3 &&
+            retPolygon.coord[0].X == retPolygon.coord[^1].X &&
+            retPolygon.coord[0].Y == retPolygon.coord[^1].Y)
         {
           retPolygon.coord.RemoveAt(retPolygon.coord.Count - 1);
         }
         ret = retPolygon;
-      }
+        break;
 
-      if (location is GeoJsonLineString<GeoJson2DCoordinates> line)
-      {
+      case LineString line:
         var retLine = new GeometryPolylineDTO();
-        List<GeoJson2DCoordinates> coordinates = new List<GeoJson2DCoordinates>();
-
-        foreach (var cur in line.Coordinates.Positions)
+        foreach (var cur in line.Coordinates)
         {
-          retLine.coord.Add(new Geo2DCoordDTO() { cur.Y, cur.X });
+          retLine.coord.Add(new Geo2DCoordDTO {Y = cur.Y, X = cur.X });
         }
         ret = retLine;
-      }
+        break;
 
-      ret.type = location.Type.ToString();
-      return ret;
+      default:
+        throw new NotSupportedException(
+            $"Geometry type {location.GeometryType} not supported");
     }
 
-    public static List<T> ConvertExtraPropsToDB<T>(List<ObjExtraPropertyDTO> extra_props)
+    ret.type = location.GeometryType; // например "Point", "Polygon", "LineString"
+    return ret;
+  }
+
+
+  public static List<T> ConvertExtraPropsToDB<T>(List<ObjExtraPropertyDTO> extra_props)
     where T : DBObjExtraProperty, new()
     {
       if (extra_props == null)

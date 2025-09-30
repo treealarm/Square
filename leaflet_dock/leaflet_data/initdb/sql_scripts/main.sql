@@ -17,3 +17,4 @@
 \i 'groups.sql'
 \i 'diagram_types.sql'
 \i 'diagrams.sql'
+\i 'geo_objects.sql'

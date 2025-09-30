@@ -233,18 +233,27 @@ export default function EventTable(props: IEventTableProps) {
                         value = getPriority(row.event_priority);
                       }
                       
-                      if (column.id == 'timestamp') {
-                        var utcDate = new Date(row.timestamp + 'Z');
-                        value = utcDate.toLocaleString(undefined, { // undefined = использовать локаль браузера
-                          year: 'numeric',
-                          month: 'numeric',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit',
-                          timeZoneName: 'short' // Покажет название часового пояса
-                        }) + " [" + utcDate.getMilliseconds() + "ms]";
+                      if (column.id === 'timestamp') {
+                        // Обрезаем микросекунды до миллисекунд
+                        let ts = row.timestamp.replace(/(\.\d{3})\d+Z$/, '$1Z');
+
+                        const utcDate = new Date(ts);
+
+                        if (isNaN(utcDate.getTime())) {
+                          value = row.timestamp; // fallback, если всё равно не парсится
+                        } else {
+                          value = utcDate.toLocaleString(undefined, {
+                            year: 'numeric',
+                            month: 'numeric',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            timeZoneName: 'short'
+                          }) + " [" + utcDate.getMilliseconds() + "ms]";
+                        }
                       }
+
 
                       if (column.id == 'param0') {
                         value = row.param0;

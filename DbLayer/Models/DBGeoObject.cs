@@ -1,21 +1,12 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Driver.GeoJsonObjectModel;
+﻿using DbLayer.Models;
+using NetTopologySuite.Geometries;
 
 namespace DbLayer
 {
-  [BsonIgnoreExtraElements]
-  internal class DBGeoObject
+  internal record DBGeoObject : BasePgEntity
   {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string id { get; set; }
-    public GeoJsonGeometry<GeoJson2DCoordinates> location { get; set; }
-
-    [BsonIgnoreIfNull]
+    public Geometry figure { get; set; } // NetTopologySuite
     public double? radius { get; set; }
-
-    [BsonIgnoreIfNull]
     public string zoom_level { get; set; }
   }
 }

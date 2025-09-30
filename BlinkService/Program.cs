@@ -1,9 +1,7 @@
 ﻿using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MongoDB.Driver;
 using PubSubLib;
 
 namespace BlinkService

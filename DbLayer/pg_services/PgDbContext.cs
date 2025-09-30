@@ -13,6 +13,7 @@ namespace DbLayer
     private readonly NpgsqlDataSource _source;
 
     
+    public DbSet<DBGeoObject> GeoObjects { get; set; }
     public DbSet<DBDiagram> Diagrams { get; set; }
     public DbSet<DBDiagramTypeRegion> DiagramTypeRegions { get; set; }
     public DbSet<DBDiagramType> DiagramTypes { get; set; }
@@ -76,7 +77,41 @@ namespace DbLayer
       ConfigureGroups(modelBuilder);
       ConfigureDiagramTypes(modelBuilder);
       ConfigureDiagrams(modelBuilder);
+      ConfigureGeoObjects(modelBuilder);
     }
+
+    private void ConfigureGeoObjects(ModelBuilder modelBuilder)
+    {
+      modelBuilder.Entity<DBGeoObject>(entity =>
+      {
+        entity.ToTable("geo_objects");
+
+        entity.HasKey(e => e.id);
+
+        // figure (геометрия)
+        entity.Property(e => e.figure)
+              .IsRequired()
+              .HasColumnName("figure")
+              .HasColumnType("geometry"); // EF Core + NetTopologySuite
+
+        // radius
+        entity.Property(e => e.radius)
+              .HasColumnName("radius");
+
+        // zoom_level
+        entity.Property(e => e.zoom_level)
+              .HasColumnName("zoom_level");
+
+        // индексы
+        entity.HasIndex(e => e.zoom_level)
+              .HasDatabaseName("idx_geo_objects_zoom_level");
+
+        entity.HasIndex(e => e.figure)
+              .HasDatabaseName("idx_geo_objects_figure_gist")
+              .HasMethod("gist");
+      });
+    }
+
 
     private void ConfigureDiagrams(ModelBuilder modelBuilder)
     {
