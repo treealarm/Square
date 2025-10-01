@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapr.Client" Version="1.15.4" />
-    <PackageReference Include="Dapr.Messaging" Version="1.15.4" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
+    <PackageReference Include="Dapr.Client" Version="1.16.0" />
+    <PackageReference Include="Dapr.Messaging" Version="1.16.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup>
