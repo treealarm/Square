@@ -722,7 +722,7 @@ namespace AASubService
               var time = await camera.GetDeviceTimeAsync();
               alive = time != null;
             }
-            catch(Exception ex)
+            catch(Exception)
             {
               alive = false;
             }

@@ -10,7 +10,6 @@
         "leafletalarmsservice": "StartDebugging",
         "routermicroservice": "StartWithoutDebugging",
         "redisservice": "StartWithoutDebugging",
-        "mongoservice": "StartWithoutDebugging",
         "grpctracksclient": "StartDebugging",
         "blinkservice": "StartDebugging"
       }
