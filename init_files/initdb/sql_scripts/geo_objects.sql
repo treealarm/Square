@@ -1,8 +1,6 @@
--- Нужно расширение PostGIS для работы с геометрией
 CREATE EXTENSION IF NOT EXISTS postgis;
-
 -- Таблица геообъектов
-CREATE TABLE IF NOT EXISTS geo_objects (
+CREATE TABLE IF NOT EXISTS public.geo_objects (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     figure geometry(GEOMETRY, 4326) NOT NULL, -- хранит Point, Polygon и т.д.
     radius double precision,
@@ -11,8 +9,8 @@ CREATE TABLE IF NOT EXISTS geo_objects (
 
 -- Индекс по zoom_level (btree)
 CREATE INDEX IF NOT EXISTS idx_geo_objects_zoom_level 
-    ON geo_objects(zoom_level);
+    ON public.geo_objects(zoom_level);
 
 -- Индекс для гео-запросов (gist по figure)
 CREATE INDEX IF NOT EXISTS idx_geo_objects_figure_gist 
-    ON geo_objects USING gist (figure);
+    ON public.geo_objects USING gist (figure);

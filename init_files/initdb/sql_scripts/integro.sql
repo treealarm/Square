@@ -1,9 +1,9 @@
 -- Table: public.integro
 
 -- DROP TABLE IF EXISTS public.integro;
--- таблица соответствия объекта с id , 
--- его типа интеграции i_type (cam, main...) и 
--- его микромодуля i_name (app_id)
+-- С‚Р°Р±Р»РёС†Р° СЃРѕРѕС‚РІРµС‚СЃС‚РІРёСЏ РѕР±СЉРµРєС‚Р° СЃ id , 
+-- РµРіРѕ С‚РёРїР° РёРЅС‚РµРіСЂР°С†РёРё i_type (cam, main...) Рё 
+-- РµРіРѕ РјРёРєСЂРѕРјРѕРґСѓР»СЏ i_name (app_id)
 CREATE TABLE IF NOT EXISTS public.integro
 (
     id uuid NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.integro
 
 CREATE INDEX IF NOT EXISTS idx_integro_i_type ON public.integro (i_type);
 
--- просто таблица типов
+-- РїСЂРѕСЃС‚Рѕ С‚Р°Р±Р»РёС†Р° С‚РёРїРѕРІ
 CREATE TABLE IF NOT EXISTS public.integro_types
 (
     i_type character varying,
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.integro_types
 );
 
 
--- id просто уникальный id, child_i_type типы которые может создать данный тип.
+-- id РїСЂРѕСЃС‚Рѕ СѓРЅРёРєР°Р»СЊРЅС‹Р№ id, child_i_type С‚РёРїС‹ РєРѕС‚РѕСЂС‹Рµ РјРѕР¶РµС‚ СЃРѕР·РґР°С‚СЊ РґР°РЅРЅС‹Р№ С‚РёРї.
 CREATE TABLE IF NOT EXISTS public.integro_type_children
 (
     i_type character varying,

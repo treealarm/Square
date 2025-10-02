@@ -1,19 +1,19 @@
 CREATE TABLE IF NOT EXISTS public.objects
 (
-    id UUID PRIMARY KEY,               -- вместо ObjectId будем хранить Guid
-    parent_id UUID NULL,               -- ссылка на родителя
-    owner_id UUID NULL,                -- ссылка на владельца
-    name TEXT NOT NULL                 -- имя объекта
+    id UUID PRIMARY KEY,               -- РІРјРµСЃС‚Рѕ ObjectId Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ Guid
+    parent_id UUID NULL,               -- СЃСЃС‹Р»РєР° РЅР° СЂРѕРґРёС‚РµР»В¤
+    owner_id UUID NULL,                -- СЃСЃС‹Р»РєР° РЅР° РІР»Р°РґРµР»СЊС†Р°
+    name TEXT NOT NULL                 -- РёРјВ¤ РѕР±СЉРµРєС‚Р°
 );
 
--- Индекс по parent_id
+-- В»РЅРґРµРєСЃ РїРѕ parent_id
 CREATE INDEX IF NOT EXISTS idx_objects_parent_id
     ON public.objects(parent_id);
 
--- Индекс по owner_id
+-- В»РЅРґРµРєСЃ РїРѕ owner_id
 CREATE INDEX IF NOT EXISTS idx_objects_owner_id
     ON public.objects(owner_id);
 
--- Составной индекс (id + owner_id), аналог как у тебя в Mongo
+-- вЂ”РѕСЃС‚Р°РІРЅРѕР№ РёРЅРґРµРєСЃ (id + owner_id), Р°РЅР°Р»РѕРі РєР°Рє Сѓ С‚РµР±В¤ РІ Mongo
 CREATE INDEX IF NOT EXISTS idx_objects_id_owner_id
     ON public.objects(id, owner_id);

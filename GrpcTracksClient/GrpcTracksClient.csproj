@@ -16,9 +16,6 @@
     <EmbeddedResource Include="JSON\SAD.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\.dockerignore" Link=".dockerignore" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
@@ -26,6 +23,9 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.9" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
   </ItemGroup>
   
   <ItemGroup>

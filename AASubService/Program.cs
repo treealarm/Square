@@ -33,10 +33,10 @@ builder.Services.AddDaprPubSubClient();
 
 builder.Services.AddSingleton<ISubService, SubService>();
 
-builder.Services.AddSingleton<ISubServiceLu, SubServiceLu>();
-builder.Services.AddSingleton<IPubServiceLu, PubServiceLu>();
-builder.Services.AddHostedService<SubHostedService>();
-builder.Services.AddHostedService<TestPubHostedService>();
+//builder.Services.AddSingleton<ISubServiceLu, SubServiceLu>();
+//builder.Services.AddSingleton<IPubServiceLu, PubServiceLu>();
+//builder.Services.AddHostedService<SubHostedService>();
+//builder.Services.AddHostedService<TestPubHostedService>();
 
 builder.Services.AddSingleton<CameraManager>();
 builder.Services.AddSingleton<CameraEventServiceManager>();

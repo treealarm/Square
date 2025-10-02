@@ -11,7 +11,7 @@ services:
       context: .
       dockerfile: LeafletAlarms/Dockerfile
     volumes:
-      - ./leaflet_data:/leaflet_data
+      - ${ROOT_DATA}:/leaflet_data
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     environment:
@@ -49,7 +49,43 @@ services:
     network_mode: "service:leafletalarmsservice"
     env_file:
       - .env
+#start aasubservice
+  aasubservice:
+    image: ${DOCKER_REGISTRY-}aasubservice
+    build:
+      context: .
+      dockerfile: AASubService/Dockerfile
+    env_file:
+      - .env
+    environment:
+      - VALHALLA_PORT=${VALHALLA_PORT}
+      - APP_PORT=${GRPC_AASUBSERVICE_PORT}
+      - APP_ID=${AASUBSERVICE_APP_ID}
+    depends_on:
+      - redis
+      - placement
+    ports:
+      - ${GRPC_AASUBSERVICE_PORT}:${GRPC_AASUBSERVICE_PORT}
+    networks:
+      - my-dapr-network
 
+  aasubservice-dapr:
+    image: "daprio/daprd:latest"
+    command: [
+      "./daprd",
+      "--app-id", "${AASUBSERVICE_APP_ID}",
+      "--app-port", "${GRPC_AASUBSERVICE_PORT}",
+      "--app-protocol", "grpc",
+      "--placement-host-address", "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--resources-path", "/components"
+      ]
+    volumes:
+        - "${DAPR_COMPONENTS}:/components"
+    depends_on:
+      - aasubservice
+    # нужно указать network_mode чтобы коляска имела доступ к портам сервиса
+    network_mode: "service:aasubservice"
+#end   aasubservice
 
   grpctracksclient:
     image: ${DOCKER_REGISTRY-}grpctracksclient
@@ -127,8 +163,8 @@ services:
     image: postgis/postgis
     restart: unless-stopped
     volumes:
-      - ./leaflet_data/postgres_data:/var/lib/postgresql/data
-      - ./leaflet_data/initdb:/docker-entrypoint-initdb.d
+      - ${ROOT_DATA}/postgres_data:/var/lib/postgresql/data
+      - ${INIT_FILES}/initdb:/docker-entrypoint-initdb.d
     ports:
       - "${MapDatabase__PgPort}:${MapDatabase__PgPort}"
     networks:
@@ -140,7 +176,7 @@ services:
     image: quay.io/keycloak/keycloak:latest
     restart: unless-stopped
     volumes:
-      - ./keycloak_imports:/opt/keycloak/data/import
+      - ${INIT_FILES}/keycloak_imports:/opt/keycloak/data/import
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgresservice:5432/keycloak
@@ -171,7 +207,7 @@ services:
     ports:
       - ${VALHALLA_PORT}:${VALHALLA_PORT}
     volumes:
-      - ./leaflet_data/valhalla_custom_files/:/custom_files
+      - ${ROOT_DATA}/valhalla_custom_files/:/custom_files
     networks:
       - my-dapr-network
 

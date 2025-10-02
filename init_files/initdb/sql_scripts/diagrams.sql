@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS diagrams (
+CREATE TABLE IF NOT EXISTS public.diagrams (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     dgr_type TEXT NOT NULL,
     geometry JSONB,

@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS public.db_values (
     value jsonb
 );
 
--- Индексы
+-- РРЅРґРµРєСЃС‹
 CREATE INDEX IF NOT EXISTS idx_db_values_owner_id ON public.db_values (owner_id);
 CREATE INDEX IF NOT EXISTS idx_db_values_name ON public.db_values (name);
--- Если предполагаются запросы по значению
+-- Р•СЃР»Рё РїСЂРµРґРїРѕР»Р°РіР°СЋС‚СЃСЏ Р·Р°РїСЂРѕСЃС‹ РїРѕ Р·РЅР°С‡РµРЅРёСЋ
 -- CREATE INDEX IF NOT EXISTS idx_db_values_value_jsonb ON public.db_values USING GIN (value);

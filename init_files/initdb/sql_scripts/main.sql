@@ -1,4 +1,4 @@
--- \cd 'D:/TESTS/Leaflet/leaflet_dock/leaflet_data/initdb/sql_scripts'
+-- \cd 'D:/TESTS/Leaflet/init_files/initdb/sql_scripts'
 -- \! cd
 -- \i 'create_db.sql'
 -- \i 'main.sql'
@@ -13,8 +13,8 @@
 \i 'levels.sql'
 \i 'objects.sql'
 \i 'properties.sql'
-\i 'track_points.sql'
 \i 'groups.sql'
 \i 'diagram_types.sql'
 \i 'diagrams.sql'
+\i 'track_points.sql'
 \i 'geo_objects.sql'

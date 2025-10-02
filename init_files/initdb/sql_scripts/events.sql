@@ -29,36 +29,36 @@ CREATE TABLE IF NOT EXISTS public.events (
     id uuid DEFAULT gen_random_uuid()
 );
 
--- Индекс для фильтрации по времени (диапазонные запросы)
+-- В»РЅРґРµРєСЃ РґР»В¤ С„РёР»СЊС‚СЂР°С†РёРё РїРѕ РІСЂРµРјРµРЅРё (РґРёР°РїР°Р·РѕРЅРЅС‹Рµ Р·Р°РїСЂРѕСЃС‹)
 CREATE INDEX IF NOT EXISTS idx_events_timestamp ON public.events ("timestamp");
 
--- Индекс для поиска по event_name (если используются операции LIKE, можно рассмотреть gin_trgm_ops)
+-- В»РЅРґРµРєСЃ РґР»В¤ РїРѕРёСЃРєР° РїРѕ event_name (РµСЃР»Рё РёСЃРїРѕР»СЊР·СѓСЋС‚СЃВ¤ РѕРїРµСЂР°С†РёРё LIKE, РјРѕР¶РЅРѕ СЂР°СЃСЃРјРѕС‚СЂРµС‚СЊ gin_trgm_ops)
 CREATE INDEX IF NOT EXISTS idx_events_event_name ON public.events (event_name);
 
--- Индекс для фильтрации по object_id (для джойна с группами)
+-- В»РЅРґРµРєСЃ РґР»В¤ С„РёР»СЊС‚СЂР°С†РёРё РїРѕ object_id (РґР»В¤ РґР¶РѕР№РЅР° СЃ РіСЂСѓРїРїР°РјРё)
 CREATE INDEX IF NOT EXISTS idx_events_object_id ON public.events (object_id);
 
--- Индекс для extra_props -> поиск по prop_name и str_val
+-- В»РЅРґРµРєСЃ РґР»В¤ extra_props -> РїРѕРёСЃРє РїРѕ prop_name Рё str_val
 CREATE INDEX IF NOT EXISTS idx_event_props_prop_name_val ON public.event_props (owner_id, prop_name, str_val);
 CREATE INDEX IF NOT EXISTS idx_event_props_owner_id ON public.event_props(owner_id);
 
 
--- Индексы для сортировки (если сортировка идет по разным полям)
+-- В»РЅРґРµРєСЃС‹ РґР»В¤ СЃРѕСЂС‚РёСЂРѕРІРєРё (РµСЃР»Рё СЃРѕСЂС‚РёСЂРѕРІРєР° РёРґРµС‚ РїРѕ СЂР°Р·РЅС‹Рј РїРѕР»В¤Рј)
 CREATE INDEX IF NOT EXISTS idx_events_priority ON public.events (event_priority);
 
--- Включаем расширение, если ещё не включено (нужно выполнить один раз в базе)
+-- В¬РєР»СЋС‡Р°РµРј СЂР°СЃС€РёСЂРµРЅРёРµ, РµСЃР»Рё РµС‰Р„ РЅРµ РІРєР»СЋС‡РµРЅРѕ (РЅСѓР¶РЅРѕ РІС‹РїРѕР»РЅРёС‚СЊ РѕРґРёРЅ СЂР°Р· РІ Р±Р°Р·Рµ)
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
--- Индекс по event_name для быстрого поиска Contains/LIKE '%...%'
+-- В»РЅРґРµРєСЃ РїРѕ event_name РґР»В¤ Р±С‹СЃС‚СЂРѕРіРѕ РїРѕРёСЃРєР° Contains/LIKE '%...%'
 CREATE INDEX IF NOT EXISTS idx_events_event_name_trgm
   ON public.events
   USING gin (event_name gin_trgm_ops);
 
--- Индексы для одиночных фильтров
+-- В»РЅРґРµРєСЃС‹ РґР»В¤ РѕРґРёРЅРѕС‡РЅС‹С… С„РёР»СЊС‚СЂРѕРІ
 CREATE INDEX IF NOT EXISTS idx_events_param0 ON public.events (param0);
 CREATE INDEX IF NOT EXISTS idx_events_param1 ON public.events (param1);
 
--- Индекс для пары param0 + param1
+-- В»РЅРґРµРєСЃ РґР»В¤ РїР°СЂС‹ param0 + param1
 CREATE INDEX IF NOT EXISTS idx_events_param0_param1 ON public.events (param0, param1);
 
 CREATE INDEX IF NOT EXISTS idx_events_param0_ts_desc ON public.events (param0, "timestamp");
