@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\**" />
     <Compile Remove="sql\**" />
+    <EmbeddedResource Remove="Services\**" />
     <EmbeddedResource Remove="sql\**" />
+    <None Remove="Services\**" />
     <None Remove="sql\**" />
   </ItemGroup>
 
@@ -20,10 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>

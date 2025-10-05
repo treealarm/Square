@@ -3,7 +3,7 @@
     "BlinkService": {
       "commandName": "Project",
       "environmentVariables": {
-        "MapDatabase__DatabaseName": "MapStore",
+        "MapDatabase__DatabaseName": "mapstore",
         "MapDatabase__PgPort": "5432",
         "MapDatabase__PgHost": "postgresservice",
         "POSTGRES_USER": "keycloak",
