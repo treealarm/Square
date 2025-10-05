@@ -3,7 +3,7 @@
 -- \i 'create_db.sql'
 -- \i 'main.sql'
 
-\connect "MapStore"
+\connect "mapstore"
 \i 'events.sql'
 \i 'integro.sql'
 \i 'actions.sql'
