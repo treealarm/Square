@@ -31,13 +31,32 @@ interface CoordSelectorProps {
 }
 
 export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps) {
-  const fallbackPosition: [number, number] = [55.751137, 37.600408]; // Fallback if coordinates are invalid
-  const [position, setPosition] = useState<[number, number]>(fallbackPosition);
+
+  
+   const fallbackPosition: [number, number] = [55.751137, 37.600408]; // Fallback if coordinates are invalid
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const selectedFig = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
 
   const [curFig, setCurFig] = useState<ICommonFig | null>(selectedFig ?? null);
+
+  const view_option = useSelector((state: ApplicationState) => state.guiStates?.cur_map_view ?? null);
+  const fallbackZoom = view_option?.zoom ?? 13;
+  function isValidCoordinate(value: number | null | undefined): boolean {
+    return value !== null && value !== undefined && Math.abs(value) > 0.000001;
+  }
+
+  // вычисляем начальную позицию до первого рендера
+  const initialPosition: [number, number] =
+    isValidCoordinate(lat) && isValidCoordinate(lon)
+      ? [lat as number, lon as number]
+      : (view_option?.map_center && !(view_option.map_center[0] === 0 && view_option.map_center[1] === 0))
+        ? view_option.map_center
+        : [55.751137, 37.600408];
+
+  const [position, setPosition] = useState<[number, number]>(initialPosition);
+
 
   function OnClick(newPos: LatLngPair) {
     setPosition(newPos); // Сохраняем новые координаты
@@ -68,20 +87,18 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
   }
 
   useEffect(() => {
-    if (lat !== null && lon !== null) {
-      setPosition([lat, lon]);
+    if (isValidCoordinate(lat) && isValidCoordinate(lon)) {
+      setPosition([lat!, lon!]);
+    } else if (view_option?.map_center && !(view_option.map_center[0] === 0 && view_option.map_center[1] === 0)) {
+      setPosition(view_option.map_center);
     } else {
-      // Получаем текущее местоположение как запасной вариант
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setPosition([pos.coords.latitude, pos.coords.longitude]);
-        },
-        () => {
-          setPosition(fallbackPosition);
-        }
-      );
+      setPosition([55.751137, 37.600408]);
     }
-  }, [lat, lon]);
+    
+
+  }, [lat, lon, view_option]);
+
+
 
 
   useEffect(() => {
@@ -89,7 +106,7 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
   }, [selectedFig]);
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
-    if (lat !== null && lon !== null) {
+    if (lat !== null && lon !== null && lat !== 0 && lon !== 0) {
       setPosition([lat, lon]);
     }
     setAnchorEl(event.currentTarget);
@@ -117,6 +134,28 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
     return <Marker position={position} />;
   };
 
+  interface MapUpdaterProps {
+    position: [number, number];
+    zoom?: number;
+  }
+
+  const MapUpdater = ({ position, zoom }: MapUpdaterProps) => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (map && position) {
+        if (zoom !== undefined) {
+          map.setView(position, zoom);
+        } else {
+          map.setView(position);
+        }
+      }
+    }, [position, zoom, map]);
+
+    return null;
+  };
+
+
   return (
     <div>
       <IconButton
@@ -141,13 +180,15 @@ export function CoordSelector({ lat, lon, index, onConfirm }: CoordSelectorProps
         }}
       >
         <div style={{ padding: 10 }}>
-          <MapContainer center={position} zoom={13} style={{ height: "400px", width: "400px" }}>
+          <MapContainer center={position} zoom={fallbackZoom} style={{ height: "400px", width: "400px" }}>
             <TileLayer
             maxZoom={20}
             attribution="&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
             url={url}
             key={1}
-          />
+            />
+            <MapUpdater position={position} zoom={fallbackZoom} />
+
             <LocationMarker />
             {
               curFig ? (

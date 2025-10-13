@@ -6,10 +6,14 @@ import {
 
 import { useEffect } from "react";
 import { ApplicationState } from "../store";
+import { useAppDispatch } from "../store/configureStore";
 
+import * as GuiStore from '../store/GUIStates';
 export function MapPositionChange() {
 
   const parentMap = useMap();
+  const appDispatch = useAppDispatch();
+  const guiStates = useSelector((state: ApplicationState) => state.guiStates);
 
   useEffect(() => {
 
@@ -32,7 +36,7 @@ export function MapPositionChange() {
     };
   }, [parentMap]);
 
-  const guiStates = useSelector((state: ApplicationState) => state.guiStates);
+  
 
   useEffect(() => {
     let map_center = guiStates?.map_option?.map_center;
@@ -54,6 +58,32 @@ export function MapPositionChange() {
   }, [guiStates?.map_option, parentMap]);
 
   useMapEvents({
+    moveend: () => {
+      const center = parentMap.getCenter();
+      const zoom = parentMap.getZoom();
+
+      console.log("Map moved:", center, "Zoom:", zoom);
+
+      appDispatch(
+        GuiStore.updateCurMapOption({
+          map_center: [center.lat, center.lng],
+          zoom: zoom,
+        })
+      );
+    },
+    zoomend: () => {
+      const center = parentMap.getCenter();
+      const zoom = parentMap.getZoom();
+
+      console.log("Zoom changed:", zoom, "Center:", center);
+
+      appDispatch(
+        GuiStore.updateCurMapOption({
+          map_center: [center.lat, center.lng],
+          zoom: zoom,
+        })
+      );
+    },
     locationfound: (location:any) => {
       parentMap.setView(location.latlng);
       console.log('location found:', location)

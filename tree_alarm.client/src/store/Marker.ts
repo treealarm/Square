@@ -250,9 +250,11 @@ export interface BoxTrackDTO extends BoundBox
   sort?: number;
 }
 
-export interface ViewOption {
-  map_center?: LatLngPair|null;
-  zoom?: number|null;
+export interface MapViewOption {
+  map_center?: LatLngPair | null;
+  zoom?: number | null;
+}
+export interface ViewOption extends MapViewOption {
   find_current_pos?: boolean;
 }
 

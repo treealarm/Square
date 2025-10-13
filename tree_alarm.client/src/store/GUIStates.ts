@@ -1,6 +1,6 @@
 ﻿import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
-import { SearchFilterGUI, ViewOption } from './Marker';
+import { MapViewOption, SearchFilterGUI, ViewOption } from './Marker';
 
 // -----------------
 // STATE
@@ -10,6 +10,7 @@ export interface GUIState {
   checked: string[];
   requestedTreeUpdate: number;
   map_option: ViewOption | null;
+  cur_map_view: MapViewOption | null;
   searchFilter: SearchFilterGUI;
   diagramDiving: boolean;
 
@@ -21,6 +22,7 @@ const initialState: GUIState = {
   checked: [],
   requestedTreeUpdate: 0,
   map_option: { map_center: null },
+  cur_map_view: { map_center: null },
   searchFilter: {
     time_start: dayjs().subtract(1, "day").toISOString(),
     time_end: dayjs().toISOString(),
@@ -55,6 +57,9 @@ const guiSlice = createSlice({
     setMapOption(state, action: PayloadAction<ViewOption | null>) {
       state.map_option = action.payload;
     },
+    updateCurMapOption(state, action: PayloadAction<MapViewOption | null>) {
+      state.cur_map_view = action.payload;
+    },
     applyFilter(state, action: PayloadAction<SearchFilterGUI>) {
       state.searchFilter = action.payload;
     },
@@ -72,6 +77,7 @@ export const {
   checkTreeItem,
   requestTreeUpdate,
   setMapOption,
+  updateCurMapOption,
   applyFilter,
   set_cur_interface,
   setDiagramDivingMode
