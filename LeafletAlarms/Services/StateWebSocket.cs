@@ -1,5 +1,7 @@
 ﻿using Domain;
+using System.Collections.Concurrent;
 using System.Net.WebSockets;
+using System.Text;
 using System.Text.Json;
 
 namespace LeafletAlarms.Services
@@ -8,6 +10,7 @@ namespace LeafletAlarms.Services
   {
     private HttpContext _context;
     private WebSocket _webSocket;
+
     private IStateService _stateService;
     private IGeoService _geoService;
     private ILevelService _levelService;
@@ -29,6 +32,9 @@ namespace LeafletAlarms.Services
     private object _locker = new object();
     private BoxDTO _currentBox;
     private bool _update_values_periodically = false;
+    private ConcurrentQueue<StateBaseReceiveDTO> _queue = new ConcurrentQueue<StateBaseReceiveDTO>();
+    private readonly IServiceProvider _serviceProvider;
+
     public BoxDTO CurrentBox
     {
       get
@@ -41,25 +47,18 @@ namespace LeafletAlarms.Services
     }
 
     public StateWebSocket(
-      HttpContext context,
-      WebSocket webSocket,
-      IGeoService geoService,
-      ILevelService levelService,
-      IStateService stateService,
-      IMapService mapService,
-      IPubService pub
+      IServiceProvider serviceProvider
     )
     {
-      _stateService = stateService;
-      _geoService = geoService;
-      _context = context;
-      _webSocket = webSocket;
-      _levelService = levelService;
-      _mapService = mapService;
-      _pub = pub;
-      InitTimer();
+      _serviceProvider = serviceProvider;
     }
 
+    public void Init(HttpContext context, WebSocket webSocket)
+    {
+      _context = context;
+      _webSocket = webSocket;
+      InitTimer();
+    }
     void InitTimer()
     {
       _timer = new Task(() => OnElapsed(), _cancellationTokenSource.Token);
@@ -68,11 +67,23 @@ namespace LeafletAlarms.Services
 
     private async void OnElapsed()
     {
+      using var scope = _serviceProvider.CreateScope();
+      _stateService = scope.ServiceProvider.GetRequiredService <IStateService>();
+      _geoService = scope.ServiceProvider.GetRequiredService<IGeoService>();
+      _levelService = scope.ServiceProvider.GetRequiredService<ILevelService>();
+      _mapService = scope.ServiceProvider.GetRequiredService < IMapService>();
+      _pub = scope.ServiceProvider.GetRequiredService<IPubService>();
+
       while (!_cancellationTokenSource.IsCancellationRequested)
       {
         try
         {
           await Task.Delay(1000);
+
+          while (_queue.TryDequeue(out var json))
+          {
+            await ProcessBuffer(json);
+          }
 
           List<TrackPointDTO> movedMarkers;
           HashSet<string> idsToUpdate;
@@ -114,76 +125,62 @@ namespace LeafletAlarms.Services
         }
       }
     }
+    private async Task ProcessBuffer(StateBaseReceiveDTO json)
+    {
+      switch (json.action.ToString())
+      {
+        case "set_box":
+          BoxDTO setBox = JsonSerializer.Deserialize<BoxDTO>(json.data.ToString());
+          if (setBox != null)
+            await OnSetBox(setBox);
+          break;
+
+        case "set_ids":
+          List<string> ids = JsonSerializer.Deserialize<List<string>>(json.data.ToString());
+          if (ids != null)
+            await OnSetIds(ids);
+          break;
+
+        case "update_values_periodically":
+          _update_values_periodically = JsonSerializer.Deserialize<bool>(json.data.ToString());
+          break;
+      }
+    }
+
 
     public async Task ProcessAcceptedSocket()
     {
       var buffer = new byte[1024 * 4];
-      WebSocketReceiveResult result =
-        await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+      WebSocketReceiveResult result;
 
-      while (!result.CloseStatus.HasValue)
+      try
       {
-        try
+        while (_webSocket.State == WebSocketState.Open)
         {
-          string s = System.Text.Encoding.UTF8.GetString(buffer, 0, result.Count);
+          result = await _webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
+          if (result.CloseStatus.HasValue)
+            break;
+
+          string s = Encoding.UTF8.GetString(buffer, 0, result.Count);
           var json = JsonSerializer.Deserialize<StateBaseReceiveDTO>(s);
 
-          if (json.action.ToString() == "set_box")
+          if (json != null)
           {
-            BoxDTO setBox = JsonSerializer.Deserialize<BoxDTO>(json.data.ToString());
-
-            if (setBox != null)
-            {
-              await OnSetBox(setBox);
-            }
+            _queue.Enqueue(json); // кладём в очередь на обработку
           }
-
-          if (json.action.ToString() == "set_ids")
-          {
-            List<string> ids = JsonSerializer.Deserialize<List<string>>(json.data.ToString());
-
-            if (ids != null)
-            {
-              await OnSetIds(ids);
-            }
-          }
-
-          if (json.action.ToString() == "update_values_periodically")
-          {
-            _update_values_periodically = JsonSerializer.Deserialize<bool>(json.data.ToString());
-          }
-
-          var replay = JsonSerializer.SerializeToUtf8Bytes(json);
-
-          //await _webSocket.SendAsync(
-          //  new ArraySegment<byte>(buffer, 0, replay.Length),
-          //  result.MessageType,
-          //  result.EndOfMessage,
-          //  CancellationToken.None
-          //);
-
-          result = await _webSocket.ReceiveAsync(
-            new ArraySegment<byte>(buffer),
-            CancellationToken.None
-          );
-        }
-        catch (Exception ex)
-        {
-          Console.Error.WriteLine(ex.ToString());
-          break;
         }
       }
-
-      _cancellationTokenSource.Cancel();
-      _timer.Wait();
-
-      await _webSocket.CloseAsync(
-        result.CloseStatus.Value,
-        result.CloseStatusDescription,
-        CancellationToken.None
-      );
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex);
+      }
+      finally
+      {
+        _cancellationTokenSource.Cancel();
+      }
     }
+
 
     public bool IsWithinBox(BoxDTO box, GeoObjectDTO track, List<string> levels)
     {

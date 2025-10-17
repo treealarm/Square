@@ -195,13 +195,12 @@ namespace BlinkService
         try
         {
           using var scope = _serviceProvider.CreateScope();
-          var provider = scope.ServiceProvider;
 
           const int maxProcess = 10000;
           for (int i = 0; i < objIds.Count; i += maxProcess)
           {
             var batch = objIds.Skip(i).Take(maxProcess).ToList();
-            await ProcessIds(batch, provider);
+            await ProcessIds(batch, scope.ServiceProvider);
           }
         }
         catch (Exception ex)

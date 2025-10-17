@@ -56,7 +56,9 @@ namespace LeafletAlarms
 
       services.AddSingleton<WebSockListService>();
       services.AddSingleton<IWebSockList>(x => x.GetRequiredService<WebSockListService>());
-      
+
+      services.AddScoped<StateWebSocket>();
+
 
       services.AddScoped<GRPCServiceProxy>();
       services.AddSingleton<IDaprClientService, DaprClientService>();

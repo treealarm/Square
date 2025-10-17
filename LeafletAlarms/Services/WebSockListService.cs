@@ -41,22 +41,11 @@ namespace LeafletAlarms.Services
     public async Task PushAsync(object context, WebSocket webSocket)
     {
       using var scope = _serviceProvider.CreateScope();
-      var stateService = scope.ServiceProvider.GetRequiredService<IStateService>();
-      var geoService = scope.ServiceProvider.GetRequiredService<IGeoService>();
-      var levelService = scope.ServiceProvider.GetRequiredService<ILevelService>();
-      var mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
 
+      var stateWs = scope.ServiceProvider.GetRequiredService<StateWebSocket>();
       var con = context as HttpContext;
 
-      var stateWs = new StateWebSocket(
-          con,
-          webSocket,
-          geoService,
-          levelService,
-          stateService,
-          mapService,
-          _pub
-      );
+      stateWs.Init(context as HttpContext, webSocket);
 
       StateSockets.TryAdd(con.Connection.Id, stateWs);
 
