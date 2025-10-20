@@ -7,28 +7,18 @@ namespace LeafletAlarms
   {
     static public string GenerateObjectId(string input, string version)
     {
-      if (string.IsNullOrEmpty(input))
-      {
-        input = string.Empty;
-      }
-      if (string.IsNullOrEmpty(version))
-      {
-        version = string.Empty;
-      }
-      string GetHash(string data, int length)
-      {
-        using (var md5 = MD5.Create())
-        {
-          var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(data));
-          // Получаем нужное количество символов из хэша
-          return BitConverter.ToString(hash, 0, length).Replace("-", "").ToLowerInvariant();
-        }
-      }
+      input ??= string.Empty;
+      version ??= string.Empty;
 
-      // Получаем хэш для input и version
-      string inputHash = GetHash(input + version, 12);
+      // Объединяем строки
+      string combined = input + version;
 
-      return inputHash;
+      // Получаем MD5-хэш (16 байт — идеально для Guid)
+      using var md5 = MD5.Create();
+      byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(combined));
+
+      // Создаем Guid из хэша
+      return new Guid(hash).ToString();
     }
   }
 }
