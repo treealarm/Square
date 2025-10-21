@@ -1,5 +1,6 @@
 ﻿using DbLayer.Services;
 using Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -20,27 +21,50 @@ namespace DbLayer
       var settings = mapDbSection.Get<MapDatabaseSettings>();
 
       {
-        var your_username = Environment.GetEnvironmentVariable("POSTGRES_USER");
-        var your_password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-        var DbName = settings.DatabaseName;
-
-        var builder = new NpgsqlConnectionStringBuilder
+        services.AddScoped(provider =>
         {
-          Host = settings.PgHost,
-          Database = settings.DatabaseName,
-          Username = your_username,
-          Password = your_password,
-          Port = settings.PgPort
-        };
+          //var http = provider.GetRequiredService<IHttpContextAccessor>();
 
-        string connectionString = builder.ConnectionString;
+          var contextProvider = provider.GetService<IRequestContextProvider>();
+          if (contextProvider != null)
+          {
+            var realm = contextProvider.GetRealm();
+          }          
 
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.ConnectionString);
-        dataSourceBuilder.EnableDynamicJson();
-        dataSourceBuilder.UseNetTopologySuite();
-        var dataSource = dataSourceBuilder.Build();
-        services.AddSingleton(dataSource);
-        services.AddDbContext<PgDbContext>();
+          var cfg = provider.GetRequiredService<IConfiguration>();
+          var settings = cfg.GetSection("MapDatabase").Get<MapDatabaseSettings>();
+
+          var dbName = Environment.GetEnvironmentVariable("POD_NAMESPACE");
+
+          if (string.IsNullOrEmpty(dbName))
+          {
+            throw new ArgumentException("Hey you!");
+          }
+          var username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "keycloack";
+          var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
+
+          var builder = new NpgsqlConnectionStringBuilder
+          {
+            Host = settings.PgHost,
+            Database = dbName,
+            Username = username,
+            Password = password,
+            Port = settings.PgPort
+          };
+
+          var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.ConnectionString);
+          dataSourceBuilder.EnableDynamicJson();
+          dataSourceBuilder.UseNetTopologySuite();
+          var dataSource = dataSourceBuilder.Build();
+
+          return dataSource;
+        });
+
+        services.AddDbContext<PgDbContext>((sp, options) =>
+        {
+          var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
+          options.UseNpgsql(dataSource);
+        });
       }      
 
       services.AddScoped<IEventsService, EventsService>();

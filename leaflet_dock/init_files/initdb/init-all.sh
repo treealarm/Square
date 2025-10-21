@@ -5,13 +5,13 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "⏳ Создание БД mapstore, если не существует..."
 
-DB_EXISTS=$(psql -U "$POSTGRES_USER" -tAc "SELECT 1 FROM pg_database WHERE datname = 'mapstore'")
+DB_EXISTS=$(psql -U "$POSTGRES_USER" -tAc "SELECT 1 FROM pg_database WHERE datname = 'myrealm'")
 
 if [ "$DB_EXISTS" != "1" ]; then
   echo "📦 Создаём базу данных mapstore..."
-  createdb -U "$POSTGRES_USER" -O "$POSTGRES_USER" mapstore
+  createdb -U "$POSTGRES_USER" -O "$POSTGRES_USER" myrealm
 else
-  echo "✅ База mapstore уже существует."
+  echo "✅ База myrealm уже существует."
 fi
 
 

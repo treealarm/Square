@@ -6,10 +6,10 @@ namespace GrpcTracksClient
 {
   internal class EventAdd
   {
-    public static EventProto CreateImageEvent(
+    public static EventProto? CreateImageEvent(
       LogLevel event_priority,
       string event_name,
-      byte[] imageArray,
+      byte[]? imageArray,
       string obj_id
       )
     {
@@ -54,7 +54,7 @@ namespace GrpcTracksClient
 
         for (int i = 1; i < 99; i++)
         {
-          byte[] imageArray = null;
+          byte[]? imageArray = null;
           if (i == 1 || i == 2 || i == 3)
           {
             var fileName = $"files/plate{i}.jpeg";
@@ -62,12 +62,16 @@ namespace GrpcTracksClient
           }
             
           var priority = (LogLevel)rnd.Next((int)LogLevel.Trace, (int)LogLevel.None);
+          var id = (i % 2 == 0)
+             ? ObjectIds.ObjectId1
+             : ObjectIds.ObjectId2;
+
           var newEv = CreateImageEvent(
-            priority,
-            $"plate recognized #{i} sensor {j} event {priority}",
-            imageArray,
-            i % 2 == 0 ? ObjectIds.ObjectId1: ObjectIds.ObjectId2
-            );
+              priority,
+              $"plate recognized #{i} sensor {j} event {priority}",
+              imageArray,
+              id
+          );
           if (newEv == null)
           {
             continue;
@@ -81,7 +85,7 @@ namespace GrpcTracksClient
         }
         try
         {
-          var result = await client.UpdateEventsAsync(events);
+          var result = await client!.UpdateEventsAsync(events);
         }
         catch (Exception ex)
         {

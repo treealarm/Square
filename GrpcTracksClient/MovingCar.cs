@@ -157,7 +157,7 @@ public class MovingCar
     });
     return valuesToSend;
   }
-  private async Task GenerateNewRouteAsync(ProtoCoord targetPoint = null)
+  private async Task GenerateNewRouteAsync(ProtoCoord? targetPoint = null)
   {
     if (targetPoint!=null)
     {

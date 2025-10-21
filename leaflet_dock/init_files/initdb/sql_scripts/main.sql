@@ -3,7 +3,7 @@
 -- \i 'create_db.sql'
 -- \i 'main.sql'
 
-\connect "mapstore"
+\connect "myrealm"
 \i 'events.sql'
 \i 'integro.sql'
 \i 'actions.sql'

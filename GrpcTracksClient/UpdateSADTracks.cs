@@ -59,14 +59,14 @@ namespace GrpcTracksClient
       var s = await ResourceLoader.GetResource(resourceName);
 
       var coords = JsonSerializer.Deserialize<GeometryPolylineDTO>(s);
-      foreach (var c in coords?.coord)
+      foreach (var c in coords?.coord!)
       {
         foreach (var f in fig.Location.Coord)
         {
           f.Lat = c.Lat;
           f.Lon = c.Lon;
         }
-        var newFigs = await client.Client.UpdateTracksAsync(figs);
+        var newFigs = await client!.Client!.UpdateTracksAsync(figs);
         //Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }

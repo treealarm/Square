@@ -1,5 +1,6 @@
 using GrpcDaprLib;
 using LeafletAlarms;
+using LeafletAlarms.Authentication;
 using LeafletAlarms.Grpc.Implementation;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using System.Net;
@@ -9,7 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
 startup.ConfigureServices(builder.Services);
 
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(options =>
+{
+  options.Interceptors.Add<GrpcContextInterceptor>();
+});
 
 var grpc_port = GrpcBaseUpdater.GetAppPort("APP_PORT", 5000);
 var http_port = GrpcBaseUpdater.GetAppPort("HTTP_PORT", 8000);
@@ -29,6 +33,8 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var app = builder.Build();
+app.UseMiddleware<RealmMiddleware>();
+
 startup.Configure(app, builder.Environment);
 
 app.MapGrpcService<TracksGrpcImp>();

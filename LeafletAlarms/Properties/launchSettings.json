@@ -9,7 +9,8 @@
         "HTTP_PORT": "8000",
         "PUBSUB_NAME": "orderpubsub",
         "POSTGRES_USER": "keycloak",
-        "POSTGRES_PASSWORD": "password"
+        "POSTGRES_PASSWORD": "password",
+        "POD_NAMESPACE": "myrealm"
       },
       "dotnetRunMessages": true
     },

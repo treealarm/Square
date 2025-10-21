@@ -57,7 +57,7 @@ namespace GrpcTracksClient.Services
             IType = _car_str
           });
         }
-        await clientIntegro.Client.UpdateIntegroAsync(integroRequest);
+        await clientIntegro!.Client!.UpdateIntegroAsync(integroRequest);
         integroObjects = await _sync.GetIntegroObjectsByType(_car_str);
         if (integroObjects == null || integroObjects.Count < IMoveObjectService.MaxCars)
         {
@@ -84,7 +84,7 @@ namespace GrpcTracksClient.Services
             var carNum = carId + 1;
             var carUid = await IntegrationUtilsLib.Utils.GenerateObjectId(_car_str, carNum);
             // set parent_id as main_obj id 
-            var movingCar = new MovingCar(_router, $"Car {carNum}", carUid, _sync.MainObj.Id);
+            var movingCar = new MovingCar(_router, $"Car {carNum}", carUid!, _sync!.MainObj!.Id);
             _cars.TryAdd(movingCar.Id, movingCar);
           }
           catch (Exception ex)
@@ -150,11 +150,11 @@ namespace GrpcTracksClient.Services
         {
           if (figs.Figs.Any())
           {
-            var newFigs = await client.Client.UpdateFiguresAsync(figs);
+            var newFigs = await client!.Client!.UpdateFiguresAsync(figs);
           }
           if (valuesToSend.Values.Any())
           {
-            var vals = await client.Client.UpdateValuesAsync(valuesToSend);
+            var vals = await client!.Client!.UpdateValuesAsync(valuesToSend);
           }
           if (!inited)
           {
@@ -169,7 +169,7 @@ namespace GrpcTracksClient.Services
               });
               Console.WriteLine($"Register integro:{client.AppId}:{fig.Id}");
             }
-            await clientIntegro.Client.UpdateIntegroAsync(integroRequest);
+            await clientIntegro!.Client!.UpdateIntegroAsync(integroRequest);
             inited = true;
           }
         }
@@ -287,7 +287,7 @@ namespace GrpcTracksClient.Services
           try
           {
             var reply =
-            await client.Client.UpdateFiguresAsync(figs);
+            await client!.Client!.UpdateFiguresAsync(figs);
             //Console.WriteLine("Fig DAPR: " + reply?.ToString());
           }
           catch (Exception ex)
@@ -378,7 +378,7 @@ namespace GrpcTracksClient.Services
           });
         }
 
-        var newFigs = await client.Client.UpdateFiguresAsync(figs);
+        var newFigs = await client!.Client!.UpdateFiguresAsync(figs);
         //Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
         await Task.Delay(1000);
       }
@@ -498,7 +498,7 @@ namespace GrpcTracksClient.Services
             var coordVal = action.Parameters.Where(i => i.Name == nameof(car.DestinationPos)).FirstOrDefault()?.CurVal.Coordinates ?? null;
             if (coordVal != null)
             {
-              car.DestinationPos = coordVal.Coord.FirstOrDefault();
+              car.DestinationPos = coordVal!.Coord!.FirstOrDefault()!;
             }
           }
           if (action.Name == "SetString")

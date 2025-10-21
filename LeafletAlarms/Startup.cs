@@ -65,7 +65,9 @@ namespace LeafletAlarms
       services.AddSingleton<FileSystemService>();
 
       services.AddSingleton<ValhallaRouter>();
-           
+
+      services.AddScoped<IRequestContextProvider, HttpRequestContextProvider>();
+      services.AddSingleton<GrpcRequestContextProvider>();
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();

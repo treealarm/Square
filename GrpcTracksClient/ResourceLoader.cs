@@ -9,8 +9,8 @@ namespace GrpcTracksClient
       var assembly = Assembly.GetExecutingAssembly();
 
       string s = string.Empty;
-      using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-      using (StreamReader reader = new StreamReader(stream))
+      using (Stream? stream = assembly.GetManifestResourceStream(resourceName))
+      using (StreamReader reader = new StreamReader(stream!))
       {
         s = await reader.ReadToEndAsync();
       }

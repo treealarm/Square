@@ -38,7 +38,7 @@ namespace GrpcTracksClient
           state.States.Add("NORM");
         }
 
-        await client.Client.UpdateStatesAsync(states);
+        await client!.Client!.UpdateStatesAsync(states);
         await Task.Delay(1000);
       }      
     }

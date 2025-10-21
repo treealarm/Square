@@ -33,7 +33,7 @@ static public class DiagramUpdater
       var client = Utils.ClientBase.Client;
 
       // Загружаем файл
-      await client.UploadFileAsync(protoUploadFile);
+      await client!.UploadFileAsync(protoUploadFile);
       
       Console.WriteLine("File uploaded.");
       var d_types = new DiagramTypesProto();
