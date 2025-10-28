@@ -2,6 +2,7 @@
 using Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PubSubLib;
 
 namespace BlinkService
@@ -13,6 +14,12 @@ namespace BlinkService
       Console.WriteLine("Hello, Blink service!");
 
       IHost host = Host.CreateDefaultBuilder(args)
+        .ConfigureLogging(logging =>
+        {
+          logging.ClearProviders(); // отключаем стандартные провайдеры
+          logging.AddConsole();
+          logging.SetMinimumLevel(LogLevel.Warning);
+        })
       .ConfigureServices((context, services) =>
       {
         var config = context.Configuration;

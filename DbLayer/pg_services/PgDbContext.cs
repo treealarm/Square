@@ -1,6 +1,7 @@
 ﻿using DbLayer.Models;
 using DbLayer.Models.Actions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace DbLayer
 {
   internal class PgDbContext : DbContext
   {
-    private readonly NpgsqlDataSource _source;
+    //private readonly NpgsqlDataSource _source;
 
     
     public DbSet<DBGeoObject> GeoObjects { get; set; }
@@ -40,25 +41,29 @@ namespace DbLayer
 
 
     public PgDbContext(
-      DbContextOptions<PgDbContext> options,
-      NpgsqlDataSource source) :base(options) 
+      DbContextOptions<PgDbContext> options
+      , NpgsqlDataSource source
+      ) : base(options)
     {
-      _source = source;
+      //_source = source;
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder builder)
-    {
-      builder.UseNpgsql(_source, npgsqlOptions =>
-      {
-        npgsqlOptions.UseNetTopologySuite();
-        npgsqlOptions.MigrationsAssembly(typeof(PgDbContext).Assembly.FullName);
+    //protected override void OnConfiguring(DbContextOptionsBuilder builder)
+    //{
+    //  builder.UseNpgsql(_source, npgsqlOptions =>
+    //  {
+    //    npgsqlOptions.UseNetTopologySuite();
+    //    npgsqlOptions.MigrationsAssembly(typeof(PgDbContext).Assembly.FullName);
 
-        npgsqlOptions.EnableRetryOnFailure(
-            maxRetryCount: int.MaxValue, // фактически бесконечно
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorCodesToAdd: null
-        );
-      });
-    }
+    //    npgsqlOptions.EnableRetryOnFailure(
+    //        maxRetryCount: int.MaxValue, // фактически бесконечно
+    //        maxRetryDelay: TimeSpan.FromSeconds(10),
+    //        errorCodesToAdd: null
+    //    );
+    //  });
+    //  builder.LogTo(Console.WriteLine,
+    //             new[] { DbLoggerCategory.Database.Command.Name },
+    //             LogLevel.Warning);
+    //}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

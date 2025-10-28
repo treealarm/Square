@@ -3,8 +3,10 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using System;
+
 
 namespace DbLayer
 {
@@ -55,6 +57,7 @@ namespace DbLayer
           var dataSourceBuilder = new NpgsqlDataSourceBuilder(builder.ConnectionString);
           dataSourceBuilder.EnableDynamicJson();
           dataSourceBuilder.UseNetTopologySuite();
+
           var dataSource = dataSourceBuilder.Build();
 
           return dataSource;
@@ -63,7 +66,31 @@ namespace DbLayer
         services.AddDbContext<PgDbContext>((sp, options) =>
         {
           var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
-          options.UseNpgsql(dataSource);
+
+          options.UseNpgsql(dataSource, npgsqlOptions =>
+          {
+            // Подключаем NetTopologySuite
+            npgsqlOptions.UseNetTopologySuite();
+
+            // Включаем retry на уровне EF Core
+            npgsqlOptions.EnableRetryOnFailure(
+                maxRetryCount: int.MaxValue,
+                maxRetryDelay: TimeSpan.FromSeconds(1),
+                errorCodesToAdd: null
+            );
+
+
+            // Сборка миграций
+            npgsqlOptions.MigrationsAssembly(typeof(PgDbContext).Assembly.FullName);
+          });
+
+          // Логирование только ошибок, без всех SQL-запросов
+          options.LogTo(Console.WriteLine,
+                        new[] { DbLoggerCategory.Database.Command.Name },
+                        LogLevel.Warning);
+
+          //options.EnableSensitiveDataLogging(false);
+          //options.LogTo(_ => { }, LogLevel.None);
         });
       }      
 
