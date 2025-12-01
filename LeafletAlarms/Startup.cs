@@ -31,11 +31,11 @@ namespace LeafletAlarms
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      var keyCloackConf = Configuration.GetSection("KeyCloack");
+      var keyCloakConf = Configuration.GetSection("KeyCloak");
 
-      services.Configure<KeycloakSettings>(keyCloackConf);
+      services.Configure<KeycloakSettings>(keyCloakConf);
 
-      var kcConfiguration = keyCloackConf.Get<KeycloakSettings>();
+      var kcConfiguration = keyCloakConf.Get<KeycloakSettings>();
       services.AddSingleton<KeyCloakConnectorService>();
 
       services.ConfigureJWT();

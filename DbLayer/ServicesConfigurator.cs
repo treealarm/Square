@@ -42,7 +42,7 @@ namespace DbLayer
           {
             throw new ArgumentException("Hey you!");
           }
-          var username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "keycloack";
+          var username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "keycloak";
           var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
 
           var builder = new NpgsqlConnectionStringBuilder
