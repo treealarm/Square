@@ -1,6 +1,11 @@
-﻿############################
+﻿networks:
+  my-dapr-network:
+    external: true
+
+############################
 # Общие настройки для всех сервисов
 ############################
+
 x-defaults: &default-service
   restart: unless-stopped
   networks:
@@ -16,7 +21,6 @@ services:
     depends_on:
       - redis
       - placement
-      - keycloakservice
       - blinkservice
     build:
       context: .
@@ -116,7 +120,6 @@ services:
     depends_on:
       - redis
       - placement
-      - valhallaservice
     ports:
       - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
 
@@ -174,56 +177,6 @@ services:
       - .env
 
   ############################
-  # Postgres & Keycloak
-  ############################
-  postgresservice:
-    <<: *default-service
-    image: postgis/postgis
-    volumes:
-      - ${ROOT_DATA}/postgres_data:/var/lib/postgresql/data
-      - ${INIT_FILES}/initdb:/docker-entrypoint-initdb.d
-    ports:
-      - "${MapDatabase__PgPort}:${MapDatabase__PgPort}"
-    env_file:
-      - .env
-
-  keycloakservice:
-    <<: *default-service
-    image: quay.io/keycloak/keycloak:latest
-    volumes:
-      - ${INIT_FILES}/keycloak_imports:/opt/keycloak/data/import
-    environment:
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgresservice:5432/keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: password
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KEYCLOAK_LOGLEVEL: ALL
-      ROOT_LOGLEVEL: ALL
-    command: 
-      - start-dev
-      - --import-realm
-    ports:
-      - 8080:8080
-    depends_on:
-      - postgresservice
-
-# command2export realm:docker exec -ti leaflet-keycloakservice-1 /opt/keycloak/bin/kc.sh export --file /opt/keycloak/data/import/realm-export1.json --realm myrealm
-
-  ############################
-  # Valhalla
-  ############################
-  valhallaservice:
-    <<: *default-service
-    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
-    container_name: valhalla_latest
-    ports:
-      - ${VALHALLA_PORT}:${VALHALLA_PORT}
-    volumes:
-      - ${ROOT_DATA}/valhalla_custom_files/:/custom_files
-
-  ############################
   # Dapr placement
   ############################
   placement:
@@ -244,6 +197,3 @@ services:
     ports:
       - "${REDIS_PORT}:6379"
 
-networks:
-  my-dapr-network:
-    driver: bridge
