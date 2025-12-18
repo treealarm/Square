@@ -1,6 +1,6 @@
 ﻿networks:
-  my-dapr-network:
-    external: true
+  shared_network:
+    name: common_app_network
 
 ############################
 # Общие настройки для всех сервисов
@@ -9,7 +9,7 @@
 x-defaults: &default-service
   restart: unless-stopped
   networks:
-    - my-dapr-network
+    - shared_network
 
 services:
   ############################
