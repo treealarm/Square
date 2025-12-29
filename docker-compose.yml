@@ -19,8 +19,6 @@ services:
     <<: *default-service
     image: ${DOCKER_REGISTRY-}leafletalarms
     depends_on:
-      - redis
-      - placement
       - blinkservice
     build:
       context: .
@@ -79,8 +77,7 @@ services:
       - APP_ID=${AASUBSERVICE_APP_ID}
       - PLACEMENT_PORT=${PLACEMENT_PORT}
     depends_on:
-      - redis
-      - placement
+      - leafletalarmsservice
     ports:
       - ${GRPC_AASUBSERVICE_PORT}:${GRPC_AASUBSERVICE_PORT}
 
@@ -118,8 +115,7 @@ services:
       - APP_ID=${TRACKS_CLIENT_APP_ID}
       - PLACEMENT_PORT=${PLACEMENT_PORT}
     depends_on:
-      - redis
-      - placement
+      - leafletalarmsservice
     ports:
       - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
 
@@ -151,9 +147,6 @@ services:
       dockerfile: BlinkService/Dockerfile
     env_file:
       - .env
-    depends_on:
-      - redis
-      - placement
     environment:
       - APP_ID=${BLINK_APP_ID}
       - PLACEMENT_PORT=${PLACEMENT_PORT}
@@ -176,24 +169,5 @@ services:
     env_file:
       - .env
 
-  ############################
-  # Dapr placement
-  ############################
-  placement:
-    <<: *default-service
-    image: "daprio/dapr"
-    command: ["./placement", "-port", "${PLACEMENT_PORT}"]
-    ports:
-      - "${PLACEMENT_PORT}:${PLACEMENT_PORT}"
 
-  ############################
-  # Redis state store
-  ############################
-  redis:
-    <<: *default-service
-    image: redis
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    ports:
-      - "${REDIS_PORT}:6379"
 
