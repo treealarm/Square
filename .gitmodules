@@ -1,3 +1,6 @@
 [submodule "OnvifLib"]
   path = OnvifLib
   url = https://github.com/treealarm/OnvifLib.git
+[submodule "KeycloakAdmin"]
+	path = KeycloakAdmin
+	url = git@github.com:treealarm/KeycloakAdmin.git
