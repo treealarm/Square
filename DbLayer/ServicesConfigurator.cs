@@ -36,7 +36,7 @@ namespace DbLayer
           var cfg = provider.GetRequiredService<IConfiguration>();
           var settings = cfg.GetSection("MapDatabase").Get<MapDatabaseSettings>();
 
-          var dbName = Environment.GetEnvironmentVariable("POD_NAMESPACE");
+          var dbName = Environment.GetEnvironmentVariable("DB_REALM_NAME");
 
           if (string.IsNullOrEmpty(dbName))
           {

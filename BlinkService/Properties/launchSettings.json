@@ -8,7 +8,7 @@
         "POSTGRES_USER": "keycloak",
         "POSTGRES_PASSWORD": "password",
         "PUBSUB_NAME": "orderpubsub",
-        "POD_NAMESPACE": "myrealm"
+        "DB_REALM_NAME": "myrealm"
       }
     },
     "Container (Dockerfile)": {

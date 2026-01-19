@@ -10,7 +10,7 @@
         "PUBSUB_NAME": "orderpubsub",
         "POSTGRES_USER": "keycloak",
         "POSTGRES_PASSWORD": "password",
-        "POD_NAMESPACE": "myrealm"
+        "DB_REALM_NAME": "myrealm"
       },
       "dotnetRunMessages": true
     },

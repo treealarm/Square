@@ -47,6 +47,7 @@
     <ProjectReference Include="..\DataChangeLayer\DataChangeLayer.csproj" />
     <ProjectReference Include="..\DbLayer\DbLayer.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\KeycloakAdmin\KeycloakAdmin.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
     <ProjectReference Include="..\ValhallaLib\ValhallaLib.csproj" />
     <ProjectReference Include="..\tree_alarm.client\tree_alarm.client.esproj">
