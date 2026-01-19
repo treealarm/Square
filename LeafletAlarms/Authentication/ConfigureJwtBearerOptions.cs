@@ -42,9 +42,9 @@ namespace LeafletAlarms.Authentication
       // check that we are currently configuring the options for the correct scheme
       if (name == JwtBearerDefaults.AuthenticationScheme)
       { 
-        var realmName = _myService.GetRealmName();
+        var realmName = KeyCloakConnectorService.GetRealmName();
 
-        var BaseAddr = _myService.GetBaseAddr();
+        var BaseAddr = KeyCloakConnectorService.GetBaseAddr();
 
         //"http://localhost:8080/realms/myrealm"
         Uri validIssuer;

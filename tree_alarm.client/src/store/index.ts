@@ -16,6 +16,7 @@ import * as ZoomLevelsStates from './ZoomLevelsStates';
 import * as ValuesStates from './ValuesStates';
 import * as IntegroStates from './IntegroStates';
 import * as GroupsStates from './GroupsStates';
+import * as AuthStates from "./authSlice";
 
 // The top-level state object
 export interface ApplicationState {
@@ -36,6 +37,7 @@ export interface ApplicationState {
   valuesStates: ValuesStates.ValuesState | undefined;
   integroStates: IntegroStates.IntegroState | undefined;
   groupssStates: GroupsStates.GroupState | undefined;
+  authStates: AuthStates.AuthState | undefined;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -58,7 +60,8 @@ export const reducers = {
   zoomLevelsStates: ZoomLevelsStates.reducer,
   valuesStates: ValuesStates.reducer,
   integroStates: IntegroStates.reducer,
-  groupsStates: GroupsStates.reducer
+  groupsStates: GroupsStates.reducer,
+  authStates: AuthStates.reducer
 };
 
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are

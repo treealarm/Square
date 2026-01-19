@@ -1,5 +1,7 @@
 using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
+using Keycloak.Net.Models.Clients;
+using KeycloakAdmin;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;
@@ -31,12 +33,23 @@ namespace LeafletAlarms
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      var keyCloakConf = Configuration.GetSection("KeyCloak");
-
-      services.Configure<KeycloakSettings>(keyCloakConf);
-
-      var kcConfiguration = keyCloakConf.Get<KeycloakSettings>();
       services.AddSingleton<KeyCloakConnectorService>();
+
+
+      var Url = Environment.GetEnvironmentVariable("KEYCLOAK_URL") ?? "http://localhost:8080";
+      var AdminUser = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_USER") ?? "admin";
+      var AdminPassword = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_PASSWORD") ?? "admin";
+      var ClientId = Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID") ?? "admin-cli";
+
+
+      services.AddSingleton<IKeycloakAdminClient>(sp =>
+          new KeycloakAdminClient(
+              keycloakUrl: Url!,
+              adminUser: AdminUser!,
+              adminPassword: AdminPassword!
+          )
+      );
+
 
       services.ConfigureJWT();
 

@@ -10,7 +10,12 @@
         "PUBSUB_NAME": "orderpubsub",
         "POSTGRES_USER": "keycloak",
         "POSTGRES_PASSWORD": "password",
-        "DB_REALM_NAME": "myrealm"
+
+        "DB_REALM_NAME": "myrealm",
+        "KEYCLOAK_URL": "http://keycloakservice:8080",
+        "KEYCLOAK_ADMIN_USER":"admin",
+        "KEYCLOAK_ADMIN_PASSWORD": "admin",
+        "KEYCLOAK_CLIENT_ID":"admin-cli"
       },
       "dotnetRunMessages": true
     },

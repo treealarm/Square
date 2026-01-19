@@ -13,20 +13,38 @@ namespace LeafletAlarms.Authentication
     private Oath2TokenModel _token;
     private DateTime _tokenExpiration = new DateTime();
     private DateTime _refreshTokenExpiration = new DateTime();
-    private readonly IOptions<KeycloakSettings> _keyCloakSettings;
-    public string GetRealmName()
+
+    //var Url = Environment.GetEnvironmentVariable("KEYCLOAK_URL") ?? "http://localhost:8080";
+    //var AdminUser = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_USER") ?? "admin";
+    //var AdminPassword = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_PASSWORD") ?? "admin";
+    //var ClientId = Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID") ?? "admin-cli";
+
+    static public string GetRealmName()
     {
-      return _keyCloakSettings.Value.RealmName;
+      return Environment.GetEnvironmentVariable("DB_REALM_NAME") ?? "myrealm";
     }
 
-    public string GetBaseAddr()
+    static public string GetBaseAddr()
     {
-      return _keyCloakSettings.Value.BaseAddr;
+      return Environment.GetEnvironmentVariable("KEYCLOAK_URL") ?? "http://localhost:8080";
     }
 
-    public KeyCloakConnectorService(IOptions<KeycloakSettings> keyCloakSettings)
+    static public string GetClientId()
     {
-      _keyCloakSettings = keyCloakSettings;
+      return Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID") ?? "admin-cli";
+    }
+
+    static public string GetAdminUser()
+    {
+      return Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_USER") ?? "admin";
+    }
+    static public string GetAdminPass()
+    {
+      return Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_PASSWORD") ?? "admin";
+    }
+    public KeyCloakConnectorService()
+    {
+
     }
     public async Task GetOath2Token()
     {
@@ -42,7 +60,7 @@ namespace LeafletAlarms.Authentication
         Uri url;
 
         if (!Uri.TryCreate(
-          new Uri(_keyCloakSettings.Value.BaseAddr, UriKind.Absolute),
+          new Uri(KeyCloakConnectorService.GetBaseAddr(), UriKind.Absolute),
           new Uri($"realms/master/protocol/openid-connect/token", UriKind.Relative),
           out url)
         )
@@ -64,9 +82,9 @@ namespace LeafletAlarms.Authentication
         var dic = new Dictionary<string, string>
       {
           { "grant_type", "password" },
-          { "client_id", _keyCloakSettings.Value.admin_client_id },
-          { "username", _keyCloakSettings.Value.admin_name },
-          { "password", _keyCloakSettings.Value.admin_password }
+          { "client_id", KeyCloakConnectorService.GetClientId() },
+          { "username", KeyCloakConnectorService.GetRealmName() },
+          { "password", KeyCloakConnectorService.GetAdminPass() }
       };
 
         if (_token != null &&
@@ -101,8 +119,8 @@ namespace LeafletAlarms.Authentication
       await GetOath2Token();
 
       if (Uri.TryCreate(
-        new Uri(_keyCloakSettings.Value.BaseAddr, UriKind.Absolute),
-        new Uri($"admin/realms/{_keyCloakSettings.Value.RealmName}/roles", UriKind.Relative),
+        new Uri(KeyCloakConnectorService.GetBaseAddr(), UriKind.Absolute),
+        new Uri($"admin/realms/{KeyCloakConnectorService.GetRealmName()}/roles", UriKind.Relative),
         out var url)
       )
       {
@@ -136,8 +154,8 @@ namespace LeafletAlarms.Authentication
       }
 
       if (Uri.TryCreate(
-        new Uri(_keyCloakSettings.Value.BaseAddr, UriKind.Absolute),
-        new Uri($"realms/{_keyCloakSettings.Value.RealmName}", UriKind.Relative),
+        new Uri(KeyCloakConnectorService.GetBaseAddr(), UriKind.Absolute),
+        new Uri($"realms/{KeyCloakConnectorService.GetRealmName()}", UriKind.Relative),
         out var url)
       )
       {

@@ -1,7 +1,7 @@
 import { reducers } from './';
-import { configureStore } from '@reduxjs/toolkit'
-import { useDispatch } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
+import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux';
 export default function configureTheStore() {
 
   // Automatically adds the thunk middleware and the Redux DevTools extension
@@ -14,4 +14,10 @@ export default function configureTheStore() {
 }
 
 export var theStore = configureTheStore();
-export const useAppDispatch = () => useDispatch<typeof theStore.dispatch>();
+
+export type RootState = ReturnType<typeof theStore.getState>;
+export type AppDispatch = typeof theStore.dispatch;
+
+//export const useAppDispatch = () => useDispatch<typeof theStore.dispatch>();
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

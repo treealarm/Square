@@ -9,7 +9,7 @@ import {
 
 import { WebSockStatus } from "./WebSockStatus";
 import GlobalLayersOptions from "../tree/GlobalLayersOptions";
-import { Login } from "../auth/Login";
+import { LoginButton } from "../auth/LoginButton";
 import PanelSwitch from "./PanelSwitch";
 import { EPanelType } from "../store/Marker";
 import { SearchApplyButton } from "../tree/SearchApplyButton";
@@ -75,7 +75,7 @@ export function MainToolbar() {
             justifyContent="flex-end"
             alignContent="center"
           >
-            <Box sx={{ m: 2, p: 2 }}><Login /></Box>
+            <Box sx={{ m: 2, p: 2 }}><LoginButton /></Box>
 
             <PanelSwitch panelType={EPanelType.Right} />
           </Box>
