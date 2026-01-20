@@ -12,9 +12,11 @@ export function AuthGuard() {
   const { token } = useAppSelector((s) => s.authStates);
 
   useEffect(() => {
-    if (!token) return;
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-    // 1) Проверить токен при старте
     dispatch(validateToken())
       .unwrap()
       .catch(() => {
@@ -22,14 +24,15 @@ export function AuthGuard() {
         navigate("/login");
       });
 
-    // 2) Авто-refresh токена
     const exp = getTokenExp(token);
-    if (!exp) return;
+    if (!exp) {
+      dispatch(logout());
+      navigate("/login");
+      return;
+    }
 
     const now = Date.now();
     const msToExpire = exp - now;
-
-    // refresh за 30 секунд до конца
     const refreshAt = msToExpire - 30_000;
 
     if (refreshAt <= 0) {
@@ -53,6 +56,7 @@ export function AuthGuard() {
 
     return () => clearTimeout(timer);
   }, [token, dispatch, navigate]);
+
 
   return null; // компонент ничего не рисует
 }
