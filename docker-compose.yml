@@ -72,7 +72,7 @@ services:
     env_file:
       - .env
     environment:
-      - VALHALLA_PORT=${VALHALLA_PORT}
+      - VALHALLA_URL=${VALHALLA_URL}
       - APP_PORT=${GRPC_AASUBSERVICE_PORT}
       - APP_ID=${AASUBSERVICE_APP_ID}
       - PLACEMENT_PORT=${PLACEMENT_PORT}

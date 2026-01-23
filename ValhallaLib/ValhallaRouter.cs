@@ -41,12 +41,11 @@ namespace ValhallaLib
       //{
       //  Console.WriteLine($"{key}- {allVars[key]}");
       //}
-      if (int.TryParse(Environment.GetEnvironmentVariable("VALHALLA_PORT"), out var VALHALLA_PORT))
+      var VALHALLA_URL = Environment.GetEnvironmentVariable("VALHALLA_URL");
+      if (!string.IsNullOrEmpty(VALHALLA_URL))
       {
-        Console.WriteLine($"valhalla port:{VALHALLA_PORT}");
-        var builder = new UriBuilder("http", "valhallaservice", VALHALLA_PORT);
-        Console.WriteLine(builder.ToString());
-        return builder.ToString();
+        Console.WriteLine($"valhalla :{VALHALLA_URL}");
+        return VALHALLA_URL;
       }
       Console.Error.WriteLine("GetValhallaUrl return empty string");
       return string.Empty;
