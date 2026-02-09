@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddGrpc();
 
-var grpc_port = GrpcBaseUpdater.GetAppPort();
+var grpc_port = GrpcBaseUpdater.GetAppPort("APP_PORT", 20008);
 
 builder.WebHost.ConfigureKestrel(options =>
 {

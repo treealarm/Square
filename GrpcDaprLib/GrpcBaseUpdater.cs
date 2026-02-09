@@ -26,7 +26,7 @@ namespace GrpcDaprLib
       Console.WriteLine($"LEAFLETALARM_APP_ID: {LEAFLETALARM_APP_ID}");
     }
 
-    public static int GetAppPort(string env_name = "APP_PORT", int def_val = 5001)
+    public static int GetAppPort(string env_name, int def_val)
     {
       if (int.TryParse(Environment.GetEnvironmentVariable(env_name), out var port))
       {

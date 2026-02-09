@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
+using Dapr.Actors.Client;
+using Dapr.Actors;
 
 namespace BlinkService
 {
@@ -13,10 +15,12 @@ namespace BlinkService
 
     private readonly Dictionary<string, AlarmObject> _hierarhy = new();
     private readonly HashSet<string> _idsUpdated = new();
+    private readonly IActorProxyFactory _actorProxy;
 
-    public HierarhyStateService(IServiceProvider serviceProvider)
+    public HierarhyStateService(IServiceProvider serviceProvider, IActorProxyFactory actorProxy)
     {
       _serviceProvider = serviceProvider;
+      _actorProxy = actorProxy;
     }
 
     private async Task CheckStatesByIds(string channel, byte[] message)
@@ -177,8 +181,23 @@ namespace BlinkService
 
     private async Task DoWork()
     {
+      var parentActor = _actorProxy.CreateActorProxy<IAlarmActor>(
+            new ActorId("22"),
+            nameof(AlarmActor)
+        );
+
       while (!_cancellationToken.IsCancellationRequested)
       {
+        try
+        {
+         
+          await parentActor.SetAlarm(true);
+          await parentActor.SetAlarm(false);
+        }
+        catch (Exception ex)
+        {
+        }
+
         List<string> objIds;
         lock (_idsUpdated)
         {
