@@ -4,23 +4,23 @@ common:
   resourcesPath: ./init_files/dapr_components_local/
   #placementHostAddress: "localhost:50006"
 apps:
-  # - appID: leafletalarms
-  #   appProtocol: grpc
-  #   appPort: 5000
-  #   appDirPath: ./leafletalarms/
-  #   command: ["dotnet", "run"]
+  - appID: leafletalarms
+    appProtocol: grpc
+    appPort: 5000
+    appDirPath: ./leafletalarms/
+    command: ["dotnet", "run"]
 
-  # - appDirPath: ./grpctracksclient/
-  #   appID: grpctracksclient
-  #   appProtocol: grpc
-  #   appPort: 20007
-  #   command: ["dotnet", "run"]
+  - appDirPath: ./grpctracksclient/
+    appID: grpctracksclient
+    appProtocol: grpc
+    appPort: 20007
+    command: ["dotnet", "run"]
 
-  # - appID: aasubservice
-  #   appProtocol: grpc
-  #   appPort: 20008
-  #   appDirPath: ./aasubservice/
-  #   command: ["dotnet", "run"]
+  - appID: aasubservice
+    appProtocol: grpc
+    appPort: 20008
+    appDirPath: ./aasubservice/
+    command: ["dotnet", "run"]
 
   - appID: blinkservice
     appProtocol: http

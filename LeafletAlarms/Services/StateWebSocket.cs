@@ -355,7 +355,6 @@ namespace LeafletAlarms.Services
         }
       }
       await UpdateOwners();
-      await _pub.Publish(Topics.CheckStatesByIds, toUpdate);
 
       if (toDelete.Count > 0)
       {
@@ -504,8 +503,6 @@ namespace LeafletAlarms.Services
         {
           _dicIds.Add(item.Key);
         }
-
-        _pub.Publish(Topics.CheckStatesByIds, newIds.Select(i => i.Key).ToList());
       }
     }
 
@@ -537,7 +534,6 @@ namespace LeafletAlarms.Services
         {
           _dicIds.Add(item);
         }
-        _pub.Publish(Topics.CheckStatesByIds, newIds.ToList());
       }
 
       await UpdateOwners();

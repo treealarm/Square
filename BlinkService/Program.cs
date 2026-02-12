@@ -36,13 +36,15 @@ namespace BlinkService
       services.AddSingleton<ISubService, SubService>();
       services.AddSingleton<IPubService, PubService>();
 
+      services.AddSingleton<IAlarmStateAccumulator, AlarmStateAccumulator>();
+
       DbLayer.ServicesConfigurator.ConfigureServices(services, config);
       DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
 
       // ---------- Background workers ----------
       services.AddHostedService<HierarhyStateService>();
 
-      //var grpc_port = GrpcBaseUpdater.GetAppPort("APP_PORT", 20009);
+      var grpc_port = GrpcBaseUpdater.GetAppPort("APP_PORT", 20010);
       var http_port = GrpcBaseUpdater.GetAppPort("HTTP_PORT", 20009);
 
       builder.WebHost.ConfigureKestrel(options =>

@@ -222,7 +222,7 @@ namespace DbLayer.Services
         });
     }
 
-    public async Task<Dictionary<string, ObjectStateDTO>> GetAlarmedStates(List<string> statesFilter)
+    public async Task<Dictionary<string, ObjectStateDTO>> GetAlarmedStates(List<string>? statesFilter)
     {
       var alarmedDescr = await GetAlarmStatesDescr(statesFilter);
       var alarmedStates = alarmedDescr.Keys.ToHashSet();

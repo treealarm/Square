@@ -1,7 +1,10 @@
-﻿using Dapr.Actors;
+﻿using BlinkService;
+using Dapr.Actors;
 using Dapr.Actors.Client;
 using Dapr.Actors.Runtime;
+using Domain;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // 1. Определяем интерфейс
@@ -9,7 +12,6 @@ public interface IAlarmActor : IActor
 {
   Task SetAlarm(bool alarm);
   Task SetChildAlarmDelta(int delta);
-  Task<AlarmActorState> GetState();
 }
 
 // 2. State для Actor
@@ -24,70 +26,95 @@ public class AlarmActorState
 // 3. Actor реализация
 public class AlarmActor : Actor, IAlarmActor
 {
-  private const string StateName = "statestore";
+  private const string StateName = "state";
+  private AlarmActorState _state = default!;
+  private readonly IServiceScopeFactory _scopeFactory;
+  private readonly IAlarmStateAccumulator _stateAcc;
 
-  public AlarmActor(ActorHost host) : base(host) { }
+  public AlarmActor(ActorHost host,
+    IServiceScopeFactory scopeFactory,
+    IAlarmStateAccumulator stateAcc) : base(host) 
+  {
+    _scopeFactory = scopeFactory;
+    _stateAcc = stateAcc;
+  }
 
   protected override async Task OnActivateAsync()
   {
-    await StateManager.SetStateAsync(StateName, new AlarmActorState());
-    Console.WriteLine($"Activating actor id: {this.Id}");
+    if (await StateManager.ContainsStateAsync(StateName))
+    {
+      _state = await StateManager.GetStateAsync<AlarmActorState>(StateName);
+    }
+    else
+    {
+      _state = new AlarmActorState();
+    }
+
+    if (string.IsNullOrEmpty(_state.ParentId)) 
+    {
+      using (var scope = _scopeFactory.CreateScope())
+      {
+        var mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
+        var me = await mapService.GetAsync(this.Id.ToString());
+        _state.ParentId = me.parent_id;
+      }
+
+      await StateManager.SetStateAsync(StateName, _state);
+    }
+
     await base.OnActivateAsync();
   }
-  protected override async Task OnDeactivateAsync()
-  {
-    // Provides Opporunity to perform optional cleanup.
-    Console.WriteLine($"Deactivating actor id: {this.Id}");
-    await base.OnDeactivateAsync();
-  }
-  // 4. Установка собственной тревоги
+
   public async Task SetAlarm(bool alarm)
   {
-    var state = await StateManager.GetStateAsync<AlarmActorState>(StateName);
-    if (state.Alarm != alarm)
-    {
-      state.Alarm = alarm;
-      await StateManager.SetStateAsync(StateName, state);
+    if (_state.Alarm == alarm)
+      return;
 
-      // Уведомляем родителя
-      if (!string.IsNullOrEmpty(state.ParentId))
-      {
-        var parentActor = ActorProxy.Create<IAlarmActor>(
-            new ActorId(state.ParentId),
-            "AlarmActor"
-        );
+    _stateAcc.Publish(Id.ToString(), alarm);
 
-        await parentActor.SetChildAlarmDelta(alarm ? 1 : -1);
-      }
-    }
+    bool oldAlarmed = IsAlarmed();
+
+    _state.Alarm = alarm;
+
+    await StateManager.SetStateAsync(StateName, _state);
+
+    bool newAlarmed = IsAlarmed();
+
+    if (oldAlarmed != newAlarmed)
+      await NotifyParent(alarm ? 1 : -1);
   }
 
-  // 5. Изменение счётчика тревожных детей
   public async Task SetChildAlarmDelta(int delta)
   {
-    var state = await StateManager.GetStateAsync<AlarmActorState>(StateName);
-    int oldChildrenAlarms = state.ChildrenAlarms;
-    state.ChildrenAlarms += delta;
+    bool oldAlarmed = IsAlarmed();
 
-    await StateManager.SetStateAsync(StateName, state);
+    _state.ChildrenAlarms += delta;
 
-    // Если суммарная тревога изменилась, уведомляем родителя
-    bool oldAlarmed = oldChildrenAlarms > 0 || state.Alarm;
-    bool newAlarmed = state.ChildrenAlarms > 0 || state.Alarm;
+    await StateManager.SetStateAsync(StateName, _state);
 
-    if (oldAlarmed != newAlarmed && !string.IsNullOrEmpty(state.ParentId))
+    bool newAlarmed = IsAlarmed();
+
+    if (oldAlarmed != newAlarmed)
     {
-      var parentActor = ActorProxy.Create<IAlarmActor>(
-            new ActorId(state.ParentId),
-            "AlarmActor"
-        );
-      await parentActor.SetChildAlarmDelta(delta);
-    }
+      await NotifyParent(delta);
+      _stateAcc.Publish(Id.ToString(), newAlarmed);
+    }      
   }
 
-  // 6. Получение состояния Actor
-  public async Task<AlarmActorState> GetState()
+  private bool IsAlarmed()
+      => _state.Alarm || _state.ChildrenAlarms > 0;
+
+  private async Task NotifyParent(int delta)
   {
-    return await StateManager.GetStateAsync<AlarmActorState>(StateName);
+    if (string.IsNullOrEmpty(_state.ParentId))
+      return;
+
+    var parent = ActorProxy.Create<IAlarmActor>(
+        new ActorId(_state.ParentId),
+        nameof(AlarmActor)
+    );
+
+    await parent.SetChildAlarmDelta(delta);
   }
 }
+
