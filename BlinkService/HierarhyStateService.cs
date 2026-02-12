@@ -27,7 +27,7 @@ namespace BlinkService
 
     private async Task AlarmStatesChanged(string channel, byte[] message)
     {
-      var alarmStatesUpdated = JsonSerializer.Deserialize<List<AlarmState>>(message);
+      var alarmStatesUpdated = JsonSerializer.Deserialize<List<AlarmBaseState>>(message);
 
       if (alarmStatesUpdated == null || alarmStatesUpdated.Count == 0)
         return;
@@ -55,11 +55,8 @@ namespace BlinkService
     {
       using var scope = _serviceProvider.CreateScope();
       var sub = scope.ServiceProvider.GetRequiredService<ISubService>();
-      var stateService = scope.ServiceProvider.GetRequiredService<IStateService>();
-      var stateUpdateService = scope.ServiceProvider.GetRequiredService<IStatesUpdateService>();
 
-      await stateUpdateService.DropStateAlarms();
-      var initialAlarmedStates = await stateService.GetAlarmedStates(null);
+      //await stateUpdateService.DropStateAlarms();
 
       await sub.Subscribe(Topics.AlarmStatesChanged, AlarmStatesChanged);
 
@@ -71,7 +68,7 @@ namespace BlinkService
       using var scope = _serviceProvider.CreateScope();
       var sub = scope.ServiceProvider.GetRequiredService<ISubService>();
 
-      await sub.Subscribe(Topics.AlarmStatesChanged, AlarmStatesChanged);
+      await sub.Unsubscribe(Topics.AlarmStatesChanged, AlarmStatesChanged);
 
       _cancellationToken.Cancel();
       if (_timer != null)
@@ -93,7 +90,8 @@ namespace BlinkService
         await stateUpdateService.UpdateAlarmStatesAsync(blinkChanges.Select(t => new AlarmState()
         {
           id = t.Key,
-          alarm = t.Value
+          alarm = t.Value.Alarm,
+          children_alarms = t.Value.ChildrenAlarms
         }).ToList());
       }
 

@@ -504,6 +504,7 @@ namespace LeafletAlarms.Services
           _dicIds.Add(item.Key);
         }
       }
+      await UpdateOwners();
     }
 
     private async Task UpdateOwners()

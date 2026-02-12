@@ -162,7 +162,7 @@ export function LocationMarkers() {
       var vAlarmState = alarmedObjects.find(i => i.id == id);
 
       if (vAlarmState != null
-        && (vAlarmState.alarm)) {
+        && (vAlarmState.alarm || vAlarmState.children_alarms > 0)) {
         //const colorOptions = {
         //  fillColor: 'yellow',
         //  fillOpacity: 0.5,

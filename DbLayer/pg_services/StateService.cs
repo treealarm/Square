@@ -153,27 +153,60 @@ namespace DbLayer.Services
 
     public async Task UpdateAlarmStatesAsync(List<AlarmState> alarms)
     {
+      var ids = alarms
+          .Select(a => Domain.Utils.ConvertObjectIdToGuid(a.id) ?? Guid.Empty)
+          .ToList();
+
+      var existingStates = await _dbContext.AlarmStates
+          .Where(x => ids.Contains(x.id))
+          .ToDictionaryAsync(x => x.id);
+
       foreach (var alarm in alarms)
       {
         var id = Domain.Utils.ConvertObjectIdToGuid(alarm.id) ?? Guid.Empty;
-        var existing = await _dbContext.AlarmStates.FindAsync(id);
 
-        if (existing != null)
+        if (existingStates.TryGetValue(id, out var existing))
         {
-          existing.alarm = alarm.alarm ?? false;
+          existing.alarm = alarm.alarm;
+          existing.children_alarms = alarm.children_alarms;
         }
         else
         {
           _dbContext.AlarmStates.Add(new DBAlarmState
           {
             id = id,
-            alarm = alarm.alarm ?? false
+            alarm = alarm.alarm,
+            children_alarms = alarm.children_alarms
           });
         }
       }
 
       await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<List<AlarmState>> GetAlarmedLeafStatesAsync(List<string> ids)
+    {
+      var parsedIds = ids
+          .Select(Domain.Utils.ConvertObjectIdToGuid)
+          .Where(x => x.HasValue)
+          .Select(x => x.Value)
+          .ToList();
+
+      if (parsedIds.Count == 0)
+        return new List<AlarmState>();
+
+      var result = await _dbContext.AlarmStates
+          .Where(x => parsedIds.Contains(x.id) && x.alarm == true)
+          .ToListAsync();
+
+      return result.Select(x => new AlarmState
+      {
+        id = Domain.Utils.ConvertGuidToObjectId(x.id),
+        alarm = x.alarm,
+        children_alarms = x.children_alarms
+      }).ToList();
+    }
+
 
     public async Task<Dictionary<string, AlarmState>> GetAlarmStatesAsync(List<string> ids)
     {
@@ -188,7 +221,8 @@ namespace DbLayer.Services
         x => new AlarmState
         {
           id = Domain.Utils.ConvertGuidToObjectId(x.id),
-          alarm = x.alarm
+          alarm = x.alarm,
+          children_alarms = x.children_alarms
         });
     }
 

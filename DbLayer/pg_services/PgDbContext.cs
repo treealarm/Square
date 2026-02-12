@@ -518,7 +518,7 @@ namespace DbLayer
         entity.ToTable("alarm_states");
         entity.HasKey(e => e.id);
 
-        entity.Property(e => e.alarm)
+        entity.Property(e => e.children_alarms)
               .IsRequired();
       });
     }

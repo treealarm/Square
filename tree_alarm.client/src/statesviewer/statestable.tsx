@@ -42,7 +42,7 @@ export default function StatesTable() {
   const selectedStateId = useSelector((state: ApplicationState) => state?.markersVisualStates?.selected_state_id);
 
   const isAlarmed = (id: string) =>
-    visualStates?.alarmed_objects.some((a) => a.id === id && a.alarm);
+    visualStates?.alarmed_objects.some((a) => a.id === id && (a.alarm || a.children_alarms > 0));
 
   const getDescr = (objId: string, state: string): ObjectStateDescriptionDTO | undefined =>
     visualStates?.states_descr.find((d) => d.id === objId && d.state === state);

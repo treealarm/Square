@@ -18,16 +18,26 @@ public interface IAlarmActor : IActor
 [Serializable]
 public class AlarmActorState
 {
-  public bool Alarm { get; set; } = false;         // реальная тревога
+  public bool? Alarm { get; set; } = null;         // реальная тревога
   public int ChildrenAlarms { get; set; } = 0;    // количество тревожных детей
   public string ParentId { get; set; } = null;    // родительский ActorId
+
+  public AlarmActorState Clone()
+  {
+    return new AlarmActorState
+    {
+      Alarm = this.Alarm,
+      ChildrenAlarms = this.ChildrenAlarms,
+      ParentId = this.ParentId
+    };
+  }
+
 }
 
 // 3. Actor реализация
 public class AlarmActor : Actor, IAlarmActor
 {
-  private const string StateName = "state";
-  private AlarmActorState _state = default!;
+  private AlarmActorState _state = new();
   private readonly IServiceScopeFactory _scopeFactory;
   private readonly IAlarmStateAccumulator _stateAcc;
 
@@ -41,25 +51,22 @@ public class AlarmActor : Actor, IAlarmActor
 
   protected override async Task OnActivateAsync()
   {
-    if (await StateManager.ContainsStateAsync(StateName))
+    using (var scope = _scopeFactory.CreateScope())
     {
-      _state = await StateManager.GetStateAsync<AlarmActorState>(StateName);
-    }
-    else
-    {
-      _state = new AlarmActorState();
-    }
+      var my_id = this.Id.ToString();
 
-    if (string.IsNullOrEmpty(_state.ParentId)) 
-    {
-      using (var scope = _scopeFactory.CreateScope())
+      var mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
+      var me = await mapService.GetAsync(my_id);
+      _state.ParentId = me.parent_id;
+
+      var stateService = scope.ServiceProvider.GetRequiredService<IStateService>();
+      var alarm_states = await stateService.GetAlarmStatesAsync(new List<string> { my_id });
+
+      if (alarm_states.TryGetValue(my_id, out var alarm_state_value) && alarm_state_value != null)
       {
-        var mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
-        var me = await mapService.GetAsync(this.Id.ToString());
-        _state.ParentId = me.parent_id;
+        _state.ChildrenAlarms = alarm_state_value.children_alarms;
+        _state.Alarm = alarm_state_value.alarm;
       }
-
-      await StateManager.SetStateAsync(StateName, _state);
     }
 
     await base.OnActivateAsync();
@@ -68,15 +75,13 @@ public class AlarmActor : Actor, IAlarmActor
   public async Task SetAlarm(bool alarm)
   {
     if (_state.Alarm == alarm)
-      return;
-
-    _stateAcc.Publish(Id.ToString(), alarm);
+      return;    
 
     bool oldAlarmed = IsAlarmed();
 
     _state.Alarm = alarm;
 
-    await StateManager.SetStateAsync(StateName, _state);
+    _stateAcc.Publish(Id.ToString(), _state.Clone());
 
     bool newAlarmed = IsAlarmed();
 
@@ -90,19 +95,17 @@ public class AlarmActor : Actor, IAlarmActor
 
     _state.ChildrenAlarms += delta;
 
-    await StateManager.SetStateAsync(StateName, _state);
-
     bool newAlarmed = IsAlarmed();
 
     if (oldAlarmed != newAlarmed)
     {
       await NotifyParent(delta);
-      _stateAcc.Publish(Id.ToString(), newAlarmed);
+      _stateAcc.Publish(Id.ToString(), _state.Clone());
     }      
   }
 
   private bool IsAlarmed()
-      => _state.Alarm || _state.ChildrenAlarms > 0;
+      => _state.Alarm == true || _state.ChildrenAlarms > 0;
 
   private async Task NotifyParent(int delta)
   {

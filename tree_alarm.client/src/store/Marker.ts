@@ -274,6 +274,7 @@ export interface ObjectStateDescriptionDTO {
 export interface AlarmObject {
   id: string;
   alarm: boolean;
+  children_alarms: number;
 }
 
 export interface MarkerVisualStateDTO {

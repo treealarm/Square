@@ -4,15 +4,15 @@ namespace BlinkService
 {
   public class AlarmStateAccumulator : IAlarmStateAccumulator
   {
-    private ConcurrentDictionary<string, bool> _alarms = new();
-    public void Publish(string id, bool alarmed)
+    private ConcurrentDictionary<string, AlarmActorState> _alarms = new();
+    public void Publish(string id, AlarmActorState state)
     {
-      _alarms[id] = alarmed;
+      _alarms[id] = state;
     }
-    public Dictionary<string, bool> Flush()
+    public Dictionary<string, AlarmActorState> Flush()
     {
       // создаём новый словарь
-      var newDict = new ConcurrentDictionary<string, bool>();
+      var newDict = new ConcurrentDictionary<string, AlarmActorState>();
 
       // атомарно меняем ссылку
       var oldDict = Interlocked.Exchange(ref _alarms, newDict);

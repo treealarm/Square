@@ -61,10 +61,9 @@ namespace DataChangeLayer
       //First select only owners
       List<string> ids = objStates.Select(i => i.id ?? "").ToList();
       var objsToUpdate = await _mapService.GetOwnersAsync(ids);
-      objStates.RemoveAll(i => !ids.Contains(i.id ?? string.Empty));
-
+      objStates.RemoveAll(i => !objsToUpdate.ContainsKey(i.id ?? string.Empty));
+      
       await _stateService.UpdateStatesAsync(objStates);
-
 
       //Now let notify about alarm changes
       var allAlarm = await GetAllAlarmStates();
@@ -77,11 +76,11 @@ namespace DataChangeLayer
           .ToHashSet();
 
         var processingObjs = objStates.Select(st => st.id).ToList();
-        var currentStates = await _stateService.GetAlarmStatesAsync(processingObjs!);
+        var currentStates = await _stateService.GetAlarmedLeafStatesAsync(processingObjs!);
 
         var currentAlarmedObjs = currentStates
-          .Where(s => s.Value.alarm == true)
-          .Select(o => o.Value.id)
+          .Where(s => s.alarm == true)
+          .Select(o => o.id)
           .ToHashSet();
 
         var clearedAlarms = currentAlarmedObjs
@@ -89,20 +88,22 @@ namespace DataChangeLayer
             .ToHashSet();
 
         // Составляем список AlarmState
-        var alarmStates = new List<AlarmState>();
+        var alarmStates = new List<AlarmBaseState>();
 
         // Новые тревожные → alarm = true
-        alarmStates.AddRange(newAlarmedObjs.Select(id => new AlarmState { id = id, alarm = true }));
+        alarmStates.AddRange(newAlarmedObjs.Select(id => new AlarmBaseState { id = id, alarm = true }));
 
         // Снятые тревоги → alarm = false
-        alarmStates.AddRange(clearedAlarms.Select(id => new AlarmState { id = id, alarm = false }));
-        
-        await _pub.Publish(Topics.AlarmStatesChanged, alarmStates);
+        alarmStates.AddRange(clearedAlarms.Select(id => new AlarmBaseState { id = id, alarm = false }));
+
+        if (alarmStates.Count > 0)
+        {
+          await _pub.Publish(Topics.AlarmStatesChanged, alarmStates);
+        }        
       }
       
 
       await _pub.Publish(Topics.OnStateChanged, objStates);
-      //await _pub.Publish(Topics.CheckStatesByIds, objStates.Select(st => st.id).ToList());
 
       return true;
     }
