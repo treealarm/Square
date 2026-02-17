@@ -6,6 +6,8 @@ namespace Domain
     string? id { get; set; }
   }
   public abstract record BaseObjectDTO : IIdentifiable
-  {    public string? id { get; set; }
+  {    
+    public string? id { get; set; }
+    public uint Version { get; set; }
   }
 }

@@ -106,9 +106,10 @@ namespace DbLayer
       GeoObjectDTO retVal = new GeoObjectDTO()
       {
         id = Domain.Utils.ConvertGuidToObjectId(dbObj.id),
+        Version = dbObj.Version,
         radius = dbObj.radius,
         zoom_level = dbObj.zoom_level,
-        location = ConvertGeoDB2DTO(dbObj.figure)
+        location = ConvertGeoDB2DTO(dbObj.figure),
       };
 
       return retVal;

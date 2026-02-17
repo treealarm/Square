@@ -1,5 +1,6 @@
 ﻿using Domain;
 using System.Collections.Concurrent;
+using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -28,23 +29,15 @@ namespace LeafletAlarms.Services
     private HashSet<string> _setTrackUpdate = new HashSet<string>();
     private HashSet<string> _setIdsToUpdate = new HashSet<string>();
     private HashSet<string> _dicIds = new HashSet<string>();
+    
+    private Dictionary<string, GeoObjectDTO> _dicGeo = new Dictionary<string, GeoObjectDTO>();
+
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
     private object _locker = new object();
     private BoxDTO _currentBox;
     private bool _update_values_periodically = false;
     private ConcurrentQueue<StateBaseReceiveDTO> _queue = new ConcurrentQueue<StateBaseReceiveDTO>();
     private readonly IServiceProvider _serviceProvider;
-
-    public BoxDTO CurrentBox
-    {
-      get
-      {
-        lock (_locker)
-        {
-          return _currentBox;
-        }
-      }
-    }
 
     public StateWebSocket(
       IServiceProvider serviceProvider
@@ -85,6 +78,7 @@ namespace LeafletAlarms.Services
             await ProcessBuffer(json);
           }
 
+          await PollBox();
           List<TrackPointDTO> movedMarkers;
           HashSet<string> idsToUpdate;
           HashSet<string> setTrackUpdate;
@@ -281,6 +275,10 @@ namespace LeafletAlarms.Services
 
     private async Task UpdateIds(HashSet<string> toUpdate)
     {
+      if (toUpdate.Count == 0)
+      {
+        return;
+      }
       StateBaseDTO packet = new StateBaseDTO()
       {
         action = "set_ids2update",
@@ -295,7 +293,20 @@ namespace LeafletAlarms.Services
 
       await SendPacket(packet);
     }
+    private async Task DeleteIds(HashSet<string> toDelete)
+    {
+      if (toDelete.Count == 0)
+      {
+        return;
+      }
+      StateBaseDTO packet = new StateBaseDTO()
+      {
+        action = "set_ids2delete",
+        data = toDelete
+      };
 
+      await SendPacket(packet);
+    }
     private async Task UpdateRoutesByTrackId(HashSet<string> toUpdate)
     {
       StateBaseDTO packet = new StateBaseDTO()
@@ -311,7 +322,7 @@ namespace LeafletAlarms.Services
     {
       HashSet<string> toUpdate = new HashSet<string>();
       HashSet<string> toDelete = new HashSet<string>();
-      BoxDTO curBox = CurrentBox;
+      BoxDTO curBox = _currentBox;
 
       if (curBox == null)
       {
@@ -356,16 +367,7 @@ namespace LeafletAlarms.Services
       }
       await UpdateOwners();
 
-      if (toDelete.Count > 0)
-      {
-        StateBaseDTO packet = new StateBaseDTO()
-        {
-          action = "set_ids2delete",
-          data = toDelete
-        };
-
-        await SendPacket(packet);
-      }
+      await DeleteIds(toDelete);
       
       if (toUpdate.Count > 0)
       {
@@ -486,25 +488,68 @@ namespace LeafletAlarms.Services
       );
     }
 
-    private async Task OnSetBox(BoxDTO box)
+    private async Task PollBox()
     {
+      BoxDTO box;
+      box = _currentBox;
+
+      if (box == null)
+      {
+         _dicGeo.Clear();
+         return;
+      }
+        
+
+      // 1. Получаем актуальные геообъекты для box
       var geo = await _geoService.GetGeoAsync(box);
 
+      // 2. Сравниваем с текущим кэшем _dicGeo
+      var added = new Dictionary<string, GeoObjectDTO>();
+      var updated = new Dictionary<string, GeoObjectDTO>();
+      var removed = new HashSet<string>();
+
+      // 2a. removed — есть в _dicGeo, но нет в geo
+      removed = _dicGeo.Keys.Except(geo.Keys).ToHashSet();
+
+      // 2b. added / updated
+      foreach (var (id, obj) in geo)
+      {
+        if (!_dicGeo.TryGetValue(id, out var old))
+        {
+          added[id] = obj;
+        }
+        else if (old.Version != obj.Version)
+        {
+          updated[id] = obj;
+        }
+      }
+
+      _dicGeo = geo;
+      // 2c. обновляем _dicIds
+      _dicIds.Clear();
+      foreach (var id in _dicGeo.Keys)
+        _dicIds.Add(id);
+
+
+      // 3. Вызываем UpdateOwners только если есть изменения
+      if (added.Any() || updated.Any() || removed.Any())
+        await UpdateOwners();
+
+      // 4. По желанию: можно сразу пушить изменения клиенту
+      if (added.Any() || updated.Any() || removed.Any())
+      {
+        await UpdateIds(added.Keys.Union(updated.Keys).ToHashSet());
+        await DeleteIds(removed);
+      }      
+    }
+
+    private async Task OnSetBox(BoxDTO box)
+    {
       lock (_locker)
       {
         _currentBox = box;
-
-        var newIds = geo.Where(g => !_dicIds.Contains(g.Key));
-
-        _dicIds.Clear();
-
-
-        foreach (var item in geo)
-        {
-          _dicIds.Add(item.Key);
-        }
       }
-      await UpdateOwners();
+      await Task.CompletedTask;
     }
 
     private async Task UpdateOwners()

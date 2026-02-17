@@ -107,6 +107,8 @@ namespace DbLayer
         entity.Property(e => e.zoom_level)
               .HasColumnName("zoom_level");
 
+        //entity.Property(e => e.Version).IsRowVersion();
+
         // индексы
         entity.HasIndex(e => e.zoom_level)
               .HasDatabaseName("idx_geo_objects_zoom_level");
