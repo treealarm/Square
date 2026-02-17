@@ -25,6 +25,7 @@ namespace LeafletAlarms.Services
     private HashSet<string> _dicIds = new HashSet<string>();
     
     private Dictionary<string, GeoObjectDTO> _dicGeo = new Dictionary<string, GeoObjectDTO>();
+    private Dictionary<string, ObjectStateDTO> _dicStates = new Dictionary<string, ObjectStateDTO>();
 
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
     private object _locker = new object();
@@ -69,7 +70,8 @@ namespace LeafletAlarms.Services
             await ProcessBuffer(json);
           }
 
-          await PollBox();        
+          await PollBox();
+          await PollStates();
         }
         catch(Exception ex)
         {
@@ -357,9 +359,12 @@ namespace LeafletAlarms.Services
       return objIds;
     }
     
-    public async Task OnStateChanged(List<ObjectStateDTO> states)
+    private async Task OnStateChanged(List<string> ids)
     {
-      HashSet<string> objIds = GetOwnersAndViews(states.Select(i=>i.id));
+      if (ids.Count == 0)
+      { return; }
+
+      HashSet<string> objIds = GetOwnersAndViews(ids);
 
       if (objIds.Count > 0)
       {
@@ -418,6 +423,50 @@ namespace LeafletAlarms.Services
         true,
         _cancellationTokenSource.Token
       );
+    }
+
+    private async Task PollStates()
+    {
+      if (_dicIds.Count == 0)
+      {
+        _dicStates.Clear();
+        return;
+      }
+
+      // 1. Получаем актуальные состояния
+      var states = await _stateService.GetStatesAsync(_dicIds.ToList());
+      // states: Dictionary<string, StateDTO>
+
+      var added = new Dictionary<string, ObjectStateDTO>();
+      var updated = new Dictionary<string, ObjectStateDTO>();
+      var removed = new HashSet<string>();
+
+      // 2a. removed — было, но больше нет
+      removed = _dicStates.Keys.Except(states.Keys).ToHashSet();
+
+      // 2b. added / updated
+      foreach (var (id, state) in states)
+      {
+        if (!_dicStates.TryGetValue(id, out var old))
+        {
+          added[id] = state;
+        }
+        else if (old.Version != state.Version)
+        {
+          updated[id] = state;
+        }
+      }
+
+      // 3. Обновляем кэш
+      _dicStates = states;
+
+      // 4. Реакции только если есть изменения
+      if (added.Any() || updated.Any() || removed.Any())
+      {
+        await OnStateChanged(
+          added.Keys.Union(updated.Keys).ToList()
+        );
+      }
     }
 
     private async Task PollBox()

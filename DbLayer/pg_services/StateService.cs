@@ -131,7 +131,8 @@ namespace DbLayer.Services
         {
           id = Domain.Utils.ConvertGuidToObjectId(x.id),
           states = x.states.Select(s => s.state).ToList(),
-          timestamp = x.timestamp
+          timestamp = x.timestamp,
+          Version = x.Version
         });
     }
 

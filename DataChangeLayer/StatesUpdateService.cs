@@ -101,10 +101,7 @@ namespace DataChangeLayer
           await _pub.Publish(Topics.AlarmStatesChanged, alarmStates);
         }        
       }
-      
-
-      await _pub.Publish(Topics.OnStateChanged, objStates);
-
+ 
       return true;
     }
 

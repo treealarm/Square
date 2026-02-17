@@ -21,14 +21,12 @@ namespace LeafletAlarms.Services
       _sub = sub;
       _pub = pub;
 
-      _sub.Subscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
       _sub.Subscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
 
     ~WebSockListService()
     {
-      _sub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
       _sub.Unsubscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
@@ -74,21 +72,6 @@ namespace LeafletAlarms.Services
         {
           StateSockets.TryRemove(con.Connection.Id, out _);
         }
-      }
-    }
-
-    public async Task OnStateChanged(string channel, byte[] message)
-    {
-      var state = JsonSerializer.Deserialize<List<ObjectStateDTO>>(message);
-
-      if (state == null)
-      {
-        return;
-      }
-
-      foreach (var sock in StateSockets)
-      {
-        await sock.Value.OnStateChanged(state);
       }
     }
 
