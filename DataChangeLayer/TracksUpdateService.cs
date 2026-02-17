@@ -27,9 +27,6 @@ namespace DataChangeLayer
     private async Task<List<string>> DoUpdateTracks(List<TrackPointDTO> trackPoints)
     {
       var trackPointsInserted = await _tracksService.InsertManyAsync(trackPoints);
-
-      await _pub.Publish(Topics.OnUpdateTrackPosition, trackPoints);
-
       return trackPointsInserted.Select (t => t.id!).ToList();
     }
 

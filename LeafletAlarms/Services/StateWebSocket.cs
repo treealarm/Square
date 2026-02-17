@@ -18,16 +18,10 @@ namespace LeafletAlarms.Services
     private IMapService _mapService;
     private IPubService _pub;
 
-    private Task _timer;
+    private Task _worker;
     private CancellationTokenSource _cancellationTokenSource
       = new CancellationTokenSource();
 
-    Dictionary<string, TrackPointDTO> _dicUpdatedTracks =
-      new Dictionary<string, TrackPointDTO>();
-    private object _lockerTracks = new object();
-
-    private HashSet<string> _setTrackUpdate = new HashSet<string>();
-    private HashSet<string> _setIdsToUpdate = new HashSet<string>();
     private HashSet<string> _dicIds = new HashSet<string>();
     
     private Dictionary<string, GeoObjectDTO> _dicGeo = new Dictionary<string, GeoObjectDTO>();
@@ -50,27 +44,24 @@ namespace LeafletAlarms.Services
     {
       _context = context;
       _webSocket = webSocket;
-      InitTimer();
-    }
-    void InitTimer()
-    {
-      _timer = new Task(() => OnElapsed(), _cancellationTokenSource.Token);
-      _timer.Start();
+
+      _worker = new Task(() => DoWork(), _cancellationTokenSource.Token);
+      _worker.Start();
     }
 
-    private async void OnElapsed()
+    private async void DoWork()
     {
-      using var scope = _serviceProvider.CreateScope();
-      _stateService = scope.ServiceProvider.GetRequiredService <IStateService>();
-      _geoService = scope.ServiceProvider.GetRequiredService<IGeoService>();
-      _levelService = scope.ServiceProvider.GetRequiredService<ILevelService>();
-      _mapService = scope.ServiceProvider.GetRequiredService < IMapService>();
-      _pub = scope.ServiceProvider.GetRequiredService<IPubService>();
-
       while (!_cancellationTokenSource.IsCancellationRequested)
       {
         try
         {
+          using var scope = _serviceProvider.CreateScope();
+          _stateService = scope.ServiceProvider.GetRequiredService<IStateService>();
+          _geoService = scope.ServiceProvider.GetRequiredService<IGeoService>();
+          _levelService = scope.ServiceProvider.GetRequiredService<ILevelService>();
+          _mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
+          _pub = scope.ServiceProvider.GetRequiredService<IPubService>();
+
           await Task.Delay(1000);
 
           while (_queue.TryDequeue(out var json))
@@ -78,40 +69,7 @@ namespace LeafletAlarms.Services
             await ProcessBuffer(json);
           }
 
-          await PollBox();
-          List<TrackPointDTO> movedMarkers;
-          HashSet<string> idsToUpdate;
-          HashSet<string> setTrackUpdate;
-
-          lock (_lockerTracks)
-          {
-            movedMarkers = _dicUpdatedTracks.Values.ToList();
-            _dicUpdatedTracks.Clear();
-          }
-
-          lock (_locker)
-          {
-            idsToUpdate = _setIdsToUpdate.ToHashSet();
-            _setIdsToUpdate.Clear();
-
-            setTrackUpdate = _setTrackUpdate.ToHashSet();
-            _setTrackUpdate.Clear();
-          }
-
-          if (idsToUpdate.Any())
-          {
-            await UpdateIds(idsToUpdate);
-          }
-
-          if (movedMarkers.Any())
-          {
-            await DoUpdateTrackPosition(movedMarkers);
-          }
-
-          if (setTrackUpdate.Any())
-          {
-            await UpdateRoutesByTrackId(setTrackUpdate);
-          }          
+          await PollBox();        
         }
         catch(Exception ex)
         {
@@ -245,21 +203,6 @@ namespace LeafletAlarms.Services
       {
         return _dicIds.Count;
       }
-    }
-
-    public void OnUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
-    {
-      lock(_lockerTracks)
-      {
-        foreach(var track in movedMarkers)
-        {
-          if (string.IsNullOrEmpty(track.figure.id))
-          {
-            continue;
-          }
-          _dicUpdatedTracks[track.figure.id] = track;
-        }
-      }      
     }
 
     public void OnUpdateTracks(List<string> routEnds)

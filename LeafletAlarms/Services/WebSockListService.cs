@@ -24,7 +24,6 @@ namespace LeafletAlarms.Services
       _sub.Subscribe(Topics.NewRoutBuilt, NewRoutBuilt);
       _sub.Subscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
-      _sub.Subscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
       _sub.Subscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
 
@@ -33,7 +32,6 @@ namespace LeafletAlarms.Services
       _sub.Unsubscribe(Topics.NewRoutBuilt, NewRoutBuilt);
       _sub.Unsubscribe(Topics.OnStateChanged, OnStateChanged);
       _sub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
-      _sub.Unsubscribe(Topics.OnUpdateTrackPosition, OnUpdateTrackPosition);
       _sub.Unsubscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
@@ -80,31 +78,6 @@ namespace LeafletAlarms.Services
         }
       }
     }
-
-
-    public async Task OnUpdateTrackPosition(string channel, byte[] message)
-    {
-      var movedMarkers = JsonSerializer.Deserialize<List<TrackPointDTO>>(message);
-
-      if (movedMarkers == null)
-      {
-        return;
-      }
-
-      foreach (var sock in StateSockets)
-      {
-        sock.Value.OnUpdateTrackPosition(movedMarkers);
-      }
-      await Task.CompletedTask;
-    }
-
-    public void OnUpdateTracks(List<string> movedMarkers)
-    {
-      foreach (var sock in StateSockets)
-      {
-        sock.Value.OnUpdateTracks(movedMarkers);
-      }
-    }    
 
     public async Task OnStateChanged(string channel, byte[] message)
     {
