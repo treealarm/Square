@@ -26,6 +26,7 @@ namespace LeafletAlarms.Services
     
     private Dictionary<string, GeoObjectDTO> _dicGeo = new Dictionary<string, GeoObjectDTO>();
     private Dictionary<string, ObjectStateDTO> _dicStates = new Dictionary<string, ObjectStateDTO>();
+    private Dictionary<string, AlarmState> _dicAlarmStates = new Dictionary<string, AlarmState>();
 
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
     private object _locker = new object();
@@ -400,19 +401,6 @@ namespace LeafletAlarms.Services
       await SendPacket(packet);
     }
 
-    public async Task OnBlinkStateChanged(List<AlarmState> states)
-    {
-      HashSet<string> objIds = GetOwnersAndViews(states.Select(i => i.id));
-
-      StateBaseDTO packet = new StateBaseDTO()
-      {
-        action = "set_alarm_states",
-        data = objIds
-      };
-
-      await SendPacket(packet);
-    }
-
     private async Task SendPacket(StateBaseDTO packet)
     {
       var buffer = JsonSerializer.SerializeToUtf8Bytes(packet);
@@ -430,44 +418,61 @@ namespace LeafletAlarms.Services
       if (_dicIds.Count == 0)
       {
         _dicStates.Clear();
+        _dicAlarmStates.Clear();
         return;
       }
 
-      // 1. Получаем актуальные состояния
-      var states = await _stateService.GetStatesAsync(_dicIds.ToList());
-      // states: Dictionary<string, StateDTO>
+      var changedIds = new HashSet<string>();
 
-      var added = new Dictionary<string, ObjectStateDTO>();
-      var updated = new Dictionary<string, ObjectStateDTO>();
-      var removed = new HashSet<string>();
-
-      // 2a. removed — было, но больше нет
-      removed = _dicStates.Keys.Except(states.Keys).ToHashSet();
-
-      // 2b. added / updated
-      foreach (var (id, state) in states)
+      // ---------- обычные состояния ----------
       {
-        if (!_dicStates.TryGetValue(id, out var old))
+        var states = await _stateService.GetStatesAsync(_dicIds.ToList());
+
+        // removed
+        foreach (var id in _dicStates.Keys.Except(states.Keys))
+          changedIds.Add(id);
+
+        // added / updated
+        foreach (var (id, state) in states)
         {
-          added[id] = state;
+          if (!_dicStates.TryGetValue(id, out var old) ||
+              old.Version != state.Version)
+          {
+            changedIds.Add(id);
+          }
         }
-        else if (old.Version != state.Version)
-        {
-          updated[id] = state;
-        }
+
+        _dicStates = states;
       }
 
-      // 3. Обновляем кэш
-      _dicStates = states;
-
-      // 4. Реакции только если есть изменения
-      if (added.Any() || updated.Any() || removed.Any())
+      // ---------- alarm-состояния ----------
       {
-        await OnStateChanged(
-          added.Keys.Union(updated.Keys).ToList()
-        );
+        var alarmStates = await _stateService.GetAlarmStatesAsync(_dicIds.ToList());
+
+        // removed
+        foreach (var id in _dicAlarmStates.Keys.Except(alarmStates.Keys))
+          changedIds.Add(id);
+
+        // added / updated
+        foreach (var (id, state) in alarmStates)
+        {
+          if (!_dicAlarmStates.TryGetValue(id, out var old) ||
+              old.Version != state.Version)
+          {
+            changedIds.Add(id);
+          }
+        }
+
+        _dicAlarmStates = alarmStates;
+      }
+
+      // ---------- единое уведомление ----------
+      if (changedIds.Count > 0)
+      {
+        await OnStateChanged(changedIds.ToList());
       }
     }
+
 
     private async Task PollBox()
     {

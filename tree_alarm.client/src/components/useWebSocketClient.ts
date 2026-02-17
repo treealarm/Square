@@ -39,7 +39,6 @@ export function useWebSocketClient() {
 
       switch (received.action) {
         case "set_visual_states":
-        case "set_alarm_states":
           appDispatch(MarkersVisualStore.requestAndUpdateMarkersVisualStates(received.data));
           break;
         case "set_ids2update":

@@ -21,13 +21,11 @@ namespace LeafletAlarms.Services
       _sub = sub;
       _pub = pub;
 
-      _sub.Subscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
       _sub.Subscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
 
     ~WebSockListService()
     {
-      _sub.Unsubscribe(Topics.OnBlinkStateChanged, OnBlinkStateChanged);
       _sub.Unsubscribe(Topics.OnValuesChanged, OnValuesChanged);
     }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
@@ -86,20 +84,6 @@ namespace LeafletAlarms.Services
       foreach (var sock in StateSockets)
       {
         await sock.Value.OnValuesChanged(state);
-      }
-    }
-    public async Task OnBlinkStateChanged(string channel, byte[] message)
-    {
-      var state = JsonSerializer.Deserialize<List<AlarmState>>(message);
-
-      if (state == null)
-      {
-        return;
-      }
-
-      foreach (var sock in StateSockets)
-      {
-        await sock.Value.OnBlinkStateChanged(state);
       }
     }
 

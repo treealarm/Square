@@ -1,11 +1,10 @@
 ﻿namespace Domain
 {
-  public class AlarmBaseState
+  public record AlarmBaseState: BaseObjectDTO
   {
-    public string? id { get; set; }
     public bool? alarm { get; set; }
   }
-  public class AlarmState: AlarmBaseState
+  public record AlarmState: AlarmBaseState
   {
     public int children_alarms { get; set; }
   }
