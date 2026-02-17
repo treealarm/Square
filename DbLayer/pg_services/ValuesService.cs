@@ -79,7 +79,8 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
       id = Domain.Utils.ConvertGuidToObjectId(dbo.id),
       name = dbo.name,
       owner_id = Domain.Utils.ConvertGuidToObjectId(dbo.owner_id),
-      value = dbo.value?.Deserialize<object>()
+      value = dbo.value?.Deserialize<object>(),
+      Version = dbo.Version
     };
   }
 

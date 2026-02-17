@@ -23,13 +23,11 @@ namespace DataChangeLayer
     public async Task UpdateValues(List<ValueDTO> obj2UpdateIn)
     {
       await _valuesService.UpdateListAsync(obj2UpdateIn);
-      await _pub.Publish(Topics.OnValuesChanged, obj2UpdateIn);
     }
 
     public async Task<Dictionary<string, ValueDTO>> UpdateValuesFilteredByNameAsync(List<ValueDTO> obj2UpdateIn)
     {
       var retVal = await _valuesService.UpdateValuesFilteredByNameAsync(obj2UpdateIn);
-      await _pub.Publish(Topics.OnValuesChanged, retVal.Values.ToList());
       return retVal;
     }
   }

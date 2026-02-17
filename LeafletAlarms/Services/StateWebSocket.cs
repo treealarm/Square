@@ -1,6 +1,5 @@
 ﻿using Domain;
 using System.Collections.Concurrent;
-using System.Net.Sockets;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -14,9 +13,8 @@ namespace LeafletAlarms.Services
 
     private IStateService _stateService;
     private IGeoService _geoService;
-    private ILevelService _levelService;
     private IMapService _mapService;
-    private IPubService _pub;
+    private IValuesService _valuesService;
 
     private Task _worker;
     private CancellationTokenSource _cancellationTokenSource
@@ -27,6 +25,7 @@ namespace LeafletAlarms.Services
     private Dictionary<string, GeoObjectDTO> _dicGeo = new Dictionary<string, GeoObjectDTO>();
     private Dictionary<string, ObjectStateDTO> _dicStates = new Dictionary<string, ObjectStateDTO>();
     private Dictionary<string, AlarmState> _dicAlarmStates = new Dictionary<string, AlarmState>();
+    private Dictionary<string, ValueDTO> _dicValues = new Dictionary<string, ValueDTO>();
 
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
     private object _locker = new object();
@@ -60,9 +59,8 @@ namespace LeafletAlarms.Services
           using var scope = _serviceProvider.CreateScope();
           _stateService = scope.ServiceProvider.GetRequiredService<IStateService>();
           _geoService = scope.ServiceProvider.GetRequiredService<IGeoService>();
-          _levelService = scope.ServiceProvider.GetRequiredService<ILevelService>();
           _mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
-          _pub = scope.ServiceProvider.GetRequiredService<IPubService>();
+          _valuesService = scope.ServiceProvider.GetRequiredService<IValuesService>();
 
           await Task.Delay(1000);
 
@@ -73,6 +71,7 @@ namespace LeafletAlarms.Services
 
           await PollBox();
           await PollStates();
+          await PollValues();
         }
         catch(Exception ex)
         {
@@ -253,91 +252,6 @@ namespace LeafletAlarms.Services
       await SendPacket(packet);
     }
 
-    private async Task DoUpdateTrackPosition(List<TrackPointDTO> movedMarkers)
-    {
-      HashSet<string> toUpdate = new HashSet<string>();
-      HashSet<string> toDelete = new HashSet<string>();
-      BoxDTO curBox = _currentBox;
-
-      if (curBox == null)
-      {
-        return;
-      }
-
-      var toCheckIfInBox = new List<TrackPointDTO>();
-      var levels = await _levelService.GetLevelsByZoom(curBox.zoom);
-
-      lock (_locker)
-      {
-        foreach (var track in movedMarkers)
-        {
-          if (_dicIds.Contains(track.figure.id))
-          {
-            if (!IsWithinBox(curBox, track.figure, levels))
-            {
-              _dicIds.Remove(track.figure.id);
-              toDelete.Add(track.figure.id);
-            }
-            else
-            {
-              toUpdate.Add(track.figure.id);
-            }
-            
-            continue;
-          }
-          toCheckIfInBox.Add(track);
-        }
-      }
-
-      foreach (var track in toCheckIfInBox)
-      {
-        if (IsWithinBox(curBox, track.figure, levels))
-        {
-          toUpdate.Add(track.figure.id);
-          lock (_locker)
-          {
-            _dicIds.Add(track.figure.id);
-          }
-        }
-      }
-      await UpdateOwners();
-
-      await DeleteIds(toDelete);
-      
-      if (toUpdate.Count > 0)
-      {
-        await RemoveFilteredIds(curBox, toUpdate);
-
-        await UpdateIds(toUpdate);
-      }
-    }
-
-    public async Task RemoveFilteredIds(BoxDTO curBox, HashSet<string> toUpdate)
-    {
-      if (curBox.property_filter != null && curBox.property_filter.props.Count > 0)
-      {
-        var toCompare = curBox.property_filter.props;
-
-        var props = await _mapService.GetPropsAsync(toUpdate.ToList());
-
-        foreach (var prop in props)
-        {
-          foreach (var c in toCompare)
-          {
-            var objProp = prop.Value.extra_props
-              .Where(i => i.prop_name == c.prop_name)
-              .FirstOrDefault();
-
-            if (objProp == null || objProp.str_val != c.str_val)
-            {
-              toUpdate.Remove(prop.Key);
-              break;
-            }
-          }
-        }
-      }
-    }
-
     public HashSet<string> GetOwnersAndViews(IEnumerable<string> ids)
     {
       HashSet<string> objIds = new HashSet<string>();
@@ -378,14 +292,9 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public async Task OnValuesChanged(List<ValueDTO> states)
+    public async Task OnValuesChanged(List<string> ids)
     {
-      if (!_update_values_periodically)
-      {
-        return;
-      }
-
-      HashSet<string> objIds = GetOwnersAndViews(states.Select(i => i.owner_id));
+      HashSet<string> objIds = GetOwnersAndViews(ids);
 
       if (!objIds.Any())
       {
@@ -412,6 +321,47 @@ namespace LeafletAlarms.Services
         _cancellationTokenSource.Token
       );
     }
+
+    private async Task PollValues()
+    {
+      if (!_update_values_periodically)
+        return;
+
+      if (_dicIds.Count == 0)
+      {
+        _dicValues.Clear();
+        return;
+      }
+
+      // 1. Получаем актуальные значения
+      var list = await _valuesService.GetListByOwnersAsync(_dicIds.ToList());
+
+
+      // 3. Определяем изменения
+      var changedIds = new HashSet<string>();
+
+
+      // added / updated
+      foreach (var value in list)
+      {
+        if (!_dicValues.TryGetValue(value.Key, out var old) ||
+            old.Version != value.Value.Version)
+        {
+          changedIds.Add(value.Value.owner_id);
+        }
+      }
+
+      // 4. Обновляем кэш
+      _dicValues = list;
+
+      // 5. Уведомляем
+      if (changedIds.Count > 0)
+      {
+        await OnValuesChanged(changedIds.ToList());
+      }
+    }
+
+
 
     private async Task PollStates()
     {
