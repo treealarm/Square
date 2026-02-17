@@ -28,7 +28,7 @@ namespace LeafletAlarms.Services
     private Dictionary<string, ValueDTO> _dicValues = new Dictionary<string, ValueDTO>();
 
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
-    private object _locker = new object();
+
     private BoxDTO _currentBox;
     private bool _update_values_periodically = false;
     private ConcurrentQueue<StateBaseReceiveDTO> _queue = new ConcurrentQueue<StateBaseReceiveDTO>();
@@ -135,78 +135,6 @@ namespace LeafletAlarms.Services
       }
     }
 
-
-    public bool IsWithinBox(BoxDTO box, GeoObjectDTO track, List<string> levels)
-    {
-      bool IsPointInBox(BoxDTO box, Geo2DCoordDTO coord, double dx = 0)
-      {
-        var right = box.es[0] + dx;
-        var left = box.wn[0] - dx;
-        var up = box.wn[1] + dx;
-        var down = box.es[1] - dx;
-
-        if (coord.X < left)
-          return false;
-
-        if (coord.X > right)
-          return false;
-
-        if (coord.Y > up)
-          return false;
-
-        if (coord.Y < down)
-          return false;
-
-        return true;
-      }
-
-      if (!string.IsNullOrEmpty(track.zoom_level))
-      {
-        if (!levels.Contains(track.zoom_level))
-        {
-          return false;
-        }
-      }
-
-      if (track.location is GeometryCircleDTO point)
-      {
-        double dx = (double)(track.radius == null ? 0.0 : track.radius / 111000);
-        return IsPointInBox(box, point.coord, dx);
-      }
-
-      if (track.location is GeometryPolygonDTO polygon)
-      {
-        foreach (var pt in polygon.coord)
-        {
-          if (IsPointInBox(box, pt))
-          {
-            return true;
-          }
-        }
-      }
-
-      if (track.location is GeometryPolylineDTO line)
-      {
-        foreach (var pt in line.coord)
-        {
-          if (IsPointInBox(box, pt))
-          {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    }
-
-    public int GetCurObjectCount()
-    {
-      lock (_locker)
-      {
-        return _dicIds.Count;
-      }
-    }
-
     private async Task UpdateIds(HashSet<string> toUpdate)
     {
       if (toUpdate.Count == 0)
@@ -219,7 +147,7 @@ namespace LeafletAlarms.Services
         data = toUpdate
       };
 
-      if (toUpdate.Count > 1000 || GetCurObjectCount() >  1000)
+      if (toUpdate.Count > 1000 || _dicIds.Count >  1000)
       {
         packet.action = "update_viewbox";
         packet.data = null;
@@ -241,34 +169,20 @@ namespace LeafletAlarms.Services
 
       await SendPacket(packet);
     }
-    private async Task UpdateRoutesByTrackId(HashSet<string> toUpdate)
-    {
-      StateBaseDTO packet = new StateBaseDTO()
-      {
-        action = "update_routes_by_tracks",
-        data = toUpdate
-      };
-
-      await SendPacket(packet);
-    }
 
     public HashSet<string> GetOwnersAndViews(IEnumerable<string> ids)
     {
       HashSet<string> objIds = new HashSet<string>();
-
-      lock (_locker)
+      foreach (var id in ids)
       {
-        foreach (var id in ids)
+        if (_dicOwnersAndViews.TryGetValue(id, out var marker))
         {
-          if (_dicOwnersAndViews.TryGetValue(id, out var marker))
-          {
-            var views = _dicOwnersAndViews.Values
-              .Where(i => i.owner_id == marker.id)
-              .Select(i => i.id)
-              ;
-            objIds.UnionWith(views);
-            objIds.Add(id);
-          }
+          var views = _dicOwnersAndViews.Values
+            .Where(i => i.owner_id == marker.id)
+            .Select(i => i.id)
+            ;
+          objIds.UnionWith(views);
+          objIds.Add(id);
         }
       }
       return objIds;
@@ -481,43 +395,31 @@ namespace LeafletAlarms.Services
 
     private async Task OnSetBox(BoxDTO box)
     {
-      lock (_locker)
-      {
-        _currentBox = box;
-      }
+       _currentBox = box;
       await Task.CompletedTask;
     }
 
     private async Task UpdateOwners()
     {
       List<string> ids;
-      lock (_locker)
-      {
-        ids = _dicIds.ToList();
-      }
+      ids = _dicIds.ToList();
+
       var owners_and_views = await _mapService.GetOwnersAndViewsAsync(ids);
-      lock (_locker)
-      {
-        _dicOwnersAndViews = owners_and_views;
-      }
+      _dicOwnersAndViews = owners_and_views;
     }
     private async Task OnSetIds(List<string> ids)
     {
-      lock (_locker)
+      _currentBox = null;
+
+      var newIds = ids.Where(g => !_dicIds.Contains(g));
+
+      _dicIds.Clear();
+
+
+      foreach (var item in ids)
       {
-        _currentBox = null;
-
-        var newIds = ids.Where(g => !_dicIds.Contains(g));
-
-        _dicIds.Clear();
-
-
-        foreach (var item in ids)
-        {
-          _dicIds.Add(item);
-        }
+        _dicIds.Add(item);
       }
-
       await UpdateOwners();
     }
   }

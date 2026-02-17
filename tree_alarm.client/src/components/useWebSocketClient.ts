@@ -24,7 +24,6 @@ export function useWebSocketClient() {
   const checked_ids = useSelector((state: ApplicationState) => state?.guiStates?.checked) ?? [];
 
   const [isConnected, setIsConnected] = useState(false);
-  const [updatedTracks, setUpdatedTracks] = useState<string[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   const handleOpen = useCallback(() => setIsConnected(true), []);
@@ -49,9 +48,6 @@ export function useWebSocketClient() {
           break;
         case "update_viewbox":
           appDispatch(MarkersStore.initiateUpdateAll());
-          break;
-        case "update_routes_by_tracks":
-          setUpdatedTracks(received.data as string[]);
           break;
         case "on_values_changed":
           appDispatch(ValuesStore.fetchValuesByOwners(received.data));
