@@ -2,7 +2,6 @@
 {
   public static class Topics
   {
-    public static string NewRoutBuilt = "NewRoutBuilt";
     public static string OnStateChanged = "OnStateChanged";
     public static string OnBlinkStateChanged = "OnBlinkStateChanged";
     public static string OnValuesChanged = "OnValuesChanged";

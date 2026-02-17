@@ -205,17 +205,6 @@ namespace LeafletAlarms.Services
       }
     }
 
-    public void OnUpdateTracks(List<string> routEnds)
-    {
-      lock (_locker)
-      {
-        foreach (var track_end_id in routEnds)
-        {
-          _setTrackUpdate.Add(track_end_id);
-        }
-      }
-    }    
-
     private async Task UpdateIds(HashSet<string> toUpdate)
     {
       if (toUpdate.Count == 0)
