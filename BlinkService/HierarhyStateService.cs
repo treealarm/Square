@@ -23,7 +23,15 @@ namespace BlinkService
       _actorProxy = actorProxy;
       _stateAcc = stateAcc;
     }
+    private async Task RecordingEvents(string channel, byte[] message)
+    {
+      // Конвертируем байты в строку
+      string text = System.Text.Encoding.UTF8.GetString(message);
 
+      Console.WriteLine($"Channel: {channel}, Message: {text}");
+
+      await Task.CompletedTask;
+    }
 
     private async Task AlarmStatesChanged(string channel, byte[] message)
     {
@@ -59,6 +67,8 @@ namespace BlinkService
       //await stateUpdateService.DropStateAlarms();
 
       await sub.Subscribe(Topics.AlarmStatesChanged, AlarmStatesChanged);
+      await sub.Subscribe(Topics.RecordingEvents, RecordingEvents);
+      
 
       _timer = Task.Run(() => DoWork(), _cancellationToken.Token);
     }
@@ -69,6 +79,7 @@ namespace BlinkService
       var sub = scope.ServiceProvider.GetRequiredService<ISubService>();
 
       await sub.Unsubscribe(Topics.AlarmStatesChanged, AlarmStatesChanged);
+      await sub.Unsubscribe(Topics.RecordingEvents, RecordingEvents);
 
       _cancellationToken.Cancel();
       if (_timer != null)

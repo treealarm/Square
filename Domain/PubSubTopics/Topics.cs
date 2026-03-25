@@ -6,5 +6,6 @@
     public static string OnDeleteIntegros = "OnDeleteIntegros";
 
     public static string AlarmStatesChanged = "AlarmStatesChanged";
+    public static string RecordingEvents = "recording.events";
   }
 }
