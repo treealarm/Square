@@ -2,7 +2,6 @@
   "recommendations": [
     "ms-dotnettools.csharp",
     "ms-dotnettools.csdevkit",
-    "ms-azuretools.vscode-docker",
-    "ms-azuretools.vscode-dapr"
+    "ms-azuretools.vscode-docker"
   ]
 }
