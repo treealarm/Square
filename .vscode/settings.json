@@ -1,0 +1,4 @@
+{
+  "dotnet.defaultSolution": "LeafletAlarms.sln",
+  "cmake.ignoreCMakeListsMissing": true
+}

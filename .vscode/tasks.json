@@ -1,0 +1,132 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build: solution",
+      "detail": "dotnet build всего решения (Debug)",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/LeafletAlarms.sln",
+        "-c",
+        "Debug",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build: backend (LeafletAlarms)",
+      "detail": "Сборка главного web/grpc-приложения",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/LeafletAlarms/LeafletAlarms.csproj",
+        "-c",
+        "Debug",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "clean: solution",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["clean", "${workspaceFolder}/LeafletAlarms.sln"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "client: npm install",
+      "detail": "Установка зависимостей React-клиента",
+      "type": "process",
+      "command": "npm",
+      "args": ["install"],
+      "options": { "cwd": "${workspaceFolder}/tree_alarm.client" },
+      "problemMatcher": []
+    },
+    {
+      "label": "client: build",
+      "detail": "Production-сборка клиента (vite build)",
+      "type": "process",
+      "command": "npm",
+      "args": ["run", "build"],
+      "options": { "cwd": "${workspaceFolder}/tree_alarm.client" },
+      "problemMatcher": []
+    },
+    {
+      "label": "client: dev (vite)",
+      "detail": "Dev-сервер Vite на http://localhost:8002 (фоновая задача)",
+      "type": "process",
+      "command": "npm",
+      "args": ["run", "dev"],
+      "options": { "cwd": "${workspaceFolder}/tree_alarm.client" },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": {
+          "regexp": "^$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*VITE.*",
+          "endsPattern": ".*(Local:|ready in).*"
+        }
+      }
+    },
+    {
+      "label": "infra: up (postgres/keycloak/valhalla/redis/placement)",
+      "detail": "Поднять только инфраструктуру из leaflet_dock в Docker",
+      "type": "process",
+      "command": "docker",
+      "args": [
+        "compose",
+        "-f",
+        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
+        "--env-file",
+        "${workspaceFolder}/leaflet_dock/.env",
+        "up",
+        "-d",
+        "postgresservice",
+        "keycloakservice",
+        "valhallaservice",
+        "redis",
+        "placement"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "infra: down",
+      "type": "process",
+      "command": "docker",
+      "args": [
+        "compose",
+        "-f",
+        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
+        "--env-file",
+        "${workspaceFolder}/leaflet_dock/.env",
+        "down"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "dapr: run all apps",
+      "detail": "Запуск всех 4 .NET-сервисов на хосте с dapr-сайдкарами (dapr.yaml)",
+      "type": "process",
+      "command": "dapr",
+      "args": ["run", "-f", "${workspaceFolder}/dapr.yaml"],
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
