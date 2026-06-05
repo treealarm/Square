@@ -4,22 +4,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Исключаем Data/ и wwwroot/ из дефолтных item-glob'ов именно здесь, а не
+         через <... Remove="...">. На Linux Remove заставляет MSBuild материализовать
+         дефолтные глобы, и пустые шаблоны (*.resx/*.razor/*.cshtml) превращаются в
+         литералы -> сборка падает (MSB3552/CS2001). DefaultItemExcludes этого избегает. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);Data/**;wwwroot/**</DefaultItemExcludes>
+    <!-- В проекте нет .resx. На этом SDK/Linux дефолтный glob "**/*.resx" при нуле
+         совпадений материализуется в литерал и валит сборку (MSB3552). -->
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <SpaRoot>..\tree_alarm.client</SpaRoot>
     <SpaProxyLaunchCommand>npm run dev</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>http://localhost:8002</SpaProxyServerUrl>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Data\**" />
-    <Compile Remove="wwwroot\**" />
-    <Content Remove="Data\**" />
-    <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="Data\**" />
-    <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="Data\**" />
-    <None Remove="wwwroot\**" />
-  </ItemGroup>  
 
   <ItemGroup>
 

@@ -127,6 +127,76 @@
       "args": ["run", "-f", "${workspaceFolder}/dapr.yaml"],
       "isBackground": true,
       "problemMatcher": []
+    },
+    {
+      "label": "infra: up (local F5)",
+      "detail": "Инфраструктура для F5 на этой машине: postgres(5433)+keycloak+valhalla. Redis/placement берём из self-hosted Dapr.",
+      "type": "process",
+      "command": "docker",
+      "args": [
+        "compose",
+        "-f",
+        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
+        "-f",
+        "${workspaceFolder}/leaflet_dock/docker-compose.local.yml",
+        "--env-file",
+        "${workspaceFolder}/leaflet_dock/.env",
+        "up",
+        "-d",
+        "postgresservice",
+        "keycloakservice",
+        "valhallaservice"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "daprd: leafletalarms (F5)",
+      "detail": "Dapr-сайдкар для бэкенда (для отладки по F5). Использует self-hosted placement/scheduler/redis от `dapr init`.",
+      "type": "shell",
+      "command": "${userHome}/.dapr/bin/daprd",
+      "args": [
+        "--app-id", "leafletalarms",
+        "--app-port", "5000",
+        "--app-protocol", "grpc",
+        "--dapr-http-port", "3500",
+        "--dapr-grpc-port", "50001",
+        "--placement-host-address", "localhost:50005",
+        "--scheduler-host-address", "localhost:50006",
+        "--resources-path", "${workspaceFolder}/init_files/dapr_components_local",
+        "--log-level", "info"
+      ],
+      "isBackground": true,
+      // endsPattern НЕ 'Status: Running': с --app-port daprd блокируется в ожидании
+      // приложения, которое отладчик запустит уже ПОСЛЕ prep. Берём момент готовности
+      // самого сайдкара, иначе prep зависнет навсегда (дедлок).
+      "problemMatcher": {
+        "pattern": [
+          { "regexp": ".", "file": 1, "location": 2, "message": 3 }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "This will block until the app is listening on that port"
+        }
+      }
+    },
+    {
+      "label": "daprd: stop (F5)",
+      "detail": "Останавливает Dapr-сайдкар после завершения отладки.",
+      "type": "shell",
+      "command": "pkill -f 'app-id leafletalarms' || true",
+      "problemMatcher": []
+    },
+    {
+      "label": "prep: F5 backend",
+      "detail": "preLaunchTask для F5: инфра -> сборка бэкенда -> запуск Dapr-сайдкара.",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "infra: up (local F5)",
+        "build: backend (LeafletAlarms)",
+        "daprd: leafletalarms (F5)"
+      ],
+      "problemMatcher": []
     }
   ]
 }

@@ -43,7 +43,7 @@ const nodeModulesPath = path.resolve(__dirname, './node_modules');
 // Определяем целевую URL
 //const target = env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:8000';
 
-const target = 'http://127.0.0.1:8000'; // Явно указываем localhost
+const target = 'http://127.0.0.1:8085'; // HTTP-порт бэкенда (8000 занят сторонним Keycloak в Docker)
 
 console.log(`search server on:${target}, env.ASPNETCORE_URLS:${env.ASPNETCORE_URLS}`);
 export default defineConfig({

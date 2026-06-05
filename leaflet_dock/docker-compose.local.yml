@@ -1,0 +1,12 @@
+# Локальный override для F5-отладки на этой машине.
+# Причина: host-порт 5432 уже занят сторонним контейнером (vms-postgres),
+# а redis/placement/scheduler уже подняты self-hosted Dapr (`dapr init`),
+# поэтому project-postgres публикуем на 5433, а свои redis/placement не поднимаем.
+# Используется вместе с базовым файлом:
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d \
+#     postgresservice keycloakservice valhallaservice
+services:
+  postgresservice:
+    # !override заменяет список портов из базового файла (иначе compose их склеит)
+    ports: !override
+      - "5433:5432"

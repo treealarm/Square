@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# BASH_SOURCE, а не $0: postgres-образ подключает init-скрипты через `source`,
+# поэтому $0 указывает на сам docker-entrypoint, а не на этот файл.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo "⏳ Создание БД mapstore, если не существует..."
 
