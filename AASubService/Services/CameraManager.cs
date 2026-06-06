@@ -19,6 +19,7 @@ namespace AASubService
     private const string CamStr = "cam";
     private ConcurrentDictionary<string, Camera> _cameras = new ConcurrentDictionary<string, Camera>();
     private readonly ISubService _sub;
+    private readonly ISquareIntegration _square;
     private readonly ActionExecutionManager _manager = new();
     private readonly CameraEventServiceManager _cameraEventServiceManager;
 
@@ -30,10 +31,11 @@ namespace AASubService
     const string CredentialListParam = "credential_list";
     const string PortListParam = "port_list";
 
-    public CameraManager(ISubService sub, CameraEventServiceManager cameraEventServiceManager)
+    public CameraManager(ISubService sub, CameraEventServiceManager cameraEventServiceManager, ISquareIntegration square)
     {
       _sub = sub;
       _cameraEventServiceManager = cameraEventServiceManager;
+      _square = square;
     }
 
     public async ValueTask DisposeAsync()
@@ -210,9 +212,8 @@ namespace AASubService
 
         try
         {
-          var client = IntegrationUtilsLib.Utils.ClientBase.Client;
-          if (client != null && events.Events.Any())
-            await client.UpdateEventsAsync(events);
+          if (events.Events.Any())
+            await _square.PushEvents(events);
         }
         catch (Exception ex)
         {
@@ -281,16 +282,8 @@ namespace AASubService
 
         protoUploadFile.FileData = Google.Protobuf.ByteString.CopyFrom(data.Data);
 
-        // Создаем клиента gRPC и подключаемся
-        var client = IntegrationUtilsLib.Utils.ClientBase.Client;
-
-        if (client == null)
-        {
-          await Task.Delay(1000);
-          return false;
-        }
         // Загружаем файл
-        await client.UploadFileAsync(protoUploadFile);
+        await _square.UploadFile(protoUploadFile);
 
         var toSend = new ProtoObjPropsList();
 
@@ -307,7 +300,7 @@ namespace AASubService
         });
         toSend.Objects.Add(protoProp);
 
-        await client!.UpdatePropertiesAsync(toSend);
+        await _square.PushProperties(toSend);
         return true;
       }
       return false;
@@ -480,8 +473,7 @@ namespace AASubService
         Progress = progress,
         Result = result
       });
-      var clientIntegro = IntegrationUtilsLib.Utils.ClientIntegro;
-      await clientIntegro!.Client!.UpdateActionResultsAsync(progressRequest);
+      await _square.ReportActionStatus(progressRequest);
     }
     private async Task HandleActionRefreshAsync(ProtoActionExe action, CancellationToken token)
     {
@@ -654,7 +646,7 @@ namespace AASubService
 
       string? objId = existing.Value != null
           ? existing.Key
-          : await IntegrationUtilsLib.Utils.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
+          : await _square.GenerateObjectId($"{cam.Ip}:{cam.Port}", 1);
 
       var ipProp = new ProtoObjProps
       {
@@ -703,12 +695,6 @@ namespace AASubService
         while (!cancellationToken.IsCancellationRequested)
         {
           await Task.Delay(interval, cancellationToken.Token); // ждем перед следующим циклом
-          var client = IntegrationUtilsLib.Utils.ClientBase;
-
-          if (client == null || client.IsDead)
-          {
-            continue;
-          }
           var states = new ProtoObjectStates();
 
           var tasks = _cameras.Select(async kvp =>
@@ -742,7 +728,7 @@ namespace AASubService
 
           if (states.States.Count > 0)
           {
-            await client.Client!.UpdateStatesAsync(states);
+            await _square.PushStates(states);
           }
         }
       });

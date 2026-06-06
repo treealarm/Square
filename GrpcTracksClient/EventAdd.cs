@@ -40,8 +40,7 @@ namespace GrpcTracksClient
     public static async Task Add(CancellationToken token)
     {
       var rnd = new Random();
-      var client = Utils.ClientBase.Client;
-      
+
       for (int j = 0; j < 100000; j++)
       {
         if (token.IsCancellationRequested)
@@ -85,7 +84,7 @@ namespace GrpcTracksClient
         }
         try
         {
-          var result = await client!.UpdateEventsAsync(events);
+          await SquareIntegration.Default.PushEvents(events);
         }
         catch (Exception ex)
         {

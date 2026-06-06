@@ -108,43 +108,39 @@ namespace AASubService
         // Предполагаем, что контент — это JPEG-изображение
         try
         {
-          var client = Utils.ClientBase;
-          if (client != null) 
+          var newEv = new EventProto();
+          newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
+
+
+          newEv.EventPriority = (int)LogLevel.Critical;
+          newEv.EventName = "lukich";
+
+          newEv.ExtraProps.Add(new ProtoObjExtraProperty()
           {
-            var newEv = new EventProto();
-            newEv.Timestamp = Timestamp.FromDateTime(DateTime.UtcNow);
+            PropName = "lukich1",
+            StrVal = $"lukich2"
+          });
 
+          // Сохраняем изображение, если оно есть
+          string base64Image = mediaSample.Content.ToStringUtf8();
+          byte[] imageBytes = Convert.FromBase64String(base64Image);
 
-            newEv.EventPriority = (int)LogLevel.Critical;
-            newEv.EventName = "lukich";
-
+          if (ImageService.IsValidImage(imageBytes))
+          {
             newEv.ExtraProps.Add(new ProtoObjExtraProperty()
             {
-              PropName = "lukich1",
-              StrVal = $"lukich2"
+              PropName = "license_image",
+              StrVal = base64Image,
+              VisualType = "base64image_fs"
             });
-
-            // Сохраняем изображение, если оно есть
-            string base64Image = mediaSample.Content.ToStringUtf8();
-            byte[] imageBytes = Convert.FromBase64String(base64Image);
-
-            if (ImageService.IsValidImage(imageBytes))
-            {
-              newEv.ExtraProps.Add(new ProtoObjExtraProperty()
-              {
-                PropName = "license_image",
-                StrVal = base64Image,
-                VisualType = "base64image_fs"
-              });
-            }
-
-            
-            newEv.ObjectId = "64270c097a71c88757377dcf";
-
-            var events = new EventsProto();
-            events.Events.Add(newEv);
-            var result = await client.Client.UpdateEventsAsync(events);
           }
+
+
+          newEv.ObjectId = "64270c097a71c88757377dcf";
+
+          var events = new EventsProto();
+          events.Events.Add(newEv);
+          await SquareIntegration.Default.PushEvents(events);
         }
         catch (Exception ex)
         {

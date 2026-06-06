@@ -1,190 +1,115 @@
-﻿using Common;
 using LeafletAlarmsGrpc;
 
 namespace IntegrationUtilsLib
 {
+  /// <summary>
+  /// Оркестрация интеграции продьюсера: создание/поиск главного (root) объекта по APP_ID.
+  /// Весь транспорт делегируется в <see cref="ISquareIntegration"/>.
+  /// </summary>
   public class IntegrationSync
   {
+    protected readonly ISquareIntegration _square;
+
     private ProtoObject? _mainObject = null;
     private IntegroProto? _mainIntegro = null;
     public const string MainStr = "main";
-    public ProtoObject? MainObj { get { return _mainObject; } }
-    public IntegroProto? MainIntegroObj { get { return _mainIntegro; } }
+    public ProtoObject? MainObj => _mainObject;
+    public IntegroProto? MainIntegroObj => _mainIntegro;
+
+    public IntegrationSync() : this(SquareIntegration.Default) { }
+    public IntegrationSync(ISquareIntegration square)
+    {
+      _square = square;
+    }
+
     public async Task<ProtoObject?> GetBaseObject(string id_in)
     {
-      var client = Utils.ClientBase.Client;
-
-      var ids = new ProtoObjectIds();
-      ids.Ids.Add(id_in);
-      var response = await client!.RequestObjectsAsync(ids);
-
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.FirstOrDefault();
-    }
-    public async Task<List<ProtoObject>?> GetBaseObjects(IEnumerable<string> ids_in)
-    {
-      var client = Utils.ClientBase.Client;
-
-      var ids = new ProtoObjectIds();
-      ids.Ids.AddRange(ids_in);
-      var response = await client!.RequestObjectsAsync(ids);
-
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.ToList();
-    }
-    public async Task<List<ProtoObjProps>?> GetPropObjects(IEnumerable<string> ids_in)
-    {
-      var client = Utils.ClientBase;
-
-      var ids = new ProtoObjectIds();
-      ids.Ids.AddRange(ids_in);
-      var response = await client!.Client!.RequestPropertiesAsync(ids);
-
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.ToList();
-    }
-    public async Task<List<IntegroProto>?> GetIntegroObjectsByType(string type)
-    {
-      var client = Utils.ClientIntegro;
-
-      var integroRequest = new GetListByTypeRequest();
-      integroRequest.IName = client.AppId;
-      integroRequest.IType = type;
-
-      // Ищем уже созданный main объект по типу
-
-      try
-      {
-        var response = await client!.Client!.GetListByTypeAsync(integroRequest);
-
-        if (response == null)
-        {
-          return null;
-        }
-        return response.Objects.ToList();
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine(ex.ToString());
-      }
-      return null;      
+      var objs = await _square.GetObjects(new[] { id_in });
+      return objs?.FirstOrDefault();
     }
 
-    public async Task<List<IntegroProto>?> GetIntegroObjectsByIds(List<string> ids)
-    {
-      var client = Utils.ClientIntegro;
+    public Task<List<ProtoObject>?> GetBaseObjects(IEnumerable<string> ids_in)
+      => _square.GetObjects(ids_in);
 
-      var integroRequest = new ProtoObjectIds();
-      integroRequest.Ids.AddRange(ids);
+    public Task<List<ProtoObjProps>?> GetPropObjects(IEnumerable<string> ids_in)
+      => _square.GetProperties(ids_in);
 
-      // Ищем уже созданный main объект по типу
-      var response = await client!.Client!.GetListByIdsAsync(integroRequest);
+    public Task<List<IntegroProto>?> GetIntegroObjectsByType(string type)
+      => _square.GetIntegroByType(type);
 
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.ToList();
-    }
+    public Task<List<IntegroProto>?> GetIntegroObjectsByIds(List<string> ids)
+      => _square.GetIntegroByIds(ids);
 
     public async Task<ProtoObject?> UpdateBaseObject(string id, string name, string parent_id)
     {
-      var client = Utils.ClientBase.Client;
-
-      var mainObject = new ProtoObject()
+      var list = new ProtoObjectList();
+      list.Objects.Add(new ProtoObject()
       {
         Id = id,
         Name = name,
         ParentId = parent_id
-      };
-      var list = new ProtoObjectList();
-      list.Objects.Add(mainObject);
-      var response = await client!.UpdateObjectsAsync(list);
+      });
+      var objs = await _square.UpsertObjects(list);
+      return objs?.FirstOrDefault();
+    }
 
-      if (response == null)
-      {
-        return null;
-      }
-      return response.Objects.FirstOrDefault();
-    }
-    public async Task<bool> InitTypes(IntegroTypesProto types, CancellationToken token)
-    {
-      var client = Utils.ClientIntegro;
-      foreach (var type in types.Types_)
-      {
-        type.IName = client.AppId;// Setup my app_id as i-name
-      }
-      var retVal = await client!.Client!.UpdateIntegroTypesAsync(types);
-      return retVal.Value;
-    }
+    public Task InitTypes(IntegroTypesProto types, CancellationToken token)
+      => _square.RegisterIntegroTypes(types);
+
     public async Task InitMainObject(CancellationToken token)
     {
       while (_mainObject == null && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
-        var client = Utils.ClientIntegro;
-        Console.Error.WriteLine($"creating _mainObject {client.AppId}");        
+        Console.Error.WriteLine($"creating _mainObject {_square.AppId}");
 
         // Ищем уже созданный main объект по типу
         var integroObjects = await GetIntegroObjectsByType(MainStr);
 
-        if (integroObjects != null)
+        if (integroObjects == null)
         {
-          if (integroObjects.Count > 0)
+          Console.Error.WriteLine("integroObjects is null");
+          continue;
+        }
+
+        if (integroObjects.Count > 0)
+        {
+          // Если находим, обращаемся к таблице Objects за базовым объектом (имя, id, ...)
+          _mainIntegro = integroObjects.FirstOrDefault();
+
+          if (_mainIntegro != null)
           {
-            //Если находим, то обращаемся к таблице Objects
-            // И получаем базовый объект с именем, айди, итд
-            _mainIntegro = integroObjects.FirstOrDefault();
+            var mainObj = await GetBaseObject(_mainIntegro.ObjectId);
 
-            if (_mainIntegro != null)
+            if (mainObj == null)
             {
-              //Request real object or create if doesn't exist
-              var mainObj = await GetBaseObject(_mainIntegro.ObjectId);
-
-              if (mainObj == null)
-              {
-                // Если не находим, то создаем с дефолтным именем
-                mainObj = await UpdateBaseObject(_mainIntegro.ObjectId, $"{client.AppId}_{MainStr}", string.Empty);
-              }
-
-              if (mainObj != null)
-              {
-                _mainObject = mainObj;
-              }
-            }
-          }
-          else
-          {
-            //Если не нашли объект в БД, то создадим новый.
-            var mainUid = await Utils.GenerateObjectId($"{MainStr}_{client.AppId}", 0);
-
-            if (!string.IsNullOrEmpty(_mainIntegro?.ObjectId))
-            {
-              mainUid = _mainIntegro.ObjectId;
+              // Если не находим, создаём с дефолтным именем
+              mainObj = await UpdateBaseObject(_mainIntegro.ObjectId, $"{_square.AppId}_{MainStr}", string.Empty);
             }
 
-            var integro = new IntegroListProto();
-            integro.Objects.Add(new IntegroProto()
+            if (mainObj != null)
             {
-              IType = MainStr,
-              IName = client.AppId,
-              ObjectId = mainUid
-            });
-            await client!.Client!.UpdateIntegroAsync(integro);
+              _mainObject = mainObj;
+            }
           }
         }
         else
         {
-          Console.Error.WriteLine("integroObjects is null");
+          // Не нашли объект в БД — создаём новый интеграционный root.
+          var mainUid = await _square.GenerateObjectId($"{MainStr}_{_square.AppId}", 0);
+
+          if (!string.IsNullOrEmpty(_mainIntegro?.ObjectId))
+          {
+            mainUid = _mainIntegro.ObjectId;
+          }
+
+          var integro = new IntegroListProto();
+          integro.Objects.Add(new IntegroProto()
+          {
+            IType = MainStr,
+            ObjectId = mainUid
+          });
+          await _square.RegisterIntegro(integro);
         }
       }
     }

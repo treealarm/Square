@@ -53,8 +53,6 @@ namespace GrpcTracksClient
 
     public static async Task MoveGrpc(TrackPointsProto figs, ProtoGeoObject fig)
     {
-      var client = IntegrationUtilsLib.Utils.ClientBase;
-
       var resourceName = $"GrpcTracksClient.JSON.SAD.json";
       var s = await ResourceLoader.GetResource(resourceName);
 
@@ -66,8 +64,7 @@ namespace GrpcTracksClient
           f.Lat = c.Lat;
           f.Lon = c.Lon;
         }
-        var newFigs = await client!.Client!.UpdateTracksAsync(figs);
-        //Console.WriteLine("Tracks GRPC: " + newFigs?.ToString());
+        await IntegrationUtilsLib.SquareIntegration.Default.PushTracks(figs);
         await Task.Delay(1000);
       }
     }
