@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>disable</Nullable>
+    <!-- annotations: разрешаем nullable-аннотации (string?) без включения null-state warnings -->
+    <Nullable>annotations</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Исключаем Data/ и wwwroot/ из дефолтных item-glob'ов именно здесь, а не
          через <... Remove="...">. На Linux Remove заставляет MSBuild материализовать
