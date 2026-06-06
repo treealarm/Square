@@ -2,6 +2,7 @@ using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
 using Keycloak.Net.Models.Clients;
 using KeycloakAdmin;
+using IntegrationServerLib;
 using LeafletAlarms.Authentication;
 using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;

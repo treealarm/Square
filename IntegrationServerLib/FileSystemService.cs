@@ -1,12 +1,12 @@
-﻿using Domain;
+using Domain;
 using Microsoft.Extensions.Options;
 
-namespace LeafletAlarms.Services
+namespace IntegrationServerLib
 {
   public class FileSystemService
   {
     private readonly IOptions<RoutingSettings> _routingSettings;
-    public FileSystemService(IOptions<RoutingSettings> routingSettings) 
+    public FileSystemService(IOptions<RoutingSettings> routingSettings)
     {
       _routingSettings = routingSettings;
     }
@@ -74,7 +74,7 @@ namespace LeafletAlarms.Services
         }
       }
       catch(Exception ex)
-      { Console.WriteLine(ex.ToString()); }        
+      { Console.WriteLine(ex.ToString()); }
 
         // Возвращаем успешный результат загрузки
         return filePath;

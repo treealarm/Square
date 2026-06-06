@@ -1,5 +1,5 @@
 ﻿using Domain;
-using LeafletAlarms.Grpc.Implementation;
+using IntegrationServerLib;
 using ObjectActions;
 using System.Text.Json;
 
@@ -17,7 +17,7 @@ namespace LeafletAlarms.Grpc
         ProtoActionValue.ValueOneofCase.DoubleValue => (VisualTypes.Double, (object)value.DoubleValue),
         ProtoActionValue.ValueOneofCase.IntValue => (VisualTypes.Int, (object)value.IntValue),
         ProtoActionValue.ValueOneofCase.StringValue => (VisualTypes.String, (object)value.StringValue),
-        ProtoActionValue.ValueOneofCase.Coordinates => (VisualTypes.Coordinates, GRPCServiceProxy.CoordsFromProto2DTO(value.Coordinates)),
+        ProtoActionValue.ValueOneofCase.Coordinates => (VisualTypes.Coordinates, GeometryProtoConvert.CoordsFromProto2DTO(value.Coordinates)),
         ProtoActionValue.ValueOneofCase.IpRange => (VisualTypes.IpRange, new IpRangeDTO() 
         { 
           start_ip = value.IpRange.StartIp,
@@ -107,10 +107,10 @@ namespace LeafletAlarms.Grpc
             new ProtoActionValue { StringValue = cur_val?.ToString() },
 
         VisualTypes.Coordinates when cur_val is JsonElement elem && elem.ValueKind == JsonValueKind.Object =>
-            new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(elem.Deserialize<GeometryDTO>()) },
+            new ProtoActionValue { Coordinates = GeometryProtoConvert.ConvertGeoDTO2Proto(elem.Deserialize<GeometryDTO>()) },
 
         VisualTypes.Coordinates when cur_val is GeometryDTO coords =>
-            new ProtoActionValue { Coordinates = GRPCServiceProxy.ConvertGeoDTO2Proto(coords) },
+            new ProtoActionValue { Coordinates = GeometryProtoConvert.ConvertGeoDTO2Proto(coords) },
 
         VisualTypes.IpRange when cur_val is JsonElement elem && elem.ValueKind == JsonValueKind.Object =>
             new ProtoActionValue

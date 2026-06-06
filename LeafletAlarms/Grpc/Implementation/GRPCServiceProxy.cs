@@ -1,7 +1,7 @@
 ﻿
 using Domain;
 using Google.Protobuf.WellKnownTypes;
-using LeafletAlarms.Services;
+using IntegrationServerLib;
 using LeafletAlarmsGrpc;
 using Common;
 using Grpc.Core;
@@ -41,86 +41,6 @@ namespace LeafletAlarms.Grpc.Implementation
       _fs = fs;
       _mapService = mapService;
     }
-    public static GeometryDTO CoordsFromProto2DTO(ProtoGeometry geometry)
-    {
-      GeometryDTO geo;
-
-      if (geometry.Type == "Polygon" || geometry.Type == "LineString")
-      {
-        var polygonCoord = new GeometryPolygonDTO();
-        geo = polygonCoord;
-        polygonCoord.coord = new List<Geo2DCoordDTO>();
-
-        foreach (var c in geometry.Coord)
-        {
-          polygonCoord.coord.Add(new Geo2DCoordDTO()
-          {
-            Lon = c.Lon,
-            Lat = c.Lat
-          });
-        }
-      }
-      else
-      if (geometry.Type == "Point")
-      {
-        var c = geometry.Coord.FirstOrDefault();
-
-        if (c == null)
-        {
-          return null;
-        }
-        var pointCoord = new GeometryCircleDTO();
-        geo = pointCoord;
-        pointCoord.coord = new Geo2DCoordDTO()
-        {
-          Lon = c.Lon,
-          Lat = c.Lat
-        };
-      }
-      else
-      {
-        return null;
-      }
-      return geo;
-    }
-
-    public static ProtoGeometry ConvertGeoDTO2Proto(GeometryDTO location)
-    {
-      ProtoGeometry protoGeometry = new ProtoGeometry();
-
-      if (location is GeometryCircleDTO point)
-      {
-        protoGeometry.Type = "Point";  // Устанавливаем тип
-        protoGeometry.Coord.Add(
-            new ProtoCoord { Lat = point.coord.Lat, Lon = point.coord.Lon });
-      }
-
-      if (location is GeometryPolygonDTO polygon)
-      {
-        protoGeometry.Type = "Polygon";  // Устанавливаем тип
-
-        foreach (var coord in polygon.coord)
-        {
-          protoGeometry.Coord.Add(new ProtoCoord { Lat = coord.Lat, Lon = coord.Lon });
-        }
-
-        // Закрываем полигон, добавив первую координату в конец списка
-        protoGeometry.Coord.Add(new ProtoCoord { Lat = polygon.coord[0].Lat, Lon = polygon.coord[0].Lon });
-      }
-
-      if (location is GeometryPolylineDTO line)
-      {
-        protoGeometry.Type = "LineString";  // Устанавливаем тип
-
-        foreach (var coord in line.coord)
-        {
-          protoGeometry.Coord.Add(new ProtoCoord { Lat = coord.Lat, Lon = coord.Lon });
-        }
-      }
-
-      return protoGeometry;
-    }
-
     public async Task<ProtoFigures> UpdateFigures(ProtoFigures request)
     {
       ProtoFigures response = new ProtoFigures();
@@ -140,7 +60,7 @@ namespace LeafletAlarms.Grpc.Implementation
           newFigDto.parent_id = fig.ParentId;
           newFigDto.radius = fig.Radius;
           newFigDto.zoom_level = fig.ZoomLevel;
-          newFigDto.geometry = CoordsFromProto2DTO(fig.Geometry);
+          newFigDto.geometry = GeometryProtoConvert.CoordsFromProto2DTO(fig.Geometry);
 
           if (newFigDto.geometry == null)
           {
@@ -310,7 +230,7 @@ namespace LeafletAlarms.Grpc.Implementation
           id = string.IsNullOrEmpty(track.Figure.Id) ? null : track.Figure.Id,
           radius = track.Figure.Radius,
           zoom_level = track.Figure.ZoomLevel,
-          location = CoordsFromProto2DTO(track.Figure.Location)
+          location = GeometryProtoConvert.CoordsFromProto2DTO(track.Figure.Location)
         };
 
         if (newTrack.figure.location == null)
