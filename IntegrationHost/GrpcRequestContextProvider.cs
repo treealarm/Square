@@ -1,7 +1,7 @@
 ﻿using Domain;
 using Grpc.Core;
 
-namespace LeafletAlarms.Authentication
+namespace IntegrationHost
 {
   public class GrpcRequestContextProvider : IRequestContextProvider
   {

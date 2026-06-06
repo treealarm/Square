@@ -4,10 +4,18 @@ common:
   resourcesPath: ./init_files/dapr_components_local/
   #placementHostAddress: "localhost:50006"
 apps:
+  # Фронт-API. Больше не хостит приёмный gRPC — только HTTP (REST/WebSocket/SPA).
   - appID: leafletalarms
+    appProtocol: http
+    appPort: 8000
+    appDirPath: ./leafletalarms/
+    command: ["dotnet", "run"]
+
+  # Приёмный gRPC-слой интеграции (вынесен из leafletalarms).
+  - appID: integrationhost
     appProtocol: grpc
     appPort: 5000
-    appDirPath: ./leafletalarms/
+    appDirPath: ./integrationhost/
     command: ["dotnet", "run"]
 
   - appDirPath: ./grpctracksclient/
@@ -15,12 +23,16 @@ apps:
     appProtocol: grpc
     appPort: 20007
     command: ["dotnet", "run"]
+    env:
+      LEAFLETALARM_APP_ID: integrationhost
 
   - appID: aasubservice
     appProtocol: grpc
     appPort: 20008
     appDirPath: ./aasubservice/
     command: ["dotnet", "run"]
+    env:
+      LEAFLETALARM_APP_ID: integrationhost
 
   - appID: blinkservice
     appProtocol: http

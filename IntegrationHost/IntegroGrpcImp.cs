@@ -6,7 +6,7 @@ using Grpc.Core;
 using LeafletAlarmsGrpc;
 using static LeafletAlarmsGrpc.IntegroService;
 
-namespace LeafletAlarms.Grpc.Implementation
+namespace IntegrationHost
 {
   internal class IntegroGrpcImp : IntegroServiceBase
   {
@@ -37,7 +37,7 @@ namespace LeafletAlarms.Grpc.Implementation
         {
           Input = r.Input,
           Version = r.Version,
-          ObjectId = Utils.GenerateObjectId(r.Input, r.Version)
+          ObjectId = IntegrationServerLib.ObjectIdGenerator.GenerateObjectId(r.Input, r.Version)
         });
       }
      

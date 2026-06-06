@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeycloakAdmin", "KeycloakAd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationServerLib", "IntegrationServerLib\IntegrationServerLib.csproj", "{492FF48F-BEBE-4D9B-B114-EB096BCA2FFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationHost", "IntegrationHost\IntegrationHost.csproj", "{95295488-62AA-4C87-9142-12302919E7BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -245,6 +247,18 @@ Global
 		{492FF48F-BEBE-4D9B-B114-EB096BCA2FFF}.Release|x64.Build.0 = Release|Any CPU
 		{492FF48F-BEBE-4D9B-B114-EB096BCA2FFF}.Release|x86.ActiveCfg = Release|Any CPU
 		{492FF48F-BEBE-4D9B-B114-EB096BCA2FFF}.Release|x86.Build.0 = Release|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Debug|x64.Build.0 = Debug|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Debug|x86.Build.0 = Debug|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Release|x64.ActiveCfg = Release|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Release|x64.Build.0 = Release|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Release|x86.ActiveCfg = Release|Any CPU
+		{95295488-62AA-4C87-9142-12302919E7BE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -83,17 +83,29 @@ LeafletAlarms подхватит. Живые обновления сохраня
    `GeometryProtoConvert` (из статики `GRPCServiceProxy`). Поправлены ссылки в `FilesController`,
    `Startup`, `GRPCServiceProxy`, `ProtoToDTOConvertor`. LeafletAlarms собирается.
    (`GrpcRequestContextProvider` отложен — переедет с IntegrationHost.)
-2. **Новый проект** `IntegrationHost` (ASP.NET, Kestrel HTTP/2): референс Domain, DataChangeLayer,
-   DbLayer, протоколы, `IntegrationContracts`. Перенести папку `Grpc/`.
-3. **DI в IntegrationHost** `Program.cs`: `AddGrpc` + интерсептор, `MapGrpcService<TracksGrpcImp>` и
-   `<IntegroGrpcImp>`, регистрация DbContext (без миграций), DataChangeLayer write-сервисов,
-   `IPubService`, `FileSystemService`. Переиспользовать существующее DI-расширение DbLayer/DataChangeLayer
-   (найти его в LeafletAlarms/Startup при реализации).
-4. **LeafletAlarms**: убрать `MapGrpcService<TracksGrpcImp/IntegroGrpcImp>` и хостинг приёмного gRPC;
-   оставить REST/WebSocket/northbound. (gRPC `AddGrpc` оставить только если ещё что-то хостит.)
-5. **docker-compose / .env / launch.json**: сервис `integrationhost` + сайдкар; общий volume static-files
-   в оба; те же DB/Redis env; продьюсерам `LEAFLETALARM_APP_ID=integrationhost`.
-6. **Миграции**: убедиться, что только LeafletAlarms их применяет.
+2. **[СДЕЛАНО] Новый проект** `IntegrationHost` (ASP.NET, Kestrel HTTP/2): референс Domain,
+   DataChangeLayer, DbLayer, GrpcDaprLib, `IntegrationServerLib`, PubSubLib. Перенесены (git mv,
+   namespace → `IntegrationHost`): `TracksGrpcImp`, `IntegroGrpcImp`, `GRPCServiceProxy`,
+   `GrpcContextInterceptor`, `GrpcRequestContextProvider`. (`ProtoToDTOConvertor` остался в LeafletAlarms
+   — нужен `IntegroController`.) Доп. находка: `GenerateObjectId(input,version)` тоже общий → вынесен
+   в `IntegrationServerLib.ObjectIdGenerator`.
+3. **[СДЕЛАНО] DI в IntegrationHost** `Program.cs`: `AddGrpc`+интерсептор, `MapGrpcService<...>`,
+   `DbLayer.ServicesConfigurator` + `DataChangeLayer.ServicesConfigurator` (переиспользованы),
+   pub-sub, `FileSystemService`, `GRPCServiceProxy`. Миграции не запускаем.
+   Realm/auth НЕ переносили: БД выбирается `DB_REALM_NAME`, а `IRequestContextProvider` в DbLayer
+   опционален (`GetService` → null) и его результат не используется.
+4. **[СДЕЛАНО] LeafletAlarms**: убраны `MapGrpcService`/`AddGrpc`/gRPC-listener, регистрации
+   `GRPCServiceProxy` и `GrpcRequestContextProvider`. Остался REST/WebSocket/SPA/northbound.
+5. **[СДЕЛАНО] docker-compose / dapr.yaml / .env**: сервис `integrationhostservice` + сайдкар
+   (`integrationhost`, grpc, `GRPC_INTEGRATION_PORT`); общий том `${ROOT_DATA}:/leaflet_data` в оба;
+   продьюсерам (compose+dapr.yaml) `LEAFLETALARM_APP_ID=integrationhost`; сайдкар leafletalarms →
+   `--app-protocol http --app-port ${HTTP_PORT}`. Новые `IntegrationHost/Dockerfile` и
+   `Properties/launchSettings.json`. `docker compose config` валиден, solution собирается (0 ошибок).
+6. **Миграции**: IntegrationHost не регистрирует `InitHostedService` → их применяет только LeafletAlarms. ✓
+
+> **Не проверено в рантайме (нужен полный стек Dapr+Postgres+Redis+Keycloak):** фактический приём
+> пушей integrationhost'ом, кросс-процессный pub-sub → WebSocket фронта, общий том для снимков,
+> корректность смены протокола сайдкара leafletalarms (http). См. раздел «Проверка».
 
 ## Проверка
 

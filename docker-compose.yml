@@ -29,25 +29,23 @@ services:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - APP_PORT=${GRPC_MAIN_PORT}
       - APP_ID=${LEAFLETALARM_APP_ID}
-      - HTTP_PORT=${HTTP_PORT} 
+      - HTTP_PORT=${HTTP_PORT}
       - PLACEMENT_PORT=${PLACEMENT_PORT}
     ports:
-      - ${GRPC_MAIN_PORT}:${GRPC_MAIN_PORT}
       - ${HTTP_PORT}:${HTTP_PORT}
     env_file:
       - .env
 
-  # Dapr sidecar для Leaflet Alarms
+  # Dapr sidecar для Leaflet Alarms (теперь HTTP — приёмный gRPC вынесен в integrationhost)
   leafletalarms-dapr:
     restart: unless-stopped
     image: "daprio/daprd:latest"
     command: [
       "./daprd",
       "--app-id", "${LEAFLETALARM_APP_ID}",
-      "--app-port", "${GRPC_MAIN_PORT}",
-      "--app-protocol", "grpc",
+      "--app-port", "${HTTP_PORT}",
+      "--app-protocol", "http",
       "--placement-host-address", "placement:${PLACEMENT_PORT}",
       "--resources-path", "/components"
     ]
@@ -57,6 +55,48 @@ services:
       - leafletalarmsservice
     # Для коляски используем network_mode, networks не нужны
     network_mode: "service:leafletalarmsservice"
+    env_file:
+      - .env
+
+  ############################
+  # IntegrationHost — приёмный gRPC-слой интеграции
+  ############################
+  integrationhostservice:
+    <<: *default-service
+    image: ${DOCKER_REGISTRY-}integrationhost
+    build:
+      context: .
+      dockerfile: IntegrationHost/Dockerfile
+    volumes:
+      # Общий том со статикой: сюда integrationhost пишет файлы (снимки),
+      # leafletalarms их раздаёт. Должен совпадать с томом leafletalarms.
+      - ${ROOT_DATA}:/leaflet_data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - APP_PORT=${GRPC_INTEGRATION_PORT}
+      - APP_ID=${INTEGRATION_HOST_APP_ID}
+      - PLACEMENT_PORT=${PLACEMENT_PORT}
+    ports:
+      - ${GRPC_INTEGRATION_PORT}:${GRPC_INTEGRATION_PORT}
+    env_file:
+      - .env
+
+  integrationhost-dapr:
+    restart: unless-stopped
+    image: "daprio/daprd:latest"
+    command: [
+      "./daprd",
+      "--app-id", "${INTEGRATION_HOST_APP_ID}",
+      "--app-port", "${GRPC_INTEGRATION_PORT}",
+      "--app-protocol", "grpc",
+      "--placement-host-address", "placement:${PLACEMENT_PORT}",
+      "--resources-path", "/components"
+    ]
+    volumes:
+      - "${DAPR_COMPONENTS}:/components"
+    depends_on:
+      - integrationhostservice
+    network_mode: "service:integrationhostservice"
     env_file:
       - .env
 
@@ -75,9 +115,10 @@ services:
       - VALHALLA_URL=${VALHALLA_URL}
       - APP_PORT=${GRPC_AASUBSERVICE_PORT}
       - APP_ID=${AASUBSERVICE_APP_ID}
+      - LEAFLETALARM_APP_ID=${INTEGRATION_HOST_APP_ID}
       - PLACEMENT_PORT=${PLACEMENT_PORT}
     depends_on:
-      - leafletalarmsservice
+      - integrationhostservice
     ports:
       - ${GRPC_AASUBSERVICE_PORT}:${GRPC_AASUBSERVICE_PORT}
 
@@ -113,9 +154,10 @@ services:
       - VALHALLA_PORT=${VALHALLA_PORT}
       - APP_PORT=${DAPR_CLI_PORT}
       - APP_ID=${TRACKS_CLIENT_APP_ID}
+      - LEAFLETALARM_APP_ID=${INTEGRATION_HOST_APP_ID}
       - PLACEMENT_PORT=${PLACEMENT_PORT}
     depends_on:
-      - leafletalarmsservice
+      - integrationhostservice
     ports:
       - ${DAPR_CLI_PORT}:${DAPR_CLI_PORT}
 

@@ -4,7 +4,6 @@ using Keycloak.Net.Models.Clients;
 using KeycloakAdmin;
 using IntegrationServerLib;
 using LeafletAlarms.Authentication;
-using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
@@ -74,14 +73,12 @@ namespace LeafletAlarms
       services.AddScoped<StateWebSocket>();
 
 
-      services.AddScoped<GRPCServiceProxy>();
       services.AddSingleton<IDaprClientService, DaprClientService>();
       services.AddSingleton<FileSystemService>();
 
       services.AddSingleton<ValhallaRouter>();
 
       services.AddScoped<IRequestContextProvider, HttpRequestContextProvider>();
-      services.AddSingleton<GrpcRequestContextProvider>();
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();

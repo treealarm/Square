@@ -4,7 +4,7 @@ using Grpc.Core;
 using LeafletAlarmsGrpc;
 using static LeafletAlarmsGrpc.TreeAlarmsGrpcService;
 
-namespace LeafletAlarms.Grpc.Implementation
+namespace IntegrationHost
 {
   public class TracksGrpcImp: TreeAlarmsGrpcServiceBase
   {

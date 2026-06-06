@@ -1,8 +1,7 @@
 ﻿using Grpc.Core.Interceptors;
 using Grpc.Core;
-using LeafletAlarms.Authentication;
 
-namespace LeafletAlarms.Grpc.Implementation
+namespace IntegrationHost
 {
   public class GrpcContextInterceptor : Interceptor
   {

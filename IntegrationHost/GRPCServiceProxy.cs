@@ -6,7 +6,7 @@ using LeafletAlarmsGrpc;
 using Common;
 using Grpc.Core;
 
-namespace LeafletAlarms.Grpc.Implementation
+namespace IntegrationHost
 {
   public class GRPCServiceProxy
   {

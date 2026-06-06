@@ -1,0 +1,18 @@
+{
+  "profiles": {
+    "IntegrationHost": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_PORT": "5000",
+        "APP_ID": "integrationhost",
+        "PUBSUB_NAME": "orderpubsub",
+        "POSTGRES_USER": "keycloak",
+        "POSTGRES_PASSWORD": "password",
+        "DB_REALM_NAME": "myrealm",
+        "KEYCLOAK_URL": "http://keycloakservice:8080"
+      },
+      "dotnetRunMessages": true
+    }
+  }
+}
