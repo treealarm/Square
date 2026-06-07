@@ -29,18 +29,17 @@ static public class DiagramUpdater
       protoUploadFile.FileData = Google.Protobuf.ByteString.CopyFrom(
         File.ReadAllBytes($"files/{protoUploadFile.FileName}"));
 
-      // Создаем клиента gRPC и подключаемся
-      var client = Utils.ClientBase.Client;
+      var square = SquareIntegration.Default;
 
       // Загружаем файл
-      await client!.UploadFileAsync(protoUploadFile);
-      
+      await square.UploadFile(protoUploadFile);
+
       Console.WriteLine("File uploaded.");
       var d_types = new DiagramTypesProto();
 
       var d_type = new DiagramTypeProto()
       {
-        Id = await Utils.GenerateObjectId("car", 1),
+        Id = await square.GenerateObjectId("car", 1),
         Name = TeslaCar,
         Src = $"{protoUploadFile.MainFolder}/{protoUploadFile.Path}/{protoUploadFile.FileName}",
       };
@@ -82,7 +81,7 @@ static public class DiagramUpdater
         d_type
       );
 
-      await client.UpdateDiagramTypesAsync(d_types);
+      await square.PushDiagramTypes(d_types);
 
       var diag = new DiagramsProto();
 
@@ -91,7 +90,7 @@ static public class DiagramUpdater
         diag.Diagrams.Add(new DiagramProto()
         {
           DgrType = TeslaCar,
-          Id = await Utils.GenerateObjectId("car", carId),
+          Id = await square.GenerateObjectId("car", carId),
           Geometry = new DiagramCoordProto()
           {
             Left = 50,
@@ -101,7 +100,7 @@ static public class DiagramUpdater
           }
         });
       }
-      await client.UpdateDiagramsAsync(diag);
+      await square.PushDiagrams(diag);
 
     }
     catch (Exception ex)

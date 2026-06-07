@@ -36,14 +36,9 @@ namespace DbLayer
           var cfg = provider.GetRequiredService<IConfiguration>();
           var settings = cfg.GetSection("MapDatabase").Get<MapDatabaseSettings>();
 
-          var dbName = Environment.GetEnvironmentVariable("DB_REALM_NAME");
-
-          if (string.IsNullOrEmpty(dbName))
-          {
-            throw new ArgumentException("Hey you!");
-          }
-          var username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "keycloak";
-          var password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password";
+          var dbName = EnvConfig.Require("DB_REALM_NAME");
+          var username = EnvConfig.Require("POSTGRES_USER");
+          var password = EnvConfig.Require("POSTGRES_PASSWORD");
 
           var builder = new NpgsqlConnectionStringBuilder
           {

@@ -20,11 +20,9 @@ namespace PubSubLib
 
     public SubService(DaprPublishSubscribeClient messagingClient)
     {
-        _pubsub_name = Environment.GetEnvironmentVariable("PUBSUB_NAME") ?? "";
-        {
-          Console.WriteLine($"SubService PUBSUB_NAME:{_pubsub_name}");
-        }
-      
+        _pubsub_name = EnvConfig.Require("PUBSUB_NAME");
+        Console.WriteLine($"SubService PUBSUB_NAME:{_pubsub_name}");
+
       _messagingClient = messagingClient;
     }
 

@@ -88,14 +88,24 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
   {
     var result = new Dictionary<string, ValueDTO>();
 
-    foreach (var dto in values)
+    var ownerGuids = values
+      .Select(dto => Domain.Utils.ConvertObjectIdToGuid(dto.owner_id) ?? Guid.NewGuid())
+      .ToList();
+
+    var distinctOwnerGuids = ownerGuids.Distinct().ToList();
+
+    // Один запрос вместо одного FirstOrDefaultAsync на каждый элемент батча (был N+1).
+    var existingByKey = await _dbContext.Values
+      .Where(v => distinctOwnerGuids.Contains(v.owner_id))
+      .ToDictionaryAsync(v => (v.owner_id, v.name));
+
+    for (int i = 0; i < values.Count; i++)
     {
-      var ownerGuid = Domain.Utils.ConvertObjectIdToGuid(dto.owner_id) ?? Guid.NewGuid();
+      var dto = values[i];
+      var ownerGuid = ownerGuids[i];
+      var key = (ownerGuid, dto.name);
 
-      var existing = await _dbContext.Values
-        .FirstOrDefaultAsync(v => v.owner_id == ownerGuid && v.name == dto.name);
-
-      if (existing != null)
+      if (existingByKey.TryGetValue(key, out var existing))
       {
         existing.value = JsonSerializer.SerializeToDocument(dto.value);
         _dbContext.Values.Update(existing);
@@ -119,7 +129,8 @@ internal class ValuesService : IValuesService, IValuesServiceInternal
           value = JsonSerializer.SerializeToDocument(dto.value)
         };
 
-        await _dbContext.Values.AddAsync(newValue);
+        _dbContext.Values.Add(newValue);
+        existingByKey[key] = newValue;
 
         result[newId.ToString()] = new ValueDTO
         {

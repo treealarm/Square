@@ -5,14 +5,16 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
-        "VALHALLA_URL": "http://valhallaservice:8012",
+        "VALHALLA_URL": "http://localhost:8012",
         "HTTP_PORT": "8000",
         "PUBSUB_NAME": "orderpubsub",
         "POSTGRES_USER": "keycloak",
         "POSTGRES_PASSWORD": "password",
+        "MapDatabase__PgHost": "localhost",
+        "MapDatabase__PgPort": "5432",
 
         "DB_REALM_NAME": "myrealm",
-        "KEYCLOAK_URL": "http://keycloakservice:8080",
+        "KEYCLOAK_URL": "http://localhost:8080",
         "KEYCLOAK_ADMIN_USER": "admin",
         "KEYCLOAK_ADMIN_PASSWORD": "admin",
         "KEYCLOAK_CLIENT_ID": "admin-cli"

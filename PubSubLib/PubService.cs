@@ -10,10 +10,8 @@ namespace PubSubLib
 
     public PubService()
     {
-      _pubsub_name = Environment.GetEnvironmentVariable("PUBSUB_NAME") ?? "";
-      {
-        Console.WriteLine($"PubService PUBSUB_NAME:{_pubsub_name}");
-      }
+      _pubsub_name = EnvConfig.Require("PUBSUB_NAME");
+      Console.WriteLine($"PubService PUBSUB_NAME:{_pubsub_name}");
       _client = new DaprClientBuilder().Build();
     }
     public async Task<long> Publish<T>(string pubsub_name, string channel, T message) where T : class

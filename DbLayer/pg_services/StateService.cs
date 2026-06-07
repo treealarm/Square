@@ -234,7 +234,7 @@ namespace DbLayer.Services
       await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<Dictionary<string, ObjectStateDescriptionDTO>> GetAlarmStatesDescr(List<string> states)
+    public async Task<Dictionary<string, ObjectStateDescriptionDTO>> GetAlarmStatesDescr(List<string>? states)
     {
       var query = _dbContext.ObjectStateDescriptions.Where(x => x.alarm);
 

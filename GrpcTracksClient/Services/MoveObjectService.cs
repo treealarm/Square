@@ -13,14 +13,15 @@ namespace GrpcTracksClient.Services
   {
     private static ValhallaRouter _router = new ValhallaRouter();
 
-    private ConcurrentDictionary<string, MovingCar> _cars = 
+    private ConcurrentDictionary<string, MovingCar> _cars =
       new ConcurrentDictionary<string, MovingCar>();
 
     private const string _car_str = "car";
+    private readonly ISquareIntegration _square = SquareIntegration.Default;
     private IntegrationSync _sync = new IntegrationSync();
     public MoveObjectService()
     {
-      
+
     }
 
     public async Task InitCarObjects(CancellationToken token)
@@ -28,8 +29,6 @@ namespace GrpcTracksClient.Services
       while (true && !token.IsCancellationRequested)
       {
         await Task.Delay(500);
-        var client = IntegrationUtilsLib.Utils.ClientBase.Client;
-        var clientIntegro = IntegrationUtilsLib.Utils.ClientIntegro;
         var integroObjects = await _sync.GetIntegroObjectsByType(_car_str);
 
         if (integroObjects == null)
@@ -37,27 +36,22 @@ namespace GrpcTracksClient.Services
           continue;
         }
 
-        int start_car_index = IMoveObjectService.MaxCars;
-        if (integroObjects != null)
-        {
-          start_car_index = integroObjects.Count;
-        }
+        int start_car_index = integroObjects.Count;
 
         var integroRequest = new IntegroListProto();
 
         for (long carId = start_car_index; carId < IMoveObjectService.MaxCars; carId++)
         {
           var carNum = carId + 1;
-          var carUid = await IntegrationUtilsLib.Utils.GenerateObjectId(_car_str, carNum);
+          var carUid = await _square.GenerateObjectId(_car_str, carNum);
 
           integroRequest.Objects.Add(new IntegroProto()
           {
-            IName = clientIntegro.AppId,
             ObjectId = carUid,
             IType = _car_str
           });
         }
-        await clientIntegro!.Client!.UpdateIntegroAsync(integroRequest);
+        await _square.RegisterIntegro(integroRequest);
         integroObjects = await _sync.GetIntegroObjectsByType(_car_str);
         if (integroObjects == null || integroObjects.Count < IMoveObjectService.MaxCars)
         {
@@ -82,8 +76,8 @@ namespace GrpcTracksClient.Services
           try
           {
             var carNum = carId + 1;
-            var carUid = await IntegrationUtilsLib.Utils.GenerateObjectId(_car_str, carNum);
-            // set parent_id as main_obj id 
+            var carUid = await _square.GenerateObjectId(_car_str, carNum);
+            // set parent_id as main_obj id
             var movingCar = new MovingCar(_router, $"Car {carNum}", carUid!, _sync!.MainObj!.Id);
             _cars.TryAdd(movingCar.Id, movingCar);
           }
@@ -105,8 +99,6 @@ namespace GrpcTracksClient.Services
       await _sync.InitMainObject(token);
       await InitCarObjects(token);
 
-      var client = IntegrationUtilsLib.Utils.ClientBase;
-      var clientIntegro = IntegrationUtilsLib.Utils.ClientIntegro;
       bool inited = false;
       while (!token.IsCancellationRequested)
       {
@@ -150,11 +142,11 @@ namespace GrpcTracksClient.Services
         {
           if (figs.Figs.Any())
           {
-            var newFigs = await client!.Client!.UpdateFiguresAsync(figs);
+            await _square.PushFigures(figs);
           }
           if (valuesToSend.Values.Any())
           {
-            var vals = await client!.Client!.UpdateValuesAsync(valuesToSend);
+            await _square.PushValues(valuesToSend);
           }
           if (!inited)
           {
@@ -163,13 +155,12 @@ namespace GrpcTracksClient.Services
             {
               integroRequest.Objects.Add(new IntegroProto()
               {
-                IName = client.AppId,
                 ObjectId = fig.Id,
                 IType = _car_str
               });
-              Console.WriteLine($"Register integro:{client.AppId}:{fig.Id}");
+              Console.WriteLine($"Register integro:{_square.AppId}:{fig.Id}");
             }
-            await clientIntegro!.Client!.UpdateIntegroAsync(integroRequest);
+            await _square.RegisterIntegro(integroRequest);
             inited = true;
           }
         }
@@ -267,8 +258,6 @@ namespace GrpcTracksClient.Services
         Lon = 37.618727730916895
       });
 
-      var client = IntegrationUtilsLib.Utils.ClientBase;
-
       double step = 0.001;
 
       for (int i = 0; i < 100; i++)
@@ -286,9 +275,7 @@ namespace GrpcTracksClient.Services
           }
           try
           {
-            var reply =
-            await client!.Client!.UpdateFiguresAsync(figs);
-            //Console.WriteLine("Fig DAPR: " + reply?.ToString());
+            await _square.PushFigures(figs);
           }
           catch (Exception ex)
           {
@@ -340,7 +327,6 @@ namespace GrpcTracksClient.Services
         Lon = 37.621130
       };
 
-      var client = IntegrationUtilsLib.Utils.ClientBase;
       var step = 0.0001;
 
       for (int i = 0; i < 1000000; i++)
@@ -378,8 +364,7 @@ namespace GrpcTracksClient.Services
           });
         }
 
-        var newFigs = await client!.Client!.UpdateFiguresAsync(figs);
-        //Console.WriteLine("Fig GRPC: " + newFigs?.ToString());
+        await _square.PushFigures(figs);
         await Task.Delay(1000);
       }
     }

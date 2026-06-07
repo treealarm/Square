@@ -1,9 +1,8 @@
-using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
 using Keycloak.Net.Models.Clients;
 using KeycloakAdmin;
+using IntegrationServerLib;
 using LeafletAlarms.Authentication;
-using LeafletAlarms.Grpc.Implementation;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
@@ -36,10 +35,10 @@ namespace LeafletAlarms
       services.AddSingleton<KeyCloakConnectorService>();
 
 
-      var Url = Environment.GetEnvironmentVariable("KEYCLOAK_URL") ?? "http://localhost:8080";
-      var AdminUser = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_USER") ?? "admin";
-      var AdminPassword = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_PASSWORD") ?? "admin";
-      var ClientId = Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID") ?? "admin-cli";
+      var Url = EnvConfig.Require("KEYCLOAK_URL");
+      var AdminUser = EnvConfig.Require("KEYCLOAK_ADMIN_USER");
+      var AdminPassword = EnvConfig.Require("KEYCLOAK_ADMIN_PASSWORD");
+      var ClientId = EnvConfig.Require("KEYCLOAK_CLIENT_ID");
 
 
       services.AddSingleton<IKeycloakAdminClient>(sp =>
@@ -57,9 +56,10 @@ namespace LeafletAlarms
 
       services.AddHostedService<InitHostedService>();
 
-      services.AddDaprPubSubClient();
-      services.AddSingleton<ISubService, SubService>();
-      services.AddSingleton<IPubService, PubService>(); 
+      // LeafletAlarms только ПУБЛИКУЕТ (update-сервисы) — на pub-sub не подписывается
+      // (фронт-обновления идут поллингом БД в StateWebSocket). Поэтому ISubService/
+      // AddDaprPubSubClient тут не нужны, оставлен только издатель.
+      services.AddSingleton<IPubService, PubService>();
 
       DbLayer.ServicesConfigurator.ConfigureServices(services, Configuration);
       DataChangeLayer.ServicesConfigurator.ConfigureServices(services);
@@ -73,14 +73,12 @@ namespace LeafletAlarms
       services.AddScoped<StateWebSocket>();
 
 
-      services.AddScoped<GRPCServiceProxy>();
       services.AddSingleton<IDaprClientService, DaprClientService>();
       services.AddSingleton<FileSystemService>();
 
       services.AddSingleton<ValhallaRouter>();
 
       services.AddScoped<IRequestContextProvider, HttpRequestContextProvider>();
-      services.AddSingleton<GrpcRequestContextProvider>();
 
       services.AddHttpContextAccessor();
       services.AddControllersWithViews();

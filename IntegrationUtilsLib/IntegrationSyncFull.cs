@@ -151,8 +151,7 @@ namespace IntegrationUtilsLib
       {
         return;
       }
-      var client = Utils.ClientBase;
-      await client!.Client!.UpdatePropertiesAsync(toSend);
+      await _square.PushProperties(toSend);
     }
     public async Task OnDeleteIntegros(string channel, byte[] message)
     {
@@ -292,21 +291,14 @@ namespace IntegrationUtilsLib
 
       if (toUpdateList.Objects.Count > 0)
       {
-        var client = Utils.ClientBase;
-        await client!.Client!.UpdatePropertiesAsync(toUpdateList);
+        await _square.PushProperties(toUpdateList);
       }
     }
 
     public async Task CreateFullObject(ProtoObjProps prop, string name, string i_type)
     {
-      var clientBase = Utils.ClientBase.Client;
-      if (clientBase == null) return;
-
-      var clientIntegro = Utils.ClientIntegro.Client;
-      if (clientIntegro == null) return;
-
       var objId = prop.Id;
-      
+
       var props = new ProtoObjPropsList();
       props.Objects.Add(prop);
 
@@ -316,23 +308,19 @@ namespace IntegrationUtilsLib
         await UpdateBaseObject(objId, name, MainObj!.Id);
       }
 
-      await clientBase.UpdatePropertiesAsync(props);
+      await _square.PushProperties(props);
 
-      var requestIntegro = new ProtoObjectIds();
-      requestIntegro.Ids.Add(objId);
-
-      var integros = await clientIntegro.GetListByIdsAsync(requestIntegro);
-      if (integros == null || integros.Objects.Count == 0)
+      var integros = await GetIntegroObjectsByIds(new List<string> { objId });
+      if (integros == null || integros.Count == 0)
       {
         var integroList = new IntegroListProto();
         integroList.Objects.Add(new IntegroProto
         {
-          IName = Utils.ClientIntegro.AppId,
           ObjectId = objId,
           IType = i_type
         });
 
-        await clientIntegro.UpdateIntegroAsync(integroList);
+        await _square.RegisterIntegro(integroList);
       }
     }
 

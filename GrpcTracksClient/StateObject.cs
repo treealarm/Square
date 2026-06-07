@@ -8,7 +8,6 @@ namespace GrpcTracksClient
   {
     public static async Task Change()
     {
-      var client = Utils.ClientBase;
       var states = new ProtoObjectStates();
 
       var state = new ProtoObjectState();
@@ -38,7 +37,7 @@ namespace GrpcTracksClient
           state.States.Add("NORM");
         }
 
-        await client!.Client!.UpdateStatesAsync(states);
+        await SquareIntegration.Default.PushStates(states);
         await Task.Delay(1000);
       }      
     }

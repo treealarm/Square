@@ -29,6 +29,5 @@ dapr.yaml
 !.git/config
 !.git/packed-refs
 !.git/refs/heads/**
-**/leaflet_dock
 **/leaflet_data
 **/non_docker_projects

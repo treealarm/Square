@@ -17,6 +17,6 @@ namespace Domain
     public Task<List<AlarmState>> GetAlarmedLeafStatesAsync(List<string> ids);
     public Task DropStateAlarms();
     public Task<Dictionary<string, ObjectStateDTO>> GetAlarmedStates(List<string> statesFilter);
-    public Task<Dictionary<string, ObjectStateDescriptionDTO>> GetAlarmStatesDescr(List<string> statesFilter);
+    public Task<Dictionary<string, ObjectStateDescriptionDTO>> GetAlarmStatesDescr(List<string>? statesFilter);
   }
 }

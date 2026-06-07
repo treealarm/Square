@@ -10,6 +10,12 @@ namespace AASubService.Services
   public class CameraEventServiceManager
   {
     private readonly ConcurrentDictionary<string, EventService1> _activeServices = new();
+    private readonly ISquareIntegration _square;
+
+    public CameraEventServiceManager(ISquareIntegration square)
+    {
+      _square = square;
+    }
 
     public async Task AddCameraAsync(string cameraId, Camera camera)
     {
@@ -71,14 +77,7 @@ namespace AASubService.Services
     {
       try
       {
-        var client = Utils.ClientBase.Client;
-
         Console.WriteLine($"[{cameraId}] Event received");
-
-        if (client ==  null)
-        {
-          return;
-        }
 
         // Получение изображения
         var media = await camera.GetMediaService();
@@ -102,8 +101,8 @@ namespace AASubService.Services
           };
 
           protoUploadFile.FileData = Google.Protobuf.ByteString.CopyFrom(imageResult.Data);
-          await client.UploadFileAsync(protoUploadFile);
-        }        
+          await _square.UploadFile(protoUploadFile);
+        }
 
         var events = new EventsProto();
 
@@ -125,7 +124,7 @@ namespace AASubService.Services
           }
           events.Events.Add(eventProto);
         }
-        await client!.UpdateEventsAsync(events);
+        await _square.PushEvents(events);
       }
       catch (Exception ex)
       {

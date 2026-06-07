@@ -3,7 +3,9 @@
     "GrpcTracksClient": {
       "commandName": "Project",
       "environmentVariables": {
-        "VALHALLA_URL": "http://valhallaservice:8012",
+        "APP_ID": "grpctracksclient",
+        "LEAFLETALARM_APP_ID": "integrationhost",
+        "VALHALLA_URL": "http://localhost:8012",
         "PUBSUB_NAME": "orderpubsub"
       }
     },

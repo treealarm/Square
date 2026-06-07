@@ -13,7 +13,7 @@ namespace IntegrationUtilsLib
     private static readonly object _lock = new object(); 
 
 
-    public static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro
+    internal static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro
     {
       get
       {
@@ -31,7 +31,7 @@ namespace IntegrationUtilsLib
         }        
       }
     }
-    public static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase
+    internal static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase
     {
       get
       {

@@ -52,7 +52,7 @@ namespace LeafletAlarms.Controllers
     [Route("GenerateObjectId")]
     public string GenerateObjectId(string input, string version)
     {
-      return Utils.GenerateObjectId(input,version);
+      return IntegrationServerLib.ObjectIdGenerator.GenerateObjectId(input, version);
     }
 
     [HttpPost()]

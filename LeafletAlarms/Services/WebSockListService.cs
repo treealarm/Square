@@ -8,18 +8,12 @@ namespace LeafletAlarms.Services
   public class WebSockListService : IWebSockList
   {
     private IServiceProvider _serviceProvider;
-    private ISubService _sub;
-    private IPubService _pub;
 
     public WebSockListService(
-      IServiceProvider provider,
-      ISubService sub,
-      IPubService pub
+      IServiceProvider provider
     )
     {
       _serviceProvider = provider;
-      _sub = sub;
-      _pub = pub;
     }
 
     ~WebSockListService()

@@ -37,6 +37,70 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "build: integrationhost (IntegrationHost)",
+      "detail": "Приёмный gRPC-слой интеграции (продьюсеры пушат сюда)",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/IntegrationHost/IntegrationHost.csproj",
+        "-c",
+        "Debug",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build: aasubservice (AASubService)",
+      "detail": "Интеграция ONVIF-камер",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/AASubService/AASubService.csproj",
+        "-c",
+        "Debug",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build: grpctracksclient (GrpcTracksClient)",
+      "detail": "Симулятор: двигает машинки (figures/tracks)",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/GrpcTracksClient/GrpcTracksClient.csproj",
+        "-c",
+        "Debug",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build: blinkservice (BlinkService)",
+      "detail": "Подписчик алармов/интеграций",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/BlinkService/BlinkService.csproj",
+        "-c",
+        "Debug",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
       "label": "clean: solution",
       "type": "process",
       "command": "dotnet",
@@ -84,69 +148,13 @@
         }
       }
     },
-    {
-      "label": "infra: up (postgres/keycloak/valhalla/redis/placement)",
-      "detail": "Поднять только инфраструктуру из leaflet_dock в Docker",
-      "type": "process",
-      "command": "docker",
-      "args": [
-        "compose",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
-        "--env-file",
-        "${workspaceFolder}/leaflet_dock/.env",
-        "up",
-        "-d",
-        "postgresservice",
-        "keycloakservice",
-        "valhallaservice",
-        "redis",
-        "placement"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "infra: down",
-      "type": "process",
-      "command": "docker",
-      "args": [
-        "compose",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
-        "--env-file",
-        "${workspaceFolder}/leaflet_dock/.env",
-        "down"
-      ],
-      "problemMatcher": []
-    },
-    {
+   {
       "label": "dapr: run all apps",
-      "detail": "Запуск всех 4 .NET-сервисов на хосте с dapr-сайдкарами (dapr.yaml)",
+      "detail": "Запуск всех 5 .NET-сервисов (leafletalarms, integrationhost, grpctracksclient, aasubservice, blinkservice) с dapr-сайдкарами (dapr.yaml)",
       "type": "process",
       "command": "dapr",
       "args": ["run", "-f", "${workspaceFolder}/dapr.yaml"],
       "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "infra: up (local F5)",
-      "detail": "Инфраструктура для F5 на этой машине: postgres(5433)+keycloak+valhalla. Redis/placement берём из self-hosted Dapr.",
-      "type": "process",
-      "command": "docker",
-      "args": [
-        "compose",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.local.yml",
-        "--env-file",
-        "${workspaceFolder}/leaflet_dock/.env",
-        "up",
-        "-d",
-        "postgresservice",
-        "keycloakservice",
-        "valhallaservice"
-      ],
       "problemMatcher": []
     },
     {
@@ -156,10 +164,13 @@
       "command": "${userHome}/.dapr/bin/daprd",
       "args": [
         "--app-id", "leafletalarms",
-        "--app-port", "5000",
-        "--app-protocol", "grpc",
+        // leafletalarms больше не хостит gRPC — это чистый HTTP-фронт (REST/WebSocket/SPA)
+        // и Dapr-клиент. app-port указывает на реально слушаемый http-порт (HTTP_PORT=8085 в launch.json).
+        "--app-port", "8085",
+        "--app-protocol", "http",
         "--dapr-http-port", "3500",
         "--dapr-grpc-port", "50001",
+        "--metrics-port", "9090",
         "--placement-host-address", "localhost:50005",
         "--scheduler-host-address", "localhost:50006",
         "--resources-path", "${workspaceFolder}/init_files/dapr_components_local",
@@ -192,9 +203,182 @@
       "detail": "preLaunchTask для F5: инфра -> сборка бэкенда -> запуск Dapr-сайдкара.",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "infra: up (local F5)",
         "build: backend (LeafletAlarms)",
         "daprd: leafletalarms (F5)"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "daprd: integrationhost (F5)",
+      "detail": "Dapr-сайдкар для приёмного gRPC-слоя интеграции (отладка по F5). Свои dapr-порты (3501/50011), чтобы не конфликтовать с leafletalarms.",
+      "type": "shell",
+      "command": "${userHome}/.dapr/bin/daprd",
+      "args": [
+        "--app-id", "integrationhost",
+        "--app-port", "5000",
+        "--app-protocol", "grpc",
+        "--dapr-http-port", "3501",
+        "--dapr-grpc-port", "50011",
+        "--metrics-port", "9091",
+        "--placement-host-address", "localhost:50005",
+        "--scheduler-host-address", "localhost:50006",
+        "--resources-path", "${workspaceFolder}/init_files/dapr_components_local",
+        "--log-level", "info"
+      ],
+      "isBackground": true,
+      // см. комментарий в daprd: leafletalarms (F5): с --app-port daprd блокируется
+      // в ожидании приложения, ловим момент готовности самого сайдкара.
+      "problemMatcher": {
+        "pattern": [
+          { "regexp": ".", "file": 1, "location": 2, "message": 3 }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "This will block until the app is listening on that port"
+        }
+      }
+    },
+    {
+      "label": "daprd: stop integrationhost (F5)",
+      "detail": "Останавливает Dapr-сайдкар integrationhost после завершения отладки.",
+      "type": "shell",
+      "command": "pkill -f 'app-id integrationhost' || true",
+      "problemMatcher": []
+    },
+    {
+      "label": "prep: F5 integrationhost",
+      "detail": "preLaunchTask для F5: инфра -> сборка integrationhost -> запуск его Dapr-сайдкара.",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "build: integrationhost (IntegrationHost)",
+        "daprd: integrationhost (F5)"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "daprd: grpctracksclient (F5)",
+      "detail": "Dapr-сайдкар симулятора машинок. dapr-порты 3502/50021.",
+      "type": "shell",
+      "command": "${userHome}/.dapr/bin/daprd",
+      "args": [
+        "--app-id", "grpctracksclient",
+        "--app-port", "20007",
+        "--app-protocol", "grpc",
+        "--dapr-http-port", "3502",
+        "--dapr-grpc-port", "50021",
+        "--metrics-port", "9092",
+        "--placement-host-address", "localhost:50005",
+        "--scheduler-host-address", "localhost:50006",
+        "--resources-path", "${workspaceFolder}/init_files/dapr_components_local",
+        "--log-level", "info"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": [ { "regexp": ".", "file": 1, "location": 2, "message": 3 } ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "This will block until the app is listening on that port"
+        }
+      }
+    },
+    {
+      "label": "daprd: stop grpctracksclient (F5)",
+      "type": "shell",
+      "command": "pkill -f 'app-id grpctracksclient' || true",
+      "problemMatcher": []
+    },
+    {
+      "label": "prep: F5 grpctracksclient",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "build: grpctracksclient (GrpcTracksClient)",
+        "daprd: grpctracksclient (F5)"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "daprd: aasubservice (F5)",
+      "detail": "Dapr-сайдкар интеграции камер. dapr-порты 3503/50031.",
+      "type": "shell",
+      "command": "${userHome}/.dapr/bin/daprd",
+      "args": [
+        "--app-id", "aasubservice",
+        "--app-port", "20008",
+        "--app-protocol", "grpc",
+        "--dapr-http-port", "3503",
+        "--dapr-grpc-port", "50031",
+        "--metrics-port", "9093",
+        "--placement-host-address", "localhost:50005",
+        "--scheduler-host-address", "localhost:50006",
+        "--resources-path", "${workspaceFolder}/init_files/dapr_components_local",
+        "--log-level", "info"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": [ { "regexp": ".", "file": 1, "location": 2, "message": 3 } ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "This will block until the app is listening on that port"
+        }
+      }
+    },
+    {
+      "label": "daprd: stop aasubservice (F5)",
+      "type": "shell",
+      "command": "pkill -f 'app-id aasubservice' || true",
+      "problemMatcher": []
+    },
+    {
+      "label": "prep: F5 aasubservice",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "build: aasubservice (AASubService)",
+        "daprd: aasubservice (F5)"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "daprd: blinkservice (F5)",
+      "detail": "Dapr-сайдкар подписчика алармов (использует акторы + БД). dapr-порты 3504/50041.",
+      "type": "shell",
+      "command": "${userHome}/.dapr/bin/daprd",
+      "args": [
+        "--app-id", "blinkservice",
+        "--app-port", "20009",
+        "--app-protocol", "http",
+        "--dapr-http-port", "3504",
+        "--dapr-grpc-port", "50041",
+        "--metrics-port", "9094",
+        "--placement-host-address", "localhost:50005",
+        "--scheduler-host-address", "localhost:50006",
+        "--resources-path", "${workspaceFolder}/init_files/dapr_components_local",
+        "--log-level", "info"
+      ],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": [ { "regexp": ".", "file": 1, "location": 2, "message": 3 } ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "This will block until the app is listening on that port"
+        }
+      }
+    },
+    {
+      "label": "daprd: stop blinkservice (F5)",
+      "type": "shell",
+      "command": "pkill -f 'app-id blinkservice' || true",
+      "problemMatcher": []
+    },
+    {
+      "label": "prep: F5 blinkservice",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "build: blinkservice (BlinkService)",
+        "daprd: blinkservice (F5)"
       ],
       "problemMatcher": []
     }
