@@ -10,12 +10,10 @@ namespace mt_admin
   public class AuthController : ControllerBase
   {
     private readonly IKeycloakAdminClient _kcAdmin;
-    private readonly HttpClient _http;
 
-    public AuthController(IKeycloakAdminClient kcAdmin, HttpClient http)
+    public AuthController(IKeycloakAdminClient kcAdmin)
     {
       _kcAdmin = kcAdmin;
-      _http = http;
     }
 
 
@@ -24,7 +22,7 @@ namespace mt_admin
     {
       try
       {
-        var dbRealmName = Environment.GetEnvironmentVariable("DB_REALM_NAME");
+        var dbRealmName = EnvConfig.Require("DB_REALM_NAME");
         var client_id = Constants.PubClient;
         var content = await _kcAdmin.GetTokenAsync(dbRealmName, client_id, dto.Username, dto.Password);
         return Ok(content);
@@ -59,7 +57,7 @@ namespace mt_admin
       if (string.IsNullOrEmpty(req.refresh_token))
         return Unauthorized("No refresh token");
 
-      var dbRealmName = Environment.GetEnvironmentVariable("DB_REALM_NAME");
+      var dbRealmName = EnvConfig.Require("DB_REALM_NAME");
 
 
       // Проверка refresh токена

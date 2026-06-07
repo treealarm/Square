@@ -34,11 +34,6 @@ builder.Services.AddDaprPubSubClient();
 builder.Services.AddSingleton<ISubService, SubService>();
 builder.Services.AddSingleton<ISquareIntegration>(SquareIntegration.Default);
 
-//builder.Services.AddSingleton<ISubServiceLu, SubServiceLu>();
-//builder.Services.AddSingleton<IPubServiceLu, PubServiceLu>();
-//builder.Services.AddHostedService<SubHostedService>();
-//builder.Services.AddHostedService<TestPubHostedService>();
-
 builder.Services.AddSingleton<CameraManager>();
 builder.Services.AddSingleton<CameraEventServiceManager>();
 builder.Services.AddSingleton<ICameraManager>(sp => sp.GetRequiredService<CameraManager>());

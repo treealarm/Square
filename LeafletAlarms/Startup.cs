@@ -35,10 +35,10 @@ namespace LeafletAlarms
       services.AddSingleton<KeyCloakConnectorService>();
 
 
-      var Url = Environment.GetEnvironmentVariable("KEYCLOAK_URL") ?? "http://localhost:8080";
-      var AdminUser = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_USER") ?? "admin";
-      var AdminPassword = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_PASSWORD") ?? "admin";
-      var ClientId = Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID") ?? "admin-cli";
+      var Url = EnvConfig.Require("KEYCLOAK_URL");
+      var AdminUser = EnvConfig.Require("KEYCLOAK_ADMIN_USER");
+      var AdminPassword = EnvConfig.Require("KEYCLOAK_ADMIN_PASSWORD");
+      var ClientId = EnvConfig.Require("KEYCLOAK_CLIENT_ID");
 
 
       services.AddSingleton<IKeycloakAdminClient>(sp =>

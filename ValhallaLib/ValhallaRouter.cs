@@ -1,4 +1,5 @@
-﻿using LeafletAlarmsGrpc;
+﻿using Domain;
+using LeafletAlarmsGrpc;
 using System.Web;
 using System.Text.Json;
 using System.Net.Http.Headers;
@@ -35,20 +36,9 @@ namespace ValhallaLib
 
     public static string GetValhallaUrl()
     {
-      var allVars = Environment.GetEnvironmentVariables();
-
-      //foreach(var key in allVars.Keys)
-      //{
-      //  Console.WriteLine($"{key}- {allVars[key]}");
-      //}
-      var VALHALLA_URL = Environment.GetEnvironmentVariable("VALHALLA_URL");
-      if (!string.IsNullOrEmpty(VALHALLA_URL))
-      {
-        Console.WriteLine($"valhalla :{VALHALLA_URL}");
-        return VALHALLA_URL;
-      }
-      Console.Error.WriteLine("GetValhallaUrl return empty string");
-      return string.Empty;
+      var url = EnvConfig.Require("VALHALLA_URL");
+      Console.WriteLine($"valhalla :{url}");
+      return url;
     }
     private async Task<RootResponse?> GetRoutFromValhalla(string request)
     {

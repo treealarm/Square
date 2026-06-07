@@ -14,33 +14,28 @@ namespace LeafletAlarms.Authentication
     private DateTime _tokenExpiration = new DateTime();
     private DateTime _refreshTokenExpiration = new DateTime();
 
-    //var Url = Environment.GetEnvironmentVariable("KEYCLOAK_URL") ?? "http://localhost:8080";
-    //var AdminUser = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_USER") ?? "admin";
-    //var AdminPassword = Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_PASSWORD") ?? "admin";
-    //var ClientId = Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID") ?? "admin-cli";
-
     static public string GetRealmName()
     {
-      return Environment.GetEnvironmentVariable("DB_REALM_NAME") ?? "myrealm";
+      return EnvConfig.Require("DB_REALM_NAME");
     }
 
     static public string GetBaseAddr()
     {
-      return Environment.GetEnvironmentVariable("KEYCLOAK_URL") ?? "http://localhost:8080";
+      return EnvConfig.Require("KEYCLOAK_URL");
     }
 
     static public string GetClientId()
     {
-      return Environment.GetEnvironmentVariable("KEYCLOAK_CLIENT_ID") ?? "admin-cli";
+      return EnvConfig.Require("KEYCLOAK_CLIENT_ID");
     }
 
     static public string GetAdminUser()
     {
-      return Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_USER") ?? "admin";
+      return EnvConfig.Require("KEYCLOAK_ADMIN_USER");
     }
     static public string GetAdminPass()
     {
-      return Environment.GetEnvironmentVariable("KEYCLOAK_ADMIN_PASSWORD") ?? "admin";
+      return EnvConfig.Require("KEYCLOAK_ADMIN_PASSWORD");
     }
     public KeyCloakConnectorService()
     {

@@ -4,6 +4,8 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_ID": "aasubservice",
+        "LEAFLETALARM_APP_ID": "integrationhost",
         "PUBSUB_NAME": "orderpubsub"
       },
       "dotnetRunMessages": true,
@@ -13,6 +15,8 @@
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "APP_ID": "aasubservice",
+        "LEAFLETALARM_APP_ID": "integrationhost",
         "PUBSUB_NAME": "orderpubsub"
       },
       "dotnetRunMessages": true,

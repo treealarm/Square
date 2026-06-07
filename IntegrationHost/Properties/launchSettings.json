@@ -10,7 +10,8 @@
         "POSTGRES_USER": "keycloak",
         "POSTGRES_PASSWORD": "password",
         "DB_REALM_NAME": "myrealm",
-        "KEYCLOAK_URL": "http://keycloakservice:8080"
+        "MapDatabase__PgHost": "localhost",
+        "MapDatabase__PgPort": "5432"
       },
       "dotnetRunMessages": true
     }

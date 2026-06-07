@@ -148,69 +148,13 @@
         }
       }
     },
-    {
-      "label": "infra: up (postgres/keycloak/valhalla/redis/placement)",
-      "detail": "Поднять только инфраструктуру из leaflet_dock в Docker",
-      "type": "process",
-      "command": "docker",
-      "args": [
-        "compose",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
-        "--env-file",
-        "${workspaceFolder}/leaflet_dock/.env",
-        "up",
-        "-d",
-        "postgresservice",
-        "keycloakservice",
-        "valhallaservice",
-        "redis",
-        "placement"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "infra: down",
-      "type": "process",
-      "command": "docker",
-      "args": [
-        "compose",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
-        "--env-file",
-        "${workspaceFolder}/leaflet_dock/.env",
-        "down"
-      ],
-      "problemMatcher": []
-    },
-    {
+   {
       "label": "dapr: run all apps",
       "detail": "Запуск всех 5 .NET-сервисов (leafletalarms, integrationhost, grpctracksclient, aasubservice, blinkservice) с dapr-сайдкарами (dapr.yaml)",
       "type": "process",
       "command": "dapr",
       "args": ["run", "-f", "${workspaceFolder}/dapr.yaml"],
       "isBackground": true,
-      "problemMatcher": []
-    },
-    {
-      "label": "infra: up (local F5)",
-      "detail": "Инфраструктура для F5 на этой машине: postgres(5433)+keycloak+valhalla. Redis/placement берём из self-hosted Dapr.",
-      "type": "process",
-      "command": "docker",
-      "args": [
-        "compose",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.yml",
-        "-f",
-        "${workspaceFolder}/leaflet_dock/docker-compose.local.yml",
-        "--env-file",
-        "${workspaceFolder}/leaflet_dock/.env",
-        "up",
-        "-d",
-        "postgresservice",
-        "keycloakservice",
-        "valhallaservice"
-      ],
       "problemMatcher": []
     },
     {
@@ -259,7 +203,6 @@
       "detail": "preLaunchTask для F5: инфра -> сборка бэкенда -> запуск Dapr-сайдкара.",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "infra: up (local F5)",
         "build: backend (LeafletAlarms)",
         "daprd: leafletalarms (F5)"
       ],
@@ -308,7 +251,6 @@
       "detail": "preLaunchTask для F5: инфра -> сборка integrationhost -> запуск его Dapr-сайдкара.",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "infra: up (local F5)",
         "build: integrationhost (IntegrationHost)",
         "daprd: integrationhost (F5)"
       ],
@@ -351,7 +293,6 @@
       "label": "prep: F5 grpctracksclient",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "infra: up (local F5)",
         "build: grpctracksclient (GrpcTracksClient)",
         "daprd: grpctracksclient (F5)"
       ],
@@ -394,7 +335,6 @@
       "label": "prep: F5 aasubservice",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "infra: up (local F5)",
         "build: aasubservice (AASubService)",
         "daprd: aasubservice (F5)"
       ],
@@ -437,7 +377,6 @@
       "label": "prep: F5 blinkservice",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "infra: up (local F5)",
         "build: blinkservice (BlinkService)",
         "daprd: blinkservice (F5)"
       ],
