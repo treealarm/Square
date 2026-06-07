@@ -1,4 +1,3 @@
-using Dapr.Messaging.PublishSubscribe.Extensions;
 using Domain;
 using Keycloak.Net.Models.Clients;
 using KeycloakAdmin;
@@ -57,9 +56,10 @@ namespace LeafletAlarms
 
       services.AddHostedService<InitHostedService>();
 
-      services.AddDaprPubSubClient();
-      services.AddSingleton<ISubService, SubService>();
-      services.AddSingleton<IPubService, PubService>(); 
+      // LeafletAlarms только ПУБЛИКУЕТ (update-сервисы) — на pub-sub не подписывается
+      // (фронт-обновления идут поллингом БД в StateWebSocket). Поэтому ISubService/
+      // AddDaprPubSubClient тут не нужны, оставлен только издатель.
+      services.AddSingleton<IPubService, PubService>();
 
       DbLayer.ServicesConfigurator.ConfigureServices(services, Configuration);
       DataChangeLayer.ServicesConfigurator.ConfigureServices(services);

@@ -12,11 +12,14 @@
   не влияя на фронт-API;
 - интеграционный слой деплоился/перезапускался/масштабировался независимо.
 
-**Почему это возможно без поломок:** write-путь уже развязан с фронтом через шину —
-`TracksUpdateService`/`StatesUpdateService` пишут в БД и публикуют в pub-sub (`IPubService`),
-а фронтовый [WebSockListService](../LeafletAlarms/Services/WebSockListService.cs) **подписан**
-на pub-sub (`ISubService`). Значит, запись из отдельного процесса → БД + pub-sub → WebSocket
-LeafletAlarms подхватит. Живые обновления сохраняются.
+**Почему это возможно без поломок:** фронт-обновления развязаны с write-путём через **общую БД**,
+а не через pub-sub. Фронтовый [StateWebSocket](../LeafletAlarms/Services/StateWebSocket.cs) в цикле
+`DoWork` **поллит БД раз в секунду** (`PollBox`/`PollStates`/`PollValues`). Значит запись из отдельного
+процесса (IntegrationHost) в ту же PostgreSQL подхватится поллингом фронта. Живые обновления
+сохраняются и вообще не зависят от pub-sub.
+(Pub-sub — `IPubService` в `TracksUpdateService`/`StatesUpdateService` — используется ДРУГИМИ
+подписчиками: `BlinkService` (`AlarmStatesChanged`) и продьюсерским `IntegrationSyncFull`
+(`OnUpdateIntegros`), не фронтовым сокетом.)
 
 **Важно:** это НЕ «тонкий слой». `GRPCServiceProxy` зависит от write-сервисов
 (`ITracksUpdateService`, `IMapService`, `FileSystemService`, …), поэтому IntegrationHost тащит
@@ -62,7 +65,8 @@ LeafletAlarms подхватит. Живые обновления сохраня
 - **PostgreSQL:** оба процесса через EF. Миграции/`EnsureCreated` владеет **только LeafletAlarms**;
   IntegrationHost лишь подключается (не мигрирует) — иначе гонка схемы.
 - **Redis pub-sub (Dapr):** IntegrationHost публикует `OnUpdateIntegros`/`AlarmStatesChanged`;
-  LeafletAlarms подписан. Уже работает кросс-процессно.
+  подписчики — `BlinkService` и продьюсерский `IntegrationSyncFull` (НЕ фронт LeafletAlarms).
+  Уже работает кросс-процессно.
 - **Static-files volume:** `FileSystemService.Upload` пишет в локальную папку (base path из
   `RoutingSettings`), а `FilesController` раздаёт. Нужен **общий volume**, смонтированный в оба
   контейнера по одному пути (иначе снимки камер не отобразятся). Путь — через общий env/настройку.
@@ -104,7 +108,7 @@ LeafletAlarms подхватит. Живые обновления сохраня
 6. **Миграции**: IntegrationHost не регистрирует `InitHostedService` → их применяет только LeafletAlarms. ✓
 
 > **Не проверено в рантайме (нужен полный стек Dapr+Postgres+Redis+Keycloak):** фактический приём
-> пушей integrationhost'ом, кросс-процессный pub-sub → WebSocket фронта, общий том для снимков,
+> пушей integrationhost'ом, фронт-поллинг общей БД (StateWebSocket), общий том для снимков,
 > корректность смены протокола сайдкара leafletalarms (http). См. раздел «Проверка».
 
 ## Проверка
@@ -112,8 +116,8 @@ LeafletAlarms подхватит. Живые обновления сохраня
 - **Автономный фронт:** LeafletAlarms стартует без приёмного gRPC; REST/WebSocket/React работают.
 - **Продьюсеры → IntegrationHost:** GrpcTracksClient двигает машинки, AASubService шлёт снапшоты/
   состояния → данные в БД, события в pub-sub.
-- **Живой фронт:** изменения от продьюсеров видны в UI через WebSocket (через pub-sub) — т.е.
-  кросс-процессный путь работает.
+- **Живой фронт:** изменения от продьюсеров видны в UI — `StateWebSocket` поллит общую БД, куда
+  пишет IntegrationHost (кросс-процессный путь через общую БД, без pub-sub).
 - **Файлы:** снапшот, загруженный IntegrationHost, отдаётся `FilesController` LeafletAlarms (общий volume).
 - **Команды:** `get_snapshot`/PTZ/`Occupate` из UI (LeafletAlarms `IntegroController`) доходят до
   продьюсера, статус по uid возвращается (`UpdateActionResults` → IntegroGrpcImp в IntegrationHost).
