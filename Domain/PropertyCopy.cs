@@ -1,12 +1,124 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text.Json;
 
 namespace Domain
 {
   public static class PropertyCopy
   {
+    private enum CopyKind
+    {
+      Direct,
+      GuidToString,
+      StringToGuid
+    }
+
+    private readonly struct CopyStep
+    {
+      public readonly Func<object, object> Get;
+      public readonly Action<object, object> Set;
+      public readonly CopyKind Kind;
+
+      public CopyStep(Func<object, object> get, Action<object, object> set, CopyKind kind)
+      {
+        Get = get;
+        Set = set;
+        Kind = kind;
+      }
+    }
+
+    // Кэш плана копирования по паре типов (source, target) — строится один раз через
+    // GetProperties()/GetFields() и reflection-сопоставление, дальше копирование идёт
+    // через скомпилированные делегаты вместо PropertyInfo.GetValue/SetValue на каждый вызов.
+    private static readonly ConcurrentDictionary<(Type, Type), CopyStep[]> _planCache = new();
+
+    private static Func<object, object> CompileGetter(MemberInfo member, Type declaringType, Type memberType)
+    {
+      var objParam = Expression.Parameter(typeof(object), "obj");
+      var typedObj = Expression.Convert(objParam, declaringType);
+      Expression access = member is PropertyInfo prop
+        ? Expression.Property(typedObj, prop)
+        : Expression.Field(typedObj, (FieldInfo)member);
+
+      var boxed = Expression.Convert(access, typeof(object));
+      return Expression.Lambda<Func<object, object>>(boxed, objParam).Compile();
+    }
+
+    private static Action<object, object> CompileSetter(MemberInfo member, Type declaringType, Type memberType)
+    {
+      var objParam = Expression.Parameter(typeof(object), "obj");
+      var valueParam = Expression.Parameter(typeof(object), "value");
+      var typedObj = Expression.Convert(objParam, declaringType);
+      var typedValue = Expression.Convert(valueParam, memberType);
+
+      Expression access = member is PropertyInfo prop
+        ? Expression.Property(typedObj, prop)
+        : Expression.Field(typedObj, (FieldInfo)member);
+
+      var assign = Expression.Assign(access, typedValue);
+      return Expression.Lambda<Action<object, object>>(assign, objParam, valueParam).Compile();
+    }
+
+    private static CopyStep[] BuildPlan(Type sourceType, Type targetType)
+    {
+      var steps = new List<CopyStep>();
+
+      Type GetUnderlyingType(Type t) => Nullable.GetUnderlyingType(t) ?? t;
+
+      foreach (var sourceProperty in sourceType.GetProperties())
+      {
+        if (!IsSimpleType(sourceProperty.PropertyType))
+          continue;
+
+        foreach (var targetProperty in targetType.GetProperties())
+        {
+          if (sourceProperty.Name != targetProperty.Name || targetProperty.SetMethod == null)
+            continue;
+
+          var sourceUnderlying = GetUnderlyingType(sourceProperty.PropertyType);
+          var targetUnderlying = GetUnderlyingType(targetProperty.PropertyType);
+
+          CopyKind? kind = null;
+          if (sourceUnderlying == targetUnderlying)
+            kind = CopyKind.Direct;
+          else if (sourceUnderlying == typeof(Guid) && targetUnderlying == typeof(string))
+            kind = CopyKind.GuidToString;
+          else if (sourceUnderlying == typeof(string) && targetUnderlying == typeof(Guid))
+            kind = CopyKind.StringToGuid;
+
+          if (kind == null)
+            continue;
+
+          steps.Add(new CopyStep(
+            CompileGetter(sourceProperty, sourceType, sourceProperty.PropertyType),
+            CompileSetter(targetProperty, targetType, targetProperty.PropertyType),
+            kind.Value));
+        }
+      }
+
+      foreach (var sourceField in sourceType.GetFields())
+      {
+        if (!IsSimpleType(sourceField.FieldType))
+          continue;
+
+        foreach (var targetField in targetType.GetFields())
+        {
+          if (sourceField.Name != targetField.Name || sourceField.FieldType != targetField.FieldType)
+            continue;
+
+          steps.Add(new CopyStep(
+            CompileGetter(sourceField, sourceType, sourceField.FieldType),
+            CompileSetter(targetField, targetType, targetField.FieldType),
+            CopyKind.Direct));
+        }
+      }
+
+      return steps.ToArray();
+    }
+
     public static void CopyAllToAsJson<T, T1>(this T source, out T1? target)
     {
       var json = JsonSerializer.Serialize(source);
@@ -168,62 +280,36 @@ namespace Domain
 
     public static void CopyAllTo<T, T1>(this T source, T1 target)
     {
-      var type = typeof(T);
-      var type1 = typeof(T1);
+      if (source == null || target == null)
+        return;
 
-      foreach (var sourceProperty in type.GetProperties())
+      var plan = _planCache.GetOrAdd((typeof(T), typeof(T1)), key => BuildPlan(key.Item1, key.Item2));
+
+      foreach (var step in plan)
       {
-        foreach (var targetProperty in type1.GetProperties()
-          .Where(targetProperty => sourceProperty.Name == targetProperty.Name)
-          .Where(targetProperty => targetProperty.SetMethod != null))
+        var value = step.Get(source);
+
+        switch (step.Kind)
         {
-          if (sourceProperty == null || !IsSimpleType(sourceProperty.PropertyType))
-          {
-            continue;
-          }
+          case CopyKind.Direct:
+            step.Set(target, value);
+            break;
 
-          Type GetUnderlyingType(Type t) => Nullable.GetUnderlyingType(t) ?? t;
-
-          var sourceType = GetUnderlyingType(sourceProperty.PropertyType);
-          var targetType = GetUnderlyingType(targetProperty.PropertyType);
-
-          if (sourceType == targetType)
-          {
-            targetProperty.SetValue(target, sourceProperty.GetValue(source, null), null);
-          }
-          else if (sourceType == typeof(Guid) && targetType == typeof(string))
-          {
-            var guid = (Guid?)sourceProperty.GetValue(source, null);
-            if (guid.HasValue)
+          case CopyKind.GuidToString:
+            if (value is Guid guid)
             {
-              var objectIdLike = Utils.ConvertGuidToObjectId(guid.Value);
-              targetProperty.SetValue(target, objectIdLike, null);
+              step.Set(target, Utils.ConvertGuidToObjectId(guid));
             }
-          }
-          else if (sourceType == typeof(string) && targetType == typeof(Guid))
-          {
-            var str = (string?)sourceProperty.GetValue(source, null);
-            if (!string.IsNullOrEmpty(str))
+            break;
+
+          case CopyKind.StringToGuid:
+            if (value is string str && !string.IsNullOrEmpty(str))
             {
-              var guid = Utils.ConvertObjectIdToGuid(str);
-              if (guid != null)
-                targetProperty.SetValue(target, guid.Value, null);
+              var converted = Utils.ConvertObjectIdToGuid(str);
+              if (converted != null)
+                step.Set(target, converted.Value);
             }
-          }
-
-        }
-      }
-
-      foreach (var sourceField in type.GetFields())
-      {
-        foreach (var targetField in type1.GetFields()
-          .Where(targetField => sourceField.Name == targetField.Name))
-        {
-          if (!IsSimpleType(sourceField.FieldType))
-          {
-            continue;
-          }
-          targetField.SetValue(target, sourceField.GetValue(source));
+            break;
         }
       }
     }

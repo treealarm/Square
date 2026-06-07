@@ -74,7 +74,11 @@ namespace LeafletAlarms.Authentication
     )
     {
       services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
-      services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
+
+      // Регистрируем конкретный тип, чтобы InitHostedService мог прогреть JWT-ключ
+      // через тот же singleton-инстанс, который потом отдаёт IssuerSigningKeyResolver.
+      services.AddSingleton<ConfigureJwtBearerOptions>();
+      services.AddSingleton<IConfigureOptions<JwtBearerOptions>>(sp => sp.GetRequiredService<ConfigureJwtBearerOptions>());
 
       var AuthenticationBuilder = services.AddAuthentication(options =>
       {

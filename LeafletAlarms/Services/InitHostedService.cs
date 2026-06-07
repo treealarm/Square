@@ -1,4 +1,5 @@
 ﻿using Domain;
+using LeafletAlarms.Authentication;
 
 public class InitHostedService : IHostedService, IDisposable
 {
@@ -27,6 +28,24 @@ public class InitHostedService : IHostedService, IDisposable
 
       await levelService.Init();
       await stateService.Init();
+    }
+
+    // Прогреваем JWT signing key ДО приёма трафика. Раньше ключ лениво грузился
+    // внутри IssuerSigningKeyResolver через блокирующий .Result на каждый
+    // авторизованный запрос — это и было причиной многосекундных задержек на
+    // всех Bearer-эндпоинтах (карта/дерево/свойства), хотя сам Keycloak отвечает
+    // за миллисекунды: блокировка пула потоков на ожидании HTTP к Keycloak
+    // каскадно тормозила остальные запросы.
+    var jwtOptions = _serviceProvider.GetRequiredService<ConfigureJwtBearerOptions>();
+    var keyLoaded = await jwtOptions.EnsureKeyLoadedAsync(
+      maxAttempts: 30,
+      retryDelay: TimeSpan.FromSeconds(2),
+      cancellationToken);
+
+    if (!keyLoaded)
+    {
+      _logger.LogWarning("JWT signing key was not loaded from Keycloak at startup. " +
+        "Authenticated requests will return 401 until the key becomes available.");
     }
 
     // Запускаем фоновую задачу
