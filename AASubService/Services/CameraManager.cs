@@ -608,22 +608,22 @@ namespace AASubService
         var profiles = await camera.GetProfiles();
         if (move_type == "relative")
         {
-          await ptz.RelativeMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
+          await ptz.RelativeMoveAsync(profiles?.FirstOrDefault()?.Token ?? "", pan, tilt, zoom);
         }          
         else if(move_type == "absolute")
         {
-          await ptz.AbsoluteMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
+          await ptz.AbsoluteMoveAsync(profiles?.FirstOrDefault()?.Token ?? "", pan, tilt, zoom);
         }
         else if (move_type == "continuous")
         {
-          await ptz.ContinuousMoveAsync(profiles?.FirstOrDefault() ?? "", pan, tilt, zoom);
+          await ptz.ContinuousMoveAsync(profiles?.FirstOrDefault()?.Token ?? "", pan, tilt, zoom);
         }
         else
         {
-          await ptz.StopAsync(profiles?.FirstOrDefault() ?? "");
+          await ptz.StopAsync(profiles?.FirstOrDefault()?.Token ?? "");
         }
         //await Task.Delay(100, token);
-        //await ptz.StopAsync(profiles?.FirstOrDefault() ?? "", true, true);
+        //await ptz.StopAsync(profiles?.FirstOrDefault()?.Token ?? "", true, true);
       }
       catch (Exception ex)
       {
