@@ -16,9 +16,6 @@ namespace LeafletAlarms.Services
       _serviceProvider = provider;
     }
 
-    ~WebSockListService()
-    {
-    }
     public static ConcurrentDictionary<string, StateWebSocket> StateSockets { get; set; } =
       new ConcurrentDictionary<string, StateWebSocket>();
     public async Task PushAsync(object context, WebSocket webSocket)
