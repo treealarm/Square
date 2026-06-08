@@ -7,48 +7,17 @@ namespace IntegrationUtilsLib
 {
   public class Utils
   {
-    private static GrpcUpdaterClient<IntegroServiceClient>? _clientIntegro;
-    private static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>? _clientBase;
+    private static readonly Lazy<GrpcUpdaterClient<IntegroServiceClient>> _clientIntegro =
+      new(() => new GrpcUpdaterClient<IntegroServiceClient>());
+    private static readonly Lazy<GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>> _clientBase =
+      new(() => new GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>());
     private static Dictionary<string,string> _idsCash = new Dictionary<string, string>();
-    private static readonly object _lock = new object(); 
+    private static readonly object _lock = new object();
 
-
-    internal static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro
-    {
-      get
-      {
-        var client = _clientIntegro;
-        // Проверяем, если клиент не существует или мертв, создаем новый
-        if (client != null && !client.IsDead)
-        {
-          return client;
-        }
-
-        lock (_lock)
-        {
-          _clientIntegro = new GrpcUpdaterClient<IntegroServiceClient>();
-          return _clientIntegro!;
-        }        
-      }
-    }
-    internal static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase
-    {
-      get
-      {
-        var client = _clientBase;
-        // Проверяем, если клиент не существует или мертв, создаем новый
-        if (client != null && !client.IsDead)
-        {
-          return client;
-        }
-
-        lock (_lock)
-        {
-          _clientBase = new GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>();
-          return _clientBase!;
-        }
-      }
-    }
+    // gRPC-канал к dapr sidecar сам переподключается при обрывах связи —
+    // пересоздавать клиент-обёртку не нужно, достаточно создать один раз.
+    internal static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro => _clientIntegro.Value;
+    internal static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase => _clientBase.Value;
 
     public static async Task<string?> GenerateObjectId(string prefix, long number)
     {
