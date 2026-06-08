@@ -9,6 +9,12 @@ namespace GrpcTracksClient
   public static class GeoCalculator
   {
     private const double EarthRadius = 6371000; // Радиус Земли в метрах
+    private static readonly Random _random = new Random();
+
+    public static double GetRandomDouble(double min, double max)
+    {
+      return min + _random.NextDouble() * (max - min);
+    }
 
     public static double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
     {

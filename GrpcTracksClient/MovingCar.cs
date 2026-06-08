@@ -114,7 +114,7 @@ public class MovingCar
     }
 
     // Выполняем шаг
-    _speed_ms = GetRandomDouble(7, 12); // Speed in m/s so it is meeters per second
+    _speed_ms = GeoCalculator.GetRandomDouble(7, 12); // Speed in m/s so it is meeters per second
 
     _currentDistance += _speed_ms;
     if (_currentDistance > _segmentDistance)
@@ -167,8 +167,8 @@ public class MovingCar
     else
     {
       // Случайная конечная точка для свободного состояния
-      var endLat = GetRandomDouble(55.750, 55.770);
-      var endLon = GetRandomDouble(37.567, 37.680);
+      var endLat = GeoCalculator.GetRandomDouble(55.750, 55.770);
+      var endLon = GeoCalculator.GetRandomDouble(37.567, 37.680);
       _route = await _router.GetRoute(_currentPosition, new ProtoCoord { Lat = endLat, Lon = endLon });
     }
 
@@ -193,18 +193,13 @@ public class MovingCar
   {
     return new ProtoCoord
     {
-      Lat = GetRandomDouble(55.750, 55.770),
-      Lon = GetRandomDouble(37.567, 37.680)
+      Lat = GeoCalculator.GetRandomDouble(55.750, 55.770),
+      Lon = GeoCalculator.GetRandomDouble(37.567, 37.680)
     };
   }
 
   private static string GenerateRandomColor()
   {
     return $"#{_random.Next(20):X2}{_random.Next(256):X2}{_random.Next(100):X2}";
-  }
-
-  private static double GetRandomDouble(double min, double max)
-  {
-    return _random.NextDouble() * (max - min) + min;
   }
 }
