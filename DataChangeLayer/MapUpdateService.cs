@@ -36,11 +36,8 @@ namespace DataChangeLayer
 
     public async Task<ObjPropsDTO?> UpdateProperties(ObjPropsDTO updatedMarker)
     {
-      //if (string.IsNullOrEmpty(updatedMarker.id))
-      {
-        await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
-      }
-
+      await _mapService.UpdateHierarchyAsync(new List<BaseMarkerDTO>() { updatedMarker });
+ 
       var marker = await _mapService.GetAsync(updatedMarker?.id);
 
       if (marker is null)

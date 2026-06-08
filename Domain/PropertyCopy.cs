@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.Json;
 
 namespace Domain
 {
@@ -119,12 +118,6 @@ namespace Domain
       return steps.ToArray();
     }
 
-    public static void CopyAllToAsJson<T, T1>(this T source, out T1? target)
-    {
-      var json = JsonSerializer.Serialize(source);
-
-      target = JsonSerializer.Deserialize<T1>(json);
-    }
     public static T1 CopyAll<T, T1>(this T source) where T1 : new()
     {
       var target = new T1();
@@ -149,110 +142,6 @@ namespace Domain
           underlyingType == typeof(TimeSpan) ||
           underlyingType == typeof(Guid);
     }
-
-    public static void CopyAllToJson<T, T1>(this T source, T1 target)
-    {
-      if (source == null)
-      {
-        throw new ArgumentNullException(nameof(source));
-      }
-
-      if (target == null)
-      {
-        throw new ArgumentNullException(nameof(target));
-      }
-
-      // Сериализация источника в JSON и десериализация в промежуточный объект
-      var json = JsonSerializer.Serialize(source);
-      var tempTarget = JsonSerializer.Deserialize<T1>(json);
-
-      if (tempTarget != null)
-      {
-        foreach (var property in typeof(T1).GetProperties())
-        {
-          if (property.CanWrite)
-          {
-            property.SetValue(target, property.GetValue(tempTarget));
-          }
-        }
-      }
-    }
-
-    public static T_DTO? ConvertDB2DTO<T_DB, T_DTO>(T_DB dbObj)
-       where T_DTO : new()
-    {
-      if (dbObj == null)
-      {
-        return default;
-      }
-
-      T_DTO result = new T_DTO();
-      dbObj.CopyAllTo(result);
-      return result;
-    }
-
-    public static Dictionary<string, T_DTO> ConvertListDB2DTO<T_DB, T_DTO>(List<T_DB> dbObjs)
-      where T_DTO : new()
-    {
-      var result = new Dictionary<string, T_DTO>();
-
-      foreach (var dbItem in dbObjs)
-      {
-        var idProperty = typeof(T_DB).GetProperty("id");
-        if (idProperty == null)
-        {
-          throw new InvalidOperationException($"Тип {typeof(T_DB).Name} не содержит свойства 'id'");
-        }
-
-        var idValue = idProperty.GetValue(dbItem)?.ToString();
-        if (idValue == null)
-        {
-          throw new InvalidOperationException($"Свойство 'id' в объекте {dbItem} имеет значение null");
-        }
-
-        result.Add(idValue, ConvertDB2DTO<T_DB, T_DTO>(dbItem)!);
-      }
-
-      return result;
-    }
-
-    public static T_DB? ConvertDTO2DB<T_DB,T_DTO>(T_DTO dto)
-       where T_DB : new()
-    {
-      if (dto == null)
-      {
-        return default;
-      }
-
-      var dbo = new T_DB();
-     
-      dto.CopyAllToJson(dbo);
-      return dbo;
-    }
-
-    public static List<T_DB> ConvertListDTO2DB<T_DB, T_DTO>(List<T_DTO> dtoObjs)
-     where T_DB : new()
-    {
-      if (dtoObjs == null)
-      {
-        return new List<T_DB>(); 
-      }
-
-      var result = new List<T_DB>();
-
-      foreach (var dtoItem in dtoObjs)
-      {
-        var dbItem = ConvertDTO2DB<T_DB, T_DTO>(dtoItem);
-        if (dbItem != null)
-        {
-          result.Add(dbItem);
-        }
-      }
-
-      return result;
-    }
-
-
 
     public static T? CloneObject<T>(T source) where T : new()
     {
