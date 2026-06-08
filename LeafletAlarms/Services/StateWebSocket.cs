@@ -400,6 +400,9 @@ namespace LeafletAlarms.Services
       foreach (var id in _dicGeo.Keys)
         _dicIds.Add(id);
 
+      // TODO: временная диагностика бага "карта не перерисовывается без панорамирования" — убрать после диагностики
+      Console.WriteLine($"[PollBox] box={(box == null ? "null" : "set")} geo={geo.Count} added={added.Count} updated={updated.Count} removed={removed.Count}");
+
 
       // 3. Вызываем UpdateOwners только если есть изменения
       if (added.Any() || updated.Any() || removed.Any())

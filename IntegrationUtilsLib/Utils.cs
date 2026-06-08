@@ -7,17 +7,40 @@ namespace IntegrationUtilsLib
 {
   public class Utils
   {
-    private static readonly Lazy<GrpcUpdaterClient<IntegroServiceClient>> _clientIntegro =
-      new(() => new GrpcUpdaterClient<IntegroServiceClient>());
-    private static readonly Lazy<GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>> _clientBase =
-      new(() => new GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>());
+    private static GrpcUpdaterClient<IntegroServiceClient>? _clientIntegro;
+    private static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>? _clientBase;
     private static Dictionary<string,string> _idsCash = new Dictionary<string, string>();
     private static readonly object _lock = new object();
 
-    // gRPC-канал к dapr sidecar сам переподключается при обрывах связи —
-    // пересоздавать клиент-обёртку не нужно, достаточно создать один раз.
-    internal static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro => _clientIntegro.Value;
-    internal static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase => _clientBase.Value;
+    // На старте sidecar dapr может быть ещё не готов — конструктор GrpcUpdaterClient
+    // бросит исключение. В этом случае поле остаётся null, и следующий доступ
+    // повторит попытку создания (Lazy<T> в этом месте кэширует исключение навсегда —
+    // именно это и ломало переподключение). После успешного создания канал к dapr
+    // sidecar сам переподключается при обрывах связи — пересоздавать не нужно.
+    internal static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro
+    {
+      get
+      {
+        if (_clientIntegro != null) { return _clientIntegro; }
+        lock (_lock)
+        {
+          _clientIntegro ??= new GrpcUpdaterClient<IntegroServiceClient>();
+          return _clientIntegro;
+        }
+      }
+    }
+    internal static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase
+    {
+      get
+      {
+        if (_clientBase != null) { return _clientBase; }
+        lock (_lock)
+        {
+          _clientBase ??= new GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>();
+          return _clientBase;
+        }
+      }
+    }
 
     public static async Task<string?> GenerateObjectId(string prefix, long number)
     {
