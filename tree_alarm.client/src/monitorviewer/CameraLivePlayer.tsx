@@ -1,13 +1,13 @@
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { vmsRecFetch } from './vmsRecFetch';
 
-// Ported from vms_rec's web_vms.client/src/components/CameraStream.tsx — self-contained WHEP/WebRTC
-// player, no changes needed beyond the file move (it already took baseUrl/streamName as plain
-// props, no Redux dependency). MediaMTX's WHEP endpoint sends permissive CORS headers by default
-// (the protocol is designed to be embeddable from any origin), so no vms_rec backend change is
-// needed for live video specifically — only the archive/recording-ranges API needs CORS (see
-// vmsRecFetch.ts and Program.cs's SQUARE_FRONTEND_ORIGIN gate).
+// Ported from vms_rec's web_vms.client/src/components/CameraStream.tsx — same WHEP/WebRTC
+// mechanics and the same plain video element (no on-screen debug overlay; the WHEP URL goes to
+// the console only, exactly like the original). MediaMTX's WHEP endpoint sends permissive CORS
+// headers by default (the protocol is designed to be embeddable from any origin), so no vms_rec
+// backend change is needed for live video specifically — only the archive/recording-ranges API
+// needs CORS (see vmsRecFetch.ts and Program.cs's SQUARE_FRONTEND_ORIGIN gate).
 interface CameraLivePlayerProps {
   cameraId: string;
   streamName: string;
@@ -122,6 +122,7 @@ export default function CameraLivePlayer({ cameraId, streamName, baseUrl }: Came
         if (isSessionExpired(currentSession, pc)) return;
 
         const url = `${baseUrl.replace(/\/$/, '')}/${streamName}/whep`;
+        console.log('WHEP url =', url);
         const resp = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/sdp' },
@@ -159,34 +160,26 @@ export default function CameraLivePlayer({ cameraId, streamName, baseUrl }: Came
     };
   }, [streamName, baseUrl]);
 
-  const whepUrl = `${baseUrl.replace(/\/$/, '')}/${streamName}/whep`;
-
   return (
-    <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Debug aid: the exact URL the WHEP POST below is sent to — paste into a new tab/curl to
-          test MediaMTX reachability independently of this player. */}
-      <Typography variant="caption" sx={{ px: 1, wordBreak: 'break-all', color: 'text.secondary' }}>
-        WHEP: {whepUrl}
-      </Typography>
-      <Box
-        sx={{
-          flex: 1,
-          minHeight: 0,
-          overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          controls
-          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-        />
-      </Box>
+    <Box
+      title={streamName}
+      sx={{
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        controls
+        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+      />
     </Box>
   );
 }

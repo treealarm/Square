@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, IconButton, List, ListItemButton, ListItemText, Stack, ToggleButton, ToggleButtonGroup, Tooltip, Typography } from '@mui/material';
+import { Alert, alpha, Box, IconButton, List, ListItemButton, ListItemText, Stack, Tooltip, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import LiveTvIcon from '@mui/icons-material/LiveTv';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import { DoFetch } from '../store/Fetcher';
 import { ApiIntegroRootString } from '../store/constants';
 import { requestMarkersByIds } from '../store/MarkersStates';
@@ -9,6 +11,7 @@ import { ICommonFig, IIntegroDTO } from '../store/Marker';
 import CameraLivePlayer from './CameraLivePlayer';
 import CameraArchivePlayer from './CameraArchivePlayer';
 import { VMS_REC_BASE_URL } from './vmsRecFetch';
+import { BTN_SX, NAME_LABEL_SX, STRIP_BG, STRIP_W, W } from './monitorStyle';
 
 // vms_rec registers itself with this Dapr app-id/i_name (see docs/square-integration-plan.md) —
 // hardcoded here rather than configurable, since this tab is specifically vms_rec's Monitor, not
@@ -88,7 +91,7 @@ export function MonitorViewer() {
     : null;
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', width: '100vw' }}>
+    <Box sx={{ display: 'flex', height: '98vh', width: '100%' }}>
       <Box sx={{ width: 280, borderRight: 1, borderColor: 'divider', overflow: 'auto' }}>
         <Stack direction="row" alignItems="center" spacing={1} sx={{ p: 1 }}>
           <Tooltip title="Back to map">
@@ -117,23 +120,45 @@ export function MonitorViewer() {
         </List>
       </Box>
 
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <Box sx={{ flex: 1, display: 'flex', minWidth: 0, p: 1 }}>
         {selected ? (
-          <>
-            <Stack direction="row" justifyContent="center" sx={{ p: 1 }}>
-              <ToggleButtonGroup size="small" value={mode} exclusive onChange={(_, v) => v && setMode(v)}>
-                <ToggleButton value="live">Live</ToggleButton>
-                <ToggleButton value="archive">Archive</ToggleButton>
-              </ToggleButtonGroup>
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'row',
+              overflow: 'hidden',
+              borderRadius: 1,
+            }}
+          >
+            {/* ── Left: icon strip — mirrors CameraUnifiedCard.tsx's compact strip ── */}
+            <Stack
+              alignItems="center"
+              spacing={0.25}
+              sx={{ ...STRIP_BG, width: STRIP_W, flexShrink: 0, py: 0.5, zIndex: 1 }}
+            >
+              <Tooltip title={mode === 'live' ? 'Switch to archive' : 'Switch to live'} placement="right">
+                <IconButton size="small" onClick={() => setMode(mode === 'live' ? 'archive' : 'live')} sx={BTN_SX}>
+                  {mode === 'live'
+                    ? <LiveTvIcon sx={{ fontSize: '0.95rem' }} />
+                    : <VideoLibraryIcon sx={{ fontSize: '0.95rem' }} />}
+                </IconButton>
+              </Tooltip>
             </Stack>
-            <Box sx={{ flex: 1, minHeight: 0 }}>
+
+            {/* ── Right: video / archive — fills remaining space ── */}
+            <Box sx={{ flex: 1, minWidth: 0, minHeight: 0, display: 'flex', overflow: 'hidden', position: 'relative', bgcolor: '#000' }}>
+              <Typography sx={NAME_LABEL_SX}>{selected.name}</Typography>
               {mode === 'live' && liveBaseUrl && selected.primaryStreamName && (
                 <CameraLivePlayer cameraId={selected.id} baseUrl={liveBaseUrl} streamName={selected.primaryStreamName} />
               )}
               {mode === 'live' && (!liveBaseUrl || !selected.primaryStreamName) && (
-                <Alert severity="info" sx={{ m: 2 }}>
-                  No live stream info pushed for this camera yet.
-                </Alert>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                  <Typography sx={{ fontSize: '0.78rem', color: alpha(W, 0.35) }}>
+                    No live stream info pushed for this camera yet.
+                  </Typography>
+                </Box>
               )}
               {mode === 'archive' && !VMS_REC_BASE_URL && (
                 <Alert severity="warning" sx={{ m: 2 }}>
@@ -144,7 +169,7 @@ export function MonitorViewer() {
                 <CameraArchivePlayer vmsCameraId={selected.id} />
               )}
             </Box>
-          </>
+          </Box>
         ) : (
           <Typography variant="body2" sx={{ p: 2 }} color="text.secondary">
             Select a camera from the list.
