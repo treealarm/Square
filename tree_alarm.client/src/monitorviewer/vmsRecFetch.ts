@@ -1,8 +1,8 @@
 import { theStore } from '../store/configureStore';
 
-// vms_rec's base URL, e.g. "http://localhost:5134" — set at build time (Square and vms_rec are
-// separate origins, unlike Square's own same-origin DoFetch). Empty by default: the Monitor tab
-// then simply has nothing to show, no crash (see MonitorViewer.tsx).
+// vms_rec's API/backend origin, e.g. "http://localhost:5134" — set at build time (Square and
+// vms_rec are separate origins, unlike Square's own same-origin DoFetch). Empty by default: the
+// Monitor tab then simply has nothing to show, no crash (see MonitorViewer.tsx).
 export const VMS_REC_BASE_URL: string = import.meta.env.VITE_VMS_REC_BASE_URL ?? '';
 
 // Square and vms_rec both validate JWTs issued by the same Keycloak realm (see

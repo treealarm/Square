@@ -16,6 +16,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import { useNavigate } from 'react-router-dom';
 
 import { IObjProps, Marker, TreeMarker, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
@@ -38,6 +40,7 @@ import { ApiIntegroRootString } from '../store/constants';
 export function ObjectProperties() {
 
   const appDispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const objProps: IObjProps|null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps??null);
@@ -54,10 +57,14 @@ export function ObjectProperties() {
   // also requires a registered type hierarchy (UpdateIntegroTypes), which a producer may
   // deliberately skip to prevent manual child creation in the tree (see vms_rec's integration).
   const [isExternalObject, setIsExternalObject] = React.useState(false);
+  // Narrower than isExternalObject above — gates the "Open in Monitor" button specifically to
+  // vms_rec cameras, not any future producer's objects (see VMS_APP_ID in monitorviewer/MonitorViewer.tsx).
+  const [isVmsRecCamera, setIsVmsRecCamera] = React.useState(false);
 
   useEffect(() => {
     if (!selected_id) {
       setIsExternalObject(false);
+      setIsVmsRecCamera(false);
       return;
     }
     let cancelled = false;
@@ -67,11 +74,16 @@ export function ObjectProperties() {
       body: JSON.stringify([selected_id]),
     })
       .then((res) => (res.ok ? res.json() : []))
-      .then((list: { i_name?: string }[]) => {
-        if (!cancelled) setIsExternalObject(!!list?.[0]?.i_name);
+      .then((list: { i_name?: string; i_type?: string }[]) => {
+        if (cancelled) return;
+        setIsExternalObject(!!list?.[0]?.i_name);
+        setIsVmsRecCamera(list?.[0]?.i_name === 'vmscfg' && list?.[0]?.i_type === 'camera');
       })
       .catch(() => {
-        if (!cancelled) setIsExternalObject(false);
+        if (!cancelled) {
+          setIsExternalObject(false);
+          setIsVmsRecCamera(false);
+        }
       });
     return () => {
       cancelled = true;
@@ -253,6 +265,15 @@ export function ObjectProperties() {
           <ButtonGroup variant="contained" aria-label="properties pannel">
 
             <EditOptions />
+
+            {isVmsRecCamera &&
+            <Tooltip title={"Open in Monitor"}>
+            <IconButton aria-label="open-in-monitor" size="medium"
+              onClick={() => navigate(`/_monitor?cameraId=${encodeURIComponent(selected_id!)}`)}>
+              <VideocamIcon fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+            }
 
             {!isExternalObject &&
             <Tooltip title={"Save object" }>
