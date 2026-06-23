@@ -29,6 +29,10 @@ export function MainToolbar() {
     navigate("/_events");
   };
 
+  const goToMonitor = () => {
+    navigate("/_monitor");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar sx={{ backgroundColor: '#bbbbbb' }} >
@@ -60,6 +64,10 @@ export function MainToolbar() {
 
           <Button onClick={goToEventViewer} variant="contained" size="small" sx={{ ml: 2 }}>
             Event Viewer
+          </Button>
+
+          <Button onClick={goToMonitor} variant="contained" size="small" sx={{ ml: 2 }}>
+            Monitor
           </Button>
 
           <Box

@@ -276,6 +276,18 @@ namespace LeafletAlarms.Controllers
       return dic.Values.ToList();
     }
 
+    // Thin REST wrapper over the already-implemented IIntegroService.GetListByType (used
+    // internally by the gRPC IntegroService for producers) — lets the frontend's Monitor tab
+    // list all objects of a given type/producer (e.g. i_name=vmscfg, i_type=camera) without a new
+    // capability being exposed.
+    [HttpGet()]
+    [Route("GetListByType")]
+    public async Task<List<IntegroDTO>> GetListByType(string i_name, string i_type)
+    {
+      var dic = await _integroService.GetListByType(i_name, i_type);
+      return dic.Values.ToList();
+    }
+
     [HttpPost]
     [Route("UpdateIntegros")]
     public async Task<List<IntegroDTO>> UpdateIntegros([FromBody] List<IntegroDTO> integros)

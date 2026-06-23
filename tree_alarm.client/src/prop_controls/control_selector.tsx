@@ -14,12 +14,13 @@ const renderTextField = (props: IControlSelector) => (
     label={props.prop_name}
     value={props.str_val}
     onChange={props.handleChangeProp}
+    inputProps={{ readOnly: !!props.readOnly }}
   />
 );
 
 const renderColorInput = (props: IControlSelector) => {
   const handleChange = (newValue: string) => {
-    // Создаем событие, совместимое с handleChangeProp
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ handleChangeProp
     const event = {
       target: {
         id: props.prop_name,
@@ -51,7 +52,7 @@ const controlMap: { [key: string]: (props_in: IControlSelector) => React.ReactEl
   [VisualTypes.Password]: (props_in) => renderPasswordField(props_in),
   [VisualTypes.SnapShot]: (props_in) => renderSnapshotViewer(props_in),
 
-  // другие типы
+  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 };
 
 
