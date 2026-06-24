@@ -49,6 +49,7 @@
     <ProjectReference Include="..\GrpcDaprLib\GrpcDaprLib.csproj" />
     <ProjectReference Include="..\KeycloakAdmin\KeycloakAdmin.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
+    <ProjectReference Include="..\SquareIntegrationClient\SquareIntegrationClient.csproj" />
     <ProjectReference Include="..\ValhallaLib\ValhallaLib.csproj" />
     <ProjectReference Include="..\tree_alarm.client\tree_alarm.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

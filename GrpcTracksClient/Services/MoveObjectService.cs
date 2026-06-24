@@ -18,8 +18,21 @@ namespace GrpcTracksClient.Services
       new ConcurrentDictionary<string, MovingCar>();
 
     private const string _car_str = "car";
-    private readonly ISquareIntegration _square = SquareIntegration.Default;
-    private IntegrationSync _sync = new IntegrationSync();
+
+    // Lazy, not field initializers: SquareIntegration.Default (and IntegrationSync's parameterless
+    // ctor, which calls it too) can throw if the Dapr sidecar isn't ready yet or an env var is
+    // briefly unset, and is designed to be retried on the next access rather than caching the
+    // failure. A field initializer would evaluate this once, eagerly, at MoveObjectService
+    // construction time (DI singleton creation during host startup) with no chance to retry; a
+    // backing field left null on failure lets the next property access try again, while still
+    // keeping the same instance once construction succeeds (IntegrationSync accumulates state
+    // across calls, so it must not be re-created on every access).
+    private ISquareIntegration? _squareBacking;
+    private ISquareIntegration _square => _squareBacking ??= SquareIntegration.Default;
+
+    private IntegrationSync? _syncBacking;
+    private IntegrationSync _sync => _syncBacking ??= new IntegrationSync();
+
     public MoveObjectService()
     {
 

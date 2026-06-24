@@ -11,6 +11,14 @@ namespace IntegrationUtilsLib
   /// </summary>
   public static class SquareIntegration
   {
+    // Read once, fail fast and stay failed: a missing env var is a permanent misconfiguration, not
+    // a transient startup race — it's just as missing on the next attempt as the first, so unlike
+    // the Dapr-sidecar-readiness check below, it must NOT be silently retried forever. A throwing
+    // static field initializer gives exactly that: the CLR caches the failure as
+    // TypeInitializationException and every subsequent access to this class throws it again.
+    private static readonly string LeafletAlarmAppId = EnvConfig.Require("LEAFLETALARM_APP_ID");
+    private static readonly string AppId = EnvConfig.Require("APP_ID");
+
     private static ISquareIntegration? _default;
     private static readonly object _lock = new object();
 
@@ -24,9 +32,7 @@ namespace IntegrationUtilsLib
         if (_default != null) { return _default; }
         lock (_lock)
         {
-          _default ??= new SquareIntegrationGrpcClient(
-            EnvConfig.Require("LEAFLETALARM_APP_ID"),
-            EnvConfig.Require("APP_ID"));
+          _default ??= new SquareIntegrationGrpcClient(LeafletAlarmAppId, AppId);
           return _default;
         }
       }

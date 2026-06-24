@@ -21,6 +21,7 @@
     <ProjectReference Include="..\GrpcDaprLib\GrpcDaprLib.csproj" />
     <ProjectReference Include="..\IntegrationServerLib\IntegrationServerLib.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
+    <ProjectReference Include="..\SquareIntegrationClient\SquareIntegrationClient.csproj" />
   </ItemGroup>
 
 </Project>
