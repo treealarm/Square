@@ -8,6 +8,7 @@ using LeafletAlarmsGrpc;
 
 using ObjectActions;
 using OnvifLib;
+using SquareIntegrationClient;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 

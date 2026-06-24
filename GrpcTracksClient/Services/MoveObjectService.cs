@@ -4,6 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 using ObjectActions;
+using SquareIntegrationClient;
 using System.Collections.Concurrent;
 using ValhallaLib;
 

@@ -1,4 +1,5 @@
 using LeafletAlarmsGrpc;
+using SquareIntegrationClient;
 
 namespace IntegrationUtilsLib
 {

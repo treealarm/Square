@@ -1,4 +1,5 @@
 ﻿using IntegrationUtilsLib;
+using SquareIntegrationClient;
 
 namespace AASubService
 {

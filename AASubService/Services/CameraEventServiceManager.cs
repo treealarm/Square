@@ -3,6 +3,7 @@ using EventServiceReference1;
 using IntegrationUtilsLib;
 using LeafletAlarmsGrpc;
 using OnvifLib;
+using SquareIntegrationClient;
 using System.Collections.Concurrent;
 
 namespace AASubService.Services

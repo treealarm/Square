@@ -7,6 +7,7 @@ using GrpcDaprLib;
 using IntegrationUtilsLib;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using PubSubLib;
+using SquareIntegrationClient;
 
 
 var builder = WebApplication.CreateBuilder(args);
