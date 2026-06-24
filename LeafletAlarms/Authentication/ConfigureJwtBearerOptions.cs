@@ -9,32 +9,51 @@ namespace LeafletAlarms.Authentication
   public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions>
   {
     private readonly KeyCloakConnectorService _myService;
-    private RsaSecurityKey _securityKey;
+    private volatile RsaSecurityKey _securityKey;
 
     public ConfigureJwtBearerOptions(KeyCloakConnectorService myService)
     {
       _myService = myService;
     }
 
+    // ВАЖНО: вызывается из IssuerSigningKeyResolver на КАЖДЫЙ запрос с Bearer-токеном.
+    // Здесь не должно быть ни I/O, ни блокировок (.Result) — иначе каждый
+    // авторизованный запрос синхронно ждёт поход в Keycloak (и ещё и роняет пул потоков).
+    // Ключ заранее прогревается через EnsureKeyLoadedAsync (см. InitHostedService).
     private RsaSecurityKey GetKey()
+    {
+      return _securityKey;
+    }
+
+    // Прогрев публичного ключа реалма. Дергается один раз при старте приложения,
+    // с ретраями — Keycloak может быть ещё не готов в момент запуска.
+    public async Task<bool> EnsureKeyLoadedAsync(int maxAttempts, TimeSpan retryDelay, CancellationToken token)
     {
       if (_securityKey != null)
       {
-        return _securityKey;
+        return true;
       }
 
-      //Realm settings/Keys/RS256(public)
-      string publicKeyJWT = string.Empty;
-
-      publicKeyJWT = _myService.GetRealmInfo().Result?.public_key;
-
-      if (string.IsNullOrEmpty(publicKeyJWT))
+      for (int attempt = 1; attempt <= maxAttempts && !token.IsCancellationRequested; attempt++)
       {
-        Console.WriteLine($"get publicKeyJWT: FAILED");
-        return null;
+        var realmInfo = await _myService.GetRealmInfo();
+        var publicKeyJWT = realmInfo?.public_key;
+
+        if (!string.IsNullOrEmpty(publicKeyJWT))
+        {
+          _securityKey = ConfigureAuthentificationServiceExtensions.BuildRSAKey(publicKeyJWT);
+          return true;
+        }
+
+        Console.WriteLine($"get publicKeyJWT: FAILED, attempt {attempt}/{maxAttempts}");
+
+        if (attempt < maxAttempts)
+        {
+          await Task.Delay(retryDelay, token);
+        }
       }
-      _securityKey = ConfigureAuthentificationServiceExtensions.BuildRSAKey(publicKeyJWT);
-      return _securityKey;
+
+      return false;
     }
 
     public void Configure(string name, JwtBearerOptions o)
@@ -69,7 +88,7 @@ namespace LeafletAlarms.Authentication
           ValidateLifetime = true          
         };
 
-        o.TokenValidationParameters.IssuerSigningKeyResolver = 
+        o.TokenValidationParameters.IssuerSigningKeyResolver =
           (
             string token,
             SecurityToken securityToken,
@@ -77,10 +96,11 @@ namespace LeafletAlarms.Authentication
             TokenValidationParameters validationParameters
         ) =>
         {
-          return new List<SecurityKey>()
-          {
-            GetKey()
-          };
+          var key = GetKey();
+
+          return key != null
+            ? new List<SecurityKey>() { key }
+            : Array.Empty<SecurityKey>();
         };
 
         o.Events = new JwtBearerEvents()

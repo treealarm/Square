@@ -46,8 +46,6 @@ namespace LeafletAlarms.Services
         roles.UnionWith(temp);
       }
 
-      Console.WriteLine($"CheckForRight: {string.Join(",", roles)}");
-
       var ret = new HashSet<string>();
 
       var rights = await _rightService.GetListByIdsAsync(ids);

@@ -158,6 +158,13 @@
       "problemMatcher": []
     },
     {
+      "label": "kill stale: leafletalarms (F5)",
+      "detail": "Подчищает зависшие daprd/dotnet от прошлой (аварийно прерванной) сессии — иначе новый запуск не займёт порты.",
+      "type": "shell",
+      "command": "pkill -f \"app-id leafletalarms\" || true; pkill -f \"LeafletAlarms/bin/Debug/net8.0/LeafletAlarms.dll\" || true",
+      "problemMatcher": []
+    },
+    {
       "label": "daprd: leafletalarms (F5)",
       "detail": "Dapr-сайдкар для бэкенда (для отладки по F5). Использует self-hosted placement/scheduler/redis от `dapr init`.",
       "type": "shell",
@@ -203,9 +210,17 @@
       "detail": "preLaunchTask для F5: инфра -> сборка бэкенда -> запуск Dapr-сайдкара.",
       "dependsOrder": "sequence",
       "dependsOn": [
+        "kill stale: leafletalarms (F5)",
         "build: backend (LeafletAlarms)",
         "daprd: leafletalarms (F5)"
       ],
+      "problemMatcher": []
+    },
+    {
+      "label": "kill stale: integrationhost (F5)",
+      "detail": "Подчищает зависшие daprd/dotnet от прошлой (аварийно прерванной) сессии — иначе новый запуск не займёт порты.",
+      "type": "shell",
+      "command": "pkill -f \"app-id integrationhost\" || true; pkill -f \"IntegrationHost/bin/Debug/net8.0/IntegrationHost.dll\" || true",
       "problemMatcher": []
     },
     {
@@ -251,9 +266,17 @@
       "detail": "preLaunchTask для F5: инфра -> сборка integrationhost -> запуск его Dapr-сайдкара.",
       "dependsOrder": "sequence",
       "dependsOn": [
+        "kill stale: integrationhost (F5)",
         "build: integrationhost (IntegrationHost)",
         "daprd: integrationhost (F5)"
       ],
+      "problemMatcher": []
+    },
+    {
+      "label": "kill stale: grpctracksclient (F5)",
+      "detail": "Подчищает зависшие daprd/dotnet от прошлой (аварийно прерванной) сессии — иначе новый запуск не займёт порты.",
+      "type": "shell",
+      "command": "pkill -f \"app-id grpctracksclient\" || true; pkill -f \"GrpcTracksClient/bin/Debug/net8.0/GrpcTracksClient.dll\" || true",
       "problemMatcher": []
     },
     {
@@ -293,9 +316,17 @@
       "label": "prep: F5 grpctracksclient",
       "dependsOrder": "sequence",
       "dependsOn": [
+        "kill stale: grpctracksclient (F5)",
         "build: grpctracksclient (GrpcTracksClient)",
         "daprd: grpctracksclient (F5)"
       ],
+      "problemMatcher": []
+    },
+    {
+      "label": "kill stale: aasubservice (F5)",
+      "detail": "Подчищает зависшие daprd/dotnet от прошлой (аварийно прерванной) сессии — иначе новый запуск не займёт порты.",
+      "type": "shell",
+      "command": "pkill -f \"app-id aasubservice\" || true; pkill -f \"AASubService/bin/Debug/net8.0/AASubService.dll\" || true",
       "problemMatcher": []
     },
     {
@@ -335,9 +366,17 @@
       "label": "prep: F5 aasubservice",
       "dependsOrder": "sequence",
       "dependsOn": [
+        "kill stale: aasubservice (F5)",
         "build: aasubservice (AASubService)",
         "daprd: aasubservice (F5)"
       ],
+      "problemMatcher": []
+    },
+    {
+      "label": "kill stale: blinkservice (F5)",
+      "detail": "Подчищает зависшие daprd/dotnet от прошлой (аварийно прерванной) сессии — иначе новый запуск не займёт порты.",
+      "type": "shell",
+      "command": "pkill -f \"app-id blinkservice\" || true; pkill -f \"BlinkService/bin/Debug/net8.0/BlinkService.dll\" || true",
       "problemMatcher": []
     },
     {
@@ -377,6 +416,7 @@
       "label": "prep: F5 blinkservice",
       "dependsOrder": "sequence",
       "dependsOn": [
+        "kill stale: blinkservice (F5)",
         "build: blinkservice (BlinkService)",
         "daprd: blinkservice (F5)"
       ],

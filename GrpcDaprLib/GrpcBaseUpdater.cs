@@ -1,14 +1,12 @@
 ﻿using Dapr.Client;
 using Domain;
 using Grpc.Core;
-using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 
 namespace GrpcDaprLib
 {
-  public abstract class GrpcBaseUpdater : IDisposable
+  public abstract class GrpcBaseUpdater
   {
-    protected GrpcChannel? _channel;
     protected CallInvoker? _daprClient;
     public string AppId { get; private set; } = string.Empty;
 
@@ -31,12 +29,6 @@ namespace GrpcDaprLib
       }
       Console.Error.WriteLine($"{env_name} return empty string using default {def_val}");
       return def_val;
-    }
-
-    public virtual void Dispose()
-    {
-      _channel?.Dispose();
-      _channel = null;
     }
   }
 }

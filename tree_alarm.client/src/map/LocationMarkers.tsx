@@ -10,14 +10,14 @@ import { ApplicationState } from '../store';
 import { BoundBox, getExtraProp, ICommonFig, IObjProps } from '../store/Marker';
 
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   useMap,
   useMapEvents,
 } from 'react-leaflet'
 
 
-import { LeafletEvent, LeafletMouseEvent } from 'leaflet';
+import { LeafletEvent } from 'leaflet';
 import { ApiDefaultMaxCountResult } from '../store/constants';
 import { MyCommonFig } from './MyCommonFig';
 
@@ -44,8 +44,10 @@ export function LocationMarkers() {
 
   const [selectedMarker, setSelectedMarker] = useState<ICommonFig | null>(null)
 
-  parentMap.attributionControl.options.prefix = 
-    '<a href="https://www.leftfront.org" title="A JavaScript library for interactive maps">' + '<img width="12" height="8" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg"></img>' + 'LeafletAlarms</a>';
+  useEffect(() => {
+    parentMap.attributionControl.options.prefix =
+      '<a href="https://www.leftfront.org" title="A JavaScript library for interactive maps">' + '<img width="12" height="8" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_the_Soviet_Union.svg"></img>' + 'LeafletAlarms</a>';
+  }, [parentMap]);
 
   const RequestMarkersByBox = useCallback((bounds: L.LatLngBounds)=> {
     if (bounds == null) {
@@ -90,8 +92,7 @@ export function LocationMarkers() {
     }, [markers]);
 
    useMapEvents({
-     preclick(e: LeafletMouseEvent) {
-       console.log(e);
+     preclick() {
        if (!selectedEditMode?.edit_mode) {
          appDispatch(GuiStore.selectTreeItem(null));
        }       
@@ -129,16 +130,32 @@ export function LocationMarkers() {
       }      
     }, [RequestMarkersByBox, markersStates?.initiateUpdateAll, searchFilter?.search_id]);
 
+  // Реверс-индексы по id — иначе getColor делал бы по 3 линейных
+  // поиска на каждый маркер при каждом рендере (O(N*M)).
+  const stateById = useMemo(
+    () => new Map(visualStates.states.map(i => [i.id, i])),
+    [visualStates.states]);
+
+  const stateDescrByState = useMemo(
+    () => new Map(visualStates.states_descr.map(s => [s.state, s])),
+    [visualStates.states_descr]);
+
+  const alarmById = useMemo(
+    () => new Map(alarmedObjects.map(i => [i.id, i])),
+    [alarmedObjects]);
+
+  const checkedSet = useMemo(() => new Set(checked_ids), [checked_ids]);
+
   const getColor = useCallback(
     (marker: IObjProps) => {
-      var id = marker.id;
+      var id = marker.id ?? '';
 
       var retColor: L.PathOptions = {};
       retColor.fillColor = 'green';
       retColor.dashArray = '';
       retColor.color = 'green';
 
-      if (checked_ids.indexOf(id) !== -1) {
+      if (checkedSet.has(id)) {
         retColor.dashArray = '5,10';
       }
 
@@ -147,11 +164,11 @@ export function LocationMarkers() {
       }
 
       {
-        var vState = visualStates.states.find(i => i.id == id);
+        var vState = stateById.get(id);
 
         if (vState != null && vState.states.length > 0) {
           var vStateFirst = vState.states[0];
-          var vStateDescr = visualStates.states_descr.find(s => s.state == vStateFirst);
+          var vStateDescr = stateDescrByState.get(vStateFirst);
           if (vStateDescr != null) {
             retColor.fillColor = vStateDescr.state_color
             retColor.color = vStateDescr.state_color
@@ -159,17 +176,10 @@ export function LocationMarkers() {
         }
       }
 
-      var vAlarmState = alarmedObjects.find(i => i.id == id);
+      var vAlarmState = alarmById.get(id);
 
       if (vAlarmState != null
         && (vAlarmState.alarm || vAlarmState.children_alarms > 0)) {
-        //const colorOptions = {
-        //  fillColor: 'yellow',
-        //  fillOpacity: 0.5,
-        //  color: 'yellow',
-        //  opacity: 1,
-        //  dashArray: '5,10'
-        //}
         retColor.fillColor = 'red';
         retColor.color = 'red';
       }
@@ -184,7 +194,7 @@ export function LocationMarkers() {
 
       return retColor;
 
-    }, [visualStates, alarmedObjects, selected_id, checked_ids]);
+    }, [stateById, stateDescrByState, alarmById, selected_id, checkedSet]);
 
 
   var hidden_id: string | null = null;

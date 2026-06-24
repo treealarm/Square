@@ -28,6 +28,9 @@ namespace LeafletAlarms.Services
     private Dictionary<string, ValueDTO> _dicValues = new Dictionary<string, ValueDTO>();
 
     private Dictionary<string, BaseMarkerDTO> _dicOwnersAndViews = new Dictionary<string, BaseMarkerDTO>();
+    // Обратный индекс owner_id -> [view ids], строится один раз в UpdateOwners,
+    // чтобы GetOwnersAndViews не сканировал весь _dicOwnersAndViews на каждый id.
+    private Dictionary<string, List<string>> _dicViewsByOwner = new Dictionary<string, List<string>>();
 
     private BoxDTO _currentBox;
     private bool _update_values_periodically = false;
@@ -46,11 +49,10 @@ namespace LeafletAlarms.Services
       _context = context;
       _webSocket = webSocket;
 
-      _worker = new Task(() => DoWork(), _cancellationTokenSource.Token);
-      _worker.Start();
+      _worker = DoWorkAsync();
     }
 
-    private async void DoWork()
+    private async Task DoWorkAsync()
     {
       while (!_cancellationTokenSource.IsCancellationRequested)
       {
@@ -62,7 +64,7 @@ namespace LeafletAlarms.Services
           _mapService = scope.ServiceProvider.GetRequiredService<IMapService>();
           _valuesService = scope.ServiceProvider.GetRequiredService<IValuesService>();
 
-          await Task.Delay(1000);
+          await Task.Delay(1000, _cancellationTokenSource.Token);
 
           while (_queue.TryDequeue(out var json))
           {
@@ -72,6 +74,10 @@ namespace LeafletAlarms.Services
           await PollBox();
           await PollStates();
           await PollValues();
+        }
+        catch (OperationCanceledException)
+        {
+          break;
         }
         catch(Exception ex)
         {
@@ -132,6 +138,20 @@ namespace LeafletAlarms.Services
       finally
       {
         _cancellationTokenSource.Cancel();
+
+        // Дожидаемся, пока фоновый цикл DoWorkAsync реально остановится,
+        // прежде чем сокет будет закрыт и DI-скоуп уничтожен снаружи.
+        if (_worker != null)
+        {
+          try
+          {
+            await _worker;
+          }
+          catch (Exception ex)
+          {
+            Console.WriteLine(ex);
+          }
+        }
       }
     }
 
@@ -177,12 +197,12 @@ namespace LeafletAlarms.Services
       {
         if (_dicOwnersAndViews.TryGetValue(id, out var marker))
         {
-          var views = _dicOwnersAndViews.Values
-            .Where(i => i.owner_id == marker.id)
-            .Select(i => i.id)
-            ;
-          objIds.UnionWith(views);
           objIds.Add(id);
+
+          if (marker.id != null && _dicViewsByOwner.TryGetValue(marker.id, out var views))
+          {
+            objIds.UnionWith(views);
+          }
         }
       }
       return objIds;
@@ -380,6 +400,9 @@ namespace LeafletAlarms.Services
       foreach (var id in _dicGeo.Keys)
         _dicIds.Add(id);
 
+      // TODO: временная диагностика бага "карта не перерисовывается без панорамирования" — убрать после диагностики
+      Console.WriteLine($"[PollBox] box={(box == null ? "null" : "set")} geo={geo.Count} added={added.Count} updated={updated.Count} removed={removed.Count}");
+
 
       // 3. Вызываем UpdateOwners только если есть изменения
       if (added.Any() || updated.Any() || removed.Any())
@@ -401,17 +424,19 @@ namespace LeafletAlarms.Services
 
     private async Task UpdateOwners()
     {
-      List<string> ids;
-      ids = _dicIds.ToList();
+      var ids = _dicIds.ToList();
 
       var owners_and_views = await _mapService.GetOwnersAndViewsAsync(ids);
       _dicOwnersAndViews = owners_and_views;
+
+      _dicViewsByOwner = owners_and_views.Values
+        .Where(m => !string.IsNullOrEmpty(m.owner_id) && m.id != null)
+        .GroupBy(m => m.owner_id)
+        .ToDictionary(g => g.Key, g => g.Select(m => m.id).ToList());
     }
     private async Task OnSetIds(List<string> ids)
     {
       _currentBox = null;
-
-      var newIds = ids.Where(g => !_dicIds.Contains(g));
 
       _dicIds.Clear();
 

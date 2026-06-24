@@ -20,6 +20,7 @@
     "@mui/x-tree-view": "^7.12.0",
     "@reduxjs/toolkit": "^2.2.7",
     "dayjs": "^1.11.10",
+    "hls.js": "^1.6.16",
     "keycloak-js": "^26.0.1",
     "leaflet": "^1.9.4",
     "mui-color-input": "^2.0.3",

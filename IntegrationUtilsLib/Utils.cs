@@ -10,42 +10,34 @@ namespace IntegrationUtilsLib
     private static GrpcUpdaterClient<IntegroServiceClient>? _clientIntegro;
     private static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>? _clientBase;
     private static Dictionary<string,string> _idsCash = new Dictionary<string, string>();
-    private static readonly object _lock = new object(); 
+    private static readonly object _lock = new object();
 
-
+    // На старте sidecar dapr может быть ещё не готов — конструктор GrpcUpdaterClient
+    // бросит исключение. В этом случае поле остаётся null, и следующий доступ
+    // повторит попытку создания (Lazy<T> в этом месте кэширует исключение навсегда —
+    // именно это и ломало переподключение). После успешного создания канал к dapr
+    // sidecar сам переподключается при обрывах связи — пересоздавать не нужно.
     internal static GrpcUpdaterClient<IntegroServiceClient> ClientIntegro
     {
       get
       {
-        var client = _clientIntegro;
-        // Проверяем, если клиент не существует или мертв, создаем новый
-        if (client != null && !client.IsDead)
-        {
-          return client;
-        }
-
+        if (_clientIntegro != null) { return _clientIntegro; }
         lock (_lock)
         {
-          _clientIntegro = new GrpcUpdaterClient<IntegroServiceClient>();
-          return _clientIntegro!;
-        }        
+          _clientIntegro ??= new GrpcUpdaterClient<IntegroServiceClient>();
+          return _clientIntegro;
+        }
       }
     }
     internal static GrpcUpdaterClient<TreeAlarmsGrpcServiceClient> ClientBase
     {
       get
       {
-        var client = _clientBase;
-        // Проверяем, если клиент не существует или мертв, создаем новый
-        if (client != null && !client.IsDead)
-        {
-          return client;
-        }
-
+        if (_clientBase != null) { return _clientBase; }
         lock (_lock)
         {
-          _clientBase = new GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>();
-          return _clientBase!;
+          _clientBase ??= new GrpcUpdaterClient<TreeAlarmsGrpcServiceClient>();
+          return _clientBase;
         }
       }
     }

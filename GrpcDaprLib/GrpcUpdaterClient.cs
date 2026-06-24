@@ -14,7 +14,5 @@
         Console.Error.WriteLine($"Failed to create client of type {typeof(TClient).Name}");
       }
     }
-
-    public bool IsDead => Client == null;
   }
 }

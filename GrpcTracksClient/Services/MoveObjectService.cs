@@ -371,11 +371,6 @@ namespace GrpcTracksClient.Services
 
     private static Random _random = new Random();
 
-    static double GetRandomDouble(double min, double max)
-    {
-      return min + _random.NextDouble() * (max - min);
-    }
-
     private static string CarParamsActionName = "SetCarParams";
 
     private void FillCarAction(ProtoGetAvailableActionsRequest request, ProtoGetAvailableActionsResponse response)

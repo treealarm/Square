@@ -16,6 +16,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import { useNavigate } from 'react-router-dom';
 
 import { IObjProps, Marker, TreeMarker, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
 import * as EditStore from '../store/EditStates';
@@ -32,10 +34,13 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import { ControlSelector } from '../prop_controls/control_selector';
 import { ObjectSelector } from '../components/ObjectSelector';
 import SelectedObjectGeoEditor from './SelectedObjectGeoEditor';
+import { DoFetch } from '../store/Fetcher';
+import { ApiIntegroRootString } from '../store/constants';
 
 export function ObjectProperties() {
 
   const appDispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const objProps: IObjProps|null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps??null);
@@ -44,6 +49,46 @@ export function ObjectProperties() {
   const selected_marker = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
 
   const [newPropName, setNewPropName] = React.useState('');
+
+  // Objects registered by an external producer (AASubService, GrpcTracksClient, vms_rec, ...) via
+  // IntegroService.UpdateIntegro carry an i_name — that producer is the source of truth for them,
+  // so this panel must not let an admin "save" a stale/conflicting edit here. Checked via the
+  // already-public POST /api/integro/GetByIds rather than GetObjectIntegroType, since the latter
+  // also requires a registered type hierarchy (UpdateIntegroTypes), which a producer may
+  // deliberately skip to prevent manual child creation in the tree (see vms_rec's integration).
+  const [isExternalObject, setIsExternalObject] = React.useState(false);
+  // Narrower than isExternalObject above — gates the "Open in Monitor" button specifically to
+  // vms_rec cameras, not any future producer's objects (see VMS_APP_ID in monitorviewer/MonitorViewer.tsx).
+  const [isVmsRecCamera, setIsVmsRecCamera] = React.useState(false);
+
+  useEffect(() => {
+    if (!selected_id) {
+      setIsExternalObject(false);
+      setIsVmsRecCamera(false);
+      return;
+    }
+    let cancelled = false;
+    DoFetch(ApiIntegroRootString + '/GetByIds', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify([selected_id]),
+    })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((list: { i_name?: string; i_type?: string }[]) => {
+        if (cancelled) return;
+        setIsExternalObject(!!list?.[0]?.i_name);
+        setIsVmsRecCamera(list?.[0]?.i_name === 'vmscfg' && list?.[0]?.i_type === 'camera');
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setIsExternalObject(false);
+          setIsVmsRecCamera(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [selected_id]);
 
 
   function handleChangeName (e: any){
@@ -221,11 +266,22 @@ export function ObjectProperties() {
 
             <EditOptions />
 
+            {isVmsRecCamera &&
+            <Tooltip title={"Open in Monitor"}>
+            <IconButton aria-label="open-in-monitor" size="medium"
+              onClick={() => navigate(`/_monitor?cameraId=${encodeURIComponent(selected_id!)}`)}>
+              <VideocamIcon fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+            }
+
+            {!isExternalObject &&
             <Tooltip title={"Save object" }>
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>
+            }
 
             <Tooltip title={"Edit object"}>
             <IconButton aria-label="edit" size="medium"
@@ -265,11 +321,13 @@ export function ObjectProperties() {
             value={objProps.parent_id ? objProps.parent_id:''}
             inputProps={{ readOnly: true}}>
           </TextField>
+          {!isExternalObject &&
           <ObjectSelector
             selectedId={objProps.parent_id ?? null}
             excludeId={objProps.id}
             onSelect={handleSelect}
           />
+          }
         </ListItem>
 
         <ListItem>
@@ -280,11 +338,13 @@ export function ObjectProperties() {
             value={objProps.owner_id ? objProps.owner_id : ''}
             inputProps={{ readOnly: true }}>
           </TextField>
+          {!isExternalObject &&
           <ObjectSelector
             selectedId={objProps.owner_id ?? null}
             excludeId={objProps.id}
             onSelect={handleSelectOwner}
           />
+          }
         </ListItem>
 
         <ListItem>
@@ -292,7 +352,8 @@ export function ObjectProperties() {
           fullWidth
           id="name" label='Name'
             value={objProps?.name}
-            onChange={handleChangeName} />
+            onChange={handleChangeName}
+            inputProps={{ readOnly: isExternalObject }} />
         </ListItem>
         <ListItem sx={{ width: '100%' }}>
           <SelectedObjectGeoEditor events={childGeoPropEvents} />
@@ -308,23 +369,27 @@ export function ObjectProperties() {
               }}
             >
 
-              <ControlSelector 
+              <ControlSelector
                 prop_name={item.prop_name}
                 str_val={item.str_val}
                 visual_type={item.visual_type ?? null}
                 handleChangeProp={handleChangeProp}
-                object_id={selected_id ?? null} />
+                object_id={selected_id ?? null}
+                readOnly={isExternalObject} />
 
+              {!isExternalObject &&
               <Tooltip title={"remove property"}>
                 <IconButton aria-label="delete" size="small" onClick={() => { handleRemoveProp(item.prop_name); }}>
                   <DeleteOutlineIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
+              }
 
             </ListItem>
             )
         }
         <Divider><br></br></Divider>
+        {!isExternalObject &&
         <ListItem>
           <TextField size="small"
             fullWidth
@@ -337,6 +402,7 @@ export function ObjectProperties() {
             </IconButton>
           </Tooltip>
         </ListItem>
+        }
       </List>
     </Box>
   );

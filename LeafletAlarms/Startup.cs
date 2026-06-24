@@ -81,6 +81,7 @@ namespace LeafletAlarms
       services.AddScoped<IRequestContextProvider, HttpRequestContextProvider>();
 
       services.AddHttpContextAccessor();
+      services.AddHttpClient();
       services.AddControllersWithViews();
       services.AddEndpointsApiExplorer();
       services.AddSwaggerGen(setUpAction =>

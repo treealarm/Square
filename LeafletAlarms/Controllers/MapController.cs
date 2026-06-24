@@ -22,6 +22,7 @@ namespace LeafletAlarms.Controllers
     private readonly IOptions<RoutingSettings> _routingSettings;
     private readonly IMapUpdateService _mapUpdateService;
     private readonly IIntegroUpdateService _integroUpdateService;
+    private readonly IHttpClientFactory _httpClientFactory;
     public MapController(
       IMapService mapsService,
       IGeoService geoService,
@@ -30,7 +31,8 @@ namespace LeafletAlarms.Controllers
       RightsCheckerService rightChecker,
       IOptions<RoutingSettings> routingSettings,
       IMapUpdateService mapUpdateService,
-      IIntegroUpdateService integroUpdateService
+      IIntegroUpdateService integroUpdateService,
+      IHttpClientFactory httpClientFactory
     )
     {
       _mapService = mapsService;
@@ -41,7 +43,8 @@ namespace LeafletAlarms.Controllers
       _routingSettings = routingSettings;
       _mapUpdateService = mapUpdateService;
       _integroUpdateService = integroUpdateService;
-    }        
+      _httpClientFactory = httpClientFactory;
+    }
 
     [HttpGet()]
     [Route("GetById")]
@@ -101,18 +104,17 @@ namespace LeafletAlarms.Controllers
 
       try
       {
-        using (HttpClient httpClient = new HttpClient())
-        {
-          var productValue = new ProductInfoHeaderValue("Mozilla", "1.0");
-          var commentValue = new ProductInfoHeaderValue("(+http://www.leftfront.ru)");
+        var httpClient = _httpClientFactory.CreateClient();
 
-          httpClient.DefaultRequestHeaders.Add(
-              HeaderNames.UserAgent, productValue.ToString());
-          httpClient.DefaultRequestHeaders.Add(
-              HeaderNames.UserAgent, commentValue.ToString());
+        var productValue = new ProductInfoHeaderValue("Mozilla", "1.0");
+        var commentValue = new ProductInfoHeaderValue("(+http://www.leftfront.ru)");
 
-          data = await httpClient.GetByteArrayAsync(tile_server);
-        }
+        httpClient.DefaultRequestHeaders.Add(
+            HeaderNames.UserAgent, productValue.ToString());
+        httpClient.DefaultRequestHeaders.Add(
+            HeaderNames.UserAgent, commentValue.ToString());
+
+        data = await httpClient.GetByteArrayAsync(tile_server);
 
         try
         {
@@ -252,7 +254,7 @@ namespace LeafletAlarms.Controllers
         var ids = propsObjs.Select(i => i.id).ToList();
 
         // History, so limit by time.
-        var tracks = await _tracksService?.GetFirstTracksByTime(
+        var tracks = await _tracksService.GetFirstTracksByTime(
           filter.time_start,
           filter.time_end,
           ids

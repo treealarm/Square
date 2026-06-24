@@ -29,11 +29,6 @@ namespace PubSubLib
         }
         else
         {
-          if (!await _client.CheckOutboundHealthAsync())
-          {
-            Console.WriteLine("Dapr sidecar not ready, retry later");
-            return 0;
-          }
           await _client.PublishEventAsync(pubsub_name, channel, message);
         }
       }

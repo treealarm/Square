@@ -37,6 +37,13 @@ namespace LeafletAlarms.Controllers
     {
       var owners_and_views = await _mapService.GetOwnersAndViewsAsync(ids);
 
+      return await GetAlarmedStates(ids, owners_and_views);
+    }
+
+    private async Task<List<AlarmState>> GetAlarmedStates(
+      List<string> ids,
+      Dictionary<string, BaseMarkerDTO> owners_and_views)
+    {
       var owners = owners_and_views.Where(i => string.IsNullOrEmpty(i.Value.owner_id)).ToDictionary();
 
       var data = await _stateService.GetAlarmStatesAsync(owners.Keys.ToList());
@@ -58,7 +65,7 @@ namespace LeafletAlarms.Controllers
               retval.Add(new AlarmState()
               {
                 id = id,
-                alarm = state_owner.alarm               
+                alarm = state_owner.alarm
               }
               );
             }
@@ -74,6 +81,13 @@ namespace LeafletAlarms.Controllers
     {
       var owners_and_views = await _mapService.GetOwnersAndViewsAsync(ids);
 
+      return await GetStates(ids, owners_and_views);
+    }
+
+    private async Task<List<ObjectStateDTO>> GetStates(
+      List<string> ids,
+      Dictionary<string, BaseMarkerDTO> owners_and_views)
+    {
       var owners = owners_and_views.Where(i => string.IsNullOrEmpty(i.Value.owner_id)).ToDictionary();
 
       var data = await _stateService.GetStatesAsync(owners.Keys.ToList());
@@ -82,8 +96,8 @@ namespace LeafletAlarms.Controllers
 
       foreach (var id in ids)
       {
-        if (owners_and_views.TryGetValue(id, out var view)) 
-        { 
+        if (owners_and_views.TryGetValue(id, out var view))
+        {
           if (data.TryGetValue(id, out var state))
           {
             retval.Add(state);
@@ -121,8 +135,9 @@ namespace LeafletAlarms.Controllers
         return vStateDTO;
       }
       var objsToUpdate = await _mapService.GetAsync(objIds);
-      var objStates = await GetStates(objIds);
-      var alarmStates = await GetAlarmedStates(objIds);
+      var owners_and_views = await _mapService.GetOwnersAndViewsAsync(objIds);
+      var objStates = await GetStates(objIds, owners_and_views);
+      var alarmStates = await GetAlarmedStates(objIds, owners_and_views);
 
       var setStateDescriptions = new HashSet<string>();
 

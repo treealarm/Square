@@ -8,6 +8,7 @@ import { Home } from "./components/Home";
 import { DiagramTypeEditor } from "./diagramtypeeditor/DiagramTypeEditor";
 import { EventViewer } from "./eventviewer/EventViewer";
 import { StatesViewer } from "./statesviewer/statesviewer";
+import { MonitorViewer } from "./monitorviewer/MonitorViewer";
 import { ObjectPropertiesUpdater } from "./components/ObjectPropertiesUpdater";
 
 import { AuthGuard } from "./auth/AuthGuard";
@@ -31,18 +32,19 @@ export default function App() {
       <Router>
         <ObjectPropertiesUpdater />
 
-        {/* Глобальная защита */}
+        {/* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ */}
         <AuthGuard />
 
         <Routes>
-          {/* ВСЕГДА доступен */}
+          {/* пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */}
           <Route path="/login" element={<LoginForm />} />
 
-          {/* Защищённые маршруты */}
+          {/* пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ */}
           <Route path="/" element={<Layout><Home /></Layout>} />
           <Route path="/editdiagram" element={<Layout><DiagramTypeEditor /></Layout>} />
           <Route path="/_events" element={<Layout><EventViewer /></Layout>} />
           <Route path="/_states" element={<Layout><StatesViewer /></Layout>} />
+          <Route path="/_monitor" element={<Layout><MonitorViewer /></Layout>} />
         </Routes>
       </Router>
     </ThemeProvider>
