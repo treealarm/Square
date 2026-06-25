@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
-import { useAppDispatch } from '../store/configureStore';
+import { useAppDispatch, theStore } from '../store/configureStore';
 import * as MarkersStore from '../store/MarkersStates';
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import { ICircle, PointType, getExtraProp, setExtraProp } from '../store/Marker';
@@ -58,6 +58,14 @@ export function MapDropTarget() {
       }
 
       appDispatch(MarkersStore.updateMarkers({ figs: [figure] }));
+
+      // If this object is the one currently open in the Properties panel, its editor copy
+      // (markersStates.selected_marker) is a separate piece of state that wouldn't otherwise
+      // see this new geometry — left stale, clicking "Save" there would overwrite the drop
+      // with the old position.
+      if (theStore.getState().guiStates?.selected_id === id) {
+        appDispatch(MarkersStore.selectMarkerLocally(figure));
+      }
     };
 
     container.addEventListener('dragover', onDragOver);
