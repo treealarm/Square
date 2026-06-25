@@ -1,6 +1,6 @@
 ﻿/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
 import { DeepCopy, IIntegroTypeDTO, IObjProps, IUpdateIntegroObjectDTO, TreeMarker } from '../store/Marker';
@@ -48,7 +48,8 @@ export function TreeControl() {
   const startEndBounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [debounceTimeout, setDebounceTimeout] = useState<any | null>(null);
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const burstStartRef = useRef<number | null>(null);
 
   const checked = useSelector((state: ApplicationState) => state?.guiStates?.checked) ?? [];
 
@@ -83,22 +84,37 @@ export function TreeControl() {
   
 
   useEffect(() => {
-    // Если есть предыдущий таймер, его нужно очистить
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout);
+    // Дебаунс с потолком ожидания: одиночное изменение (обычный клик) улетает почти сразу
+    // (DEBOUNCE_MS), а если requestedState продолжает быстро меняться (например, конфигуратор
+    // фильтра меняет несколько полей подряд), таймер всё равно не откладывается бесконечно —
+    // после MAX_WAIT_MS с начала "пачки" изменений запрос уйдёт принудительно.
+    const DEBOUNCE_MS = 50;
+    const MAX_WAIT_MS = 300;
+
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
     }
 
-    // Создаём новый таймер
-    const timeout = setTimeout(() => {
+    const now = Date.now();
+    if (burstStartRef.current == null) {
+      burstStartRef.current = now;
+    }
+    const elapsed = now - burstStartRef.current;
+
+    const fire = () => {
+      burstStartRef.current = null;
+      debounceTimeoutRef.current = null;
       appDispatch(TreeStore.fetchByParent(requestedState));
-    }, 1000); // задержка 1 секунда TODO сделать компонент, аккумулирующий изменения конфигуры
+    };
 
-    // Сохраняем текущий таймер, чтобы его можно было очистить на следующем рендере
-    setDebounceTimeout(timeout);
+    if (elapsed >= MAX_WAIT_MS) {
+      fire();
+    } else {
+      debounceTimeoutRef.current = setTimeout(fire, Math.min(DEBOUNCE_MS, MAX_WAIT_MS - elapsed));
+    }
 
-    // Очистка таймера при размонтировании компонента
     return () => {
-      if (timeout) clearTimeout(timeout);
+      if (debounceTimeoutRef.current) clearTimeout(debounceTimeoutRef.current);
     };
   }, [requestedState, requestTreeUpdate]);
 
