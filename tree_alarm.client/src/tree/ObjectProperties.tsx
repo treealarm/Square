@@ -17,6 +17,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VideocamIcon from '@mui/icons-material/Videocam';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useNavigate } from 'react-router-dom';
 
 import { IObjProps, Marker, TreeMarker, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
@@ -35,6 +36,7 @@ import { ControlSelector } from '../prop_controls/control_selector';
 import { ObjectSelector } from '../components/ObjectSelector';
 import SelectedObjectGeoEditor from './SelectedObjectGeoEditor';
 import { fetchIntegroInfoByIds } from './integroInfo';
+import { OBJECT_REPLICA_DRAG_TYPE, getDragGhostImage } from './dragTypes';
 
 export function ObjectProperties() {
 
@@ -194,7 +196,7 @@ export function ObjectProperties() {
   }
 
   const deleteMe = useCallback(
-    (obj_props: IObjProps) => {
+    async (obj_props: IObjProps) => {
 
       var marker: Marker = {
         name: obj_props.name,
@@ -202,7 +204,10 @@ export function ObjectProperties() {
         parent_id: obj_props.parent_id
       }
       let idsToDelete: string[] = marker?.id?[marker.id]:[];
-      appDispatch(MarkersStore.deleteMarkers(idsToDelete));
+      // Wait for the delete to actually land before asking the tree to refresh — otherwise the
+      // refetch (now near-instant after shortening the tree's debounce) can complete before the
+      // DELETE does, and the just-deleted item is still in the response.
+      await appDispatch(MarkersStore.deleteMarkers(idsToDelete));
       appDispatch(GuiStore.selectTreeItem(null));
       appDispatch(DiagramsStore.remove_ids_locally(idsToDelete));
       appDispatch(GuiStore.requestTreeUpdate());
@@ -326,6 +331,21 @@ export function ObjectProperties() {
             excludeId={objProps.id}
             onSelect={handleSelectOwner}
           />
+          {!objProps.owner_id &&
+          <Tooltip title="Drag to map to create a replica sharing this object's state">
+            <IconButton
+              aria-label="create-replica"
+              size="medium"
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData(OBJECT_REPLICA_DRAG_TYPE, objProps.id ?? '');
+                e.dataTransfer.setDragImage(getDragGhostImage(), 12, 12);
+              }}
+            >
+              <ContentCopyIcon fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
+          }
         </ListItem>
 
         <ListItem>
