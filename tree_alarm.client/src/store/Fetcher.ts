@@ -1,7 +1,26 @@
-﻿import { theStore } from './configureStore.ts';
+import { theStore } from './configureStore.ts';
 import { refreshToken, logout } from "./authSlice";
 
-let isRefreshing = false;
+let refreshPromise: Promise<boolean> | null = null;
+
+// Shared by DoFetch's 401-retry and AuthGuard's pre-emptive scheduled refresh, so concurrent
+// callers await the same network request instead of each independently calling Keycloak's
+// refresh_token grant. Keycloak rotates the refresh token on use, so two concurrent refreshes
+// with the same (now-stale) refresh_token end up with the second one rejected (400).
+export function refreshTokenSafely(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = theStore.dispatch(refreshToken()).unwrap()
+      .then(() => true)
+      .catch(() => {
+        theStore.dispatch(logout());
+        return false;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+  return refreshPromise;
+}
 
 export async function DoFetch(
   input: RequestInfo,
@@ -25,35 +44,23 @@ export async function DoFetch(
     return response;
   }
 
-  // ⚠️ 401 — пробуем refresh ОДИН раз
-  if (isRefreshing) {
+  // ⚠️ 401 — пробуем refresh
+  const refreshed = await refreshTokenSafely();
+  if (!refreshed) {
     return response;
   }
 
-  isRefreshing = true;
+  const newToken = theStore.getState().authStates.token;
 
-  try {
-    await theStore.dispatch(refreshToken()).unwrap();
-
-    const newToken = theStore.getState().auth.token;
-    if (!newToken) {
-      theStore.dispatch(logout());
-      return response;
-    }
-
-    const retryHeaders = new Headers(init?.headers || {});
+  const retryHeaders = new Headers(init?.headers || {});
+  if (newToken) {
     retryHeaders.set("Authorization", `Bearer ${newToken}`);
-
-    response = await fetch(input, {
-      ...init,
-      headers: retryHeaders,
-    });
-
-    return response;
-  } catch {
-    theStore.dispatch(logout());
-    return response;
-  } finally {
-    isRefreshing = false;
   }
+
+  response = await fetch(input, {
+    ...init,
+    headers: retryHeaders,
+  });
+
+  return response;
 }

@@ -2,7 +2,8 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../store/configureStore";
 
-import { validateToken, refreshToken, logout } from "../store/authSlice";
+import { validateToken, logout } from "../store/authSlice";
+import { refreshTokenSafely } from "../store/Fetcher";
 import { useNavigate } from "react-router-dom";
 import { getTokenExp } from "../store/authSlice";
 
@@ -36,27 +37,21 @@ export function AuthGuard() {
     const refreshAt = msToExpire - 30_000;
 
     if (refreshAt <= 0) {
-      dispatch(refreshToken())
-        .unwrap()
-        .catch(() => {
-          dispatch(logout());
-          navigate("/login");
-        });
+      refreshTokenSafely().then((ok) => {
+        if (!ok) navigate("/login");
+      });
       return;
     }
 
     const timer = setTimeout(() => {
-      dispatch(refreshToken())
-        .unwrap()
-        .catch(() => {
-          dispatch(logout());
-          navigate("/login");
-        });
+      refreshTokenSafely().then((ok) => {
+        if (!ok) navigate("/login");
+      });
     }, refreshAt);
 
     return () => clearTimeout(timer);
   }, [token, dispatch, navigate]);
 
 
-  return null; // компонент ничего не рисует
+  return null; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 }

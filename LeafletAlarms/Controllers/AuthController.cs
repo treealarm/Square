@@ -2,6 +2,7 @@
 using KeycloakAdmin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Sockets;
 
 namespace mt_admin
 {
@@ -16,21 +17,42 @@ namespace mt_admin
       _kcAdmin = kcAdmin;
     }
 
+    // Right after the dev stack starts, Kestrel is already accepting requests before
+    // InitHostedService's Keycloak warm-up (see ConfigureJwtBearerOptions.EnsureKeyLoadedAsync)
+    // finishes — Keycloak's container can report healthy before its realm import completes.
+    // The very first login can race that window and hit a connection-level failure even
+    // though the credentials are fine. Retry only on transient connectivity errors, not on
+    // Keycloak's own rejection of bad credentials (4xx).
+    private static bool IsTransientKeycloakError(Exception ex) =>
+      ex is SocketException ||
+      ex is TaskCanceledException ||
+      (ex is HttpRequestException hre && (hre.StatusCode == null || (int)hre.StatusCode >= 500));
 
     [HttpPost("customer_login")]
     public async Task<IActionResult> CustomerLogin(CustomerLoginDto dto)
     {
-      try
+      var dbRealmName = EnvConfig.Require("DB_REALM_NAME");
+      var client_id = Constants.PubClient;
+
+      const int maxAttempts = 5;
+      for (var attempt = 1; attempt <= maxAttempts; attempt++)
       {
-        var dbRealmName = EnvConfig.Require("DB_REALM_NAME");
-        var client_id = Constants.PubClient;
-        var content = await _kcAdmin.GetTokenAsync(dbRealmName, client_id, dto.Username, dto.Password);
-        return Ok(content);
+        try
+        {
+          var content = await _kcAdmin.GetTokenAsync(dbRealmName, client_id, dto.Username, dto.Password);
+          return Ok(content);
+        }
+        catch (Exception ex) when (attempt < maxAttempts && IsTransientKeycloakError(ex))
+        {
+          await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+        catch (Exception ex)
+        {
+          return StatusCode(500, ex.Message);
+        }
       }
-      catch (Exception ex)
-      {
-        return StatusCode(500, ex.Message);
-      }
+
+      return StatusCode(500, "Keycloak unavailable");
     }
     [HttpGet("ValidateToken")]
     [AllowAnonymous]

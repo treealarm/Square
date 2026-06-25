@@ -31,6 +31,9 @@ export const requestObjPropsById = async (object_id: string): Promise<IObjProps 
 
   const response = await DoFetch(`${ApiRootString}/GetObjProps?id=${object_id}`);
 
+  if (response.status === 404) {
+    return null;
+  }
   if (!response.ok) {
     throw new Error(response.statusText);
   }

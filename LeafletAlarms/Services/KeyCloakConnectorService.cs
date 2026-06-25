@@ -78,7 +78,7 @@ namespace LeafletAlarms.Authentication
       {
           { "grant_type", "password" },
           { "client_id", KeyCloakConnectorService.GetClientId() },
-          { "username", KeyCloakConnectorService.GetRealmName() },
+          { "username", KeyCloakConnectorService.GetAdminUser() },
           { "password", KeyCloakConnectorService.GetAdminPass() }
       };
 
