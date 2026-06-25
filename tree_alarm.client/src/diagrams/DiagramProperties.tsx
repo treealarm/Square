@@ -161,7 +161,7 @@ export function DiagramProperties(props: IDiagramProperties) {
     }    
   }
 
-  const onClickAddNewDiagram = useCallback(() => {
+  const onClickAddNewDiagram = useCallback(async () => {
 
     if (!selected_id || cur_diagram != null)
       return;
@@ -181,8 +181,16 @@ export function DiagramProperties(props: IDiagramProperties) {
       region_id: null
     };
 
-    appDispatch(DiagramsStore.updateDiagrams([copy]));  
-  }, [selected_id, cur_diagram]);
+    try {
+      await appDispatch(DiagramsStore.updateDiagrams([copy])).unwrap();
+      // updateDiagrams.fulfilled only patches an already-loaded cur_diagram — there isn't one
+      // yet for a brand-new diagram, so refetch explicitly (this also pulls parent_type, needed
+      // for the region dropdown below).
+      appDispatch(DiagramsStore.fetchSingleDiagram(selected_id));
+    } catch (error) {
+      console.error('Failed to create diagram for object:', error);
+    }
+  }, [selected_id, cur_diagram, appDispatch]);
   const onClickDeleteDiagram = useCallback(() => {
 
     if (cur_diagram == null)

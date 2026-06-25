@@ -3,14 +3,15 @@ import * as React from 'react';
 import { useCallback, useEffect, useRef, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker';
+import { DeepCopy, IDiagramCoord, IDiagramDTO, IDiagramContentDTO, IObjProps } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
 import * as ValuesStore from '../store/ValuesStates';
+import * as ObjPropsStore from '../store/ObjPropsStates';
 import { fetchIntegroInfoByIds } from '../tree/integroInfo';
 import { CAMERA_DGR_TYPE_NAME, CAMERA_ICON_PATH, getDefaultIcon } from '../tree/defaultIcons';
-import { TREE_MARKER_DRAG_TYPE } from '../tree/dragTypes';
+import { TREE_MARKER_DRAG_TYPE, OBJECT_REPLICA_DRAG_TYPE } from '../tree/dragTypes';
 import { ensureDgrType } from './ensureDgrType';
 
 import { useState } from 'react';
@@ -141,26 +142,88 @@ export default function DiagramViewer() {
   const paperRef = useRef<HTMLDivElement | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
-    if (e.dataTransfer.types.includes(TREE_MARKER_DRAG_TYPE)) {
+    if (e.dataTransfer.types.includes(TREE_MARKER_DRAG_TYPE) ||
+        e.dataTransfer.types.includes(OBJECT_REPLICA_DRAG_TYPE)) {
       e.preventDefault();
     }
   };
 
+  // paperRef spans the whole (oversized, see currentPaperProps) canvas, but a child's geometry
+  // is positioned relative to its parent's OWN box (cur_diagram.geometry.left/top within that
+  // canvas) — without subtracting that offset, a dropped icon lands far from the cursor and can
+  // end up outside the parent's bounds entirely. Centers the icon on the cursor, matching how
+  // it's dragged from the tree (drag image centered under the pointer).
+  const dropCoord = (e: React.DragEvent, rect: DOMRect, size: number) => ({
+    left: (e.clientX - rect.left) / zoom - (cur_diagram?.geometry?.left ?? 0) - size / 2,
+    top: (e.clientY - rect.top) / zoom - (cur_diagram?.geometry?.top ?? 0) - size / 2,
+  });
+
   const handleDrop = async (e: React.DragEvent) => {
-    const id = e.dataTransfer.getData(TREE_MARKER_DRAG_TYPE);
-    if (!id || !cur_diagram?.id) return;
-    e.preventDefault();
+    if (!cur_diagram?.id) return;
 
     const rect = paperRef.current?.getBoundingClientRect();
     if (!rect) return;
 
+    const ICON_SIZE = 40;
+
+    // Dropped the Properties panel's replica handle — create a brand-new object owned by the
+    // dragged one, parented under the currently open diagram so it renders here, instead of
+    // moving the dragged object's own placement.
+    const ownerId = e.dataTransfer.getData(OBJECT_REPLICA_DRAG_TYPE);
+    if (ownerId) {
+      e.preventDefault();
+
+      const owner = await ObjPropsStore.requestObjPropsById(ownerId);
+      if (!owner) return;
+
+      const newObjProps: IObjProps = {
+        id: null,
+        name: owner.name,
+        parent_id: cur_diagram.id,
+        owner_id: ownerId,
+        extra_props: DeepCopy(owner.extra_props) ?? [],
+      };
+      const created = await appDispatch(ObjPropsStore.updateObjProps(newObjProps)).unwrap();
+      if (!created.id) return;
+
+      const dto: IDiagramDTO = {
+        id: created.id,
+        geometry: {
+          ...dropCoord(e, rect, ICON_SIZE),
+          width: ICON_SIZE,
+          height: ICON_SIZE,
+          rotation: 0,
+        },
+        dgr_type: null,
+        region_id: null,
+        background_img: null,
+      };
+
+      const [replicaIntegroInfo] = await fetchIntegroInfoByIds([ownerId]).catch(() => []);
+      const replicaDefaultIcon = getDefaultIcon(replicaIntegroInfo?.i_name, replicaIntegroInfo?.i_type);
+      if (replicaDefaultIcon && cur_diagram_content) {
+        dto.dgr_type = await ensureDgrType(appDispatch, cur_diagram_content, {
+          name: CAMERA_DGR_TYPE_NAME,
+          src: CAMERA_ICON_PATH,
+        });
+      }
+
+      appDispatch(DiagramsStore.updateDiagrams([dto]));
+      appDispatch(GuiStore.requestTreeUpdate());
+      appDispatch(GuiStore.selectTreeItem(created.id));
+      return;
+    }
+
+    const id = e.dataTransfer.getData(TREE_MARKER_DRAG_TYPE);
+    if (!id) return;
+    e.preventDefault();
+
     const dto: IDiagramDTO = {
       id,
       geometry: {
-        left: (e.clientX - rect.left) / zoom,
-        top: (e.clientY - rect.top) / zoom,
-        width: 40,
-        height: 40,
+        ...dropCoord(e, rect, ICON_SIZE),
+        width: ICON_SIZE,
+        height: ICON_SIZE,
         rotation: 0,
       },
       dgr_type: null,

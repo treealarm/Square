@@ -131,10 +131,10 @@ export default function DiagramElement(props: IDiagramElement) {
       var newCoord = diagram.geometry;
 
       if (diagram?.region_id != null) {
-        var parent_type: IDiagramTypeDTO|null = diagram_content?.dgr_types.find(t => t.name == parent?.dgr_type) ?? null;
+        var parent_type: IDiagramTypeDTO|null = diagram_content?.dgr_types?.find(t => t.name == parent?.dgr_type) ?? null;
 
         if (parent_type != null) {
-          var region = parent_type.regions.find(r => r.region_key == diagram.region_id);
+          var region = parent_type.regions?.find(r => r.region_key == diagram.region_id);
 
           if (region != null) {
             var w = parent_coord.width;

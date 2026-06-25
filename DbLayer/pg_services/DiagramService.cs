@@ -61,9 +61,9 @@ namespace DbLayer.Services
               .ToListAsync();
         }
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-        // Можно логировать, чтобы не потерять причину
+        Domain.BackendLog.LogError($"DiagramService.GetListByIdsAsync(ids=[{string.Join(",", ids)}])", ex);
       }
 
       return ConvertListDB2DTO(obj);
