@@ -1,6 +1,6 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { useCallback, useEffect, WheelEvent } from 'react';
+import { useCallback, useEffect, useRef, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
 import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker';
@@ -8,6 +8,10 @@ import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker'
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
 import * as ValuesStore from '../store/ValuesStates';
+import { fetchIntegroInfoByIds } from '../tree/integroInfo';
+import { CAMERA_DGR_TYPE_NAME, CAMERA_ICON_PATH, getDefaultIcon } from '../tree/defaultIcons';
+import { TREE_MARKER_DRAG_TYPE } from '../tree/dragTypes';
+import { ensureDgrType } from './ensureDgrType';
 
 import { useState } from 'react';
 import { Box, ButtonGroup, IconButton } from '@mui/material';
@@ -134,6 +138,48 @@ export default function DiagramViewer() {
       appDispatch(GuiStore.selectTreeItem(cur_diagram?.id));
   };
 
+  const paperRef = useRef<HTMLDivElement | null>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes(TREE_MARKER_DRAG_TYPE)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    const id = e.dataTransfer.getData(TREE_MARKER_DRAG_TYPE);
+    if (!id || !cur_diagram?.id) return;
+    e.preventDefault();
+
+    const rect = paperRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const dto: IDiagramDTO = {
+      id,
+      geometry: {
+        left: (e.clientX - rect.left) / zoom,
+        top: (e.clientY - rect.top) / zoom,
+        width: 40,
+        height: 40,
+        rotation: 0,
+      },
+      dgr_type: null,
+      region_id: null,
+      background_img: null,
+    };
+
+    const [integroInfo] = await fetchIntegroInfoByIds([id]).catch(() => []);
+    const defaultIcon = getDefaultIcon(integroInfo?.i_name, integroInfo?.i_type);
+    if (defaultIcon && cur_diagram_content) {
+      dto.dgr_type = await ensureDgrType(appDispatch, cur_diagram_content, {
+        name: CAMERA_DGR_TYPE_NAME,
+        src: CAMERA_ICON_PATH,
+      });
+    }
+
+    appDispatch(DiagramsStore.updateDiagrams([dto]));
+  };
+
   const handleWheelEvent = (e: WheelEvent) => {
     //e.preventDefault();
     //e.stopPropagation();
@@ -195,7 +241,10 @@ export default function DiagramViewer() {
       >
         <Box
           key={"box yellow"}
+          ref={paperRef}
           onClick={handleClick}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
           bgcolor="primary.light"
           sx={{// Paper
             position: 'absolute',

@@ -136,12 +136,14 @@ export function setExtraProp(
     visual_type: visual_type
   };
 
-  var g = obj?.extra_props.find(p => p.prop_name == propName);
-  if (g != null) {
-    Object.assign(g, newElem);
+  // Replace (never mutate) the existing entry — extra_props can come straight from Redux
+  // state, which RTK/Immer freezes in dev mode; Object.assign onto a frozen entry throws.
+  var idx = obj.extra_props.findIndex(p => p.prop_name == propName);
+  if (idx >= 0) {
+    obj.extra_props = obj.extra_props.map((p, i) => i === idx ? newElem : p);
     return;
   }
-  obj.extra_props = [...obj.extra_props,...[newElem]];
+  obj.extra_props = [...obj.extra_props, newElem];
 }
 
 export function getExtraProp(
@@ -384,6 +386,7 @@ export interface IDiagramCoord {
   top: number;
   width: number;
   height: number;
+  rotation?: number | null;
 }
 export interface IDiagramDTO {
   id: string;

@@ -9,7 +9,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
 import * as ValuesStore from '../store/ValuesStates';
-import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
+import * as DiagramsStore from '../store/DiagramsStates';
+import { DeepCopy, IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
+import { DiagramRotationHandle } from './DiagramRotationHandle';
 
 
 const getValueByRegion = (
@@ -217,8 +219,20 @@ export default function DiagramElement(props: IDiagramElement) {
             margin: 0,
             width: '100%',
             height: '100%',
-            objectFit: 'fill'
+            objectFit: 'fill',
+            transform: `rotate(${coord.rotation ?? 0}deg)`
           }} />
+
+        {selected_id === diagram?.id && (
+          <DiagramRotationHandle
+            onRotate={(deg) => {
+              const updated = DeepCopy(diagram);
+              if (!updated) return;
+              updated.geometry = { ...updated.geometry, rotation: deg };
+              appDispatch(DiagramsStore.update_diagram_geometry_locally(updated));
+            }}
+          />
+        )}
 
         {diagram_type?.regions?.map((region) => getValueByRegion(region, cur_values, zoom, coord))}
 

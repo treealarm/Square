@@ -125,6 +125,19 @@ const diagramsSlice = createSlice({
         state.cur_diagram_content.content = newContent;
       }      
     },
+    // Updates one entry's geometry within cur_diagram_content (e.g. from dragging a rotation
+    // handle directly on the diagram) without touching cur_diagram.parent_type, unlike
+    // update_single_diagram_locally which is meant for the full Properties-panel edit flow.
+    update_diagram_geometry_locally(state: DiagramsStates, action: PayloadAction<IDiagramDTO>) {
+      if (state.cur_diagram_content) {
+        state.cur_diagram_content.content = state.cur_diagram_content.content.map(
+          d => d.id === action.payload.id ? action.payload : d
+        );
+      }
+      if (state.cur_diagram?.diagram?.id === action.payload.id) {
+        state.cur_diagram.diagram = action.payload;
+      }
+    },
     set_depth(state: DiagramsStates, action: PayloadAction<number>) {
       state.depth = action.payload;
     },
@@ -204,7 +217,8 @@ export const {
   set_depth,
   set_diagram_content_locally,
   remove_ids_locally,
-  update_single_diagram_locally
+  update_single_diagram_locally,
+  update_diagram_geometry_locally
 } = diagramsSlice.actions
 export const reducer = diagramsSlice.reducer
 

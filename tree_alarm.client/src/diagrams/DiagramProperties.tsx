@@ -23,6 +23,7 @@ import FileUpload from '../components/FileUpload';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LinkIcon from '@mui/icons-material/Link';
+import { CompassDial } from '../components/CompassDial';
 export interface ChildEvents {
   clickSave: () => void;
 }
@@ -140,6 +141,14 @@ export function DiagramProperties(props: IDiagramProperties) {
     }
 
     appDispatch(DiagramsStore.update_single_diagram_locally(copy));
+  }
+
+  function handleChangeRotation(deg: number) {
+    var copy = DeepCopy(cur_diagram_full);
+    if (copy?.diagram?.geometry) {
+      copy.diagram.geometry.rotation = deg;
+      appDispatch(DiagramsStore.update_single_diagram_locally(copy));
+    }
   }
 
   function handleChangeRegionId(e: any) {
@@ -338,6 +347,9 @@ export function DiagramProperties(props: IDiagramProperties) {
             onChange={handleChangeRegion}
           >
           </TextField>
+        </ListItem>
+        <ListItem id={"reg_rotation"}>
+          <CompassDial value={cur_diagram?.geometry?.rotation ?? 0} onChange={handleChangeRotation} />
         </ListItem>
       <ListItem id="btn_delete">
         <Button

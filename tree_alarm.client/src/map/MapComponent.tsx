@@ -6,6 +6,7 @@ import {
 
 import { EditableFigure } from "./EditableFigure";
 import { MapPositionChange } from "./MapPositionChange";
+import { MapDropTarget } from "./MapDropTarget";
 import { TrackViewer } from "../tracks/TrackViewer";
 import L from "leaflet";
 
@@ -58,9 +59,10 @@ export function MapComponent() {
 
       <TrackViewer />
       <LocationMarkers />
-      
+
       <EditableFigure />
       <MapPositionChange />
+      <MapDropTarget />
 
       <TileLayer
         maxZoom={20}

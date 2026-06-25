@@ -20,22 +20,29 @@ const initialState: ObjPropsState = {
 // -----------------
 // Async thunks
 
+// The base object record (name, parent_id, extra_props, ...) — exists regardless of whether
+// the object has a geo-binding yet, unlike api/map/GetByIds which only returns objects that
+// already have a geo row. Use this (not MarkersStore.requestMarkersByIds) when you need an
+// object's base properties to construct its *first* geometry.
+export const requestObjPropsById = async (object_id: string): Promise<IObjProps | null> => {
+  if (!object_id) {
+    return null;
+  }
+
+  const response = await DoFetch(`${ApiRootString}/GetObjProps?id=${object_id}`);
+
+  if (!response.ok) {
+    throw new Error(response.statusText);
+  }
+
+  return (await response.json()) as IObjProps;
+};
+
 export const fetchObjProps = createAsyncThunk(
   'objProps/fetchObjProps',
   async (object_id: string, { rejectWithValue }) => {
     try {
-      if (!object_id) {
-        return null;
-      }
-
-      const response = await DoFetch(`${ApiRootString}/GetObjProps?id=${object_id}`);
-
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-
-      const data = (await response.json()) as IObjProps;
-      return data;
+      return await requestObjPropsById(object_id);
     } catch (error) {
       return rejectWithValue(null);
     }

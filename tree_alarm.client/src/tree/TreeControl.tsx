@@ -27,6 +27,7 @@ import { RequestedState } from '../store/TreeStates';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { createObjectsFromBrowserFile } from './createObjectsFromBrowserFile';
+import { TREE_MARKER_DRAG_TYPE, getDragGhostImage } from './dragTypes';
 
 export function TreeControl() {
   const appDispatch = useAppDispatch();
@@ -308,7 +309,7 @@ const selectItem = (selectedMarker: TreeMarker | null) => {
                                 accept=".json"
                                 onChange={(e) => {
                                   if (e.target.files?.[0]) {
-                                    createObjectsFromBrowserFile(e.target.files[0], reduxSelectedId, appDispatch, objectIntegroType?.i_name);
+                                    createObjectsFromBrowserFile(e.target.files[0], reduxSelectedId, appDispatch, objectIntegroType?.i_name ?? null);
                                     e.target.value = '';
                                   }
                                 }}
@@ -325,15 +326,23 @@ const selectItem = (selectedMarker: TreeMarker | null) => {
                 )}
               </>
             }>
-              <ListItemButton selected={reduxSelectedId === marker.id} onClick={handleSelect(marker)}>
+              <ListItemButton
+                selected={reduxSelectedId === marker.id}
+                onClick={handleSelect(marker)}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(TREE_MARKER_DRAG_TYPE, marker.id ?? '');
+                  e.dataTransfer.setDragImage(getDragGhostImage(), 12, 12);
+                }}
+              >
                 <ListItemIcon>
                   <Checkbox
                     size="small"
                     edge="start"
-                    checked={checked.includes(marker.id)}
+                    checked={checked.includes(marker.id ?? '')}
                     tabIndex={-1}
                     disableRipple
-                    id={marker.id}
+                    id={marker.id ?? undefined}
                     onChange={handleChecked}
                   />
                 </ListItemIcon>
