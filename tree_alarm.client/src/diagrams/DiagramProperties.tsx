@@ -6,7 +6,7 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import * as DiagramTypeStore from '../store/DiagramTypeStates'
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import { Box, Button, Divider, TextField } from '@mui/material';
+import { Box, Button, Divider, TextField, Typography } from '@mui/material';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -24,6 +24,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LinkIcon from '@mui/icons-material/Link';
 import { CompassDial } from '../components/CompassDial';
+import { useDiagramEditing } from '../editworkspace/DiagramEditingContext';
 export interface ChildEvents {
   clickSave: () => void;
 }
@@ -35,6 +36,7 @@ export interface IDiagramProperties {
 export function DiagramProperties(props: IDiagramProperties) {
 
   const appDispatch = useAppDispatch();
+  const editingEnabled = useDiagramEditing();
   let navigate = useNavigate();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const cur_diagram_content: IDiagramContentDTO | null =
@@ -167,8 +169,6 @@ export function DiagramProperties(props: IDiagramProperties) {
       return;
     const copy: IDiagramDTO = {
       id: selected_id,
-      name: 'New Diagram',
-      parent_id: null,
       dgr_type: null,
       background_img: null,
       geometry:
@@ -210,7 +210,7 @@ export function DiagramProperties(props: IDiagramProperties) {
     appDispatch(DiagramsStore.update_single_diagram_locally(copy));
   }
 
-  let enable_add_diagram = selected_id != null && cur_diagram == null;
+  let enable_add_diagram = editingEnabled && selected_id != null && cur_diagram == null;
 
   if (enable_add_diagram) {
     return (
@@ -250,6 +250,34 @@ export function DiagramProperties(props: IDiagramProperties) {
   }
   let cur_diagram_type = cur_diagram?.dgr_type != null ? cur_diagram?.dgr_type : "";
 
+  if (!editingEnabled) {
+    // Read-only: this object has a diagram, but diagram editing only happens in the
+    // /_editdiagrams workspace — show what's there without offering to change it.
+    return (
+      <Box sx={{
+        width: '100%',
+        bgcolor: 'background.paper',
+        overflow: 'auto',
+        height: '100%',
+        border: 0
+      }}>
+        <List dense>
+          <Divider><br></br></Divider>
+          <ListItem>
+            <Typography variant="body2">Diagram type: {cur_diagram_type || '—'}</Typography>
+          </ListItem>
+          <ListItem>
+            <Typography variant="body2">
+              Position: {cur_diagram?.geometry?.left}, {cur_diagram?.geometry?.top}
+              {' '}({cur_diagram?.geometry?.width}×{cur_diagram?.geometry?.height}),
+              rotation {cur_diagram?.geometry?.rotation ?? 0}°
+            </Typography>
+          </ListItem>
+        </List>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{
       width: '100%',
@@ -261,7 +289,7 @@ export function DiagramProperties(props: IDiagramProperties) {
     }}>
 
       <List dense>
-        <Divider><br></br></Divider>        
+        <Divider><br></br></Divider>
         <ListItem id="diagram_type_name_src">
 
           <TextField
@@ -282,7 +310,7 @@ export function DiagramProperties(props: IDiagramProperties) {
           >
             {'select'}
           </Button >
-           
+
         </ListItem>
 
         <ListItem id={"reg_id"}

@@ -150,7 +150,7 @@ export function getExtraProp(
   obj: IObjProps,
   propName: string,
   defVal:string|null = null
-): string {
+): string | null {
 
   if (obj?.extra_props == null) {
     return defVal;

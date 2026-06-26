@@ -12,6 +12,7 @@ import * as ValuesStore from '../store/ValuesStates';
 import * as DiagramsStore from '../store/DiagramsStates';
 import { DeepCopy, IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
 import { DiagramRotationHandle } from './DiagramRotationHandle';
+import { useDiagramEditing } from '../editworkspace/DiagramEditingContext';
 
 
 const getValueByRegion = (
@@ -117,8 +118,9 @@ export default function DiagramElement(props: IDiagramElement) {
   // CompassDial) instead of setPointerCapture — capture only engages reliably on the exact
   // node it's requested on, and a fast drag easily outruns this object's small hit area;
   // window listeners keep firing regardless of where the cursor physically is.
+  const editingEnabled = useDiagramEditing();
   const justDraggedRef = useRef(false);
-  const canDrag = diagram?.region_id == null;
+  const canDrag = editingEnabled && diagram?.region_id == null;
 
   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     if (!canDrag || event.button !== 0) return;
@@ -280,7 +282,7 @@ export default function DiagramElement(props: IDiagramElement) {
             transform: `rotate(${coord.rotation ?? 0}deg)`
           }} />
 
-        {selected_id === diagram?.id && (
+        {editingEnabled && selected_id === diagram?.id && (
           <DiagramRotationHandle
             onRotate={(deg) => {
               const updated = DeepCopy(diagram);

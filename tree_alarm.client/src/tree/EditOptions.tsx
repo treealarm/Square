@@ -14,10 +14,12 @@ import {
 import * as ObjPropsStore from '../store/ObjPropsStates';
 import AddIcon from '@mui/icons-material/Add';
 import { ApplicationState } from '../store';
+import { useDiagramEditing } from '../editworkspace/DiagramEditingContext';
 
 export default function EditOptions() {
 
   const appDispatch = useAppDispatch();
+  const editingEnabled = useDiagramEditing();
 
   const diagram = useSelector((state: ApplicationState) => state?.diagramsStates.cur_diagram_content);
 
@@ -29,7 +31,8 @@ export default function EditOptions() {
   var figuresMenu = EditStore.Figures;
 
   if (diagram != null) {
-    figuresMenu = EditStore.Diagrams;
+    // Creating a (nested) diagram is diagram editing — only offer it inside /_editdiagrams.
+    figuresMenu = editingEnabled ? EditStore.Diagrams : {};
   }
   const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -107,7 +110,7 @@ export default function EditOptions() {
 
     if (item == EditStore.DiagramTool) {
 
-      if (selected_id == null) {
+      if (!editingEnabled || selected_id == null) {
         return;
       }
       const copy: IDiagramDTO = {

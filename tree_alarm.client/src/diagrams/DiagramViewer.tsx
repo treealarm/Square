@@ -3,16 +3,17 @@ import * as React from 'react';
 import { useCallback, useEffect, useRef, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
-import { DeepCopy, IDiagramCoord, IDiagramDTO, IDiagramContentDTO, IObjProps } from '../store/Marker';
+import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker';
 
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
 import * as ValuesStore from '../store/ValuesStates';
-import * as ObjPropsStore from '../store/ObjPropsStates';
 import { fetchIntegroInfoByIds } from '../tree/integroInfo';
 import { CAMERA_DGR_TYPE_NAME, CAMERA_ICON_PATH, getDefaultIcon } from '../tree/defaultIcons';
 import { TREE_MARKER_DRAG_TYPE, OBJECT_REPLICA_DRAG_TYPE } from '../tree/dragTypes';
 import { ensureDgrType } from './ensureDgrType';
+import { createDiagramReplicaOnDiagram } from './createDiagramReplica';
+import { useDiagramEditing } from '../editworkspace/DiagramEditingContext';
 
 import { useState } from 'react';
 import { Box, ButtonGroup, IconButton } from '@mui/material';
@@ -29,6 +30,7 @@ import MenuItem from '@mui/material/MenuItem';
 export default function DiagramViewer() {
 
   const appDispatch = useAppDispatch();
+  const editingEnabled = useDiagramEditing();
   const [zoom, setZoom] = useState(1.0);
 
   const cur_diagram_content: IDiagramContentDTO | null =
@@ -142,6 +144,7 @@ export default function DiagramViewer() {
   const paperRef = useRef<HTMLDivElement | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
+    if (!editingEnabled) return;
     if (e.dataTransfer.types.includes(TREE_MARKER_DRAG_TYPE) ||
         e.dataTransfer.types.includes(OBJECT_REPLICA_DRAG_TYPE)) {
       e.preventDefault();
@@ -159,7 +162,7 @@ export default function DiagramViewer() {
   });
 
   const handleDrop = async (e: React.DragEvent) => {
-    if (!cur_diagram?.id) return;
+    if (!editingEnabled || !cur_diagram?.id) return;
 
     const rect = paperRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -173,44 +176,16 @@ export default function DiagramViewer() {
     if (ownerId) {
       e.preventDefault();
 
-      const owner = await ObjPropsStore.requestObjPropsById(ownerId);
-      if (!owner) return;
-
-      const newObjProps: IObjProps = {
-        id: null,
-        name: owner.name,
-        parent_id: cur_diagram.id,
-        owner_id: ownerId,
-        extra_props: DeepCopy(owner.extra_props) ?? [],
-      };
-      const created = await appDispatch(ObjPropsStore.updateObjProps(newObjProps)).unwrap();
-      if (!created.id) return;
-
-      const dto: IDiagramDTO = {
-        id: created.id,
-        geometry: {
-          ...dropCoord(e, rect, ICON_SIZE),
-          width: ICON_SIZE,
-          height: ICON_SIZE,
-          rotation: 0,
-        },
-        dgr_type: null,
-        region_id: null,
-        background_img: null,
-      };
-
-      const [replicaIntegroInfo] = await fetchIntegroInfoByIds([ownerId]).catch(() => []);
-      const replicaDefaultIcon = getDefaultIcon(replicaIntegroInfo?.i_name, replicaIntegroInfo?.i_type);
-      if (replicaDefaultIcon && cur_diagram_content) {
-        dto.dgr_type = await ensureDgrType(appDispatch, cur_diagram_content, {
-          name: CAMERA_DGR_TYPE_NAME,
-          src: CAMERA_ICON_PATH,
-        });
+      const createdId = await createDiagramReplicaOnDiagram(
+        appDispatch,
+        ownerId,
+        cur_diagram.id,
+        dropCoord(e, rect, ICON_SIZE),
+        cur_diagram_content
+      );
+      if (createdId) {
+        appDispatch(GuiStore.selectTreeItem(createdId));
       }
-
-      appDispatch(DiagramsStore.updateDiagrams([dto]));
-      appDispatch(GuiStore.requestTreeUpdate());
-      appDispatch(GuiStore.selectTreeItem(created.id));
       return;
     }
 
