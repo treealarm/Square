@@ -88,6 +88,12 @@ export const fetchSingleDiagram = createAsyncThunk<IDiagramFullDTO, string>(
       }
     );
 
+    // 204 (no diagram for this object yet) has no body — most objects never get one,
+    // so this is the common case, not an error. Parsing it as JSON would throw.
+    if (fetched.status === 204) {
+      return rejectWithValue("Diagram not found");
+    }
+
     const json = await fetched.json();
 
     if (!json) {
