@@ -28,6 +28,13 @@ namespace mt_admin
       ex is TaskCanceledException ||
       (ex is HttpRequestException hre && (hre.StatusCode == null || (int)hre.StatusCode >= 500));
 
+    // No DB/Keycloak calls — just confirms Kestrel is up and routing this controller, so the
+    // frontend can poll it to know when the backend is reachable at all (separate concern from
+    // the Keycloak-specific retry below, which assumes the backend itself is already serving).
+    [HttpGet("Ping")]
+    [AllowAnonymous]
+    public IActionResult Ping() => Ok();
+
     [HttpPost("customer_login")]
     [AllowAnonymous]
     public async Task<IActionResult> CustomerLogin(CustomerLoginDto dto)

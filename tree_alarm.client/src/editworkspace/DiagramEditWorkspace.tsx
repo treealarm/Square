@@ -13,7 +13,7 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import { IDiagramFullDTO, IObjProps } from '../store/Marker';
 
 import { DiagramEditingContext } from './DiagramEditingContext';
-import { SearchableTreeBrowser } from '../tree/SearchableTreeBrowser';
+import { EditDiagramTreeBrowser } from './EditDiagramTreeBrowser';
 import { DiagramComposition } from './DiagramComposition';
 import { DiagramProperties, ChildEvents } from '../diagrams/DiagramProperties';
 import DiagramNavigation from '../diagrams/DiagramNavigation';
@@ -71,7 +71,7 @@ export function DiagramEditWorkspace() {
 
         <Grid container sx={{ height: '100%', width: '100%', overflow: 'auto', flex: 1 }}>
           <Grid item xs={3} sx={{ height: '100%', border: 1 }}>
-            <SearchableTreeBrowser
+            <EditDiagramTreeBrowser
               onAttach={attachTargetDiagramId ? handleAttach : undefined}
               attachLabel="Attach to the open diagram"
             />

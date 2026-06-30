@@ -156,7 +156,9 @@ namespace DbLayer.Services
     public async Task<Dictionary<string, BaseMarkerDTO>> GetByNameAsync(string name)
     {
       var list = await _db.Markers
-          .Where(m => m.name == name)
+          .Where(m => EF.Functions.ILike(m.name, $"%{name}%"))
+          .OrderBy(m => m.name)
+          .Take(20)
           .ToListAsync();
 
       return list.ToDictionary(

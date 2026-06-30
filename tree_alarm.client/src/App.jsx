@@ -14,6 +14,7 @@ import { ObjectPropertiesUpdater } from "./components/ObjectPropertiesUpdater";
 
 import { AuthGuard } from "./auth/AuthGuard";
 import { LoginForm } from "./auth/LoginForm";
+import { BackendReadyGate } from "./auth/BackendReadyGate";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 
@@ -31,23 +32,25 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <Router>
-        <ObjectPropertiesUpdater />
+        <BackendReadyGate>
+          <ObjectPropertiesUpdater />
 
-        {/* ���������� ������ */}
-        <AuthGuard />
+          {/* ���������� ������ */}
+          <AuthGuard />
 
-        <Routes>
-          {/* ������ �������� */}
-          <Route path="/login" element={<LoginForm />} />
+          <Routes>
+            {/* ������ �������� */}
+            <Route path="/login" element={<LoginForm />} />
 
-          {/* ���������� �������� */}
-          <Route path="/" element={<Layout><Home /></Layout>} />
-          <Route path="/_editdiagrams" element={<Layout><DiagramEditWorkspace /></Layout>} />
-          <Route path="/editdiagram" element={<Layout><DiagramTypeEditor /></Layout>} />
-          <Route path="/_events" element={<Layout><EventViewer /></Layout>} />
-          <Route path="/_states" element={<Layout><StatesViewer /></Layout>} />
-          <Route path="/_monitor" element={<Layout><MonitorViewer /></Layout>} />
-        </Routes>
+            {/* ���������� �������� */}
+            <Route path="/" element={<Layout><Home /></Layout>} />
+            <Route path="/_editdiagrams" element={<Layout><DiagramEditWorkspace /></Layout>} />
+            <Route path="/editdiagram" element={<Layout><DiagramTypeEditor /></Layout>} />
+            <Route path="/_events" element={<Layout><EventViewer /></Layout>} />
+            <Route path="/_states" element={<Layout><StatesViewer /></Layout>} />
+            <Route path="/_monitor" element={<Layout><MonitorViewer /></Layout>} />
+          </Routes>
+        </BackendReadyGate>
       </Router>
     </ThemeProvider>
   );
