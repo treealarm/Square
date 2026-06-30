@@ -119,7 +119,7 @@ export default function DiagramTypeViewer() {
 
       <Tooltip title={"Zoom " + zoom.toFixed(2)}>
         <ButtonGroup variant="contained" orientation="vertical"
-          sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
+          sx={{ position: 'absolute', left: '5px', bgcolor: 'background.paper' }}>
 
           <IconButton
             onClick={() => setZoom(zoom + 0.1)}>

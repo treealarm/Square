@@ -32,7 +32,7 @@ export const AccordionPanels = (props: { components: Array<[IPanelsStatesDTO, Re
 
   var accordions = components.map((component) => {
 
-    var color = '#eee';
+    var color = 'background.paper';
 
     var togglePanels: IPanelsStatesDTO[] = [];
 

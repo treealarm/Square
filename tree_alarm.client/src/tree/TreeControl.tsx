@@ -227,7 +227,7 @@ const selectItem = (selectedMarker: TreeMarker | null) => {
   return (
     <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <TabControl />
-      <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
+      <Box sx={{ flexGrow: 1, bgcolor: 'background.paper' }}>
         <Toolbar variant="dense">
 
           <Tooltip title="Go to previous page">

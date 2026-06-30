@@ -56,7 +56,7 @@ export default function DiagramNavigation() {
   return (
     <Box
       sx={{
-        backgroundColor: '#bbbbbb',
+        bgcolor: 'background.paper',
         flexDirection: 'row',
         justifyContent: 'flex-end',
         display: 'flex'

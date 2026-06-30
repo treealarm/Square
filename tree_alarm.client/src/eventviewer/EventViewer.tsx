@@ -239,7 +239,7 @@ export function EventViewer() {
       >
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Toolbar sx={{ backgroundColor: 'lightgray', justifyContent: "center", }}>
+          <Toolbar sx={{ bgcolor: 'background.paper', justifyContent: "center", }}>
               <Stack
                 direction="row"                
                 divider={<Divider orientation="vertical" flexItem />}

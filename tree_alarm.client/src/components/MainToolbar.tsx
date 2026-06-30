@@ -39,7 +39,7 @@ export function MainToolbar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar sx={{ backgroundColor: '#bbbbbb' }} >
+      <AppBar position="static" sx={{ bgcolor: 'background.paper' }} >
         <Toolbar variant='dense' >
           <Box
             sx={{ flexGrow: 1 }}

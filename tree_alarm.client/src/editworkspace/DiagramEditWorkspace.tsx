@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Divider, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CategoryIcon from '@mui/icons-material/Category';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import { ApplicationState } from '../store';
 import { useAppDispatch } from '../store/configureStore';
@@ -60,7 +61,12 @@ export function DiagramEditWorkspace() {
   return (
     <DiagramEditingContext.Provider value={true}>
       <Box sx={{ height: '98vh', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', backgroundColor: '#bbbbbb', px: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'background.paper', px: 1 }}>
+          <Tooltip title="Exit diagram editor">
+            <IconButton onClick={() => navigate('/')}>
+              <ArrowBackIcon />
+            </IconButton>
+          </Tooltip>
           <Typography variant="subtitle1" sx={{ flexGrow: 1 }}>Diagram Editor</Typography>
           <Tooltip title="Diagram type editor">
             <IconButton onClick={() => navigate('/editdiagram')}>

@@ -327,7 +327,7 @@ export default function DiagramViewer() {
       </Box>
 
       <ButtonGroup variant="contained" orientation="vertical"
-        sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
+        sx={{ position: 'absolute', left: '5px', bgcolor: 'background.paper' }}>
         <IconButton
           onClick={() => setZoom(zoom + 0.1)}>
           <ZoomInIcon fontSize="inherit"></ZoomInIcon>

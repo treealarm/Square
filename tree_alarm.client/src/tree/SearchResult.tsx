@@ -83,7 +83,7 @@ export function SearchResult() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
+      <Box sx={{ flexGrow: 1, bgcolor: 'background.paper' }}>
         <Toolbar variant="dense">
 
           <Tooltip title="Go to previous page">

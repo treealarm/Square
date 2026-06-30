@@ -33,7 +33,7 @@ export function DiagramTypeEditor() {
         width: '100%'
       }}
       >
-        <Toolbar sx={{ justifyContent: "left", backgroundColor: 'lightgray' }}>
+        <Toolbar sx={{ justifyContent: "left", bgcolor: 'background.paper' }}>
           {
             result == null ? null :
               <Box>

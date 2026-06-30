@@ -7,7 +7,7 @@ import { MapComponent } from "../map/MapComponent";
 import { ObjectProperties } from "../tree/ObjectProperties";
 import {
   Box,
-  Grid, Toolbar,
+  Grid,
 } from "@mui/material";
 
 
@@ -113,9 +113,8 @@ export function Home() {
       <Box sx={{
         width: '100%'
       }}
-      >        
+      >
         <MainToolbar />
-        <Toolbar />
       </Box>
 
       <Grid container sx={{
