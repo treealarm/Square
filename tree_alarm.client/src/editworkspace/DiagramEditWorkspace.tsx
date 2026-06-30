@@ -70,14 +70,14 @@ export function DiagramEditWorkspace() {
         </Box>
 
         <Grid container sx={{ height: '100%', width: '100%', overflow: 'auto', flex: 1 }}>
-          <Grid item xs={3} sx={{ height: '100%', border: 1 }}>
+          <Grid size={3} sx={{ height: '100%', border: 1 }}>
             <EditDiagramTreeBrowser
               onAttach={attachTargetDiagramId ? handleAttach : undefined}
               attachLabel="Attach to the open diagram"
             />
           </Grid>
 
-          <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
+          <Grid size="grow" sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
             {diagramDiving ? (
               <DiagramViewer />
             ) : (
@@ -91,7 +91,7 @@ export function DiagramEditWorkspace() {
             )}
           </Grid>
 
-          <Grid item xs={3} sx={{ height: '100%', border: 1, overflow: 'auto' }}>
+          <Grid size={3} sx={{ height: '100%', border: 1, overflow: 'auto' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', px: 1 }}>
               <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>{objProps?.name ?? ''}</Typography>
               {diagramDiving && (

@@ -125,15 +125,15 @@ export function Home() {
         flex: 1
       }}>
 
-        <Grid item xs={3} sx={{ height: "100%", display: showLeftPannel ? '' : 'none' }}>
+        <Grid size={3} sx={{ height: "100%", display: showLeftPannel ? '' : 'none' }}>
           <LeftPanel />
         </Grid>
 
-        <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
+        <Grid size="grow" sx={{ minWidth: '100px', minHeight: '100px', height: '100%' }}>
           {diagramDiving ? <DiagramViewer /> : <MapComponent />}
         </Grid>
 
-        <Grid item xs={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
+        <Grid size={3} sx={{ height: "100%", display: showRightPannel ? '' : 'none' }}>
           <RightPanel />
         </Grid>
       </Grid>
