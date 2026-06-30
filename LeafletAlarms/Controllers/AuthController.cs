@@ -29,6 +29,7 @@ namespace mt_admin
       (ex is HttpRequestException hre && (hre.StatusCode == null || (int)hre.StatusCode >= 500));
 
     [HttpPost("customer_login")]
+    [AllowAnonymous]
     public async Task<IActionResult> CustomerLogin(CustomerLoginDto dto)
     {
       var dbRealmName = EnvConfig.Require("DB_REALM_NAME");

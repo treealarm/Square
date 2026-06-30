@@ -50,7 +50,10 @@ namespace LeafletAlarms.Authentication
 
       try
       {
-        var client = new HttpClient();
+        // Bounds each retry attempt in EnsureKeyLoadedAsync's loop — without this, a
+        // slow/unresponsive Keycloak lets the default ~100s HttpClient timeout dominate the
+        // whole warmup instead of the intended 2s retryDelay between attempts.
+        var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         Uri url;
 
@@ -159,7 +162,7 @@ namespace LeafletAlarms.Authentication
           var request = new HttpRequestMessage(HttpMethod.Get,
             url.ToString()
           );
-          var client = new HttpClient();
+          var client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
           request.Headers.Add("authorization", "Bearer " + _token.access_token);
           request.Headers.Add("cache-control", "no-cache");
           HttpResponseMessage resp = await client.SendAsync(request);
