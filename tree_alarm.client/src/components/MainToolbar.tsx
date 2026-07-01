@@ -33,9 +33,13 @@ export function MainToolbar() {
     navigate("/_monitor");
   };
 
+  const goToDiagramEditor = () => {
+    navigate("/_editdiagrams");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar sx={{ backgroundColor: '#bbbbbb' }} >
+      <AppBar position="static" sx={{ bgcolor: 'background.paper' }} >
         <Toolbar variant='dense' >
           <Box
             sx={{ flexGrow: 1 }}
@@ -68,6 +72,10 @@ export function MainToolbar() {
 
           <Button onClick={goToMonitor} variant="contained" size="small" sx={{ ml: 2 }}>
             Monitor
+          </Button>
+
+          <Button onClick={goToDiagramEditor} variant="contained" color="secondary" size="small" sx={{ ml: 2 }}>
+            Diagram Editor
           </Button>
 
           <Box

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -87,6 +88,21 @@ namespace LeafletAlarms.Authentication
         options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
       });
       AuthenticationBuilder.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, configureOptions: null);
+
+      // Secure by default: most controllers here (DiagramsController, DiagramTypesController,
+      // EventsController, GroupController, IntegroController, RightsController, RouterController,
+      // StatesController, ValuesController) had no [Authorize] at all and were reachable by
+      // anyone, unauthenticated — opt-in security is easy to forget on a new controller/action.
+      // This flips it: every endpoint requires a valid Bearer token unless explicitly marked
+      // [AllowAnonymous] (login, refresh, validate-token, tile/static-file serving). Confirmed
+      // safe — integration producers (AASubService, GrpcTracksClient) reach the backend over
+      // gRPC via IntegrationHost, never through these REST controllers.
+      services.AddAuthorization(options =>
+      {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+          .RequireAuthenticatedUser()
+          .Build();
+      });
     }
   }
 }

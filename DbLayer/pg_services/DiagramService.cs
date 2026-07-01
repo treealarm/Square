@@ -61,9 +61,9 @@ namespace DbLayer.Services
               .ToListAsync();
         }
       }
-      catch (Exception)
+      catch (Exception ex)
       {
-        // Можно логировать, чтобы не потерять причину
+        Domain.BackendLog.LogError($"DiagramService.GetListByIdsAsync(ids=[{string.Join(",", ids)}])", ex);
       }
 
       return ConvertListDB2DTO(obj);
@@ -154,7 +154,8 @@ namespace DbLayer.Services
         height = dto.geometry.height,
         width = dto.geometry.width,
         left = dto.geometry.left,
-        top = dto.geometry.top
+        top = dto.geometry.top,
+        rotation = dto.geometry.rotation
       };
       return dbo;
     }
@@ -184,7 +185,8 @@ namespace DbLayer.Services
           top = dbObj.geometry.top,
           left = dbObj.geometry.left,
           width = dbObj.geometry.width,
-          height = dbObj.geometry.height
+          height = dbObj.geometry.height,
+          rotation = dbObj.geometry.rotation
         };
 
         newObjs.Add(dto.id, dto);

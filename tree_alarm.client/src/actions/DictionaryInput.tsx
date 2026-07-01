@@ -44,7 +44,7 @@ export function DictionaryInput({ label, value, onChange }: DictionaryProps) {
       <Grid container spacing={1}>
         {entries.map(([k, v], i) => (
           <React.Fragment key={i}>
-            <Grid item xs={5}>
+            <Grid size={5}>
               <TextField
                 size="small"
                 fullWidth
@@ -53,7 +53,7 @@ export function DictionaryInput({ label, value, onChange }: DictionaryProps) {
                 onChange={(e) => handleEntryChange(i, e.target.value, v)}
               />
             </Grid>
-            <Grid item xs={5}>
+            <Grid size={5}>
               <TextField
                 size="small"
                 fullWidth
@@ -62,7 +62,7 @@ export function DictionaryInput({ label, value, onChange }: DictionaryProps) {
                 onChange={(e) => handleEntryChange(i, k, e.target.value)}
               />
             </Grid>
-            <Grid item xs={2}>
+            <Grid size={2}>
               <IconButton onClick={() => handleRemove(i)}>
                 <Delete />
               </IconButton>

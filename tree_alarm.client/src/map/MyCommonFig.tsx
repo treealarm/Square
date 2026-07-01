@@ -1,15 +1,52 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Circle, Marker, Polygon, Polyline, Tooltip } from "react-leaflet";
-import { ICircle, ICommonFig, IGeometryDTO, IPolygon, IPolyline, IValueDTO, LineStringType, PointType, PolygonType, calculateCenter, getExtraProp } from "../store/Marker";
+import { Circle, Marker, Polygon, Polyline, Tooltip, useMap } from "react-leaflet";
+import { ICircle, ICommonFig, IGeometryDTO, IPolygon, IPolyline, IValueDTO, LatLngPair, LineStringType, PointType, PolygonType, calculateCenter, getExtraProp, setExtraProp } from "../store/Marker";
 import React, { useEffect, useMemo, useState } from "react";
 import * as L from 'leaflet';
 import { useAppDispatch } from "../store/configureStore";
 import * as GuiStore from '../store/GUIStates';
 import * as ValuesStore from '../store/ValuesStates';
+import * as MarkersStore from '../store/MarkersStates';
 import { useSelector } from "react-redux";
 import { ApplicationState } from "../store";
+import { bearingFromDelta, offsetFromBearing } from "../components/rotation";
+
+const ROTATE_HANDLE_RADIUS_PX = 28;
+
+interface IRotationHandleProps {
+  center: LatLngPair;
+  angleDeg: number;
+  // eslint-disable-next-line no-unused-vars
+  onRotate: (deg: number) => void;
+}
+
+// Lets a selected, icon-bearing marker (e.g. a camera) be oriented by dragging a small
+// handle around it, instead of only typing degrees into a property field.
+function RotationHandle(props: IRotationHandleProps) {
+  const map = useMap();
+  const centerPt = map.latLngToContainerPoint(props.center as L.LatLngExpression);
+  const { dx, dy } = offsetFromBearing(props.angleDeg, ROTATE_HANDLE_RADIUS_PX);
+  const handleLatLng = map.containerPointToLatLng(L.point(centerPt.x + dx, centerPt.y + dy));
+
+  const icon = useMemo(() => L.divIcon({
+    className: 'rotate-handle-icon',
+    iconSize: [12, 12],
+    iconAnchor: [6, 6],
+    html: "<div style='width:12px;height:12px;border-radius:50%;background:#1976d2;border:2px solid white;box-shadow:0 0 2px rgba(0,0,0,0.5);'></div>"
+  }), []);
+
+  const eventHandlers = useMemo(() => ({
+    drag(e: L.LeafletEvent) {
+      const marker = e.target as L.Marker;
+      const newPt = map.latLngToContainerPoint(marker.getLatLng());
+      props.onRotate(bearingFromDelta(newPt.x - centerPt.x, newPt.y - centerPt.y));
+    }
+  }), [map, centerPt.x, centerPt.y, props.onRotate]);
+
+  return <Marker position={handleLatLng} icon={icon} draggable eventHandlers={eventHandlers} />;
+}
 function MyPolygon(props: any) {
 
   var fig: IPolygon = props.marker;
@@ -44,6 +81,8 @@ function MyPolyline(props: any) {
 }
 
 function MyCircle(props: any) {
+
+  const appDispatch = useAppDispatch();
 
   var fig: ICircle = props.marker;
   var center = fig.geometry.coord;
@@ -94,6 +133,18 @@ function MyCircle(props: any) {
           icon={imageIcon}
           eventHandlers={props.eventHandlers}
         />
+
+        {props.selected && (
+          <RotationHandle
+            center={center}
+            angleDeg={Number(image_rotate)}
+            onRotate={(deg) => {
+              const updatedFig: ICircle = { ...fig };
+              setExtraProp(updatedFig, "__image_rotate", deg.toFixed(0), "Int");
+              appDispatch(MarkersStore.selectMarkerLocally(updatedFig));
+            }}
+          />
+        )}
       </React.Fragment>
     );
   }
@@ -176,7 +227,7 @@ export const MyCommonFig = React.memo(function MyCommonFig(props: any) {
   const center = calculateCenter(geo);
 
   return (<React.Fragment>
-    {geo.type === PointType && <MyCircle {...props} eventHandlers={eventHandlers} />}
+    {geo.type === PointType && <MyCircle {...props} selected={selected_id === fig?.id} eventHandlers={eventHandlers} />}
     {geo.type === PolygonType && <MyPolygon {...props} eventHandlers={eventHandlers} />}
     {geo.type === LineStringType && <MyPolyline {...props} eventHandlers={eventHandlers} />}
 

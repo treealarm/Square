@@ -3,12 +3,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
-import { GeometryType, ICircle, ICommonFig, IFigures, IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LatLngPair, LineStringType, PointType, PolygonType } from '../store/Marker';
+import { GeometryType, ICircle, ICommonFig, IFigures, IObjProps, IPointCoord, IPolygonCoord, IPolylineCoord, LatLngPair, LineStringType, PointType, PolygonType, getExtraProp, setExtraProp } from '../store/Marker';
 import GeoEditor from '../prop_controls/geo_editor';
 import { useAppDispatch } from '../store/configureStore';
 import * as MarkersStore from '../store/MarkersStates';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import GeoExtraPropertiesEditor from '../prop_controls/GeoExtraPropertiesEditor';
+import { fetchIntegroInfoByIds } from './integroInfo';
+import { getDefaultIcon } from './defaultIcons';
 
 export interface ChildEvents {
   clickSave: () => void;
@@ -23,11 +25,21 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
   const appDispatch = useAppDispatch();
   const selected_id = useSelector((state: ApplicationState) => state?.guiStates?.selected_id);
   const selectedFig = useSelector((state: ApplicationState) => state?.markersStates?.selected_marker);
+  const cachedMarkers = useSelector((state: ApplicationState) => state?.markersStates?.markers);
   const objProps: IObjProps | null = useSelector((state: ApplicationState) => state?.objPropsStates?.objProps ?? null);
+  const mapCenter = useSelector((state: ApplicationState) => state?.guiStates?.cur_map_view?.map_center ?? null);
 
   useEffect(() => {
     if (selected_id) {
       if (selectedFig?.id != selected_id) {
+        // Avoid a redundant network call if the marker is already loaded
+        // (e.g. by ObjectProperties.tsx's parallel fetch, or an earlier map-viewport box query).
+        const cached = cachedMarkers?.figs?.find(m => m.id === selected_id);
+        if (cached) {
+          appDispatch(MarkersStore.selectMarkerLocally(cached));
+          return;
+        }
+
         // Fetch the figure if it's not already set
         const fetchData = async () => {
           try {
@@ -40,11 +52,11 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
         };
 
         fetchData();
-      }      
+      }
     } else {
       appDispatch(MarkersStore.selectMarkerLocally(null));
     }
-  }, [selected_id, selectedFig]);
+  }, [selected_id, selectedFig, cachedMarkers]);
 
   const handleSave = useCallback(() => {
     if (selectedFig) {
@@ -59,12 +71,17 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
     (updatedProps: {
       radius?: number;
       zoom_level?: string;
+      rotation?: number;
     }) => {
       if (selectedFig) {
+        const { rotation, ...rest } = updatedProps;
         const updatedFig: ICommonFig = {
           ...selectedFig,
-          ...updatedProps, // Merge updated properties into selectedFig
+          ...rest, // Merge updated properties into selectedFig
         };
+        if (rotation != null) {
+          setExtraProp(updatedFig, '__image_rotate', rotation.toString(), 'Int');
+        }
         appDispatch(MarkersStore.selectMarkerLocally(updatedFig));
       }
     },
@@ -91,17 +108,26 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
     }
   }, [props.events, selectedFig]);
 
-  const addDefaultGeometry = useCallback(() => {
+  const addDefaultGeometry = useCallback(async () => {
     if (!objProps) return;
 
     const figure: ICircle = {
       ...objProps,
-      geometry: { type: PointType, coord: [0, 0] },
+      geometry: { type: PointType, coord: mapCenter ?? [0, 0] },
       radius: 100,
     };
 
+    if (selected_id) {
+      const [integroInfo] = await fetchIntegroInfoByIds([selected_id]).catch(() => []);
+      const defaultIcon = getDefaultIcon(integroInfo?.i_name, integroInfo?.i_type);
+      if (defaultIcon && !getExtraProp(figure, '__image')) {
+        setExtraProp(figure, '__image', defaultIcon.image, 'String');
+        setExtraProp(figure, '__image_rotate', '0', 'Int');
+      }
+    }
+
     appDispatch(MarkersStore.selectMarkerLocally(figure));
-  }, [selected_id, objProps, appDispatch]);
+  }, [selected_id, objProps, mapCenter, appDispatch]);
 
   const changeGeometryType = useCallback(
     (newType: GeometryType) => {
@@ -186,8 +212,10 @@ const SelectedObjectGeoEditor = (props: IGeoEditorProperties) => {
             extraProps={{
               radius: selectedFig.radius,
               zoom_level: selectedFig.zoom_level,
+              rotation: Number(getExtraProp(selectedFig, '__image_rotate', '0')),
             }}
             showRadius={selectedFig?.geometry?.type === PointType}
+            showRotation={selectedFig?.geometry?.type === PointType}
             handleChangeProp={(updatedProps) => handleChangeProp(updatedProps)}
           />
           <FormControl size="small" sx={{ mb: 1, minWidth: 120 }}>

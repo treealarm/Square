@@ -34,13 +34,13 @@ export default function DiagramParentsNavigator(props: IDiagramParentsNavigator)
   }
   return (
     <Box sx={{
-      backgroundColor: '#bbbbbb',
+      bgcolor: 'background.paper',
       flexGrow: 1,
       display: 'flex'
     }}
     >
       <Tabs
-        value={curMarker}
+        value={curMarker ?? false}
         onChange={handleChange}
         variant='scrollable'
         scrollButtons

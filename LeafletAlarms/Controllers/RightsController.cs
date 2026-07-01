@@ -8,8 +8,7 @@ namespace LeafletAlarms.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
-  //[Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin)]
-  
+  [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin)]
   public class RightsController: ControllerBase
   {
     private readonly IRightService _rightsService;

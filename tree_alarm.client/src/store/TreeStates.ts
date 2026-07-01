@@ -55,6 +55,23 @@ export async function getByParent(parent_id: string | null, start_id: string | n
   return json;
 }
 
+// Backend already has this (api/map/GetByName) — just wasn't called from anywhere on the
+// frontend yet. Used by the editor's tree search to find an object anywhere in the tree by
+// name, regardless of which level is currently loaded/drilled into.
+export async function searchByName(name: string): Promise<Marker[]> {
+  const response = await DoFetch(`${ApiRootString}/GetByName`, {
+    method: "POST",
+    headers: { "Content-type": "application/json" },
+    body: JSON.stringify(name),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to search by name');
+  }
+
+  return await response.json() as Marker[];
+}
+
 export async function getById(id: string | null): Promise <Marker>
 {
 

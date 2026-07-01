@@ -17,6 +17,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import AddTaskIcon from '@mui/icons-material/AddTask';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import VideocamIcon from '@mui/icons-material/Videocam';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useNavigate } from 'react-router-dom';
 
 import { IObjProps, Marker, TreeMarker, DeepCopy, IGeometryDTO, ObjExtraPropertyDTO } from '../store/Marker';
@@ -34,8 +35,8 @@ import * as DiagramsStore from '../store/DiagramsStates';
 import { ControlSelector } from '../prop_controls/control_selector';
 import { ObjectSelector } from '../components/ObjectSelector';
 import SelectedObjectGeoEditor from './SelectedObjectGeoEditor';
-import { DoFetch } from '../store/Fetcher';
-import { ApiIntegroRootString } from '../store/constants';
+import { fetchIntegroInfoByIds } from './integroInfo';
+import { OBJECT_REPLICA_DRAG_TYPE, getDragGhostImage } from './dragTypes';
 
 export function ObjectProperties() {
 
@@ -50,38 +51,26 @@ export function ObjectProperties() {
 
   const [newPropName, setNewPropName] = React.useState('');
 
-  // Objects registered by an external producer (AASubService, GrpcTracksClient, vms_rec, ...) via
-  // IntegroService.UpdateIntegro carry an i_name — that producer is the source of truth for them,
-  // so this panel must not let an admin "save" a stale/conflicting edit here. Checked via the
-  // already-public POST /api/integro/GetByIds rather than GetObjectIntegroType, since the latter
-  // also requires a registered type hierarchy (UpdateIntegroTypes), which a producer may
-  // deliberately skip to prevent manual child creation in the tree (see vms_rec's integration).
-  const [isExternalObject, setIsExternalObject] = React.useState(false);
-  // Narrower than isExternalObject above — gates the "Open in Monitor" button specifically to
-  // vms_rec cameras, not any future producer's objects (see VMS_APP_ID in monitorviewer/MonitorViewer.tsx).
+  // Objects registered by an external producer (AASubService, GrpcTracksClient, vms_rec, ...) still
+  // have their properties/geo stored in our own DB, so they're editable here like any other object
+  // — if the producer pushes an update later, that's expected, not a conflict to guard against.
+  // Gates the "Open in Monitor" button specifically to vms_rec cameras, not any future producer's
+  // objects (see VMS_APP_ID in monitorviewer/MonitorViewer.tsx).
   const [isVmsRecCamera, setIsVmsRecCamera] = React.useState(false);
 
   useEffect(() => {
     if (!selected_id) {
-      setIsExternalObject(false);
       setIsVmsRecCamera(false);
       return;
     }
     let cancelled = false;
-    DoFetch(ApiIntegroRootString + '/GetByIds', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify([selected_id]),
-    })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((list: { i_name?: string; i_type?: string }[]) => {
+    fetchIntegroInfoByIds([selected_id])
+      .then((list) => {
         if (cancelled) return;
-        setIsExternalObject(!!list?.[0]?.i_name);
         setIsVmsRecCamera(list?.[0]?.i_name === 'vmscfg' && list?.[0]?.i_type === 'camera');
       })
       .catch(() => {
         if (!cancelled) {
-          setIsExternalObject(false);
           setIsVmsRecCamera(false);
         }
       });
@@ -161,10 +150,10 @@ export function ObjectProperties() {
   }
 
   useEffect(() => {
-    if (objProps?.id != null) {
-      appDispatch(MarkersStore.fetchMarkersByIds([objProps.id]));
-    }      
-  }, [propsUpdated, objProps?.id]);
+    if (selected_id != null) {
+      appDispatch(MarkersStore.fetchMarkersByIds([selected_id]));
+    }
+  }, [propsUpdated, selected_id]);
 
   const childDiagramPropEvents = useMemo(() => ({
     clickSave: () => { }
@@ -207,7 +196,7 @@ export function ObjectProperties() {
   }
 
   const deleteMe = useCallback(
-    (obj_props: IObjProps) => {
+    async (obj_props: IObjProps) => {
 
       var marker: Marker = {
         name: obj_props.name,
@@ -215,7 +204,10 @@ export function ObjectProperties() {
         parent_id: obj_props.parent_id
       }
       let idsToDelete: string[] = marker?.id?[marker.id]:[];
-      appDispatch(MarkersStore.deleteMarkers(idsToDelete));
+      // Wait for the delete to actually land before asking the tree to refresh — otherwise the
+      // refetch (now near-instant after shortening the tree's debounce) can complete before the
+      // DELETE does, and the just-deleted item is still in the response.
+      await appDispatch(MarkersStore.deleteMarkers(idsToDelete));
       appDispatch(GuiStore.selectTreeItem(null));
       appDispatch(DiagramsStore.remove_ids_locally(idsToDelete));
       appDispatch(GuiStore.requestTreeUpdate());
@@ -275,13 +267,11 @@ export function ObjectProperties() {
           </Tooltip>
             }
 
-            {!isExternalObject &&
             <Tooltip title={"Save object" }>
             <IconButton aria-label="save" size="medium" onClick={handleSave}>
               <SaveIcon fontSize="inherit" />
             </IconButton>
           </Tooltip>
-            }
 
             <Tooltip title={"Edit object"}>
             <IconButton aria-label="edit" size="medium"
@@ -321,13 +311,11 @@ export function ObjectProperties() {
             value={objProps.parent_id ? objProps.parent_id:''}
             inputProps={{ readOnly: true}}>
           </TextField>
-          {!isExternalObject &&
           <ObjectSelector
             selectedId={objProps.parent_id ?? null}
             excludeId={objProps.id}
             onSelect={handleSelect}
           />
-          }
         </ListItem>
 
         <ListItem>
@@ -338,12 +326,25 @@ export function ObjectProperties() {
             value={objProps.owner_id ? objProps.owner_id : ''}
             inputProps={{ readOnly: true }}>
           </TextField>
-          {!isExternalObject &&
           <ObjectSelector
             selectedId={objProps.owner_id ?? null}
             excludeId={objProps.id}
             onSelect={handleSelectOwner}
           />
+          {!objProps.owner_id &&
+          <Tooltip title="Drag to map to create a replica sharing this object's state">
+            <IconButton
+              aria-label="create-replica"
+              size="medium"
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.setData(OBJECT_REPLICA_DRAG_TYPE, objProps.id ?? '');
+                e.dataTransfer.setDragImage(getDragGhostImage(), 12, 12);
+              }}
+            >
+              <ContentCopyIcon fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
           }
         </ListItem>
 
@@ -352,8 +353,7 @@ export function ObjectProperties() {
           fullWidth
           id="name" label='Name'
             value={objProps?.name}
-            onChange={handleChangeName}
-            inputProps={{ readOnly: isExternalObject }} />
+            onChange={handleChangeName} />
         </ListItem>
         <ListItem sx={{ width: '100%' }}>
           <SelectedObjectGeoEditor events={childGeoPropEvents} />
@@ -374,22 +374,18 @@ export function ObjectProperties() {
                 str_val={item.str_val}
                 visual_type={item.visual_type ?? null}
                 handleChangeProp={handleChangeProp}
-                object_id={selected_id ?? null}
-                readOnly={isExternalObject} />
+                object_id={selected_id ?? null} />
 
-              {!isExternalObject &&
               <Tooltip title={"remove property"}>
                 <IconButton aria-label="delete" size="small" onClick={() => { handleRemoveProp(item.prop_name); }}>
                   <DeleteOutlineIcon fontSize="inherit" />
                 </IconButton>
               </Tooltip>
-              }
 
             </ListItem>
             )
         }
         <Divider><br></br></Divider>
-        {!isExternalObject &&
         <ListItem>
           <TextField size="small"
             fullWidth
@@ -402,7 +398,6 @@ export function ObjectProperties() {
             </IconButton>
           </Tooltip>
         </ListItem>
-        }
       </List>
     </Box>
   );

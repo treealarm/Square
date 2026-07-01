@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Domain;
+using LeafletAlarms.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LeafletAlarms.Controllers
 {
@@ -47,6 +49,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpDelete()]
     [Route("DeleteDiagramTypes")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.power_user)]
     public async Task<List<string>> DeleteDiagramTypes(List<string> ids)
     {
       return await _diagramTypeUpdateService.DeleteDiagramTypes(ids);
@@ -54,6 +57,7 @@ namespace LeafletAlarms.Controllers
 
     [HttpPost()]
     [Route("UpdateDiagramTypes")]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = RoleConstants.admin + "," + RoleConstants.power_user)]
     public async Task<GetDiagramTypesDTO> UpdateDiagramTypes(List<DiagramTypeDTO> dgr_types)
     {
       return await _diagramTypeUpdateService.UpdateDiagramTypes(dgr_types);

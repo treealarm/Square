@@ -1,6 +1,6 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react';
-import { useCallback, useEffect, WheelEvent } from 'react';
+import { useCallback, useEffect, useRef, WheelEvent } from 'react';
 import { ApplicationState } from '../store';
 import { useSelector } from 'react-redux';
 import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker';
@@ -8,6 +8,12 @@ import { IDiagramCoord, IDiagramDTO, IDiagramContentDTO } from '../store/Marker'
 import { useAppDispatch } from '../store/configureStore';
 import * as DiagramsStore from '../store/DiagramsStates';
 import * as ValuesStore from '../store/ValuesStates';
+import { fetchIntegroInfoByIds } from '../tree/integroInfo';
+import { CAMERA_DGR_TYPE_NAME, CAMERA_ICON_PATH, getDefaultIcon } from '../tree/defaultIcons';
+import { TREE_MARKER_DRAG_TYPE, OBJECT_REPLICA_DRAG_TYPE } from '../tree/dragTypes';
+import { ensureDgrType } from './ensureDgrType';
+import { createDiagramReplicaOnDiagram } from './createDiagramReplica';
+import { useDiagramEditing } from '../editworkspace/DiagramEditingContext';
 
 import { useState } from 'react';
 import { Box, ButtonGroup, IconButton } from '@mui/material';
@@ -24,6 +30,7 @@ import MenuItem from '@mui/material/MenuItem';
 export default function DiagramViewer() {
 
   const appDispatch = useAppDispatch();
+  const editingEnabled = useDiagramEditing();
   const [zoom, setZoom] = useState(1.0);
 
   const cur_diagram_content: IDiagramContentDTO | null =
@@ -134,6 +141,83 @@ export default function DiagramViewer() {
       appDispatch(GuiStore.selectTreeItem(cur_diagram?.id));
   };
 
+  const paperRef = useRef<HTMLDivElement | null>(null);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    if (!editingEnabled) return;
+    if (e.dataTransfer.types.includes(TREE_MARKER_DRAG_TYPE) ||
+        e.dataTransfer.types.includes(OBJECT_REPLICA_DRAG_TYPE)) {
+      e.preventDefault();
+    }
+  };
+
+  // paperRef spans the whole (oversized, see currentPaperProps) canvas, but a child's geometry
+  // is positioned relative to its parent's OWN box (cur_diagram.geometry.left/top within that
+  // canvas) — without subtracting that offset, a dropped icon lands far from the cursor and can
+  // end up outside the parent's bounds entirely. Centers the icon on the cursor, matching how
+  // it's dragged from the tree (drag image centered under the pointer).
+  const dropCoord = (e: React.DragEvent, rect: DOMRect, size: number) => ({
+    left: (e.clientX - rect.left) / zoom - (cur_diagram?.geometry?.left ?? 0) - size / 2,
+    top: (e.clientY - rect.top) / zoom - (cur_diagram?.geometry?.top ?? 0) - size / 2,
+  });
+
+  const handleDrop = async (e: React.DragEvent) => {
+    if (!editingEnabled || !cur_diagram?.id) return;
+
+    const rect = paperRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const ICON_SIZE = 40;
+
+    // Dropped the Properties panel's replica handle — create a brand-new object owned by the
+    // dragged one, parented under the currently open diagram so it renders here, instead of
+    // moving the dragged object's own placement.
+    const ownerId = e.dataTransfer.getData(OBJECT_REPLICA_DRAG_TYPE);
+    if (ownerId) {
+      e.preventDefault();
+
+      const createdId = await createDiagramReplicaOnDiagram(
+        appDispatch,
+        ownerId,
+        cur_diagram.id,
+        dropCoord(e, rect, ICON_SIZE),
+        cur_diagram_content
+      );
+      if (createdId) {
+        appDispatch(GuiStore.selectTreeItem(createdId));
+      }
+      return;
+    }
+
+    const id = e.dataTransfer.getData(TREE_MARKER_DRAG_TYPE);
+    if (!id) return;
+    e.preventDefault();
+
+    const dto: IDiagramDTO = {
+      id,
+      geometry: {
+        ...dropCoord(e, rect, ICON_SIZE),
+        width: ICON_SIZE,
+        height: ICON_SIZE,
+        rotation: 0,
+      },
+      dgr_type: null,
+      region_id: null,
+      background_img: null,
+    };
+
+    const [integroInfo] = await fetchIntegroInfoByIds([id]).catch(() => []);
+    const defaultIcon = getDefaultIcon(integroInfo?.i_name, integroInfo?.i_type);
+    if (defaultIcon && cur_diagram_content) {
+      dto.dgr_type = await ensureDgrType(appDispatch, cur_diagram_content, {
+        name: CAMERA_DGR_TYPE_NAME,
+        src: CAMERA_ICON_PATH,
+      });
+    }
+
+    appDispatch(DiagramsStore.updateDiagrams([dto]));
+  };
+
   const handleWheelEvent = (e: WheelEvent) => {
     //e.preventDefault();
     //e.stopPropagation();
@@ -195,7 +279,10 @@ export default function DiagramViewer() {
       >
         <Box
           key={"box yellow"}
+          ref={paperRef}
           onClick={handleClick}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
           bgcolor="primary.light"
           sx={{// Paper
             position: 'absolute',
@@ -240,7 +327,7 @@ export default function DiagramViewer() {
       </Box>
 
       <ButtonGroup variant="contained" orientation="vertical"
-        sx={{ position: 'absolute', left: '5px', backgroundColor: 'lightgray' }}>
+        sx={{ position: 'absolute', left: '5px', bgcolor: 'background.paper' }}>
         <IconButton
           onClick={() => setZoom(zoom + 0.1)}>
           <ZoomInIcon fontSize="inherit"></ZoomInIcon>

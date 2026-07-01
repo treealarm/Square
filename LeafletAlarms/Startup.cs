@@ -296,19 +296,15 @@ namespace LeafletAlarms
       
 
       app.UseRouting();
-      app.UseAuthorization();
 
-      app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller}/{action=Index}/{id?}");
-
+      // WebSocket middleware must run before UseAuthorization so that the unauthenticated
+      // WS upgrade to /state is not rejected by the global FallbackPolicy. Browsers cannot
+      // send Authorization headers with the native WebSocket API.
       var webSocketOptions = new WebSocketOptions
       {
         KeepAliveInterval = TimeSpan.FromMinutes(2)
       };
-
       app.UseWebSockets(webSocketOptions);
-
       app.Use(async (context, next) =>
       {
         if (context.Request.Path == "/state")
@@ -337,8 +333,14 @@ namespace LeafletAlarms
         {
           await next();
         }
-
       });
+
+      app.UseAuthorization();
+
+      app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller}/{action=Index}/{id?}");
+
       app.MapControllers();
       app.MapFallbackToFile("/index.html");
     }

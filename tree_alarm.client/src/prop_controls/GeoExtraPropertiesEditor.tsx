@@ -2,19 +2,22 @@
 import React, { useCallback } from 'react';
 import { TextField, Box } from '@mui/material';
 import ZoomLevelSelector from './ZoomLevelSelector';
+import { CompassDial } from '../components/CompassDial';
 
 export interface IGeoExtraProperties {
   radius?: number;
   zoom_level?: string|null;
+  rotation?: number;
 }
 
 export interface IGeoExtraPropertiesEditorProps {
   extraProps: IGeoExtraProperties;
   handleChangeProp: (updatedProps: IGeoExtraProperties) => void;
-  showRadius: boolean; // Флаг для отображения поля радиуса
+  showRadius: boolean; // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+  showRotation?: boolean;
 }
 
-const GeoExtraPropertiesEditor = ({ extraProps, handleChangeProp, showRadius }: IGeoExtraPropertiesEditorProps) => {
+const GeoExtraPropertiesEditor = ({ extraProps, handleChangeProp, showRadius, showRotation }: IGeoExtraPropertiesEditorProps) => {
   const handleRadiusChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     handleChangeProp({
       ...extraProps,
@@ -26,6 +29,13 @@ const GeoExtraPropertiesEditor = ({ extraProps, handleChangeProp, showRadius }: 
     handleChangeProp({
       ...extraProps,
       zoom_level: cur_level,
+    });
+  }, [extraProps, handleChangeProp]);
+
+  const handleRotationChange = useCallback((deg: number) => {
+    handleChangeProp({
+      ...extraProps,
+      rotation: deg,
     });
   }, [extraProps, handleChangeProp]);
 
@@ -47,6 +57,9 @@ const GeoExtraPropertiesEditor = ({ extraProps, handleChangeProp, showRadius }: 
         onZoomLevelChange={handleZoomLevelChange}
         fullWidth
       />
+      {showRotation && (
+        <CompassDial value={extraProps.rotation ?? 0} onChange={handleRotationChange} />
+      )}
     </Box>
   );
 };

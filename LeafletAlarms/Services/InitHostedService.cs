@@ -30,23 +30,28 @@ public class InitHostedService : IHostedService, IDisposable
       await stateService.Init();
     }
 
-    // Прогреваем JWT signing key ДО приёма трафика. Раньше ключ лениво грузился
-    // внутри IssuerSigningKeyResolver через блокирующий .Result на каждый
-    // авторизованный запрос — это и было причиной многосекундных задержек на
-    // всех Bearer-эндпоинтах (карта/дерево/свойства), хотя сам Keycloak отвечает
-    // за миллисекунды: блокировка пула потоков на ожидании HTTP к Keycloak
-    // каскадно тормозила остальные запросы.
+    // Прогреваем JWT signing key, но НЕ блокируя на этом StartAsync: ASP.NET Core не начинает
+    // принимать НИКАКОЙ HTTP-трафик (включая [AllowAnonymous] /api/Auth/customer_login,
+    // которому этот ключ вообще не нужен) пока все IHostedService.StartAsync не завершатся.
+    // Раньше ключ к тому же лениво грузился внутри IssuerSigningKeyResolver через блокирующий
+    // .Result на каждый авторизованный запрос — той проблемы это уже не касается (ключ
+    // кешируется в _securityKey), но awaiting retry-цикла прямо тут добавлял до 30×2с к
+    // запуску ВСЕГО сервера. Bearer-эндпоинты и так корректно отвечают 401, пока ключ не
+    // прогрелся (см. IssuerSigningKeyResolver) — отдельного ожидания тут не нужно.
     var jwtOptions = _serviceProvider.GetRequiredService<ConfigureJwtBearerOptions>();
-    var keyLoaded = await jwtOptions.EnsureKeyLoadedAsync(
-      maxAttempts: 30,
-      retryDelay: TimeSpan.FromSeconds(2),
-      cancellationToken);
-
-    if (!keyLoaded)
+    _ = Task.Run(async () =>
     {
-      _logger.LogWarning("JWT signing key was not loaded from Keycloak at startup. " +
-        "Authenticated requests will return 401 until the key becomes available.");
-    }
+      var keyLoaded = await jwtOptions.EnsureKeyLoadedAsync(
+        maxAttempts: 30,
+        retryDelay: TimeSpan.FromSeconds(2),
+        cancellationToken);
+
+      if (!keyLoaded)
+      {
+        _logger.LogWarning("JWT signing key was not loaded from Keycloak at startup. " +
+          "Authenticated requests will return 401 until the key becomes available.");
+      }
+    }, cancellationToken);
 
     // Запускаем фоновую задачу
     _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

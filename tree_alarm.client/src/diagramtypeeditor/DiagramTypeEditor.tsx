@@ -33,7 +33,7 @@ export function DiagramTypeEditor() {
         width: '100%'
       }}
       >
-        <Toolbar sx={{ justifyContent: "left", backgroundColor: 'lightgray' }}>
+        <Toolbar sx={{ justifyContent: "left", bgcolor: 'background.paper' }}>
           {
             result == null ? null :
               <Box>
@@ -64,14 +64,14 @@ export function DiagramTypeEditor() {
         flex: 1
       }}>
         
-        <Grid item xs={3} sx={{ height: "100%", border:1 }}>
+        <Grid size={3} sx={{ height: "100%", border:1 }}>
           <DiagramTypeSearcher />
         </Grid>
-        <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
+        <Grid size="grow" sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
           <DiagramTypeViewer/>
         </Grid>
 
-        <Grid item xs={3} sx={{ height: "100%", border: 1 }}>
+        <Grid size={3} sx={{ height: "100%", border: 1 }}>
           <DiagramTypeProperties />
         </Grid>
       </Grid>

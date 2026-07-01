@@ -1,6 +1,6 @@
 ﻿/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { ApplicationState } from '../store';
 import { DeepCopy, IIntegroTypeDTO, IObjProps, IUpdateIntegroObjectDTO, TreeMarker } from '../store/Marker';
@@ -27,6 +27,7 @@ import { RequestedState } from '../store/TreeStates';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { createObjectsFromBrowserFile } from './createObjectsFromBrowserFile';
+import { TREE_MARKER_DRAG_TYPE, getDragGhostImage } from './dragTypes';
 
 export function TreeControl() {
   const appDispatch = useAppDispatch();
@@ -47,7 +48,8 @@ export function TreeControl() {
   const startEndBounds = parentMarkerId ? parentBounds[parentMarkerId] : parentBounds[''];
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [debounceTimeout, setDebounceTimeout] = useState<any | null>(null);
+  const debounceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const burstStartRef = useRef<number | null>(null);
 
   const checked = useSelector((state: ApplicationState) => state?.guiStates?.checked) ?? [];
 
@@ -82,22 +84,37 @@ export function TreeControl() {
   
 
   useEffect(() => {
-    // Если есть предыдущий таймер, его нужно очистить
-    if (debounceTimeout) {
-      clearTimeout(debounceTimeout);
+    // Дебаунс с потолком ожидания: одиночное изменение (обычный клик) улетает почти сразу
+    // (DEBOUNCE_MS), а если requestedState продолжает быстро меняться (например, конфигуратор
+    // фильтра меняет несколько полей подряд), таймер всё равно не откладывается бесконечно —
+    // после MAX_WAIT_MS с начала "пачки" изменений запрос уйдёт принудительно.
+    const DEBOUNCE_MS = 50;
+    const MAX_WAIT_MS = 300;
+
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
     }
 
-    // Создаём новый таймер
-    const timeout = setTimeout(() => {
+    const now = Date.now();
+    if (burstStartRef.current == null) {
+      burstStartRef.current = now;
+    }
+    const elapsed = now - burstStartRef.current;
+
+    const fire = () => {
+      burstStartRef.current = null;
+      debounceTimeoutRef.current = null;
       appDispatch(TreeStore.fetchByParent(requestedState));
-    }, 1000); // задержка 1 секунда TODO сделать компонент, аккумулирующий изменения конфигуры
+    };
 
-    // Сохраняем текущий таймер, чтобы его можно было очистить на следующем рендере
-    setDebounceTimeout(timeout);
+    if (elapsed >= MAX_WAIT_MS) {
+      fire();
+    } else {
+      debounceTimeoutRef.current = setTimeout(fire, Math.min(DEBOUNCE_MS, MAX_WAIT_MS - elapsed));
+    }
 
-    // Очистка таймера при размонтировании компонента
     return () => {
-      if (timeout) clearTimeout(timeout);
+      if (debounceTimeoutRef.current) clearTimeout(debounceTimeoutRef.current);
     };
   }, [requestedState, requestTreeUpdate]);
 
@@ -210,7 +227,7 @@ const selectItem = (selectedMarker: TreeMarker | null) => {
   return (
     <Box sx={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <TabControl />
-      <Box sx={{ flexGrow: 1, backgroundColor: 'lightgray' }}>
+      <Box sx={{ flexGrow: 1, bgcolor: 'background.paper' }}>
         <Toolbar variant="dense">
 
           <Tooltip title="Go to previous page">
@@ -308,7 +325,7 @@ const selectItem = (selectedMarker: TreeMarker | null) => {
                                 accept=".json"
                                 onChange={(e) => {
                                   if (e.target.files?.[0]) {
-                                    createObjectsFromBrowserFile(e.target.files[0], reduxSelectedId, appDispatch, objectIntegroType?.i_name);
+                                    createObjectsFromBrowserFile(e.target.files[0], reduxSelectedId, appDispatch, objectIntegroType?.i_name ?? null);
                                     e.target.value = '';
                                   }
                                 }}
@@ -325,15 +342,23 @@ const selectItem = (selectedMarker: TreeMarker | null) => {
                 )}
               </>
             }>
-              <ListItemButton selected={reduxSelectedId === marker.id} onClick={handleSelect(marker)}>
+              <ListItemButton
+                selected={reduxSelectedId === marker.id}
+                onClick={handleSelect(marker)}
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.setData(TREE_MARKER_DRAG_TYPE, marker.id ?? '');
+                  e.dataTransfer.setDragImage(getDragGhostImage(), 12, 12);
+                }}
+              >
                 <ListItemIcon>
                   <Checkbox
                     size="small"
                     edge="start"
-                    checked={checked.includes(marker.id)}
+                    checked={checked.includes(marker.id ?? '')}
                     tabIndex={-1}
                     disableRipple
-                    id={marker.id}
+                    id={marker.id ?? undefined}
                     onChange={handleChecked}
                   />
                 </ListItemIcon>

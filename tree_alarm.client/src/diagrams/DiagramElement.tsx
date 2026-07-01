@@ -5,11 +5,14 @@ import { ApplicationState } from '../store/index';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../store/configureStore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Box } from '@mui/material';
 import * as GuiStore from '../store/GUIStates';
 import * as ValuesStore from '../store/ValuesStates';
-import { IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
+import * as DiagramsStore from '../store/DiagramsStates';
+import { DeepCopy, IDiagramCoord, IDiagramDTO, IDiagramTypeDTO, IDiagramTypeRegionDTO, IValueDTO, TreeMarker } from '../store/Marker';
+import { DiagramRotationHandle } from './DiagramRotationHandle';
+import { useDiagramEditing } from '../editworkspace/DiagramEditingContext';
 
 
 const getValueByRegion = (
@@ -108,9 +111,64 @@ export default function DiagramElement(props: IDiagramElement) {
 
   const [coord, setCoord] = useState(diagram.geometry);
 
+  // Lets a freely-placed object (no region_id — region-bound children get their position
+  // from the parent type's region layout instead, see the effect below) be repositioned by
+  // dragging it directly, rather than only via the numeric left/top fields in Properties.
+  // Tracks the drag via window-level listeners (same pattern as DiagramRotationHandle /
+  // CompassDial) instead of setPointerCapture — capture only engages reliably on the exact
+  // node it's requested on, and a fast drag easily outruns this object's small hit area;
+  // window listeners keep firing regardless of where the cursor physically is.
+  const editingEnabled = useDiagramEditing();
+  const justDraggedRef = useRef(false);
+  const canDrag = editingEnabled && diagram?.region_id == null;
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (!canDrag || event.button !== 0) return;
+    // Stop a child diagram's drag gesture from also being picked up as a drag of this
+    // (ancestor) element.
+    event.stopPropagation();
+
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startLeft = coord.left;
+    const startTop = coord.top;
+    let dragging = false;
+
+    const onMove = (ev: PointerEvent) => {
+      const dx = (ev.clientX - startX) / zoom;
+      const dy = (ev.clientY - startY) / zoom;
+
+      if (!dragging && Math.hypot(dx, dy) < 3) return;
+      dragging = true;
+
+      const updated = DeepCopy(diagram);
+      if (!updated) return;
+      updated.geometry = {
+        ...updated.geometry,
+        left: startLeft + dx,
+        top: startTop + dy,
+      };
+      appDispatch(DiagramsStore.update_diagram_geometry_locally(updated));
+    };
+
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      if (dragging) {
+        justDraggedRef.current = true;
+      }
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  };
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
+    if (justDraggedRef.current) {
+      justDraggedRef.current = false;
+      return;
+    }
     selectItem(diagram?.id);
   };
 
@@ -129,10 +187,10 @@ export default function DiagramElement(props: IDiagramElement) {
       var newCoord = diagram.geometry;
 
       if (diagram?.region_id != null) {
-        var parent_type: IDiagramTypeDTO|null = diagram_content?.dgr_types.find(t => t.name == parent?.dgr_type) ?? null;
+        var parent_type: IDiagramTypeDTO|null = diagram_content?.dgr_types?.find(t => t.name == parent?.dgr_type) ?? null;
 
         if (parent_type != null) {
-          var region = parent_type.regions.find(r => r.region_key == diagram.region_id);
+          var region = parent_type.regions?.find(r => r.region_key == diagram.region_id);
 
           if (region != null) {
             var w = parent_coord.width;
@@ -188,6 +246,7 @@ export default function DiagramElement(props: IDiagramElement) {
       <Box
         key={"box in element"}
         onClick={handleClick}
+        onPointerDown={handlePointerDown}
         sx={{// Main object
           boxShadow: shadow,
           padding: 0,
@@ -199,8 +258,9 @@ export default function DiagramElement(props: IDiagramElement) {
           width: coord.width * zoom + 'px',
           backgroundColor: 'transparent',
           color:color,
+          touchAction: canDrag ? 'none' : undefined,
           '&:hover': {
-            cursor: 'pointer'
+            cursor: canDrag ? 'move' : 'pointer'
           },
           display: 'flex', // Добавляем свойство display и flex-direction
           flexDirection: 'column',
@@ -211,14 +271,27 @@ export default function DiagramElement(props: IDiagramElement) {
         <img
           key={"img" + diagram?.id}
           src={diagram_type?.src != null ? diagram_type?.src : "svg/black_square.svg"}
+          draggable={false}
           style={{
             border: 0,
             padding: 0,
             margin: 0,
             width: '100%',
             height: '100%',
-            objectFit: 'fill'
+            objectFit: 'fill',
+            transform: `rotate(${coord.rotation ?? 0}deg)`
           }} />
+
+        {editingEnabled && selected_id === diagram?.id && (
+          <DiagramRotationHandle
+            onRotate={(deg) => {
+              const updated = DeepCopy(diagram);
+              if (!updated) return;
+              updated.geometry = { ...updated.geometry, rotation: deg };
+              appDispatch(DiagramsStore.update_diagram_geometry_locally(updated));
+            }}
+          />
+        )}
 
         {diagram_type?.regions?.map((region) => getValueByRegion(region, cur_values, zoom, coord))}
 

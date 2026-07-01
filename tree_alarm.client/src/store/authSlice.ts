@@ -133,6 +133,13 @@ const authSlice = createSlice({
       .addCase(customer_login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      // Without this, a successful refresh only ever updated localStorage — Redux's
+      // authStates.token stayed pinned to the original (soon-to-expire) token forever, so
+      // every subsequent DoFetch call kept sending an increasingly stale Authorization header.
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.token = action.payload.token;
+        state.refresh_token = action.payload.refresh_token;
       });
   },
 });

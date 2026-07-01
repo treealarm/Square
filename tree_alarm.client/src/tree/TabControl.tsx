@@ -38,7 +38,7 @@ export default function TabControl() {
 
   return (
     <Box sx={{
-      backgroundColor: '#dca',
+      bgcolor: 'background.paper',
       flexGrow: 1,
       display: 'flex'
     }}

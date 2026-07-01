@@ -239,7 +239,7 @@ export function EventViewer() {
       >
 
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Toolbar sx={{ backgroundColor: 'lightgray', justifyContent: "center", }}>
+          <Toolbar sx={{ bgcolor: 'background.paper', justifyContent: "center", }}>
               <Stack
                 direction="row"                
                 divider={<Divider orientation="vertical" flexItem />}
@@ -300,14 +300,14 @@ export function EventViewer() {
         flex: 1
       }}>
 
-        <Grid item xs sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
-          
+        <Grid size="grow" sx={{ minWidth: '100px', minHeight: '100px', height: '100%', border: 1 }}>
+
           {useGalleryView ?
             <EventGallery onSelect={handleSelect} /> :
             <EventTable setLocalFilter={setLocalFilter} onSelect={handleSelect} />}
         </Grid>
 
-        <Grid item xs={3} sx={{ height: "100%", border: 1 }}>
+        <Grid size={3} sx={{ height: "100%", border: 1 }}>
           <EventProperties />
         </Grid>
       </Grid>
