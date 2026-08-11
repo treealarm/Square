@@ -4,7 +4,7 @@ using Domain.OptionsModels;
 using Domain.ServiceInterfaces;
 using Google.Api;
 using LeafletAlarmsRouter;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using PubSubLib;
 using RouterMicroService;
 using Swashbuckle.AspNetCore.Filters;
@@ -34,7 +34,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setUpAction =>
 {
-  setUpAction.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+  setUpAction.SwaggerDoc("v1", new OpenApiInfo
   {
     Title = "RouterApi",
     Version = "1.0"

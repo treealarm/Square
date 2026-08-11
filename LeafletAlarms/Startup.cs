@@ -6,7 +6,7 @@ using LeafletAlarms.Authentication;
 using LeafletAlarms.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using PubSubLib;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
@@ -86,7 +86,7 @@ namespace LeafletAlarms
       services.AddEndpointsApiExplorer();
       services.AddSwaggerGen(setUpAction =>
       {
-        setUpAction.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+        setUpAction.SwaggerDoc("v1", new OpenApiInfo
         {
           Title = "MapApi",
           Version = "1.2"
@@ -104,14 +104,12 @@ namespace LeafletAlarms
               Scheme = JwtBearerDefaults.AuthenticationScheme //The name of the HTTP Authorization scheme to be used in the Authorization header. In this case "bearer".
             });
 
-        setUpAction.AddSecurityRequirement(new OpenApiSecurityRequirement{
+        //The requirement is built per document now, because a scheme reference has to be
+        //resolved against the document that owns the definition added just above.
+        setUpAction.AddSecurityRequirement(document => new OpenApiSecurityRequirement{
           {
-              new OpenApiSecurityScheme{
-                  Reference = new OpenApiReference{
-                      Id = JwtBearerDefaults.AuthenticationScheme, //The name of the previously defined security scheme.
-                      Type = ReferenceType.SecurityScheme
-                  }
-              },new List<string>()
+              new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme, document),
+              new List<string>()
           }
         });
       });
