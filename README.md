@@ -1,5 +1,7 @@
 # Object Monitoring System
 
+[![Sponsor](https://img.shields.io/badge/sponsor-%E2%99%A5-ea4aaa?style=flat-square&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/treealarm)
+
 A real-time object monitoring platform that visualizes moving and stationary entities on a map and analytical dashboards. The system collects, stores, and displays diverse object states and telemetry data for analysis.
 
 ## Features
