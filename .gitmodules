@@ -1,9 +1,3 @@
-[submodule "OnvifLib"]
-  path = OnvifLib
-  url = https://github.com/treealarm/OnvifLib.git
-[submodule "KeycloakAdmin"]
-	path = KeycloakAdmin
-	url = git@github.com:treealarm/KeycloakAdmin.git
 [submodule "SquareIntegrationClient"]
 	path = SquareIntegrationClient
-	url = git@github.com:treealarm/SquareIntegrationClient.git
+	url = https://github.com/treealarm/SquareIntegrationClient.git

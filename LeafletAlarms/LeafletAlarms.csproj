@@ -38,6 +38,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="10.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
+    <PackageReference Include="KeycloakAdmin" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,7 +47,6 @@
     <ProjectReference Include="..\IntegrationServerLib\IntegrationServerLib.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\GrpcDaprLib\GrpcDaprLib.csproj" />
-    <ProjectReference Include="..\KeycloakAdmin\KeycloakAdmin.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
     <ProjectReference Include="..\SquareIntegrationClient\SquareIntegrationClient.csproj" />
     <ProjectReference Include="..\ValhallaLib\ValhallaLib.csproj" />
