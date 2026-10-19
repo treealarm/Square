@@ -18,12 +18,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+    <PackageReference Include="OnvifLib" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GrpcDaprLib\GrpcDaprLib.csproj" />
     <ProjectReference Include="..\IntegrationUtilsLib\IntegrationUtilsLib.csproj" />
-    <ProjectReference Include="..\OnvifLib\OnvifLib.csproj" />
     <ProjectReference Include="..\PubSubLib\PubSubLib.csproj" />
   </ItemGroup>
 

@@ -9,10 +9,8 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["AASubService/AASubService.csproj", "AASubService/"]
 COPY ["GrpcDaprLib/GrpcDaprLib.csproj", "GrpcDaprLib/"]
-COPY ["ImageLib/ImageLib.csproj", "ImageLib/"]
 COPY ["IntegrationUtilsLib/IntegrationUtilsLib.csproj", "IntegrationUtilsLib/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["OnvifLib/OnvifLib.csproj", "OnvifLib/"]
 COPY ["PubSubLib/PubSubLib.csproj", "PubSubLib/"]
 RUN dotnet restore "./AASubService/AASubService.csproj"
 COPY . .
